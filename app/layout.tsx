@@ -3,6 +3,7 @@ import { Open_Sans } from "next/font/google";
 import Link from "next/link";
 
 import paths from "@/app/paths";
+import Footer from "@/app/components/Footer";
 
 import "./globals.css";
 
@@ -32,7 +33,7 @@ export default function RootLayout({
         </Link>
       </header>
       {children}
-      <footer>paka</footer>
+      <Footer />
     </body>
     </html>
   );
