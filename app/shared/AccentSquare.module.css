@@ -1,0 +1,7 @@
+.accentSquare {
+  width: 32px;
+  height: 32px;
+  background-color: #C70850;
+  border-radius: 18px 0 0 0;
+  flex-shrink: 0;
+} 

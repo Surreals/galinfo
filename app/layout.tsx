@@ -3,7 +3,7 @@ import { Open_Sans } from "next/font/google";
 import Link from "next/link";
 
 import paths from "@/app/paths";
-import Footer from "@/app/components/Footer";
+import Footer from "@/app/footer/Footer";
 
 import "./globals.css";
 

@@ -1,9 +1,9 @@
-import Link from "next/link";
+import AllNews from "@/app/allNews";
 
-export default function SocietyPage() {
+export default function HomePage() {
   return (
     <>
-      <div>HEllo 222</div>
+      <AllNews />
     </>
   );
 }
