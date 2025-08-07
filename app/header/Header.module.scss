@@ -1,8 +1,7 @@
 .headerMain {
-
-  //padding: 20px;
-  //background-color: #C70850;
-
+  box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
+  background-color: #ffffff;
+  position: relative;
 }
 
 .header {
@@ -16,13 +15,33 @@
     background-color: #C70850;
     padding: 8px 12px;
     box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
-    border-radius: 10px;
+    border-radius: 8px;
     cursor: pointer;
+    transition: background-color 0.2s ease;
   }
+
+  .radioLogo:hover {
+    background-color: #DA0457;
+  }
+
 
   .searchIcon {
     padding: 13px;
     cursor: pointer;
+    border-radius: 8px;
+    transition: background-color 0.2s ease;
+
+    img {
+      transition: filter 0.2s ease;
+    }
+  }
+
+  .searchIcon:hover {
+    background-color: #C70850;
+
+    img {
+      filter: brightness(0) invert(1);
+    }
   }
 
   .navList {
