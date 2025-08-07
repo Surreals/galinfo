@@ -1,5 +1,5 @@
 const paths = {
-  society: '/society',
+  // society: '/society',
   // АГЕНЦІЯ
   about: '/about',
   editorialPolicy: '/editorial-policy',

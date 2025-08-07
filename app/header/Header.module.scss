@@ -1,0 +1,107 @@
+.headerMain {
+
+  //padding: 20px;
+  //background-color: #C70850;
+
+}
+
+.header {
+  padding: 16px 80px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  justify-content: space-between;
+
+  .radioLogo {
+    background-color: #C70850;
+    padding: 8px 12px;
+    box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
+    border-radius: 10px;
+    cursor: pointer;
+  }
+
+  .searchIcon {
+    padding: 13px;
+    cursor: pointer;
+  }
+
+  .navList {
+    align-items: center;
+    display: flex;
+    gap: 10px;
+    line-height: 1.2;
+
+    .link {
+      padding: 4px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 600;
+      transition: color 0.2s ease;
+    }
+
+    .link:hover {
+      color: #C70850;
+    }
+  }
+
+  .svgBox {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+  }
+}
+
+.secondaryHeader {
+  border-bottom: 1px solid #CFCFCF;
+  border-top: 1px solid #CFCFCF;
+  padding: 0 80px;
+  display: flex;
+  align-items: center;
+
+
+  .text {
+    padding: 6px 0;
+    font-size: 12px;
+    width: 30vw;
+  }
+
+  .infoContainer {
+    padding: 6px;
+    border-left: 1px solid #CFCFCF;
+    align-items: center;
+    display: flex;
+    gap: 16px;
+
+    .newInfoLink {
+      align-items: center;
+      display: flex;
+      gap: 10px;
+    }
+
+    .boltText {
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .gradientTextStart {
+      background-image: linear-gradient(to right, rgba(0, 0, 0, 0) 0%, #000000 20%, #000000 80%, rgba(0, 0, 0, 0) 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      display: inline-block;
+      font-weight: 700;
+      font-size: 14px;
+    }
+
+    .gradientTextEnd {
+      background-image: linear-gradient(to right, #000000 0%, #000000 20%, rgba(0, 0, 0, 0) 80%, rgba(0, 0, 0, 0) 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      display: inline-block;
+      font-weight: 700;
+      font-size: 14px;
+    }
+  }
+}

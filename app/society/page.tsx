@@ -1,3 +1,3 @@
 export default function SocietyPage() {
-  return <h1>Про насccc..от вас</h1>;
+  return <h1>Про насЮ..від вас</h1>;
 }

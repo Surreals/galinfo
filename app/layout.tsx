@@ -1,9 +1,8 @@
 import type { Metadata } from "next";
 import { Open_Sans } from "next/font/google";
-import Link from "next/link";
 
-import paths from "@/app/paths";
 import Footer from "@/app/footer/Footer";
+import Header from "@/app/header/Header";
 
 import "./globals.css";
 
@@ -27,11 +26,7 @@ export default function RootLayout({
   return (
     <html lang="en">
     <body className={`${openSans.variable} antialiased`}>
-      <header>
-        <Link href={paths.society}>
-          <button>Перейти на About</button>
-        </Link>
-      </header>
+      <Header/>
       {children}
       <Footer />
     </body>
