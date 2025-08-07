@@ -1,0 +1,50 @@
+.viewAllContainer {
+  display: flex;
+  justify-content: flex-start;
+}
+
+.viewAllButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 24px;
+  background-color: #ffffff;
+  border: 1px solid #222222;
+  border-radius: 6px;
+  text-decoration: none;
+  color: #222222;
+  font-family: 'Open Sans', sans-serif;
+  font-weight: 600;
+  font-size: 14px;
+  line-height: 1.2;
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.viewAllButton:hover {
+  background-color: #222222;
+  color: #ffffff;
+}
+
+.arrowIcon {
+  transition: transform 0.2s ease;
+}
+
+.viewAllButton:hover .arrowIcon {
+  transform: translateX(2px);
+}
+
+/* Адаптивні стилі */
+@media (max-width: 768px) {
+  .viewAllButton {
+    padding: 8px 16px;
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .viewAllButton {
+    padding: 6px 12px;
+    font-size: 11px;
+  }
+} 

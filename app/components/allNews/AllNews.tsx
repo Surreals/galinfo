@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { AccentSquare } from '@/app/shared';
+import { AccentSquare, ViewAllButton } from '@/app/shared';
 import styles from './AllNews.module.css';
 
 // Інтерфейси для типізації даних
@@ -199,22 +199,7 @@ export default function AllNews({ news = [], isLoading = false }: AllNewsProps) 
         </div>
 
         {/* Кнопка "Всі новини з рубрики" */}
-        <div className={styles.viewAllContainer}>
-          <Link href="/all-news" className={styles.viewAllButton}>
-            <span>ВСІ НОВИНИ З РУБРИКИ</span>
-            <svg 
-              className={styles.arrowIcon} 
-              width="16" 
-              height="16" 
-              viewBox="0 0 24 24" 
-              fill="none" 
-              stroke="currentColor" 
-              strokeWidth="2"
-            >
-              <path d="M5 12h14M12 5l7 7-7 7"/>
-            </svg>
-          </Link>
-        </div>
+        <ViewAllButton href="/all-news" />
       </div>
     </section>
   );

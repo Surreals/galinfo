@@ -1,4 +1,4 @@
-.allNewsSection {
+.categoryNewsSection {
   background-color: #ffffff;
   padding: 40px 0;
 }
@@ -42,7 +42,6 @@
 .newsItem {
   display: flex;
   flex-direction: column;
-  height: auto;
   width: 100%;
 }
 
@@ -58,6 +57,40 @@
 
 .newsLink:hover {
   opacity: 0.8;
+}
+
+/* Контейнер зображення */
+.imageContainer {
+  position: relative;
+  width: 100%;
+  height: 200px;
+  margin-bottom: 12px;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.newsImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+/* Тег "ВАЖЛИВО" */
+.importantTag {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background-color: #222222;
+  color: #ffffff;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-family: 'Open Sans', sans-serif;
+  font-weight: 600;
+  font-size: 11px;
+  line-height: 1.2;
+  text-transform: uppercase;
+  z-index: 1;
 }
 
 .newsTitle {
@@ -85,51 +118,34 @@
   width: 100%;
 }
 
-/* Кнопка "Всі новини з рубрики" */
-.viewAllContainer {
-  display: flex;
-  justify-content: flex-start;
-}
 
-.viewAllButton {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 12px 24px;
-  background-color: #ffffff;
-  border: 1px solid #222222;
-  border-radius: 6px;
-  text-decoration: none;
-  color: #222222;
-  font-family: 'Open Sans', sans-serif;
-  font-weight: 600;
-  font-size: 14px;
-  line-height: 1.2;
-  transition: all 0.2s ease;
-  cursor: pointer;
-}
 
-.viewAllButton:hover {
-  background-color: #222222;
-  color: #ffffff;
-}
-
-.arrowIcon {
-  transition: transform 0.2s ease;
-}
-
-.viewAllButton:hover .arrowIcon {
-  transform: translateX(2px);
+/* Розділювальна лінія */
+.separator {
+  width: 100%;
+  height: 1px;
+  background-color: #CFCFCF;
+  margin: 32px 0 0 0;
 }
 
 /* Скелетон для завантаження */
+.skeletonImage {
+  width: 100%;
+  height: 200px;
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: loading 1.5s infinite;
+  border-radius: 8px;
+  margin-bottom: 12px;
+}
+
 .skeletonTitle {
-  height: 48px;
+  height: 32px;
   background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
   background-size: 200% 100%;
   animation: loading 1.5s infinite;
   border-radius: 4px;
-  margin-bottom: 8px;
+  margin-bottom: 6px;
 }
 
 .skeletonDate {
@@ -150,8 +166,7 @@
   }
 }
 
-
-
+/* Адаптивні стилі для різних розмірів екрану */
 @media (max-width: 1200px) {
   .container {
     padding: 0 40px;
@@ -176,7 +191,7 @@
 }
 
 @media (max-width: 768px) {
-  .allNewsSection {
+  .categoryNewsSection {
     padding: 32px 0;
   }
   
@@ -199,6 +214,10 @@
     max-width: 600px;
   }
   
+  .imageContainer {
+    height: 160px;
+  }
+  
   .newsTitle {
     font-size: 13px;
   }
@@ -207,14 +226,14 @@
     font-size: 11px;
   }
   
-  .viewAllButton {
-    padding: 8px 16px;
-    font-size: 12px;
+  .importantTag {
+    font-size: 10px;
+    padding: 3px 6px;
   }
 }
 
 @media (max-width: 480px) {
-  .allNewsSection {
+  .categoryNewsSection {
     padding: 24px 0;
   }
   
@@ -241,6 +260,10 @@
     max-width: 400px;
   }
   
+  .imageContainer {
+    height: 140px;
+  }
+  
   .newsTitle {
     font-size: 12px;
   }
@@ -249,8 +272,8 @@
     font-size: 10px;
   }
   
-  .viewAllButton {
-    padding: 6px 12px;
-    font-size: 11px;
+  .importantTag {
+    font-size: 9px;
+    padding: 2px 5px;
   }
 } 
