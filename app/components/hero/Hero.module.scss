@@ -1,0 +1,147 @@
+.heroSection {
+  padding: 24px 80px 48px 80px;
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  border-bottom: 1px solid var(--color-tertiary);
+
+  .infoSection {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 24px;
+  }
+
+  .weatherSection {
+    gap: 24px;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .currencySection {
+    gap: 24px;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .exchangeTable {
+    display: inline-block;
+    overflow: hidden;
+    border-bottom: 1px solid var(--color-tertiary);
+    padding-bottom: 24px;
+  }
+
+  .exchangeTableHeader {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 16px;
+    gap: 8px;
+    text-align: center;
+    padding-bottom: 24px;
+  }
+
+  .exchangeTableRow {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    align-items: center;
+    padding-bottom: 24px;
+  }
+
+  .exchangeCurrency {
+    font-weight: 600;
+    text-align: left;
+    font-size: 16px;
+  }
+
+  .exchangeValue {
+    text-align: center;
+    color: var(--color-tertiary);
+    font-weight: 600;
+    font-size: 16px;
+  }
+
+  .weatherWidget {
+    border: 1px solid var(--color-tertiary);
+    border-radius: 8px;
+    padding: 4px;
+  }
+
+  .heroImg {
+    width: 100%;
+    height: 520px;
+    border-radius: 8px;
+    object-fit: cover;
+  }
+
+  .sectionTitle {
+    font-size: 20px;
+    font-weight: 600;
+  }
+
+  .titleBox {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .buttonUp {
+    width: 46px;
+    height: 46px;
+    cursor: pointer;
+    border-radius: 8px;
+    border: 1px solid var(--color-accent);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.2s ease;
+  }
+
+  .buttonUp:hover {
+    background-color: var(--color-accent);
+    img {
+      filter: brightness(0) invert(1);
+    }
+  }
+
+  .carouselBox {
+    width: 67vw;
+    height: 520px;
+
+    .carouselItem {
+      width: fit-content;
+      background-size: cover;
+      background-position: center;
+      position: relative;
+
+
+      .carouselContent {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        padding: 20px;
+        background: linear-gradient(to top, rgba(0, 0, 0, 1) 0%, rgba(205, 205, 205, 0) 60%);
+      }
+
+      .carouselTitle {
+        margin: 0;
+        font-weight: 800;
+        font-size: 32px;
+        color: var(--color-white);
+      }
+
+      .carouselTime {
+        margin: 0;
+        font-size: 11px;
+        font-weight: 600;
+        color: #fff;
+      }
+    }
+  }
+
+}
+
+
+
