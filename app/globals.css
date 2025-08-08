@@ -1,5 +1,14 @@
 @import "tailwindcss";
 
+:root {
+  /* Основні кольори проекту */
+  --color-primary: #101010;      /* Чорний */
+  --color-secondary: #5B5B5B;    /* Темно-сірий */
+  --color-tertiary: #CFCFCF;     /* Світло-сірий */
+  --color-white: #FFFFFF;        /* Білий */
+  --color-accent: #C70850;       /* Маджента/рожевий */
+}
+
 body {
   font-family: var(--font-open-sans), sans-serif;
   margin: 0;
