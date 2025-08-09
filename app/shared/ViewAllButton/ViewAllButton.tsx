@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import styles from './ViewAllButton.module.css';
 
-interface ViewAllButtonProps {
+export interface ViewAllButtonProps {
   href: string;
   text?: string;
   className?: string;
@@ -30,4 +30,4 @@ export default function ViewAllButton({
       </Link>
     </div>
   );
-} 
+}

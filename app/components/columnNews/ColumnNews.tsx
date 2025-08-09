@@ -4,7 +4,7 @@ import { AccentSquare, ViewAllButton } from '@/app/shared';
 import styles from './ColumnNews.module.css';
 
 // Інтерфейси для типізації даних
-interface ColumnNewsItem {
+export interface ColumnNewsItem {
   id: string;
   title: string;
   summary: string;
@@ -15,7 +15,7 @@ interface ColumnNewsItem {
   imageAlt: string;
 }
 
-interface ColumnNewsProps {
+export interface ColumnNewsProps {
   category: string;
   news?: ColumnNewsItem[];
   isLoading?: boolean;
@@ -141,4 +141,4 @@ export default function ColumnNews({
       </div>
     </section>
   );
-} 
+}

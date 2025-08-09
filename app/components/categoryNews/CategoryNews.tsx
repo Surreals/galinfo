@@ -15,7 +15,7 @@ export interface CategoryNewsItem {
   isImportant?: boolean;
 }
 
-interface CategoryNewsProps {
+export interface CategoryNewsProps {
   category: string;
   news?: CategoryNewsItem[];
   isLoading?: boolean;
@@ -165,4 +165,4 @@ export default function CategoryNews({
       </div>
     </section>
   );
-} 
+}
