@@ -136,10 +136,11 @@
 
 .buttonGroup {
   display: flex;
+  flex-direction: column; /* Змінено на column для вертикального розташування */
   justify-content: center;
   align-items: center;
-  gap: 16px; /* Space between buttons and 'and' text */
-  margin-bottom: 32px; /* Margin below the button group */
+  gap: 10px; /* Зменшено проміжок для вертикального розташування */
+  margin-bottom: 32px;
 }
 
 .andText {
@@ -162,7 +163,7 @@
   transition: all 0.3s ease;
   cursor: pointer;
   width: auto;
-  text-decoration: none; /* Ensure link doesn't have underline */
+  text-decoration: none;
 }
 
 .fomoButton:hover {
@@ -222,7 +223,7 @@
 
 .bytcdText {
   font-size: 14px;
-  font-weight: 700; /* Changed from 500 to 700 for bold */
+  font-weight: 700;
   color: var(--color-white);
 }
 
