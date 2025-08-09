@@ -3,6 +3,7 @@ import Image from 'next/image';
 import paths from '@/app/paths';
 import styles from './Footer.module.css';
 import galinfoLogo from '@/assets/logos/galInfoLogo.png';
+import inFomoLogoWhite from '@/assets/logos/inFomoLogoWhite.png';
 
 export default function Footer() {
   return (
@@ -191,13 +192,19 @@ export default function Footer() {
             </Link>
           </div>
 
-          {/* Компактна кнопка "Сайт створений bytcd team" */}
-          <Link href="https://bytcd.com" target="_blank" rel="noopener noreferrer" className={styles.fomoButton}>
+          {/* Компактна кнопка IN-FOMO */}
+          <div className={styles.fomoButton}>
             <span className={styles.fomoText}>САЙТ СТВОРЕНИЙ</span>
-            <span className={styles.fomoText}>bytcd team</span>
-          </Link>
+            <Image 
+              src={inFomoLogoWhite} 
+              alt="IN-FOMO Logo" 
+              width={80} 
+              height={20} 
+              className={styles.fomoLogo}
+            />
+          </div>
         </div>
       </div>
     </footer>
   );
-}
+} 
