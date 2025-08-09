@@ -4,7 +4,7 @@ import { AccentSquare, ViewAllButton } from '@/app/shared';
 import styles from './CategoryNews.module.css';
 
 // Інтерфейси для типізації даних
-interface CategoryNewsItem {
+export interface CategoryNewsItem {
   id: string;
   title: string;
   date: string;
