@@ -192,19 +192,29 @@ export default function Footer() {
             </Link>
           </div>
 
-          {/* Компактна кнопка IN-FOMO */}
-          <div className={styles.fomoButton}>
-            <span className={styles.fomoText}>САЙТ СТВОРЕНИЙ</span>
-            <Image 
-              src={inFomoLogoWhite} 
-              alt="IN-FOMO Logo" 
-              width={80} 
-              height={20} 
-              className={styles.fomoLogo}
-            />
+          {/* Container for both buttons and 'and' text */}
+          <div className={styles.buttonGroup}>
+            {/* IN-FOMO button (now a Link) */}
+            <Link href={paths.inFomo} target="_blank" rel="noopener noreferrer" className={styles.fomoButton}>
+              <span className={styles.fomoText}>САЙТ СТВОРЕНИЙ</span>
+              <Image 
+                src={inFomoLogoWhite} 
+                alt="IN-FOMO Logo" 
+                width={80} 
+                height={20} 
+                className={styles.fomoLogo}
+              />
+            </Link>
+            
+            <span className={styles.andText}>та</span>
+
+            {/* BYTCD TEAM button */}
+            <Link href={paths.bytcd} target="_blank" rel="noopener noreferrer" className={styles.bytcdButton}>
+              <span className={styles.bytcdText}>BYTCD TEAM</span>
+            </Link>
           </div>
         </div>
       </div>
     </footer>
   );
-} 
+}

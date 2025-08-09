@@ -1,5 +1,4 @@
 const paths = {
-  // society: '/society',
   // АГЕНЦІЯ
   about: '/about',
   editorialPolicy: '/editorial-policy',
@@ -37,10 +36,12 @@ const paths = {
   article: '/category/article',
   interview: '/category/interview',
   
-  // Соціальні мережі
+  // Соціальні мережі та зовнішні посилання
   facebook: 'https://facebook.com/galinfo',
   twitter: 'https://twitter.com/galinfo',
   instagram: 'https://instagram.com/galinfo',
+  inFomo: 'https://in-fomo.com',
+  bytcd: 'https://bytcd.com',
 };
 
 export default paths;
