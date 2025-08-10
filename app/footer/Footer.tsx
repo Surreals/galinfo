@@ -4,6 +4,7 @@ import paths from '@/app/paths';
 import styles from './Footer.module.css';
 import galinfoLogo from '@/assets/logos/galInfoLogo.png';
 import inFomoLogoWhite from '@/assets/logos/inFomoLogoWhite.png';
+import bytcdIcon from '@/assets/icons/bytcd-icon.svg'; // Імпорт нового логотипу
 
 export default function Footer() {
   return (
@@ -210,6 +211,13 @@ export default function Footer() {
 
             {/* BYTCD TEAM button */}
             <Link href={paths.bytcd} target="_blank" rel="noopener noreferrer" className={styles.bytcdButton}>
+              <Image 
+                src={bytcdIcon} 
+                alt="BYTCD Icon" 
+                width={16} 
+                height={16} 
+                className={styles.bytcdIcon}
+              />
               <span className={styles.bytcdText}>BYTCD TEAM</span>
             </Link>
           </div>
