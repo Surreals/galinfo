@@ -10,10 +10,18 @@
   --color-accent-hover: #DA0457;       /* Маджента/рожевий ховер */
 }
 
+
 body {
   font-family: var(--font-open-sans), sans-serif;
   margin: 0;
   padding: 0;
   box-sizing: border-box;
   overflow-x: hidden;
+}
+
+/*ANTD*/
+.ant-carousel .slick-dots li button {
+  width: 12px;
+  opacity: 1;
+  background: #CFCFCF;
 }

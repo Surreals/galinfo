@@ -1,11 +1,13 @@
 import type { Metadata } from "next";
 import { Open_Sans } from "next/font/google";
 import Head from "next/head";
+import { ConfigProvider } from "antd";
 
 import Footer from "@/app/footer/Footer";
 import Header from "@/app/header/Header";
 
 import "./globals.css";
+import "antd/dist/reset.css";
 
 const openSans = Open_Sans({
   variable: "--font-open-sans",
@@ -13,6 +15,19 @@ const openSans = Open_Sans({
   weight: ["400", "600", "700"],
   display: "swap",
 });
+
+const customTheme = {
+  components: {
+    Carousel: {
+      arrowSize: 14,
+      dotActiveWidth: 34,
+      dotGap: 5,
+      colorBgContainer: "rgb(199,8,80)",
+      dotHeight: 12,
+      "dotOffset": -34
+    },
+  },
+};
 
 export const metadata: Metadata = {
   title: "Galinfo",
@@ -29,17 +44,22 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-    <Head>
-      <link
-        rel="stylesheet"
-        href="https://sinoptik.ua/resources/informer/css/informer.css"
-      />
-    </Head>
-    <body className={`${openSans.variable} antialiased`}>
-    <Header/>
-    {children}
-    <Footer/>
-    </body>
+
+      <Head>
+        <link
+          rel="stylesheet"
+          href="https://sinoptik.ua/resources/informer/css/informer.css"
+        />
+      </Head>
+      <body className={`${openSans.variable} antialiased`}>
+        <ConfigProvider
+          theme={customTheme}
+        >
+          <Header/>
+          {children}
+          <Footer/>
+        </ConfigProvider>
+      </body>
     </html>
   );
 }
