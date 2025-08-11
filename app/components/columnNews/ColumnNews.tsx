@@ -1,7 +1,9 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { AccentSquare, ViewAllButton } from '@/app/shared';
+import NewsList from '../listNews/listNews';
 import styles from './ColumnNews.module.css';
+import arrowRight from "@/assets/icons/arrowRight.svg";
 
 // Інтерфейси для типізації даних
 export interface ColumnNewsItem {
@@ -19,12 +21,18 @@ export interface ColumnNewsProps {
   category: string;
   news?: ColumnNewsItem[];
   isLoading?: boolean;
+  isHomePage?: boolean;
+  smallImg?: boolean;
+  newsQuantity?: number;
 }
 
 export default function ColumnNews({ 
   category = "КРИМІНАЛ", 
   news = [], 
-  isLoading = false 
+  isLoading = false,
+  isHomePage = false,
+  smallImg = false,
+  newsQuantity = 4
 }: ColumnNewsProps) {
   // Мокові дані для прикладу (будуть замінені на реальні дані)
   const mockNews: ColumnNewsItem[] = [
@@ -80,6 +88,34 @@ export default function ColumnNews({
     }
   ];
 
+  const generateRandomNews = (count: number) => {
+    const titles = [
+      "Зеленський підписав новий закон",
+      "В Україні прогнозують грози",
+      "Трамп дав нове інтерв'ю",
+      "На Львівщині відкрили парк",
+      "Вчені винайшли новий велосипед",
+      "Новий арт-проєкт у центрі Києва",
+    ];
+
+    return Array.from({ length: count }, () => ({
+      title: titles[Math.floor(Math.random() * titles.length)],
+      time: new Date(
+        Date.now() - Math.floor(Math.random() * 1e8)
+      ).toLocaleString("uk-UA", {
+        day: "2-digit",
+        month: "long",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+      }),
+      imageUrl: `https://picsum.photos/seed/${Math.random()}/300/200`,
+    }));
+  };
+
+  // Мокові дані для listNews
+  const newsData = generateRandomNews(newsQuantity);
+
   // Використовуємо реальні дані або мокові
   const displayNews = news.length > 0 ? news : mockNews;
 
@@ -92,44 +128,67 @@ export default function ColumnNews({
           <h2 className={styles.title}>{category}</h2>
         </div>
 
-        {/* Список новин у колонці */}
-        <div className={styles.newsList}>
-          {isLoading ? (
-            // Скелетон для завантаження
-            Array.from({ length: 5 }).map((_, index) => (
-              <div key={index} className={styles.newsItem}>
-                <div className={styles.skeletonImage}></div>
-                <div className={styles.skeletonContent}>
-                  <div className={styles.skeletonTitle}></div>
-                  <div className={styles.skeletonSummary}></div>
-                  <div className={styles.skeletonDate}></div>
+        {/* Основний контент з новинами */}
+        <div className={styles.mainContent}>
+          {/* Список новин у колонці */}
+          <div className={styles.newsList}>
+            {isLoading ? (
+              // Скелетон для завантаження
+              Array.from({ length: 5 }).map((_, index) => (
+                <div key={index} className={styles.newsItem}>
+                  <div className={smallImg ? styles.skeletonImageSmall : styles.skeletonImage}></div>
+                  <div className={smallImg ? styles.skeletonContentSmall : styles.skeletonContent}>
+                    <div className={smallImg ? styles.skeletonTitleSmall : styles.skeletonTitle}></div>
+                    <div className={smallImg ? styles.skeletonSummarySmall : styles.skeletonSummary}></div>
+                    <div className={styles.skeletonDate}></div>
+                  </div>
                 </div>
-              </div>
-            ))
-          ) : (
-            // Відображення новин
-            displayNews.map((item) => (
-              <article key={item.id} className={styles.newsItem}>
-                <Link href={item.url} className={styles.newsLink}>
-                  <div className={styles.imageContainer}>
-                    <Image 
-                      src={item.imageUrl} 
-                      alt={item.imageAlt}
-                      width={280}
-                      height={350}
-                      className={styles.newsImage}
-                    />
-                  </div>
-                  <div className={styles.content}>
-                    <h3 className={styles.newsTitle}>{item.title}</h3>
-                    <p className={styles.newsSummary}>{item.summary}</p>
-                    <time className={styles.newsDate}>
-                      {item.date}, {item.time}
-                    </time>
-                  </div>
-                </Link>
-              </article>
-            ))
+              ))
+            ) : (
+              // Відображення новин
+              displayNews.map((item) => (
+                <article key={item.id} className={styles.newsItem}>
+                  <Link href={item.url} className={styles.newsLink}>
+                    <div className={smallImg ? styles.imageContainerSmall : styles.imageContainer}>
+                      <Image 
+                        src={item.imageUrl} 
+                        alt={item.imageAlt}
+                        width={280}
+                        height={350}
+                        className={styles.newsImage}
+                      />
+                    </div>
+                    <div className={smallImg ? styles.contentSmall : styles.content}>
+                      <h3 className={smallImg ? styles.newsTitleSmall : styles.newsTitle}>{item.title}</h3>
+                      <p className={smallImg ? styles.newsSummarySmall : styles.newsSummary}>{item.summary}</p>
+                      <time className={smallImg ? styles.newsDateSmall : styles.newsDate}>
+                        {item.date}, {item.time}
+                      </time>
+                    </div>
+                  </Link>
+                </article>
+              ))
+            )}
+          </div>
+
+          {/* ListNews компонент - тільки на головній сторінці */}
+          {isHomePage && (
+            <div className={styles.listNewsContainer}>
+              <NewsList
+                title="НОВИНИ ЛЬВОВА"
+                titleIcon={<Image
+                  src={arrowRight}
+                  alt={'Arrow right'}
+                  width={10}
+                  height={8}
+                />}
+                data={newsData}
+                showImagesAt={[0, 1]}
+                showMoreButton={true}
+                moreButtonUrl="/all-news"
+                widthPercent={100}
+              />
+            </div>
           )}
         </div>
 
