@@ -329,44 +329,44 @@ export default function Hero() {
           </div>
         </div>
       </div>
-      <div className={styles.containerHeroInfo}>
-          <NewsList
-            data={newsData}
-            showImagesAt={[3]}
-            widthPercent={45}
-            showMoreButton={false}
-          />
+      {/*<div className={styles.containerHeroInfo}>*/}
+      {/*    <NewsList*/}
+      {/*      data={newsData}*/}
+      {/*      showImagesAt={[3]}*/}
+      {/*      widthPercent={45}*/}
+      {/*      showMoreButton={false}*/}
+      {/*    />*/}
 
-          <NewsList
-            title="ЕКОНОМІКА"
-            moreButtonUrl="/economics"
-            data={newsData}
-            showImagesAt={[0]}
-            widthPercent={25}
-            showMoreButton
-            titleIcon={<Image
-              src={arrowRight}
-              alt={'Arrow right'}
-              width={10}
-              height={8}
-            />}
-          />
+      {/*    <NewsList*/}
+      {/*      title="ЕКОНОМІКА"*/}
+      {/*      moreButtonUrl="/economics"*/}
+      {/*      data={newsData}*/}
+      {/*      showImagesAt={[0]}*/}
+      {/*      widthPercent={25}*/}
+      {/*      showMoreButton*/}
+      {/*      titleIcon={<Image*/}
+      {/*        src={arrowRight}*/}
+      {/*        alt={'Arrow right'}*/}
+      {/*        width={10}*/}
+      {/*        height={8}*/}
+      {/*      />}*/}
+      {/*    />*/}
 
-          <NewsList
-            data={newsData}
-            showImagesAt={[0]}
-            widthPercent={25}
-            title="НОВИНИ ЛЬВОВА"
-            titleIcon={<Image
-              src={arrowRight}
-              alt={'Arrow right'}
-              width={10}
-              height={8}
-            />}
-            showMoreButton
-            moreButtonUrl="/lviv-news"
-          />
-      </div>
+      {/*    <NewsList*/}
+      {/*      data={newsData}*/}
+      {/*      showImagesAt={[0]}*/}
+      {/*      widthPercent={25}*/}
+      {/*      title="НОВИНИ ЛЬВОВА"*/}
+      {/*      titleIcon={<Image*/}
+      {/*        src={arrowRight}*/}
+      {/*        alt={'Arrow right'}*/}
+      {/*        width={10}*/}
+      {/*        height={8}*/}
+      {/*      />}*/}
+      {/*      showMoreButton*/}
+      {/*      moreButtonUrl="/lviv-news"*/}
+      {/*    />*/}
+      {/*</div>*/}
     </section>
 
   )

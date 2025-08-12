@@ -35,7 +35,7 @@
 }
 
 /* Адаптивні стилі */
-@media (max-width: 768px) {
+@media (max-width: 1000px) {
   .viewAllButton {
     padding: 8px 16px;
     font-size: 12px;

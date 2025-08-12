@@ -11,6 +11,10 @@
   gap: 10px;
   justify-content: space-between;
 
+  .burgerMenuIcon {
+    display: none;
+  }
+
   .radioLogo {
     background-color: var(--color-accent);
     padding: 8px 12px;
@@ -44,8 +48,7 @@
     }
   }
 
-  .navList {
-    align-items: center;
+  .navList {    align-items: center;
     display: flex;
     gap: 10px;
     line-height: 1.2;
@@ -114,7 +117,7 @@
     }
 
     .gradientTextEnd {
-      background-image: linear-gradient(to right, #000000 0%, #000000 20%, rgba(0, 0, 0, 0) 80%, rgba(0, 0, 0, 0) 100%);
+      background-image: linear-gradient(to right, #000000 0%, #000000 20%, rgba(0, 0, 0, 0) 100%);
       -webkit-background-clip: text;
       background-clip: text;
       color: transparent;
@@ -122,5 +125,50 @@
       font-weight: 700;
       font-size: 14px;
     }
+  }
+}
+
+@media (max-width: 1250px) {
+  .header {
+    .headerNav {
+      display: none;
+    }
+
+    .burgerMenuIcon {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 18px;
+    }
+  }
+
+  .secondaryHeader {
+    display: none;
+  }
+}
+
+@media (max-width: 1200px) {
+  .header {
+    padding: 16px 40px;
+  }
+}
+
+@media (max-width: 1000px) {
+  .header {
+    padding: 16px 20px;
+  }
+}
+
+@media (max-width: 600px) {
+  .header {
+    .svgBox {
+      display: none;
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .header {
+    padding: 16px;
   }
 }

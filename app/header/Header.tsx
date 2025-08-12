@@ -6,6 +6,7 @@ import galinfoLogo from "@/assets/logos/galInfoLogo.png";
 import radioLogo from "@/assets/logos/radioLogo.svg"
 import searchIcon from "@/assets/icons/searchIcon.svg"
 import dotIcon from "@/assets/icons/dotIcon.svg"
+import burgerMenu from "@/assets/icons/burgerMenu.svg"
 
 import styles from "@/app/header/Header.module.scss";
 
@@ -22,7 +23,8 @@ export default function Header() {
             className={styles.logoImage}
           />
         </Link>
-        <nav>
+        
+        <nav className={styles.headerNav}>
           <ul className={styles.navList}>
             <li>
               <Link href={paths.society} className={styles.link}>
@@ -71,6 +73,9 @@ export default function Header() {
             </li>
           </ul>
         </nav>
+        <div className={styles.burgerMenuIcon}>
+          <Image src={burgerMenu} alt={'Burger menu'}/>
+        </div>
         <div className={styles.svgBox}>
           <div className={styles.searchIcon}>
             <Image
@@ -105,7 +110,7 @@ export default function Header() {
             />
           </Link>
           <Link href={paths.society} className={styles.newInfoLink}>
-            <p className={styles.gradientTextStart}>“ ВАЖЛИВА НОВИНА 1 ........................ “</p>
+            <p className={styles.gradientTextStart}>“ ВАЖЛИВА НОВИНА 1 .......... “</p>
             <Image
               src={dotIcon}
               alt="Dot Logo"
@@ -114,7 +119,7 @@ export default function Header() {
             />
           </Link>
           <Link href={paths.society} className={styles.newInfoLink}>
-            <p className={styles.gradientTextEnd}>“ ВАЖЛИВА НОВИНА 2 ........................ “</p>
+            <p className={styles.gradientTextEnd}>“ ВАЖЛИВА НОВИНА 2 .......... “</p>
             <Image
               src={dotIcon}
               alt="Dot Logo"
