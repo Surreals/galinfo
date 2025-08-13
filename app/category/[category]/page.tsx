@@ -144,12 +144,6 @@ export default function CategoryPage({ params }: CategoryPageProps) {
           <div className={styles.newsColumn}>
             <NewsList
               title="ПОЛІТИКА"
-              titleIcon={<Image
-                src={arrowRight}
-                alt={'Arrow right'}
-                width={10}
-                height={8}
-              />}
               data={newsData1}
               showImagesAt={[0, 1]}
               showMoreButton={true}
@@ -164,12 +158,6 @@ export default function CategoryPage({ params }: CategoryPageProps) {
           <div className={styles.newsColumn}>
             <NewsList
               title="ЕКОНОМІКА"
-              titleIcon={<Image
-                src={arrowRight}
-                alt={'Arrow right'}
-                width={10}
-                height={8}
-              />}
               data={newsData2}
               showImagesAt={[0, 1]}
               showMoreButton={true}
@@ -184,12 +172,6 @@ export default function CategoryPage({ params }: CategoryPageProps) {
           <div className={styles.newsColumn}>
             <NewsList
               title="СПОРТ"
-              titleIcon={<Image
-                src={arrowRight}
-                alt={'Arrow right'}
-                width={10}
-                height={8}
-              />}
               data={newsData3}
               showImagesAt={[0, 1]}
               showMoreButton={true}
