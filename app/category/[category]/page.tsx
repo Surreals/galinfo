@@ -5,13 +5,19 @@ import arrowRight from "@/assets/icons/arrowRight.svg";
 import styles from "./page.module.css";
 
 interface CategoryPageProps {
-  params: {
+  params: Promise<{
     category: string;
-  };
+  }>;
+  searchParams?: Promise<{ [key: string]: string | string[] | undefined }>;
 }
 
-export default function CategoryPage({ params }: CategoryPageProps) {
-  const { category } = params;
+export default async function CategoryPage({ params, searchParams }: CategoryPageProps) {
+  const { category } = await params;
+  
+  // Перевіряємо, чи існує category
+  if (!category) {
+    return <div>Категорія не знайдена</div>;
+  }
   
   // Функція для генерації випадкових новин для NewsList
   const generateRandomNews = (count: number) => {
