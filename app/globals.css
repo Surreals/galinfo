@@ -10,6 +10,10 @@
   --color-accent-hover: #DA0457;       /* Маджента/рожевий ховер */
 }
 
+p, h1, h2, h3, h4, h5, h6, ol, ul, dl {
+  margin: 0;
+  padding: 0;
+}
 
 body {
   font-family: var(--font-open-sans), sans-serif;
