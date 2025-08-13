@@ -19,18 +19,24 @@ export interface ColumnNewsItem {
 
 export interface ColumnNewsProps {
   category: string;
+  secondCategory: string;
   news?: ColumnNewsItem[];
   isLoading?: boolean;
   isHomePage?: boolean;
   smallImg?: boolean;
+  arrowRightIcon?: boolean;
+  settingsIcon?: boolean;
   newsQuantity?: number;
 }
 
 export default function ColumnNews({ 
   category = "КРИМІНАЛ", 
-  news = [], 
+  news = [],
+  secondCategory = '',
   isLoading = false,
   isHomePage = false,
+ arrowRightIcon = false,
+   settingsIcon = false,
   smallImg = false,
   newsQuantity = 4
 }: ColumnNewsProps) {
@@ -90,12 +96,12 @@ export default function ColumnNews({
 
   const generateRandomNews = (count: number) => {
     const titles = [
-      "Зеленський підписав новий закон",
-      "В Україні прогнозують грози",
-      "Трамп дав нове інтерв'ю",
-      "На Львівщині відкрили парк",
-      "Вчені винайшли новий велосипед",
-      "Новий арт-проєкт у центрі Києва",
+      "Зеленський підписав новий закон підписав новий закон підписав новий закон",
+      "В Україні прогнозують грози підписав новий закон ",
+      "Трамп дав нове інтерв'ю підписав новий закон",
+      "На Львівщині відкрили парк підписав новий закон",
+      "Вчені винайшли новий велосипед підписав новий закон підписав новий закон",
+      "Новий арт-проєкт у центрі Києва підписав новий закон підписав новий закон",
     ];
 
     return Array.from({ length: count }, () => ({
@@ -123,18 +129,19 @@ export default function ColumnNews({
     <section className={styles.columnNewsSection}>
       <div className={styles.container}>
         {/* Заголовок секції */}
-        <div className={styles.header}>
-          <AccentSquare className={styles.titleAccent} />
-          <h2 className={styles.title}>{category}</h2>
-        </div>
+
 
         {/* Основний контент з новинами */}
         <div className={styles.mainContent}>
           {/* Список новин у колонці */}
           <div className={styles.newsList}>
+            <div className={styles.header}>
+              <AccentSquare className={styles.titleAccent}/>
+              <h2 className={styles.title}>{category}</h2>
+            </div>
             {isLoading ? (
               // Скелетон для завантаження
-              Array.from({ length: 5 }).map((_, index) => (
+              Array.from({length: 5}).map((_, index) => (
                 <div key={index} className={styles.newsItem}>
                   <div className={smallImg ? styles.skeletonImageSmall : styles.skeletonImage}></div>
                   <div className={smallImg ? styles.skeletonContentSmall : styles.skeletonContent}>
@@ -150,8 +157,8 @@ export default function ColumnNews({
                 <article key={item.id} className={styles.newsItem}>
                   <Link href={item.url} className={styles.newsLink}>
                     <div className={smallImg ? styles.imageContainerSmall : styles.imageContainer}>
-                      <Image 
-                        src={item.imageUrl} 
+                      <Image
+                        src={item.imageUrl}
                         alt={item.imageAlt}
                         width={280}
                         height={350}
@@ -174,14 +181,10 @@ export default function ColumnNews({
           {/* ListNews компонент - тільки на головній сторінці */}
           {isHomePage && (
             <div className={styles.listNewsContainer}>
-              <NewsList
-                title="НОВИНИ ЛЬВОВА"
-                titleIcon={<Image
-                  src={arrowRight}
-                  alt={'Arrow right'}
-                  width={10}
-                  height={8}
-                />}
+            <NewsList
+              settingsIcon={settingsIcon}
+              arrowRightIcon={arrowRightIcon}
+                title={secondCategory}
                 data={newsData}
                 showImagesAt={[0, 1]}
                 showMoreButton={true}

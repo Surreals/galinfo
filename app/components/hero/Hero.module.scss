@@ -14,7 +14,7 @@
 
   .container {
     max-width: 1440px;
-    padding: 24px 80px 0 80px;
+    padding: 24px 80px 55px 80px;
     margin: 0 auto;
     border-bottom: 1px solid var(--color-tertiary);
   }
@@ -225,21 +225,28 @@
 
 @media (max-width: 1200px) {
   .heroSection {
-
+    .containerHeroInfo {
+      padding: 24px 40px 98px 40px;;
+    }
     .container {
       padding: 24px 40px 50px 40px;
     }
   }
 }
 
+
 @media (max-width: 1000px) {
   .heroSection {
-
+    .containerHeroInfo {
+      flex-direction: column;
+      padding: 24px 20px 40px 20px;;
+    }
     .container {
       padding: 24px 20px 50px 20px;
     }
   }
 }
+
 
 @media (max-width: 480px) {
   .heroSection {

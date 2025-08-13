@@ -6,16 +6,28 @@
   cursor: pointer;
 }
 
+.titleContainer {
+  display: flex;
+  align-items: center;
+}
+
 .title {
   font-size: 20px;
   font-weight: 600;
   margin-bottom: 0;
 }
 
+.titleMobile {
+  font-size: 22px;
+  font-weight: 700;
+  margin: 0;
+}
+
 .titleIcon {
   display: flex;
   align-items: center;
 }
+
 
 .list {
   display: flex;

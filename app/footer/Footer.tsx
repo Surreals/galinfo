@@ -207,19 +207,19 @@ export default function Footer() {
               />
             </Link>
             
-            <span className={styles.andText}>та</span>
+            {/*<span className={styles.andText}>та</span>*/}
 
             {/* BYTCD TEAM button */}
-            <Link href={paths.bytcd} target="_blank" rel="noopener noreferrer" className={styles.bytcdButton}>
-              <Image 
-                src={bytcdIcon} 
-                alt="BYTCD Icon" 
-                width={16} 
-                height={16} 
-                className={styles.bytcdIcon}
-              />
-              <span className={styles.bytcdText}>BYTCD TEAM</span>
-            </Link>
+            {/*<Link href={paths.bytcd} target="_blank" rel="noopener noreferrer" className={styles.bytcdButton}>*/}
+            {/*  <Image */}
+            {/*    src={bytcdIcon} */}
+            {/*    alt="BYTCD Icon" */}
+            {/*    width={16} */}
+            {/*    height={16} */}
+            {/*    className={styles.bytcdIcon}*/}
+            {/*  />*/}
+            {/*  <span className={styles.bytcdText}>BYTCD TEAM</span>*/}
+            {/*</Link>*/}
           </div>
         </div>
       </div>

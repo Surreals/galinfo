@@ -1,6 +1,13 @@
-import React from "react";
+"use client";
+
+import { useEffect, useState } from "react"
+import Image from "next/image";
+
+import {AccentSquare, ViewAllButton} from "@/app/shared";
+import arrowRight from "@/assets/icons/arrowRight.svg";
+import settings from "@/assets/icons/settingsIcon.svg";
+
 import styles from "./listNews.module.scss";
-import {ViewAllButton} from "@/app/shared";
 
 type NewsItem = {
   title: string;
@@ -13,7 +20,8 @@ type NewsListProps = {
   showImagesAt?: number[];
   widthPercent?: number;
   title?: string;
-  titleIcon?: React.ReactNode;
+  arrowRightIcon?: boolean;
+  settingsIcon?: boolean;
   showMoreButton?: boolean;
   moreButtonUrl?: string;
 };
@@ -23,17 +31,53 @@ export default function NewsList({
    showImagesAt = [],
    widthPercent = 100,
    title,
-   titleIcon,
+   arrowRightIcon = false,
+    settingsIcon = false,
    showMoreButton = false,
    moreButtonUrl = "#",
  }: NewsListProps) {
+
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    // Функція перевірки ширини
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 1000);
+    };
+
+    handleResize();
+
+    window.addEventListener("resize", handleResize);
+
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  }, []);
 
   return (
     <div style={{ width: `${widthPercent}%` }} className={styles.container}>
       {title && (
         <div className={styles.header}>
-          <h2 className={styles.title}>{title}</h2>
-          {titleIcon && <span className={styles.titleIcon}>{titleIcon}</span>}
+          <div className={styles.titleContainer}>
+            {isMobile ? <AccentSquare className={styles.titleAccent} /> : null}
+            <h2 className={isMobile ? styles.titleMobile : styles.title}>{title}</h2>
+          </div>
+          {arrowRightIcon && <span className={styles.titleIcon}>
+              <Image
+              src={arrowRight}
+              alt={'Arrow right'}
+              width={10}
+              height={8}
+            />
+          </span>}
+          {settingsIcon && <span className={styles.titleIcon}>
+              <Image
+                  src={settings}
+                  alt={'Settings'}
+                  width={18}
+                  height={18}
+              />
+          </span>}
         </div>
       )}
 

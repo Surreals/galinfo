@@ -11,7 +11,13 @@
   gap: 10px;
   justify-content: space-between;
 
+  .burgerMenuContainer {
+    align-items: center;
+    display: flex;
+  }
+
   .burgerMenuIcon {
+    cursor: pointer;
     display: none;
   }
 
@@ -49,6 +55,7 @@
   }
 
   .navList {    align-items: center;
+    margin: 0;
     display: flex;
     gap: 10px;
     line-height: 1.2;
@@ -86,6 +93,7 @@
     padding: 6px 0;
     font-size: 12px;
     width: 30vw;
+    margin: 0;
   }
 
   .infoContainer {
@@ -104,6 +112,7 @@
     .boltText {
       font-size: 14px;
       font-weight: 700;
+      margin: 0;
     }
 
     .gradientTextStart {
@@ -114,6 +123,7 @@
       display: inline-block;
       font-weight: 700;
       font-size: 14px;
+      margin: 0;
     }
 
     .gradientTextEnd {
@@ -124,6 +134,7 @@
       display: inline-block;
       font-weight: 700;
       font-size: 14px;
+      margin: 0;
     }
   }
 }

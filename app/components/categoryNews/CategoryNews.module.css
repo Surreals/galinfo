@@ -1,6 +1,6 @@
 .categoryNewsSection {
   background-color: var(--color-white);
-  padding: 40px 0;
+  /*padding: 40px 0;*/
 }
 
 .container {
@@ -13,7 +13,7 @@
 .header {
   display: flex;
   align-items: center;
-  margin-bottom: 32px;
+  margin-bottom: 53px;
 }
 
 .titleAccent {
@@ -190,7 +190,7 @@
 
 @media (max-width: 1000px) {
   .categoryNewsSection {
-    padding: 32px 0;
+    /*padding: 32px 0;*/
   }
   
   .container {
@@ -198,7 +198,7 @@
   }
   
   .header {
-    margin-bottom: 24px;
+    margin-bottom: 40px;
   }
   
   .title {
@@ -231,7 +231,7 @@
 
 @media (max-width: 480px) {
   .categoryNewsSection {
-    padding: 24px 0;
+    /*padding: 24px 0;*/
   }
   
   .container {

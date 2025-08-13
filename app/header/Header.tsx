@@ -23,7 +23,7 @@ export default function Header() {
             className={styles.logoImage}
           />
         </Link>
-        
+
         <nav className={styles.headerNav}>
           <ul className={styles.navList}>
             <li>
@@ -73,25 +73,27 @@ export default function Header() {
             </li>
           </ul>
         </nav>
-        <div className={styles.burgerMenuIcon}>
-          <Image src={burgerMenu} alt={'Burger menu'}/>
-        </div>
-        <div className={styles.svgBox}>
-          <div className={styles.searchIcon}>
-            <Image
-              src={searchIcon}
-              alt="Search Logo"
-              width={24}
-              height={24}
-            />
+        <div className={styles.burgerMenuContainer}>
+          <div className={styles.burgerMenuIcon}>
+            <Image src={burgerMenu} alt={'Burger menu'}/>
           </div>
-          <div className={styles.radioLogo}>
-            <Image
-              src={radioLogo}
-              alt="Radio Logo"
-              width={120}
-              height={40}
-            />
+          <div className={styles.svgBox}>
+            <div className={styles.searchIcon}>
+              <Image
+                src={searchIcon}
+                alt="Search Logo"
+                width={24}
+                height={24}
+              />
+            </div>
+            <a className={styles.radioLogo} target={'_blank'} href={'https://lviv.fm/'}>
+              <Image
+                src={radioLogo}
+                alt="Radio Logo"
+                width={120}
+                height={40}
+              />
+            </a>
           </div>
         </div>
       </div>
@@ -110,7 +112,7 @@ export default function Header() {
             />
           </Link>
           <Link href={paths.society} className={styles.newInfoLink}>
-            <p className={styles.gradientTextStart}>“ ВАЖЛИВА НОВИНА 1 .......... “</p>
+          <p className={styles.gradientTextStart}>“ ВАЖЛИВА НОВИНА 1 .......... “</p>
             <Image
               src={dotIcon}
               alt="Dot Logo"

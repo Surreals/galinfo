@@ -1,8 +1,9 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useRef, useEffect, useState } from "react";
 import Image from "next/image";
 import { Carousel } from 'antd';
+import Script from "next/script";
 import NewsList from "@/app/components/listNews";
 
 import arrowUpPrimary from "@/assets/icons/arrowUpPrimary.svg";
@@ -16,14 +17,31 @@ import styles from './Hero.module.scss';
 export default function Hero() {
   const carouselRef = useRef<any>(null);
 
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    // Функція перевірки ширини
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 1000);
+    };
+
+    handleResize();
+
+    window.addEventListener("resize", handleResize);
+
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  }, []);
+
   const generateRandomNews = (count: number) => {
     const titles = [
-      "Зеленський підписав новий закон",
-      "В Україні прогнозують грози",
-      "Трамп дав нове інтерв'ю",
-      "На Львівщині відкрили парк",
-      "Вчені винайшли новий велосипед",
-      "Новий арт-проєкт у центрі Києва",
+      "Зеленський підписав новий закон Зеленський підписав новий закон ",
+      "В Україні прогнозують грози Зеленський підписав новий закон",
+      "Трамп дав нове інтерв'ю Зеленський підписав новий закон",
+      "На Львівщині відкрили парк Зеленський підписав новий закон",
+      "Вчені винайшли новий велосипед Зеленський підписав новий закон",
+      "Новий арт-проєкт у центрі Києва Зеленський підписав новий закон",
     ];
 
     return Array.from({ length: count }, () => ({
@@ -46,19 +64,6 @@ export default function Hero() {
   const onChange = (currentSlide: number) => {
     console.log(currentSlide);
   };
-
-  useEffect(() => {
-    // Динамічне завантаження скрипту
-    const script = document.createElement("script");
-    script.src = "https://sinoptik.ua/api/informer/content?loc=bwCOPQ6RBMAlPUoebrAObrFr&cem=gRYJ2sbUGk=WPQ6YbAD7cM=0cTYUcnEUbrjv2r3YPS5ePkC";
-    script.async = true;
-    document.body.appendChild(script);
-
-    // Очищення при розмонтуванні
-    return () => {
-      document.body.removeChild(script);
-    };
-  }, []);
 
   const carouselItems = [
     {
@@ -187,7 +192,6 @@ export default function Hero() {
             </div>
             <div>
               <div className={styles.weatherSection}>
-
                 <div className={styles.titleBox}>
                   <h4 className={styles.sectionTitle}>ПОГОДА</h4>
                   <Image
@@ -197,13 +201,14 @@ export default function Hero() {
                     height={8}
                   />
                 </div>
-                <div className={styles.weatherWidget}>
+                <div>
+                  <link
+                    rel="stylesheet"
+                    href="https://sinoptik.ua/resources/informer/css/informer.css"
+                  />
+
                   <div
-                    className="sin-informer sin-informer_font-helvetica"
-                    style={{
-                      backgroundColor: "rgba(255, 255, 255, 1)",
-                      color: "rgba(0, 0, 0, 1)",
-                    }}
+                    className={`sin-informer sin-informer_font-arial sin-informer_theme-light ${styles.wrapper}`}
                     data-lang="uk"
                   >
                     <div className="sin-informer__header">
@@ -223,17 +228,11 @@ export default function Hero() {
                         />
                       </a>
                       <p className="sin-informer__date">Погода на найближчий час</p>
-                      <p
-                        className="sin-informer__time"
-                        data-format="24"
-                        style={{color: "rgba(0, 0, 0, 1)"}}
-                      >
-              <span
-                className="sin-informer__time-icon"
-                style={{color: "rgba(218, 4, 87, 1)"}}
-              ></span>
+                      <p className="sin-informer__time" data-format="24">
+                        <span className="sin-informer__time-icon"></span>
                       </p>
                     </div>
+
                     <div className="sin-informer__main sin-informer__main_inline">
                       <a
                         className="sin-informer__entry"
@@ -241,28 +240,22 @@ export default function Hero() {
                         target="_blank"
                         rel="nofollow"
                       >
-                        <p
-                          className="sin-informer__location"
-                          style={{backgroundColor: "rgba(229, 229, 229, 1)"}}
+                        <p className="sin-informer__location">Львів</p>
+                        <div
+                          className="sin-informer__primary"
+                          style={{display: "none"}}
                         >
-                          Львів
-                        </p>
-                        <div className="sin-informer__primary" style={{display: "none"}}>
-                          <p
-                            className="sin-informer__local-time"
-                            style={{color: "rgba(0, 0, 0, 1)"}}
-                          ></p>
-                          <p
-                            className="sin-informer__temp"
-                            data-unit="c"
-                            style={{color: "rgba(218, 4, 87, 1)"}}
-                          ></p>
+                          <p className="sin-informer__local-time"></p>
+                          <p className="sin-informer__temp" data-unit="c"></p>
                           <div
                             className="sin-informer__condition"
                             data-icon-path="https://sinoptik.ua/resources/informer/assets/icons/conditions"
                           ></div>
                         </div>
-                        <div className="sin-informer__secondary" style={{display: "none"}}>
+                        <div
+                          className="sin-informer__secondary"
+                          style={{display: "none"}}
+                        >
                           <p
                             className="sin-informer__marker sin-informer__marker_wind"
                             data-unit="ms"
@@ -270,19 +263,13 @@ export default function Hero() {
                             data-directions="Західний,Північно-Західний,Північний,Північно-Східний,Східний,Південно-Східний,Південний,Південно-Західний,Штиль"
                             title="Вітер"
                           >
-                  <span
-                    className="sin-informer__marker-icon"
-                    style={{color: "rgba(218, 4, 87, 1)"}}
-                  ></span>
+                            <span className="sin-informer__marker-icon"></span>
                           </p>
                           <p
                             className="sin-informer__marker sin-informer__marker_humidity"
                             title="Волога"
                           >
-                  <span
-                    className="sin-informer__marker-icon"
-                    style={{color: "rgba(218, 4, 87, 1)"}}
-                  ></span>
+                            <span className="sin-informer__marker-icon"></span>
                           </p>
                           <p
                             className="sin-informer__marker sin-informer__marker_pressure"
@@ -290,83 +277,74 @@ export default function Hero() {
                             data-suffix="мм"
                             title="Тиск"
                           >
-                  <span
-                    className="sin-informer__marker-icon"
-                    style={{color: "rgba(218, 4, 87, 1)"}}
-                  ></span>
+                            <span className="sin-informer__marker-icon"></span>
                           </p>
                         </div>
                       </a>
                     </div>
-                    <div
-                      className="sin-informer__footer"
-                      style={{color: "rgba(0, 0, 0, 1)"}}
-                    >
+
+                    <div className="sin-informer__footer">
                       Погода на 10 днів від{" "}
                       <a
                         className="sin-informer__domain-link"
                         href="https://sinoptik.ua/pohoda/lviv/10-dniv"
                         target="_blank"
                         rel="nofollow"
-                        style={{color: "rgba(0, 0, 0, 1)"}}
                       >
                         sinoptik.ua
                       </a>
                     </div>
                   </div>
+
+                  {/* Скрипт для завантаження даних */}
+                  <Script
+                    src="https://sinoptik.ua/api/informer/content?loc=bwCOPQ6RBMAlPUoebrAObrFr&cem=gRYJ2sbUGk=WPQ6YbAD7cM=0cTYUcnEUbrjv2r3YPS5ePkC"
+                    strategy="lazyOnload"
+                  />
                 </div>
               </div>
-              <div className={styles.buttonUp}>
-                <Image
-                  src={arrowUpPrimary}
-                  alt="Arrow Up"
-                  width={10}
-                  height={14}
-                  className={styles.arrayIcon}
-                />
-              </div>
+
             </div>
           </div>
         </div>
       </div>
       <div className={styles.containerHeroInfo}>
-          <NewsList
-            data={newsData}
-            showImagesAt={[3]}
-            widthPercent={45}
-            showMoreButton={false}
-          />
+        <NewsList
+          data={newsData}
+          showImagesAt={[3]}
+          widthPercent={isMobile ? 100 : 45}
+          showMoreButton={false}
+        />
 
-          <NewsList
-            title="ЕКОНОМІКА"
-            moreButtonUrl="/economics"
-            data={newsData}
-            showImagesAt={[0]}
-            widthPercent={25}
-            showMoreButton
-            titleIcon={<Image
-              src={arrowRight}
-              alt={'Arrow right'}
-              width={10}
-              height={8}
-            />}
-          />
+        <NewsList
+          title="ЕКОНОМІКА"
+          moreButtonUrl="/economics"
+          data={newsData}
+          arrowRightIcon
+          showImagesAt={[0]}
+          widthPercent={isMobile ? 100 : 25}
+          showMoreButton
+        />
 
-          <NewsList
-            data={newsData}
-            showImagesAt={[0]}
-            widthPercent={25}
-            title="НОВИНИ ЛЬВОВА"
-            titleIcon={<Image
-              src={arrowRight}
-              alt={'Arrow right'}
-              width={10}
-              height={8}
-            />}
-            showMoreButton
-            moreButtonUrl="/lviv-news"
-          />
+        <NewsList
+          data={newsData}
+          showImagesAt={[3]}
+          widthPercent={isMobile ? 100 : 25}
+          title="НОВИНИ ЛЬВОВА"
+          showMoreButton
+          settingsIcon
+          moreButtonUrl="/lviv-news"
+        />
       </div>
+      {/*<div className={styles.buttonUp}>*/}
+      {/*  <Image*/}
+      {/*    src={arrowUpPrimary}*/}
+      {/*    alt="Arrow Up"*/}
+      {/*    width={10}*/}
+      {/*    height={14}*/}
+      {/*    className={styles.arrayIcon}*/}
+      {/*  />*/}
+      {/*</div>*/}
     </section>
 
   )
