@@ -86,6 +86,7 @@ export default function CategoryPage({ params }: CategoryPageProps) {
             newsQuantity={4} 
             smallImg={true} 
             category="ПОЛІТИКА" 
+            secondCategory=""
             showNewsList={false} 
             hideHeader={true} 
             className={styles.columnNewsStandard}
@@ -97,6 +98,7 @@ export default function CategoryPage({ params }: CategoryPageProps) {
           <ColumnNews 
             newsQuantity={8} 
             category="ЕВРОПА" 
+            secondCategory=""
             showNewsList={false} 
             hideHeader={true} 
             className={styles.columnNewsStandard}
@@ -117,6 +119,7 @@ export default function CategoryPage({ params }: CategoryPageProps) {
           <ColumnNews 
             newsQuantity={8} 
             category="КРИМІНАЛ" 
+            secondCategory=""
             showNewsList={false} 
             hideHeader={true} 
             className={styles.columnNewsStandard}
@@ -129,6 +132,7 @@ export default function CategoryPage({ params }: CategoryPageProps) {
             newsQuantity={4} 
             smallImg={true} 
             category="КУЛЬТУРА" 
+            secondCategory=""
             showNewsList={false} 
             hideHeader={true} 
             className={styles.columnNewsStandard}

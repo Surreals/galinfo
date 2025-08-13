@@ -135,21 +135,23 @@ export default function ColumnNews({
     <section className={`${styles.columnNewsSection} ${className}`}>
       <div className={styles.container}>
         {/* Заголовок секції */}
-        {!hideHeader && (
+        {/* {!hideHeader && (
           <div className={styles.header}>
             <AccentSquare className={styles.titleAccent} />
             <h2 className={styles.title}>{category}</h2>
           </div>
-        )}
+        )} */}
 
         {/* Основний контент з новинами */}
         <div className={styles.mainContent}>
           {/* Список новин у колонці */}
           <div className={styles.newsList}>
+          {!hideHeader && (
             <div className={styles.header}>
               <AccentSquare className={styles.titleAccent}/>
               <h2 className={styles.title}>{category}</h2>
             </div>
+            )}
             {isLoading ? (
               // Скелетон для завантаження
               Array.from({length: 5}).map((_, index) => (

@@ -103,6 +103,11 @@
   padding: 0 80px !important; /* Залишаємо падінги для AllNews, щоб він був на рівні з основними компонентами */
 }
 
+/* Зменшуємо верхній відступ для AllNews в CategoryPage */
+.allNewsStandard :global(.allNewsSection) {
+  padding: 20px 0 40px 0 !important; /* Зменшуємо верхній відступ з 40px до 20px */
+}
+
 /* Адаптивність для мобільних пристроїв */
 @media (max-width: 768px) {
   .container {
@@ -139,5 +144,10 @@
   
   .allNewsStandard :global(.container) {
     padding: 0 1rem !important; /* На мобільних зменшуємо падінги для AllNews */
+  }
+  
+  /* Адаптивні стилі для AllNews на мобільних */
+  .allNewsStandard :global(.allNewsSection) {
+    padding: 16px 0 32px 0 !important; /* Ще менший верхній відступ на мобільних */
   }
 }
