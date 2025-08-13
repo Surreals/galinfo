@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import { Open_Sans } from "next/font/google";
-import Head from "next/head";
 import { ConfigProvider } from "antd";
 
 import Footer from "@/app/footer/Footer";
@@ -44,13 +43,6 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-
-      <Head>
-        <link
-          rel="stylesheet"
-          href="https://sinoptik.ua/resources/informer/css/informer.css"
-        />
-      </Head>
       <body className={`${openSans.variable} antialiased`}>
         <ConfigProvider
           theme={customTheme}

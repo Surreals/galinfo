@@ -1,3 +1,7 @@
+import Image from "next/image";
+
+import categoryIcon from "@/assets/icons/categoryIcon.svg";
+
 import styles from './AccentSquare.module.css';
 
 interface AccentSquareProps {
@@ -6,6 +10,12 @@ interface AccentSquareProps {
 
 export default function AccentSquare({ className }: AccentSquareProps) {
   return (
-    <div className={`${styles.accentSquare} ${className || ''}`}></div>
+    <Image
+      className={styles.icon}
+      src={categoryIcon}
+      alt="Right arrow"
+      width={32}
+      height={32}
+    />
   );
 } 

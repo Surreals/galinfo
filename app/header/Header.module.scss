@@ -2,6 +2,24 @@
   box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
   background-color: var(--color-white);
   position: relative;
+  .infoSection {
+    display: none;
+
+
+    .weatherBox {
+      gap: 10px;
+      display: flex;
+      align-items: center;
+
+      .sityText {
+        text-align: center;
+        color: var(--color-primary);
+        font-weight: 600;
+        font-size: 16px;
+      }
+    }
+  }
+
 }
 
 .header {
@@ -11,7 +29,13 @@
   gap: 10px;
   justify-content: space-between;
 
+  .burgerMenuContainer {
+    align-items: center;
+    display: flex;
+  }
+
   .burgerMenuIcon {
+    cursor: pointer;
     display: none;
   }
 
@@ -49,6 +73,7 @@
   }
 
   .navList {    align-items: center;
+    margin: 0;
     display: flex;
     gap: 10px;
     line-height: 1.2;
@@ -86,7 +111,9 @@
     padding: 6px 0;
     font-size: 12px;
     width: 30vw;
+    margin: 0;
   }
+
 
   .infoContainer {
     padding: 6px;
@@ -104,6 +131,7 @@
     .boltText {
       font-size: 14px;
       font-weight: 700;
+      margin: 0;
     }
 
     .gradientTextStart {
@@ -114,6 +142,7 @@
       display: inline-block;
       font-weight: 700;
       font-size: 14px;
+      margin: 0;
     }
 
     .gradientTextEnd {
@@ -124,6 +153,51 @@
       display: inline-block;
       font-weight: 700;
       font-size: 14px;
+      margin: 0;
+    }
+  }
+}
+
+@media (max-width: 1400px) {
+  .headerMain {
+    .infoSection {
+      padding: 8px 80px;
+      align-items: center;
+      justify-content: space-between;
+      display: flex;
+
+      .exchangeBox {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 20px;
+
+        .exchangeItem {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 10px;
+          .exchangeType {
+            text-align: center;
+            color: var(--color-primary);
+            font-weight: 600;
+            font-size: 16px;
+          }
+
+          .exchangeValue {
+            text-align: center;
+            color: var(--color-primary);
+            font-weight: 200;
+            font-size: 16px;
+          }
+        }
+
+        .verticalBorder {
+          width: 1px;
+          height: 18px;
+          background-color: var(--color-tertiary);
+        }
+      }
     }
   }
 }
@@ -142,6 +216,13 @@
     }
   }
 
+  .headerMain {
+    .infoSection {
+      display: flex;
+      border-top: 1px solid var(--color-tertiary);
+    }
+  }
+
   .secondaryHeader {
     display: none;
   }
@@ -151,11 +232,22 @@
   .header {
     padding: 16px 40px;
   }
+  .headerMain {
+    .infoSection {
+      padding: 8px 40px;
+    }
+  }
 }
 
 @media (max-width: 1000px) {
   .header {
     padding: 16px 20px;
+  }
+
+  .headerMain {
+    .infoSection {
+      padding: 8px 20px;
+    }
   }
 }
 
@@ -170,5 +262,11 @@
 @media (max-width: 480px) {
   .header {
     padding: 16px;
+  }
+
+  .headerMain {
+    .infoSection {
+      padding: 8px 16px;
+    }
   }
 }
