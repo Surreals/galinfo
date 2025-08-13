@@ -14,9 +14,12 @@ export interface NewsItem {
 export interface AllNewsProps {
   news?: NewsItem[];
   isLoading?: boolean;
+  hideHeader?: boolean;
+  className?: string; // Додаємо можливість передавати додатковий CSS клас
+  customTitle?: string; // Додаємо можливість змінювати заголовок
 }
 
-export default function AllNews({ news = [], isLoading = false }: AllNewsProps) {
+export default function AllNews({ news = [], isLoading = false, hideHeader = false, className = "", customTitle }: AllNewsProps) {
   // Мокові дані для прикладу (будуть замінені на реальні дані)
   const mockNews: NewsItem[] = [
     {
@@ -165,13 +168,15 @@ export default function AllNews({ news = [], isLoading = false }: AllNewsProps) 
   const displayNews = news.length > 0 ? news : mockNews;
 
   return (
-    <section className={styles.allNewsSection}>
+    <section className={`${styles.allNewsSection} ${className}`}>
       <div className={styles.container}>
         {/* Заголовок секції */}
-        <div className={styles.header}>
-          <AccentSquare className={styles.titleAccent} />
-          <h2 className={styles.title}>ВСІ НОВИНИ</h2>
-        </div>
+        {!hideHeader && (
+          <div className={styles.header}>
+            <AccentSquare className={styles.titleAccent} />
+            <h2 className={styles.title}>{customTitle || 'ВСІ НОВИНИ'}</h2>
+          </div>
+        )}
 
         {/* Сітка новин */}
         <div className={styles.newsGrid}>
@@ -199,7 +204,9 @@ export default function AllNews({ news = [], isLoading = false }: AllNewsProps) 
         </div>
 
         {/* Кнопка "Всі новини з рубрики" */}
-        <ViewAllButton href="/all-news" />
+        {!hideHeader && (
+          <ViewAllButton href="/all-news" />
+        )}
       </div>
     </section>
   );

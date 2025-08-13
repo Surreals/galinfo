@@ -19,12 +19,16 @@ export interface CategoryNewsProps {
   category: string;
   news?: CategoryNewsItem[];
   isLoading?: boolean;
+  hideHeader?: boolean;
+  className?: string; // Додаємо можливість передавати додатковий CSS клас
 }
 
 export default function CategoryNews({ 
   category = "КУЛЬТУРА", 
   news = [], 
-  isLoading = false 
+  isLoading = false,
+  hideHeader = false,
+  className = ""
 }: CategoryNewsProps) {
   // Мокові дані для прикладу (будуть замінені на реальні дані)
   const mockNews: CategoryNewsItem[] = [
@@ -109,13 +113,15 @@ export default function CategoryNews({
   const displayNews = news.length > 0 ? news : mockNews;
 
   return (
-    <section className={styles.categoryNewsSection}>
+    <section className={`${styles.categoryNewsSection} ${className}`}>
       <div className={styles.container}>
         {/* Заголовок секції */}
-        <div className={styles.header}>
-          <AccentSquare className={styles.titleAccent} />
-          <h2 className={styles.title}>{category}</h2>
-        </div>
+        {!hideHeader && (
+          <div className={styles.header}>
+            <AccentSquare className={styles.titleAccent} />
+            <h2 className={styles.title}>{category}</h2>
+          </div>
+        )}
 
         {/* Сітка новин */}
         <div className={styles.newsGrid}>
@@ -158,9 +164,14 @@ export default function CategoryNews({
         </div>
 
         {/* Кнопка "Всі новини з рубрики" */}
-        <ViewAllButton href={`/category/${category.toLowerCase()}`} />
-        
-        {/* Розділювальна лінія */}
+        {!hideHeader && (
+          <>
+            <ViewAllButton href={`/category/${category.toLowerCase()}`} />
+            
+            {/* Розділювальна лінія */}
+            
+          </>
+        )}
         <div className={styles.separator}></div>
       </div>
     </section>

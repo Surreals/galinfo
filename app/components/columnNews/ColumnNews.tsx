@@ -24,6 +24,9 @@ export interface ColumnNewsProps {
   isHomePage?: boolean;
   smallImg?: boolean;
   newsQuantity?: number;
+  showNewsList?: boolean;
+  hideHeader?: boolean;
+  className?: string; // Додаємо можливість передавати додатковий CSS клас
 }
 
 export default function ColumnNews({ 
@@ -32,7 +35,10 @@ export default function ColumnNews({
   isLoading = false,
   isHomePage = false,
   smallImg = false,
-  newsQuantity = 4
+  newsQuantity = 4,
+  showNewsList = true,
+  hideHeader = false,
+  className = ""
 }: ColumnNewsProps) {
   // Мокові дані для прикладу (будуть замінені на реальні дані)
   const mockNews: ColumnNewsItem[] = [
@@ -120,13 +126,15 @@ export default function ColumnNews({
   const displayNews = news.length > 0 ? news : mockNews;
 
   return (
-    <section className={styles.columnNewsSection}>
+    <section className={`${styles.columnNewsSection} ${className}`}>
       <div className={styles.container}>
         {/* Заголовок секції */}
-        <div className={styles.header}>
-          <AccentSquare className={styles.titleAccent} />
-          <h2 className={styles.title}>{category}</h2>
-        </div>
+        {!hideHeader && (
+          <div className={styles.header}>
+            <AccentSquare className={styles.titleAccent} />
+            <h2 className={styles.title}>{category}</h2>
+          </div>
+        )}
 
         {/* Основний контент з новинами */}
         <div className={styles.mainContent}>
@@ -171,8 +179,8 @@ export default function ColumnNews({
             )}
           </div>
 
-          {/* ListNews компонент - тільки на головній сторінці */}
-          {isHomePage && (
+          {/* ListNews компонент - тільки коли showNewsList=true */}
+          {showNewsList && (
             <div className={styles.listNewsContainer}>
               <NewsList
                 title="НОВИНИ ЛЬВОВА"
@@ -193,9 +201,13 @@ export default function ColumnNews({
         </div>
 
         {/* Кнопка "Всі новини з рубрики" */}
-        <ViewAllButton href={`/category/${category.toLowerCase()}`} />
-        
-        {/* Розділювальна лінія */}
+        {!hideHeader && (
+          <>
+            <ViewAllButton href={`/category/${category.toLowerCase()}`} />
+            
+          </>
+        )}
+         {/* Розділювальна лінія */}
         <div className={styles.separator}></div>
       </div>
     </section>
