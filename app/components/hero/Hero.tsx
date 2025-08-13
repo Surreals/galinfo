@@ -13,7 +13,6 @@ import roundArrowLeft from "@/assets/icons/roundArrowLeft.svg";
 
 import styles from './Hero.module.scss';
 
-
 export default function Hero() {
   const carouselRef = useRef<any>(null);
 
@@ -303,7 +302,6 @@ export default function Hero() {
                   />
                 </div>
               </div>
-
             </div>
           </div>
         </div>
@@ -346,6 +344,5 @@ export default function Hero() {
       {/*  />*/}
       {/*</div>*/}
     </section>
-
   )
 }

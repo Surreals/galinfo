@@ -2,6 +2,24 @@
   box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
   background-color: var(--color-white);
   position: relative;
+  .infoSection {
+    display: none;
+
+
+    .weatherBox {
+      gap: 10px;
+      display: flex;
+      align-items: center;
+
+      .sityText {
+        text-align: center;
+        color: var(--color-primary);
+        font-weight: 600;
+        font-size: 16px;
+      }
+    }
+  }
+
 }
 
 .header {
@@ -96,6 +114,7 @@
     margin: 0;
   }
 
+
   .infoContainer {
     padding: 6px;
     border-left: 1px solid var(--color-tertiary);
@@ -139,6 +158,50 @@
   }
 }
 
+@media (max-width: 1400px) {
+  .headerMain {
+    .infoSection {
+      padding: 8px 80px;
+      align-items: center;
+      justify-content: space-between;
+      display: flex;
+
+      .exchangeBox {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 20px;
+
+        .exchangeItem {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 10px;
+          .exchangeType {
+            text-align: center;
+            color: var(--color-primary);
+            font-weight: 600;
+            font-size: 16px;
+          }
+
+          .exchangeValue {
+            text-align: center;
+            color: var(--color-primary);
+            font-weight: 200;
+            font-size: 16px;
+          }
+        }
+
+        .verticalBorder {
+          width: 1px;
+          height: 18px;
+          background-color: var(--color-tertiary);
+        }
+      }
+    }
+  }
+}
+
 @media (max-width: 1250px) {
   .header {
     .headerNav {
@@ -153,6 +216,13 @@
     }
   }
 
+  .headerMain {
+    .infoSection {
+      display: flex;
+      border-top: 1px solid var(--color-tertiary);
+    }
+  }
+
   .secondaryHeader {
     display: none;
   }
@@ -162,11 +232,22 @@
   .header {
     padding: 16px 40px;
   }
+  .headerMain {
+    .infoSection {
+      padding: 8px 40px;
+    }
+  }
 }
 
 @media (max-width: 1000px) {
   .header {
     padding: 16px 20px;
+  }
+
+  .headerMain {
+    .infoSection {
+      padding: 8px 20px;
+    }
   }
 }
 
@@ -181,5 +262,11 @@
 @media (max-width: 480px) {
   .header {
     padding: 16px;
+  }
+
+  .headerMain {
+    .infoSection {
+      padding: 8px 16px;
+    }
   }
 }

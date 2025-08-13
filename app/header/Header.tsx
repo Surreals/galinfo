@@ -3,12 +3,14 @@ import Link from "next/link";
 import paths from "@/app/paths";
 import Image from "next/image";
 import galinfoLogo from "@/assets/logos/galInfoLogo.png";
+import locationIcon from "@/assets/icons/locationIcon.svg";
 import radioLogo from "@/assets/logos/radioLogo.svg"
 import searchIcon from "@/assets/icons/searchIcon.svg"
 import dotIcon from "@/assets/icons/dotIcon.svg"
 import burgerMenu from "@/assets/icons/burgerMenu.svg"
 
 import styles from "@/app/header/Header.module.scss";
+import Script from "next/script";
 
 export default function Header() {
   return (
@@ -129,6 +131,24 @@ export default function Header() {
               height={8}
             />
           </Link>
+        </div>
+      </div>
+      <div className={styles.infoSection}>
+        <div className={styles.weatherBox}>
+          <div className={styles.sityText}>+13°C</div>
+          <Image src={locationIcon} alt={'location'}/>
+          <div className={styles.sityText}>ЛЬВІВ</div>
+        </div>
+        <div className={styles.exchangeBox}>
+        <div className={styles.exchangeItem}>
+            <div className={styles.exchangeType}>USD:</div>
+            <div className={styles.exchangeValue}>39.10</div>
+          </div>
+          <div className={styles.verticalBorder}></div>
+          <div className={styles.exchangeItem}>
+            <div className={styles.exchangeType}>EUR:</div>
+            <div className={styles.exchangeValue}>42.20</div>
+          </div>
         </div>
       </div>
     </header>
