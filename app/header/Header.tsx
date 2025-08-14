@@ -1,3 +1,6 @@
+"use client";
+import { useState } from "react";
+import { Input } from 'antd';
 import Link from "next/link";
 
 import paths from "@/app/paths";
@@ -10,13 +13,23 @@ import dotIcon from "@/assets/icons/dotIcon.svg"
 import burgerMenu from "@/assets/icons/burgerMenu.svg"
 
 import styles from "@/app/header/Header.module.scss";
-import Script from "next/script";
 
 export default function Header() {
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isClosing, setIsClosing] = useState(false);
+
+  const handleCloseMenu = () => {
+    setIsClosing(true);
+    setTimeout(() => {
+      setIsClosing(false);
+      setIsMenuOpen(false);
+    }, 400);
+  };
+
   return (
     <header className={styles.headerMain}>
       <div className={styles.header}>
-        <Link href={paths.society} className={styles.logo}>
+        <Link href={'./'} className={styles.logo}>
           <Image
             src={galinfoLogo}
             alt="Galinfo Logo"
@@ -76,7 +89,10 @@ export default function Header() {
           </ul>
         </nav>
         <div className={styles.burgerMenuContainer}>
-          <div className={styles.burgerMenuIcon}>
+          <div
+            className={styles.burgerMenuIcon}
+            onClick={() => setIsMenuOpen(true)}
+          >
             <Image src={burgerMenu} alt={'Burger menu'}/>
           </div>
           <div className={styles.svgBox}>
@@ -104,33 +120,33 @@ export default function Header() {
           Агенція інформації та аналітики "Гал-інфо"
         </p>
         <div className={styles.infoContainer}>
+          {/* Статичний блок "ТЕРМІНОВІ НОВИНИ" */}
           <Link href={paths.society} className={styles.newInfoLink}>
             <p className={styles.boltText}>ТЕРМІНОВІ НОВИНИ</p>
-            <Image
-              src={dotIcon}
-              alt="Dot Logo"
-              width={8}
-              height={8}
-            />
+            <Image src={dotIcon} alt="Dot Logo" width={8} height={8}/>
           </Link>
-          <Link href={paths.society} className={styles.newInfoLink}>
-          <p className={styles.gradientTextStart}>“ ВАЖЛИВА НОВИНА 1 .......... “</p>
-            <Image
-              src={dotIcon}
-              alt="Dot Logo"
-              width={8}
-              height={8}
-            />
-          </Link>
-          <Link href={paths.society} className={styles.newInfoLink}>
-            <p className={styles.gradientTextEnd}>“ ВАЖЛИВА НОВИНА 2 .......... “</p>
-            <Image
-              src={dotIcon}
-              alt="Dot Logo"
-              width={8}
-              height={8}
-            />
-          </Link>
+
+          <div className={styles.marqueeWrapper}>
+            <div className={styles.marqueeContent}>
+              <Link href={paths.society} className={styles.newInfoLink}>
+                <p className={styles.gradientTextStart}>“ ВАЖЛИВА НОВИНА 1 ................. “</p>
+                <Image src={dotIcon} alt="Dot Logo" width={8} height={8}/>
+              </Link>
+              <Link href={paths.society} className={styles.newInfoLink}>
+                <p className={styles.gradientTextEnd}>“ ВАЖЛИВА НОВИНА 2 ................. “</p>
+                <Image src={dotIcon} alt="Dot Logo" width={8} height={8}/>
+              </Link>
+
+              <Link href={paths.society} className={styles.newInfoLink}>
+                <p className={styles.gradientTextStart}>“ ВАЖЛИВА НОВИНА 1 ................. “</p>
+                <Image src={dotIcon} alt="Dot Logo" width={8} height={8}/>
+              </Link>
+              <Link href={paths.society} className={styles.newInfoLink}>
+                <p className={styles.gradientTextEnd}>“ ВАЖЛИВА НОВИНА 2 ................. “</p>
+                <Image src={dotIcon} alt="Dot Logo" width={8} height={8}/>
+              </Link>
+            </div>
+          </div>
         </div>
       </div>
       <div className={styles.infoSection}>
@@ -140,7 +156,7 @@ export default function Header() {
           <div className={styles.sityText}>ЛЬВІВ</div>
         </div>
         <div className={styles.exchangeBox}>
-        <div className={styles.exchangeItem}>
+          <div className={styles.exchangeItem}>
             <div className={styles.exchangeType}>USD:</div>
             <div className={styles.exchangeValue}>39.10</div>
           </div>
@@ -151,6 +167,73 @@ export default function Header() {
           </div>
         </div>
       </div>
+      {isMenuOpen && (
+        <div className={`${styles.fullScreenMenu} ${isClosing ? styles.fadeOut : styles.fadeIn}`}>
+          <aside className={styles.sidebar}>
+
+            <Input
+              placeholder=""
+                suffix={<Image
+                src={searchIcon}
+                alt="Search"
+                width={20}
+                height={20}
+                className={styles.searchIcon}
+              />}
+              className={styles.input}
+            />
+
+            <h3 className={styles.sectionTitle} onClick={handleCloseMenu}>
+              ТОП ТЕМИ
+            </h3>
+            <hr className={styles.divider}/>
+            <ul className={styles.topicsList}>
+              <li><Link className={styles.textCategory} href="#">ВІДВЕРТА РОЗМОВА З</Link></li>
+              <li><Link className={styles.textCategory} href="#">РАЙОНИ ЛЬВОВА</Link></li>
+              <li><Link className={styles.textCategory} href="#">ПРЕССЛУЖБА</Link></li>
+            </ul>
+
+            {/* Categories */}
+            <h3 className={styles.sectionTitle}>КАТЕГОРІЇ</h3>
+            <hr className={styles.divider}/>
+            <div className={styles.categories}>
+              <Link className={styles.textCategory} href="#">ЛЬВІВЩИНА</Link>
+              <Link className={styles.textCategory} href="#">СУСПІЛЬСТВО</Link>
+              <Link className={styles.textCategory} href="#">ТЕРНОПІЛЬЩИНА</Link>
+              <Link className={styles.textCategory} href="#">ПОЛІТИКА</Link>
+              <Link className={styles.textCategory} href="#">ВОЛИНЬ</Link>
+              <Link className={styles.textCategory} href="#">ЕКОНОМІКА</Link>
+              <Link className={styles.textCategory} href="#">УКРАЇНА</Link>
+              <Link className={styles.textCategory} href="#">КУЛЬТУРА</Link>
+              <Link className={styles.textCategory} href="#">ЄС</Link>
+              <Link className={styles.textCategory} href="#">ЗДОРОВ'Я</Link>
+              <Link className={styles.textCategory} href="#">СВІТ</Link>
+              <span></span>
+              <Link className={styles.textCategory} href="#">СПОРТ</Link>
+              <Link className={styles.textCategory} href="#">НОВИНА</Link>
+              <Link className={styles.textCategory} href="#">КРИМІНАЛ</Link>
+              <Link className={styles.textCategory} href="#">СТАТТЯ</Link>
+              <Link className={styles.textCategory} href="#">НАДЗВИЧАЙНІ ПОДІЇ</Link>
+              <Link className={styles.textCategory} href="#">ІНТЕРВ'Ю</Link>
+              <Link className={styles.textCategory} href="#">ІСТОРІЯ</Link>
+              <span></span>
+              <Link className={styles.textCategory} href="#">ТЕХНОЛОГІЇ</Link>
+              <span></span>
+            </div>
+            <div>
+              <a className={styles.radioLogo} target={'_blank'} href={'https://lviv.fm/'}>
+                <Image
+                  src={radioLogo}
+                  alt="Radio Logo"
+                  width={120}
+                  height={40}
+                />
+              </a>
+            </div>
+
+          </aside>
+        </div>
+      )}
     </header>
   )
 }

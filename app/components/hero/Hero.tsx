@@ -7,7 +7,7 @@ import NewsList from "@/app/components/listNews";
 import CurrencyRates from "./CurrencyRates";
 import WeatherWidget from "./WeatherWidget";
 
-import arrowUpPrimary from "@/assets/icons/arrowUpPrimary.svg";
+import arrowRight from "@/assets/icons/arrowRight.svg";
 import roundArrowRight from "@/assets/icons/roundArrowRight.svg";
 import roundArrowLeft from "@/assets/icons/roundArrowLeft.svg";
 
@@ -172,15 +172,6 @@ export default function Hero() {
           moreButtonUrl="/lviv-news"
         />
       </div>
-      {/*<div className={styles.buttonUp}>*/}
-      {/*  <Image*/}
-      {/*    src={arrowUpPrimary}*/}
-      {/*    alt="Arrow Up"*/}
-      {/*    width={10}*/}
-      {/*    height={14}*/}
-      {/*    className={styles.arrayIcon}*/}
-      {/*  />*/}
-      {/*</div>*/}
     </section>
   )
 }
