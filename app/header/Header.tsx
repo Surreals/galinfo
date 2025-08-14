@@ -16,6 +16,15 @@ import styles from "@/app/header/Header.module.scss";
 
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isClosing, setIsClosing] = useState(false);
+
+  const handleCloseMenu = () => {
+    setIsClosing(true);
+    setTimeout(() => {
+      setIsClosing(false);
+      setIsMenuOpen(false);
+    }, 400);
+  };
 
   return (
     <header className={styles.headerMain}>
@@ -159,7 +168,7 @@ export default function Header() {
         </div>
       </div>
       {isMenuOpen && (
-        <div className={styles.fullScreenMenu}>
+        <div className={`${styles.fullScreenMenu} ${isClosing ? styles.fadeOut : styles.fadeIn}`}>
           <aside className={styles.sidebar}>
 
             <Input
@@ -174,7 +183,7 @@ export default function Header() {
               className={styles.input}
             />
 
-            <h3 className={styles.sectionTitle} onClick={() => setIsMenuOpen(false)}>
+            <h3 className={styles.sectionTitle} onClick={handleCloseMenu}>
               ТОП ТЕМИ
             </h3>
             <hr className={styles.divider}/>
