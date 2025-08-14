@@ -147,7 +147,7 @@
           cursor: pointer;
           position: absolute;
           top: 50%;
-          transition: opacity 0.3s ease;
+          transition: opacity 0.3s ease, filter 0.3s ease;
           transform: translateY(-50%);
           right: 40px;
         }
@@ -160,15 +160,22 @@
           cursor: pointer;
           position: absolute;
           top: 50%;
-          transition: opacity 0.3s ease;
+          transition: opacity 0.3s ease, filter 0.3s ease;
           transform: translateY(-50%);
           left: 40px;
         }
 
-        .rightArrowButton:hover, .leftArrowButton:hover {
-          opacity: 1;
+        .leftArrowButton:hover,
+        .rightArrowButton:hover {
+          filter: contrast(0.5)
         }
 
+
+
+        .rightArrowButton:focus-visible,
+        .leftArrowButton:focus-visible {
+          outline: none;
+        }
 
         .carouselContent {
           position: absolute;
@@ -196,6 +203,12 @@
           font-size: 11px;
           font-weight: 600;
           color: #fff;
+        }
+      }
+
+      .carouselItem:hover {
+        .rightArrowButton, .leftArrowButton {
+          opacity: 1;
         }
       }
     }

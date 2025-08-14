@@ -11,10 +11,17 @@
   align-items: center;
 }
 
+.titleContainer:hover {
+  .title {
+      color: var(--color-accent);
+  }
+}
+
 .title {
   font-size: 20px;
   font-weight: 600;
   margin-bottom: 0;
+  transition: color 0.3s ease;
 }
 
 .titleMobile {

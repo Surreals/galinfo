@@ -28,8 +28,13 @@
   color: var(--color-primary);
   margin: 0;
   text-transform: uppercase;
+  transition: color 0.3s ease;
+  cursor: pointer;
 }
 
+.title:hover {
+  color: var(--color-accent);
+}
 /* Сітка новин */
 .newsGrid {
   display: grid;

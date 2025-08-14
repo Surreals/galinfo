@@ -25,6 +25,13 @@ const customTheme = {
       dotHeight: 12,
       "dotOffset": -34
     },
+    Input: {
+      activeBorderColor: "rgb(255,255,255)",
+      hoverBorderColor: "rgb(207,207,207)",
+      colorBorder: "rgb(207,207,207)",
+      controlHeight: 46,
+      borderRadius: 8
+    }
   },
 };
 

@@ -4,13 +4,6 @@ export default function HomePage() {
   return (
     <>
       <Hero/>
-      {/* <ColumnNews newsQuantity={4} smallImg={true} category="ПОЛІТИКА" showNewsList={true} />
-      <CategoryNews category="СВІТ" />
-      <ColumnNews newsQuantity={8} category="ЕВРОПА" showNewsList={true} />
-      <CategoryNews category="ЗДОРОВ'Я" />
-      <ColumnNews newsQuantity={8} category="КРИМІНАЛ" showNewsList={true} /> */}
-
-
       <ColumnNews
         newsQuantity={4}
         smallImg={true}
@@ -20,7 +13,7 @@ export default function HomePage() {
         isHomePage={true}
         showNewsList={true}
       />
-      <CategoryNews category="ЕВРОПА" />
+      <CategoryNews category="ЕВРОПА"/>
       <ColumnNews
         newsQuantity={8}
         category="ЗДОРОВʼЯ"
@@ -29,7 +22,7 @@ export default function HomePage() {
         showNewsList={true}
         isHomePage={true}
       />
-      <CategoryNews category="ЗДОРОВ'Я" />
+      <CategoryNews category="ЗДОРОВ'Я"/>
       <ColumnNews
         newsQuantity={8}
         category="КРИМІНАЛ"
@@ -37,8 +30,8 @@ export default function HomePage() {
         arrowRightIcon
         isHomePage={true}
       />
-      <CategoryNews category="КУЛЬТУРА" />
-      <AllNews />
+      <CategoryNews category="КУЛЬТУРА"/>
+      <AllNews/>
     </>
   );
 }
