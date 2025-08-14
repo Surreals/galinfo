@@ -1,8 +1,11 @@
-import { AllNews, CategoryNews, ColumnNews, MainNews, CategoryTitle } from "@/app/components";
+import { AllNews, CategoryNews, ColumnNews, MainNews, CategoryTitle, AdBanner } from "@/app/components";
 import NewsList from "@/app/components/listNews/listNews";
 import Image from "next/image";
 import arrowRight from "@/assets/icons/arrowRight.svg";
 import styles from "./page.module.css";
+import CurrencyRates from "@/app/components/hero/CurrencyRates";
+import WeatherWidget from "@/app/components/hero/WeatherWidget";
+import adBannerIndfomo from '@/assets/images/Ad Banner.png';
 
 interface CategoryPageProps {
   params: Promise<{
@@ -49,6 +52,8 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
     }));
   };
 
+
+
   // Генеруємо дані для трьох колонок NewsList
   const newsData1 = generateRandomNews(8);
   const newsData2 = generateRandomNews(8);
@@ -78,6 +83,7 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
           />
           
           
+          
           {/* Основна категорія - без заголовка */}
           <CategoryNews 
             category={category.toUpperCase()} 
@@ -85,6 +91,8 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
             className={styles.categoryNewsStandard}
           />
           
+          {/* Рекламний банер */}
+          <AdBanner />
           
           
           {/* Колонка новин - без заголовка */}
@@ -98,7 +106,8 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
             className={styles.columnNewsStandard}
           />
           
-          
+          {/* Рекламний банер */}
+          <AdBanner />
           
           {/* Колонка новин - без заголовка */}
           <ColumnNews 
@@ -110,7 +119,8 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
             className={styles.columnNewsStandard}
           />
           
-         
+            {/* Рекламний банер */}
+            <AdBanner />
           
           {/* Категорія новин - без заголовка */}
           <CategoryNews 
@@ -119,13 +129,13 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
             className={styles.categoryNewsStandard}
           />
           
-          
+         
           
           {/* Колонка новин - без заголовка */}
           <ColumnNews 
             newsQuantity={8} 
             category="КРИМІНАЛ" 
-            secondCategory=""
+            secondCategory="false" 
             showNewsList={false} 
             hideHeader={true} 
             className={styles.columnNewsStandard}
@@ -143,10 +153,18 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
             hideHeader={true} 
             className={styles.columnNewsStandard}
           />
+          
+          
         </div>
 
         {/* Права частина - три колонки NewsList */}
         <div className={styles.sidebar}>
+          <div className={styles.infoSection}>
+            <CurrencyRates />
+            <WeatherWidget />
+          </div>
+          <div className={styles.rightSeparator}></div>
+          
           <div className={styles.newsColumn}>
             <NewsList
               title="ПОЛІТИКА"
@@ -159,6 +177,17 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
           </div>
           
           {/* Сепаратор між правими компонентами */}
+          <div className={styles.rightSeparator}></div>
+          <div className={styles.newsColumn}>
+            <Image 
+                src={adBannerIndfomo} 
+                alt="IN-FOMO Banner" 
+                width={600} 
+                height={240} 
+                className={styles.fomoLogo}
+                priority={false}
+              />
+          </div>
           <div className={styles.rightSeparator}></div>
           
           <div className={styles.newsColumn}>

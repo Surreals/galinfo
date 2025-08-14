@@ -5,3 +5,4 @@ export { default as Hero } from './hero';
 export { default as MainNews } from './mainNews';
 export { default as CategoryTitle } from './categoryTitle';
 export { default as NewsList } from './listNews';
+export { default as AdBanner } from './adBanner';

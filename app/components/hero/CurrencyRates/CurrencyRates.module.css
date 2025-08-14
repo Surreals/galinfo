@@ -1,0 +1,54 @@
+.currencySection {
+  gap: 24px;
+  display: flex;
+  flex-direction: column;
+}
+
+.exchangeTable {
+  display: inline-block;
+  overflow: hidden;
+  border-bottom: 1px solid var(--color-tertiary);
+  padding-bottom: 24px;
+}
+
+.exchangeTableHeader {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 16px;
+  gap: 8px;
+  text-align: center;
+  padding-bottom: 24px;
+}
+
+.exchangeTableRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+  align-items: center;
+  padding-bottom: 24px;
+}
+
+.exchangeCurrency {
+  font-weight: 600;
+  text-align: left;
+  font-size: 16px;
+}
+
+.exchangeValue {
+  text-align: center;
+  color: var(--color-tertiary);
+  font-weight: 600;
+  font-size: 16px;
+}
+
+.sectionTitle {
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.titleBox {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}

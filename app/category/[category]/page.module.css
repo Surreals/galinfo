@@ -3,6 +3,7 @@
   gap: 0; /* Убираємо gap між блоками */
   max-width: 1440px;
   margin: 0 auto;
+  padding-top: 24px;
 }
 
 .mainContent {
@@ -24,7 +25,7 @@
 
 .newsColumn {
   border-radius: 8px;
-  margin-bottom: 40px; /* Відступ між колонками NewsList */
+  margin-bottom: 15px; /* Відступ між колонками NewsList */
 }
 
 /* Сепаратор між компонентами */
@@ -151,3 +152,28 @@
     padding: 16px 0 32px 0 !important; /* Ще менший верхній відступ на мобільних */
   }
 }
+
+.infoSection {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 24px;
+}
+
+/* Стилі для рекламного банеру на CategoryPage */
+.adBanner {
+  margin: 32px 0;
+}
+
+/* Стилі для IN-FOMO логотипу */
+.fomoLogo {
+  display: block;
+  width: 100% !important;
+  height: auto !important;
+  border-radius: 8px;
+  margin-bottom: 24px;
+  object-fit: cover;
+}
+
+
+
