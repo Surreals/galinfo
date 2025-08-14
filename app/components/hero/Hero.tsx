@@ -121,7 +121,7 @@ export default function Hero() {
           <div className={styles.carouselBox}>
             <Carousel
               afterChange={onChange}
-              // autoplay
+              autoplay
               ref={carouselRef}
             >
               {carouselItems.map((item, index) => (
