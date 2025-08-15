@@ -220,13 +220,13 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
         </div>
       </div>
 
-      {/* AllNews на всю ширину сторінки - винесено за межі основного контейнера */}
-      {/*<div className={styles.fullWidthNews}>*/}
-      {/*  <AllNews */}
-      {/*    className={styles.allNewsStandard}*/}
-      {/*    customTitle="Більше новин"*/}
-      {/*  />*/}
-      {/*</div>*/}
+       {/*AllNews на всю ширину сторінки - винесено за межі основного контейнера */}
+      <div className={styles.fullWidthNews}>
+        <AllNews
+          className={styles.allNewsStandard}
+          customTitle="Більше новин"
+        />
+      </div>
     </>
   );
 }
