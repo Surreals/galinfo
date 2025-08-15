@@ -3,6 +3,7 @@ import NewsList from "@/app/components/listNews/listNews";
 import Image from "next/image";
 import arrowRight from "@/assets/icons/arrowRight.svg";
 import styles from "./page.module.css";
+import {getCategoryTitle} from "@/assets/utils/getTranslateCategory";
 import CurrencyRates from "@/app/components/hero/CurrencyRates";
 import WeatherWidget from "@/app/components/hero/WeatherWidget";
 import adBannerIndfomo from '@/assets/images/Ad Banner.png';
@@ -59,14 +60,16 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
   const newsData2 = generateRandomNews(8);
   const newsData3 = generateRandomNews(8);
 
+
+
   return (
     <>
       <div className={styles.container}>
         {/* Основний контент - ліва частина */}
         <div className={styles.mainContent}>
           {/* Тайтл кСатегорії */}
-          <CategoryTitle 
-            title={category.toUpperCase()} 
+          <CategoryTitle
+            title={getCategoryTitle(category)}
             className={styles.categoryTitleStandard}
           />
           
@@ -218,12 +221,12 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
       </div>
 
       {/* AllNews на всю ширину сторінки - винесено за межі основного контейнера */}
-      <div className={styles.fullWidthNews}>
-        <AllNews 
-          className={styles.allNewsStandard}
-          customTitle="Більше новин"
-        />
-      </div>
+      {/*<div className={styles.fullWidthNews}>*/}
+      {/*  <AllNews */}
+      {/*    className={styles.allNewsStandard}*/}
+      {/*    customTitle="Більше новин"*/}
+      {/*  />*/}
+      {/*</div>*/}
     </>
   );
 }
