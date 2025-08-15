@@ -1,29 +1,44 @@
 "use client";
-
-import Link from 'next/link';
+import { useRef, useEffect, useState } from "react";
 import Image from 'next/image';
+import Link from 'next/link';
+
 import paths from '@/app/paths';
-import styles from './Footer.module.css';
 import galinfoLogo from '@/assets/logos/galInfoLogo.png';
 import inFomoLogoWhite from '@/assets/logos/inFomoLogoWhite.png';
 import arrowUpPrimary from "@/assets/icons/arrowUpPrimary.svg";
-import bytcdIcon from '@/assets/icons/bytcd-icon.svg'; // Імпорт нового логотипу
+
+import styles from './Footer.module.css';
 
 export default function Footer() {
+  const [isVisible, setIsVisible] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const screenHeight = window.innerHeight;
+      setIsVisible(window.scrollY > screenHeight);
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
   return (
     <footer className={styles.footer}>
-      <div
-        className={styles.buttonUp}
+      <button
+        type="button"
+        className={`${styles.buttonUp} ${isVisible ? styles.show : styles.hide}`}
         onClick={() => window.scrollTo({top: 0, behavior: "smooth"})}
+        aria-label="Прокрутити вверх"
       >
         <Image
           src={arrowUpPrimary}
-          alt="Arrow Up"
+          alt=""
           width={10}
           height={14}
           className={styles.arrayIcon}
         />
-      </div>
+      </button>
       {/* Верхня секція з колонками */}
       <div className={styles.container}>
         <div className={styles.flexContainer}>

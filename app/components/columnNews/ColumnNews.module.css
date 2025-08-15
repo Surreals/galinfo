@@ -83,6 +83,9 @@
 
 .newsLink:hover {
   opacity: 0.8;
+  .newsTitle, .newsTitleSmall {
+    color: var(--color-accent);
+  }
 }
 
 /* Контейнер зображення */
@@ -529,12 +532,14 @@
     font-size: 12px;
     -webkit-line-clamp: 2;
     margin: 0 0 6px 0;
+    transition: all 0.2s ease;
   }
   
   .newsTitleSmall {
     font-size: 13px;
     -webkit-line-clamp: 2;
     margin: 0 0 6px 0;
+    transition: all 0.2s ease;
   }
   
   .newsSummary {

@@ -46,6 +46,17 @@
   gap: 32px;
 }
 
+.item {
+  cursor: pointer;
+}
+
+.item:hover {
+  opacity: 0.8;
+  .itemTitle {
+    color: var(--color-accent);
+  }
+}
+
 .image {
   width: 100%;
   object-fit: cover;
@@ -63,6 +74,7 @@
   -webkit-line-clamp: 2;
   text-overflow: ellipsis;
   -webkit-box-orient: vertical;
+  transition: color 0.3s ease;
   max-width: 600px;
   margin: 0 0 12px;
   font-family: Open Sans, sans-serif;

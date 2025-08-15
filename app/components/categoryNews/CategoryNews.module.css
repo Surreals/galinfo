@@ -64,6 +64,11 @@
 
 .newsLink:hover {
   opacity: 0.8;
+
+  .newsTitle {
+    color: var(--color-accent);
+  }
+
 }
 
 /* Контейнер зображення */
@@ -112,6 +117,7 @@
   word-wrap: break-word;
   overflow-wrap: break-word;
   hyphens: auto;
+  transition: all 0.2s ease;
 }
 
 .newsDate {
