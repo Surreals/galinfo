@@ -336,6 +336,9 @@ export default async function ArticlePage({ params, searchParams }: ArticlePageP
             </div>
           </div>
           
+          {/* Сепаратор між лівими компонентами */}
+          <div className={styles.leftSeparator}></div>
+          
           {/* Рекламний банер */}
           <AdBanner className={styles.adBannerStandard} />
           
@@ -349,6 +352,9 @@ export default async function ArticlePage({ params, searchParams }: ArticlePageP
             hideHeader={true} 
             className={styles.columnNewsStandard}
           />
+          
+          {/* Сепаратор між лівими компонентами */}
+          <div className={styles.leftSeparator}></div>
           
           {/* Рекламний банер */}
           <AdBanner className={styles.adBannerStandard} />

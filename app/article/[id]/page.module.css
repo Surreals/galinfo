@@ -2,15 +2,18 @@
 .container {
   display: flex;
   gap: 24px;
-  max-width: 1200px;
+  max-width: 1440px;
   margin: 0 auto;
-  padding: 20px;
+  padding: 24px 80px 0 80px;
 }
 
 /* Основний контент - ліва частина */
 .mainContent {
   flex: 1;
-  max-width: 800px;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  padding-right: 0;
 }
 
 /* Заголовок статті */
@@ -123,10 +126,12 @@
 
 /* Права частина - сайдбар */
 .sidebar {
-  width: 300px;
+  width: 25%;
+  flex-shrink: 0;
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: 0;
+  margin-left: 0;
 }
 
 .newsColumn {
@@ -139,49 +144,143 @@
   gap: 16px;
 }
 
-.rightSeparator {
+/* Сепаратор між лівими компонентами */
+.leftSeparator {
+  width: 100%;
   height: 1px;
-  background-color: #e0e0e0;
-  margin: 8px 0;
+  background-color: #999999;
+  margin: 32px 0;
 }
 
-.fomoLogo {
+/* Сепаратор між правими компонентами - збільшуємо видимість */
+.rightSeparator {
   width: 100%;
-  height: auto;
+  height: 1px;
+  background-color: var(--color-tertiary);
+  margin: 24px 0;
+  opacity: 1;
+}
+
+/* Стилі для IN-FOMO логотипу */
+.fomoLogo {
+  display: block;
+  width: 100% !important;
+  height: auto !important;
   border-radius: 8px;
+  margin-bottom: 24px;
+  object-fit: cover;
 }
 
 /* Рекламні банери */
 .adBannerStandard {
-  margin: 24px 0;
+  margin: 32px 0;
+}
+
+/* Спеціальні стилі для AdBanner на сторінці статті */
+.adBannerStandard :global(.adBanner) {
+  width: 100% !important;
+  max-width: 100% !important;
+  margin: 32px 0 !important;
 }
 
 /* Колонки новин */
 .columnNewsStandard {
-  margin: 24px 0;
+  margin: 32px 0;
 }
 
 .categoryNewsStandard {
-  margin: 24px 0;
+  margin: 32px 0;
 }
 
-/* Контейнер для всіх новин внизу */
-.containerAllNews {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 20px;
+/* CSS класи для компонентів - тепер НЕ перевизначаємо падінги, оскільки компоненти вже мають свої */
+.columnNewsStandard :global(.container) {
+  max-width: 1440px !important;
+  margin: 0 auto !important;
+  /* НЕ змінюємо padding - залишаємо оригінальні падінги компонентів */
+}
+
+.categoryNewsStandard :global(.container) {
+  max-width: 1440px !important;
+  margin: 0 auto !important;
+  /* НЕ змінюємо padding - залишаємо оригінальні падінги компонентів */
+}
+
+/* AllNews на всю ширину сторінки */
+.containerAllNews :global(.allNewsSection) {
+  width: 100% !important;
+  max-width: 100% !important;
+}
+
+.containerAllNews :global(.container) {
+  max-width: 1440px !important;
+  margin: 0 auto !important;
+  padding: 0 80px !important;
+}
+
+/* Адаптивні стилі для AllNews */
+@media (max-width: 1200px) {
+  .containerAllNews :global(.container) {
+    padding: 0 40px !important;
+  }
+}
+
+@media (max-width: 1000px) {
+  .containerAllNews :global(.container) {
+    padding: 0 20px !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .containerAllNews :global(.container) {
+    padding: 0 1rem !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .containerAllNews :global(.container) {
+    padding: 0 0.5rem !important;
+  }
 }
 
 /* Адаптивність */
-@media (max-width: 1024px) {
+@media (max-width: 1200px) {
+  .container {
+    padding: 24px 40px 0 40px;
+  }
+  
+  .containerAllNews {
+    padding: 0 40px;
+  }
+}
+
+@media (max-width: 1000px) {
+  .container {
+    padding: 24px 20px 0 20px;
+  }
+  
+  .containerAllNews {
+    padding: 0 20px;
+  }
+}
+
+@media (max-width: 768px) {
   .container {
     flex-direction: column;
-    gap: 20px;
+    gap: 1rem;
+    padding: 0 1rem;
+  }
+  
+  .mainContent,
+  .sidebar {
+    width: 100%;
   }
   
   .sidebar {
-    width: 100%;
     order: -1;
+  }
+  
+  .containerAllNews {
+    padding: 0 1rem;
   }
   
   .articleTitle {
@@ -189,9 +288,13 @@
   }
 }
 
-@media (max-width: 768px) {
+@media (max-width: 480px) {
   .container {
-    padding: 16px;
+    padding: 16px 0.5rem 0 0.5rem;
+  }
+  
+  .containerAllNews {
+    padding: 0 0.5rem;
   }
   
   .articleTitle {
@@ -213,16 +316,6 @@
     gap: 8px;
     align-items: flex-start;
   }
-}
-
-@media (max-width: 480px) {
-  .container {
-    padding: 12px;
-  }
-  
-  .articleTitle {
-    font-size: 20px;
-  }
   
   .tags {
     gap: 8px;
@@ -231,5 +324,30 @@
   .tag {
     font-size: 11px;
     padding: 4px 8px;
+  }
+}
+
+/* Адаптивні стилі для AdBanner */
+@media (max-width: 1200px) {
+  .adBannerStandard :global(.adBanner) {
+    margin: 24px 0 !important;
+  }
+}
+
+@media (max-width: 1000px) {
+  .adBannerStandard :global(.adBanner) {
+    margin: 20px 0 !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .adBannerStandard :global(.adBanner) {
+    margin: 16px 0 !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .adBannerStandard :global(.adBanner) {
+    margin: 12px 0 !important;
   }
 }
