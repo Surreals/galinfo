@@ -6,7 +6,7 @@
 .container {
   max-width: 1440px;
   margin: 0 auto;
-  padding: 0 80px;
+  padding: 0; /* Прибираємо падінги, оскільки тепер вони в загальному контейнері HomePage */
 }
 
 .newsItem {
@@ -64,10 +64,6 @@
 
 /* Адаптивні стилі */
 @media (max-width: 1200px) {
-  .container {
-    padding: 0 40px;
-  }
-  
   .newsTitle {
     font-size: 28px;
   }
@@ -80,10 +76,6 @@
 @media (max-width: 1000px) {
   .mainNewsSection {
     padding: 6px 0 32px 0;
-  }
-  
-  .container {
-    padding: 0 20px;
   }
   
   .newsTitle {
@@ -105,10 +97,6 @@
     padding: 4px 0 24px 0;
   }
   
-  .container {
-    padding: 0 16px;
-  }
-  
   .newsTitle {
     font-size: 20px;
   }
@@ -126,10 +114,6 @@
 @media (max-width: 480px) {
   .mainNewsSection {
     padding: 3px 0 20px 0;
-  }
-  
-  .container {
-    padding: 0 12px;
   }
   
   .newsTitle {

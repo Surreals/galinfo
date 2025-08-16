@@ -6,7 +6,7 @@
 .container {
   max-width: 1440px;
   margin: 0 auto;
-  padding: 0 80px;
+  padding: 0; /* Прибираємо падінги, оскільки тепер вони в загальному контейнері HomePage */
 }
 
 /* Заголовок секції */

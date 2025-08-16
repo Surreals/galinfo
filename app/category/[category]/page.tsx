@@ -6,7 +6,8 @@ import styles from "./page.module.css";
 import {getCategoryTitle} from "@/assets/utils/getTranslateCategory";
 import CurrencyRates from "@/app/components/hero/CurrencyRates";
 import WeatherWidget from "@/app/components/hero/WeatherWidget";
-import adBannerIndfomo from '@/assets/images/Ad Banner.png';
+import adBannerIndfomo from '@/assets/images/Ad Banner black.png';
+import banner3 from '@/assets/images/banner3.png';
 
 interface CategoryPageProps {
   params: Promise<{
@@ -95,7 +96,7 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
           />
           
           {/* Рекламний банер */}
-          <AdBanner />
+          <AdBanner className={styles.adBannerStandard} />
           
           
           {/* Колонка новин - без заголовка */}
@@ -110,7 +111,7 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
           />
           
           {/* Рекламний банер */}
-          <AdBanner />
+          <AdBanner className={styles.adBannerStandard} />
           
           {/* Колонка новин - без заголовка */}
           <ColumnNews 
@@ -123,7 +124,7 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
           />
           
             {/* Рекламний банер */}
-            <AdBanner />
+            <AdBanner className={styles.adBannerStandard} />
           
           {/* Категорія новин - без заголовка */}
           <CategoryNews 
@@ -162,6 +163,16 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
 
         {/* Права частина - три колонки NewsList */}
         <div className={styles.sidebar}>
+        <div className={styles.newsColumn}>
+            <Image 
+                src={banner3} 
+                alt="banner3" 
+                width={600} 
+                height={240} 
+                className={styles.fomoLogo}
+                priority={false}
+              />
+          </div>
           <div className={styles.infoSection}>
             <CurrencyRates />
             <WeatherWidget />
@@ -219,11 +230,8 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
           </div>
         </div>
       </div>
-
-       {/*AllNews на всю ширину сторінки - винесено за межі основного контейнера */}
-      <div className={styles.fullWidthNews}>
+      <div className={styles.containerAllNews}>
         <AllNews
-          className={styles.allNewsStandard}
           customTitle="Більше новин"
         />
       </div>

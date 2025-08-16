@@ -3,7 +3,15 @@
   gap: 24px; /* Убираємо gap між блоками */
   max-width: 1440px;
   margin: 0 auto;
-  padding: 24px 80px 0 80px;
+  padding: 24px 80px 0 80px; /* Повертаємо падінги, оскільки тепер вони в загальному контейнері */
+}
+
+.containerAllNews {
+  display: flex;
+  gap: 24px; /* Убираємо gap між блоками */
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 0px 80px 0 80px; /* Повертаємо падінги, оскільки тепер вони в загальному контейнері */
 }
 
 .mainContent {
@@ -55,10 +63,11 @@
 
 /* AllNews на всю ширину сторінки */
 .fullWidthNews {
-  width: 100vw !important; /* Повна ширина viewport */
-  margin-left: calc(-50vw + 50%); /* Центруємо */
-  margin-right: calc(-50vw + 50%); /* Центруємо */
+  width: 100%; /* Замість 100vw використовуємо 100% */
+  margin: 0; /* Прибираємо негативні margin */
   background-color: var(--color-background); /* Фон для консистентності */
+  padding: 0; /* Прибираємо падінги */
+  margin-top: 40px; /* Додаємо відступ зверху */
 }
 
 /* Перевизначаємо стилі для AllNews на всю ширину */
@@ -70,46 +79,97 @@
 .fullWidthNews :global(.container) {
   max-width: 1440px !important; /* Максимальна ширина як у основному контейнері */
   margin: 0 auto !important;
-  padding: 0 80px !important; /* Такі ж відступи як у основному контейнері */
+  padding: 0 80px !important; /* Ті ж падінги, що й в основному контейнері (24px 80px 0 80px -> 0 80px) */
 }
 
-/* CSS класи для компонентів - тепер всі мають однакові падінги як на HomePage */
+/* Спеціальні стилі для AllNews всередині fullWidthNews */
+.fullWidthNews .allNewsStandard :global(.container) {
+  max-width: 1440px !important;
+  margin: 0 auto !important;
+  padding: 0 !important; /* Прибираємо падінги, оскільки вони вже є в fullWidthNews */
+}
+
+/* CSS класи для компонентів - тепер НЕ перевизначаємо падінги, оскільки компоненти вже мають свої */
 .categoryTitleStandard :global(.container) {
   max-width: 1440px !important;
   margin: 0 auto !important;
-  padding: 0 !important; /* Прибираємо падінги, щоб компоненти були притиснуті до лівого краю */
+  /* НЕ змінюємо padding - залишаємо оригінальні падінги компонентів */
 }
 
 .mainNewsStandard :global(.container) {
   max-width: 1440px !important;
   margin: 0 auto !important;
-  padding: 0 !important; /* Прибираємо падінги, щоб компоненти були притиснуті до лівого краю */
+  /* НЕ змінюємо padding - залишаємо оригінальні падінги компонентів */
 }
 
 .categoryNewsStandard :global(.container) {
   max-width: 1440px !important;
   margin: 0 auto !important;
-  padding: 0 !important; /* Прибираємо падінги, щоб компоненти були притиснуті до лівого краю */
+  /* НЕ змінюємо padding - залишаємо оригінальні падінги компонентів */
 }
 
 .columnNewsStandard :global(.container) {
   max-width: 1440px !important;
   margin: 0 auto !important;
-  padding: 0 !important; /* Прибираємо падінги, щоб компоненти були притиснуті до лівого краю */
+  /* НЕ змінюємо padding - залишаємо оригінальні падінги компонентів */
 }
 
 .allNewsStandard :global(.container) {
   max-width: 1440px !important;
   margin: 0 auto !important;
-  padding: 0 80px !important; /* Залишаємо падінги для AllNews, щоб він був на рівні з основними компонентами */
+  padding: 0 80px !important; /* Повертаємо падінги, щоб AllNews мав правильне вирівнювання */
 }
 
 /* Зменшуємо верхній відступ для AllNews в CategoryPage */
 .allNewsStandard :global(.allNewsSection) {
-  padding: 20px 0 40px 0 !important; /* Зменшуємо верхній відступ з 40px до 20px */
+  padding: 40px 0 40px 0 !important; /* Повертаємо стандартний верхній відступ */
 }
 
-/* Адаптивність для мобільних пристроїв */
+/* Адаптивність для різних розмірів екрану */
+@media (max-width: 1200px) {
+  .container {
+    padding: 24px 40px 0 40px;
+  }
+  
+  .fullWidthNews {
+    margin-top: 32px;
+  }
+  
+  .fullWidthNews :global(.container) {
+    padding: 0 40px !important; /* Ті ж падінги, що й в основному контейнері */
+  }
+  
+  .fullWidthNews .allNewsStandard :global(.container) {
+    padding: 0 !important;
+  }
+  
+  .allNewsStandard :global(.container) {
+    padding: 0 40px !important; /* Ті ж падінги, що й в основному контейнері */
+  }
+}
+
+@media (max-width: 1000px) {
+  .container {
+    padding: 24px 20px 0 20px;
+  }
+  
+  .fullWidthNews {
+    margin-top: 28px;
+  }
+  
+  .fullWidthNews :global(.container) {
+    padding: 0 20px !important; /* Ті ж падінги, що й в основному контейнері */
+  }
+  
+  .fullWidthNews .allNewsStandard :global(.container) {
+    padding: 0 !important;
+  }
+  
+  .allNewsStandard :global(.container) {
+    padding: 0 20px !important; /* Ті ж падінги, що й в основному контейнері */
+  }
+}
+
 @media (max-width: 768px) {
   .container {
     flex-direction: column;
@@ -127,29 +187,50 @@
   }
   
   .fullWidthNews {
-    margin-left: -1rem;
-    margin-right: -1rem;
+    margin-top: 24px;
   }
   
   .fullWidthNews :global(.container) {
-    padding: 0 1rem !important;
+    padding: 0 1rem !important; /* Ті ж падінги, що й в основному контейнері */
   }
   
-  /* Адаптивні падінги для компонентів */
-  .categoryTitleStandard :global(.container),
-  .mainNewsStandard :global(.container),
-  .categoryNewsStandard :global(.container),
-  .columnNewsStandard :global(.container) {
-    padding: 0 !important; /* На мобільних також без падінгов */
+  .fullWidthNews .allNewsStandard :global(.container) {
+    padding: 0 !important;
   }
   
   .allNewsStandard :global(.container) {
-    padding: 0 1rem !important; /* На мобільних зменшуємо падінги для AllNews */
+    padding: 0 1rem !important; /* Ті ж падінги, що й в основному контейнері */
   }
   
   /* Адаптивні стилі для AllNews на мобільних */
   .allNewsStandard :global(.allNewsSection) {
-    padding: 16px 0 32px 0 !important; /* Ще менший верхній відступ на мобільних */
+    padding: 32px 0 32px 0 !important; /* Зменшуємо верхній відступ на мобільних */
+  }
+}
+
+@media (max-width: 480px) {
+  .container {
+    padding: 16px 0.5rem 0 0.5rem;
+  }
+  
+  .fullWidthNews {
+    margin-top: 20px;
+  }
+  
+  .fullWidthNews :global(.container) {
+    padding: 0 0.5rem !important; /* Ті ж падінги, що й в основному контейнері */
+  }
+  
+  .fullWidthNews .allNewsStandard :global(.container) {
+    padding: 0 !important;
+  }
+  
+  .allNewsStandard :global(.container) {
+    padding: 0 0.5rem !important; /* Ті ж падінги, що й в основному контейнері */
+  }
+  
+  .allNewsStandard :global(.allNewsSection) {
+    padding: 24px 0 24px 0 !important; /* Ще менший відступ на дуже малих екранах */
   }
 }
 
@@ -163,6 +244,38 @@
 /* Стилі для рекламного банеру на CategoryPage */
 .adBanner {
   margin: 32px 0;
+}
+
+/* Спеціальні стилі для AdBanner на сторінці категорії */
+.adBannerStandard :global(.adBanner) {
+  width: 100% !important; /* Займає повну ширину лівого блоку */
+  max-width: 100% !important; /* Максимальна ширина також 100% */
+  margin: 32px 0 !important; /* Тільки вертикальні відступи */
+}
+
+/* Адаптивні стилі для AdBanner */
+@media (max-width: 1200px) {
+  .adBannerStandard :global(.adBanner) {
+    margin: 24px 0 !important;
+  }
+}
+
+@media (max-width: 1000px) {
+  .adBannerStandard :global(.adBanner) {
+    margin: 20px 0 !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .adBannerStandard :global(.adBanner) {
+    margin: 16px 0 !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .adBannerStandard :global(.adBanner) {
+    margin: 12px 0 !important;
+  }
 }
 
 /* Стилі для IN-FOMO логотипу */

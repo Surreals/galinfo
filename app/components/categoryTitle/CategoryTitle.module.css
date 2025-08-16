@@ -6,7 +6,7 @@
 .container {
   max-width: 1440px;
   margin: 0 auto;
-  padding: 0;
+  padding: 0; /* Прибираємо падінги, оскільки тепер вони в загальному контейнері HomePage */
 }
 
 .header {
@@ -30,10 +30,6 @@
 
 /* Адаптивні стилі */
 @media (max-width: 1200px) {
-  .container {
-    padding: 0 40px;
-  }
-  
   .title {
     font-size: 28px;
   }
@@ -44,10 +40,6 @@
     padding: 16px 0 6px 0;
   }
   
-  .container {
-    padding: 0 20px;
-  }
-  
   .title {
     font-size: 24px;
   }
@@ -56,10 +48,6 @@
 @media (max-width: 768px) {
   .categoryTitleSection {
     padding: 12px 0 4px 0;
-  }
-  
-  .container {
-    padding: 0 16px;
   }
   
   .title {
@@ -74,10 +62,6 @@
 @media (max-width: 480px) {
   .categoryTitleSection {
     padding: 10px 0 3px 0;
-  }
-  
-  .container {
-    padding: 0 12px;
   }
   
   .title {
