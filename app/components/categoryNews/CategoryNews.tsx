@@ -37,7 +37,7 @@ export default function CategoryNews({
       title: 'Війна на сході: як ІТ-інновації змінюють стратегію оборони',
       date: '04 липня 2025',
       time: '11:15',
-      url: '/news/1',
+      url: '/article/it-innovations-war',
       imageUrl: 'https://picsum.photos/300/200?random=1',
       imageAlt: 'Люди за столами на IT конференції'
     },
@@ -46,7 +46,7 @@ export default function CategoryNews({
       title: 'Коли дрони стали частиною війни: нові технології в бою',
       date: '03 липня 2025',
       time: '09:30',
-      url: '/news/2',
+      url: '/article/drones-war-technology',
       imageUrl: 'https://picsum.photos/300/200?random=2',
       imageAlt: 'Військовий у формі посміхається'
     },
@@ -55,7 +55,7 @@ export default function CategoryNews({
       title: 'Як "Голуб" із "Нової пошти" став "Голубом війни"',
       date: '02 липня 2025',
       time: '14:54',
-      url: '/news/3',
+      url: '/article/golub-war-nova-poshta',
       imageUrl: 'https://picsum.photos/300/200?random=3',
       imageAlt: 'Сцена з актором на театральній виставі',
       isImportant: true
@@ -65,7 +65,7 @@ export default function CategoryNews({
       title: 'Війна на сході: як ІТ-інновації змінюють стратегію оборони',
       date: '04 липня 2025',
       time: '11:15',
-      url: '/news/4',
+      url: '/article/it-innovations-war-east',
       imageUrl: 'https://picsum.photos/300/200?random=4',
       imageAlt: 'Люди за столами на IT конференції'
     },
@@ -74,7 +74,7 @@ export default function CategoryNews({
       title: 'Смертельна аварія в Бутинах і масове ДТП на трасі Львів-Винники',
       date: '02 липня 2025',
       time: '14:54',
-      url: '/news/5',
+      url: '/article/fatal-accident-butyne-lviv-vynnyky',
       imageUrl: 'https://picsum.photos/300/200?random=5',
       imageAlt: 'Дві машини в лобовому зіткненні на дорозі',
       isImportant: true
@@ -84,7 +84,7 @@ export default function CategoryNews({
       title: 'Міноборони кодифікувало та допустило до експлуатації бойовий модуль "Хижак"',
       date: '03 липня 2025',
       time: '09:30',
-      url: '/news/6',
+      url: '/article/ministry-defense-hunter-module',
       imageUrl: 'https://picsum.photos/300/200?random=6',
       imageAlt: 'Металевий промисловий пристрій на цегляній стіні',
       isImportant: true
@@ -94,7 +94,7 @@ export default function CategoryNews({
       title: 'Смертельна аварія в Бутинах і масове ДТП на трасі Львів-Винники',
       date: '02 липня 2025',
       time: '14:54',
-      url: '/news/7',
+      url: '/article/fatal-accident-butyne-lviv-vynnyky-2',
       imageUrl: 'https://picsum.photos/300/200?random=7',
       imageAlt: 'Дві машини в лобовому зіткненні на дорозі'
     },
@@ -103,7 +103,7 @@ export default function CategoryNews({
       title: 'Міноборони кодифікувало та допустило до експлуатації бойовий модуль "Хижак"',
       date: '03 липня 2025',
       time: '09:30',
-      url: '/news/8',
+      url: '/article/ministry-defense-hunter-module-2',
       imageUrl: 'https://picsum.photos/300/200?random=8',
       imageAlt: 'Металевий промисловий пристрій на цегляній стіні'
     }

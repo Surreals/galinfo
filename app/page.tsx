@@ -1,4 +1,4 @@
-import {AllNews, CategoryNews, ColumnNews, Hero} from "@/app/components";
+import {AllNews, CategoryNews, ColumnNews, Hero, ArticleLink} from "@/app/components";
 import styles from "./page.module.css";
 
 export default function HomePage() {
@@ -6,6 +6,9 @@ export default function HomePage() {
     <>
       <div className={styles.container}>
         <Hero/>
+        
+
+        
         <ColumnNews
           newsQuantity={4}
           smallImg={true}

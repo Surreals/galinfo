@@ -36,6 +36,10 @@ const paths = {
   article: '/category/article',
   interview: '/category/interview',
   
+  // СТАТТІ ТА НОВИНИ
+  articlePage: '/article',
+  newsPage: '/news',
+  
   // Соціальні мережі та зовнішні посилання
   facebook: 'https://facebook.com/galinfo',
   twitter: 'https://twitter.com/galinfo',

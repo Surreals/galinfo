@@ -43,7 +43,17 @@ export default function Hero() {
       "Новий арт-проєкт у центрі Києва Зеленський підписав новий закон",
     ];
 
-    return Array.from({ length: count }, () => ({
+    const articleIds = [
+      "zelensky-new-law-hero",
+      "ukraine-thunderstorms-hero",
+      "trump-interview-hero",
+      "lviv-region-park-hero",
+      "scientists-bicycle-hero",
+      "kyiv-art-project-hero"
+    ];
+
+    return Array.from({ length: count }, (_, index) => ({
+      id: `hero-${index + 1}`,
       title: titles[Math.floor(Math.random() * titles.length)],
       time: new Date(
         Date.now() - Math.floor(Math.random() * 1e8)
@@ -55,6 +65,7 @@ export default function Hero() {
         minute: "2-digit",
       }),
       imageUrl: `https://picsum.photos/seed/${Math.random()}/300/200`,
+      url: `/article/${articleIds[Math.floor(Math.random() * articleIds.length)]}-${index + 1}`,
     }));
   };
 

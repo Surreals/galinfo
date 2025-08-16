@@ -39,7 +39,21 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
       "Медичні новини та здоров'я",
     ];
 
-    return Array.from({ length: count }, () => ({
+    const articleIds = [
+      "zelensky-new-law",
+      "ukraine-thunderstorms",
+      "trump-interview",
+      "lviv-region-park",
+      "scientists-bicycle",
+      "kyiv-art-project",
+      "economic-news",
+      "sports-events",
+      "cultural-events",
+      "medical-news"
+    ];
+
+    return Array.from({ length: count }, (_, index) => ({
+      id: `category-${index + 1}`,
       title: titles[Math.floor(Math.random() * titles.length)],
       time: new Date(
         Date.now() - Math.floor(Math.random() * 1e8)
@@ -51,6 +65,7 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
         minute: "2-digit",
       }),
       imageUrl: `https://picsum.photos/seed/${Math.random()}/300/200`,
+      url: `/article/${articleIds[Math.floor(Math.random() * articleIds.length)]}-${index + 1}`,
     }));
   };
 
@@ -80,7 +95,7 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
             title="На фронті від початку доби - 101 зіткнення, бої точаться на семи напрямках"
             date="02 липня 2025"
             time="14:54"
-            url="/news/main-news"
+            url="/article/front-news-101"
             imageUrl="https://picsum.photos/800/500?random=main"
             imageAlt="Військові дії на фронті"
             className={styles.mainNewsStandard}

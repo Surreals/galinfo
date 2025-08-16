@@ -1,0 +1,19 @@
+.articleLink {
+  display: inline-block;
+  color: #2563eb;
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.2s ease;
+  border-bottom: 1px solid transparent;
+}
+
+.articleLink:hover {
+  color: #1d4ed8;
+  border-bottom-color: #1d4ed8;
+}
+
+.articleLink:focus {
+  outline: 2px solid #2563eb;
+  outline-offset: 2px;
+  border-radius: 4px;
+}

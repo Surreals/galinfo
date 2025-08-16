@@ -57,6 +57,20 @@
   }
 }
 
+.itemLink {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+  transition: opacity 0.3s ease;
+}
+
+.itemLink:hover {
+  opacity: 0.8;
+  .itemTitle {
+    color: var(--color-accent);
+  }
+}
+
 .image {
   width: 100%;
   object-fit: cover;

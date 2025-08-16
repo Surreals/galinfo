@@ -10,9 +10,11 @@ import settings from "@/assets/icons/settingsIcon.svg";
 import styles from "./listNews.module.scss";
 
 type NewsItem = {
+  id?: string;
   title: string;
   time: string;
   imageUrl?: string;
+  url?: string;
 };
 
 type NewsListProps = {
@@ -83,18 +85,36 @@ export default function NewsList({
 
       <ul className={styles.list}>
         {data.map((item, index) => (
-          <li key={index} className={styles.item}>
-            {showImagesAt.includes(index) && item.imageUrl && (
-              <img
-                src={item.imageUrl}
-                alt={item.title}
-                className={styles.image}
-              />
+          <li key={item.id || index} className={styles.item}>
+            {item.url ? (
+              <a href={item.url} className={styles.itemLink}>
+                {showImagesAt.includes(index) && item.imageUrl && (
+                  <img
+                    src={item.imageUrl}
+                    alt={item.title}
+                    className={styles.image}
+                  />
+                )}
+                <div className={styles.textBlock}>
+                  <p className={styles.itemTitle}>{item.title}</p>
+                  <p className={styles.itemTime}>{item.time}</p>
+                </div>
+              </a>
+            ) : (
+              <>
+                {showImagesAt.includes(index) && item.imageUrl && (
+                  <img
+                    src={item.imageUrl}
+                    alt={item.title}
+                    className={styles.image}
+                  />
+                )}
+                <div className={styles.textBlock}>
+                  <p className={styles.itemTitle}>{item.title}</p>
+                  <p className={styles.itemTime}>{item.time}</p>
+                </div>
+              </>
             )}
-            <div className={styles.textBlock}>
-              <p className={styles.itemTitle}>{item.title}</p>
-              <p className={styles.itemTime}>{item.time}</p>
-            </div>
           </li>
         ))}
       </ul>
