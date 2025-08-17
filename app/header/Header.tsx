@@ -1,5 +1,6 @@
 "use client";
-import { useState } from "react";
+
+import { useState, useEffect } from "react";
 import { Input } from 'antd';
 import Link from "next/link";
 
@@ -18,12 +19,32 @@ export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isClosing, setIsClosing] = useState(false);
 
+  useEffect(() => {
+    if (isMenuOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [isMenuOpen]);
+
   const handleCloseMenu = () => {
     setIsClosing(true);
     setTimeout(() => {
       setIsClosing(false);
       setIsMenuOpen(false);
     }, 400);
+  };
+
+  const toggleMenu = () => {
+    if (isMenuOpen) {
+      handleCloseMenu();
+    } else {
+      setIsMenuOpen(true);
+    }
   };
 
   return (
@@ -91,7 +112,7 @@ export default function Header() {
         <div className={styles.burgerMenuContainer}>
           <div
             className={styles.burgerMenuIcon}
-            onClick={() => setIsMenuOpen(true)}
+            onClick={toggleMenu}
           >
             <Image src={burgerMenu} alt={'Burger menu'}/>
           </div>
@@ -183,7 +204,7 @@ export default function Header() {
               className={styles.input}
             />
 
-            <h3 className={styles.sectionTitle} onClick={handleCloseMenu}>
+            <h3 className={styles.sectionTitle}>
               ТОП ТЕМИ
             </h3>
             <hr className={styles.divider}/>
@@ -220,7 +241,7 @@ export default function Header() {
               <Link className={styles.textCategory} href="#">ТЕХНОЛОГІЇ</Link>
               <span></span>
             </div>
-            <div>
+            <div className={styles.radioBox}>
               <a className={styles.radioLogo} target={'_blank'} href={'https://lviv.fm/'}>
                 <Image
                   src={radioLogo}
