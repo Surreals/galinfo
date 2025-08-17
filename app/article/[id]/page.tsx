@@ -291,6 +291,7 @@ export default async function ArticlePage({ params, searchParams }: ArticlePageP
       <div className={styles.container}>
         {/* Основний контент - ліва частина */}
         <div className={styles.mainContent}>
+        <AdBanner className={styles.adBannerStandard} />
           {/* Заголовок статті */}
           <div className={styles.articleHeader}>
             <h1 className={styles.articleTitle}>{articleData.title}</h1>
@@ -336,9 +337,6 @@ export default async function ArticlePage({ params, searchParams }: ArticlePageP
             </div>
           </div>
           
-          {/* Сепаратор між лівими компонентами */}
-          <div className={styles.leftSeparator}></div>
-          
           {/* Рекламний банер */}
           <AdBanner className={styles.adBannerStandard} />
           
@@ -352,9 +350,6 @@ export default async function ArticlePage({ params, searchParams }: ArticlePageP
             hideHeader={true} 
             className={styles.columnNewsStandard}
           />
-          
-          {/* Сепаратор між лівими компонентами */}
-          <div className={styles.leftSeparator}></div>
           
           {/* Рекламний банер */}
           <AdBanner className={styles.adBannerStandard} />
@@ -406,32 +401,6 @@ export default async function ArticlePage({ params, searchParams }: ArticlePageP
               height={240} 
               className={styles.fomoLogo}
               priority={false}
-            />
-          </div>
-          <div className={styles.rightSeparator}></div>
-          
-          <div className={styles.newsColumn}>
-            <NewsList
-              title="ЕКОНОМІКА"
-              data={newsData2}
-              showImagesAt={[0, 1]}
-              showMoreButton={true}
-              moreButtonUrl="/category/economy"
-              widthPercent={100}
-            />
-          </div>
-          
-          {/* Сепаратор між правими компонентами */}
-          <div className={styles.rightSeparator}></div>
-          
-          <div className={styles.newsColumn}>
-            <NewsList
-              title="СПОРТ"
-              data={newsData3}
-              showImagesAt={[0, 1]}
-              showMoreButton={true}
-              moreButtonUrl="/category/sport"
-              widthPercent={100}
             />
           </div>
         </div>

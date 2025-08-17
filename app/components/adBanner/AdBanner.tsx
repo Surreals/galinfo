@@ -18,10 +18,6 @@ const AdBanner: React.FC<AdBannerProps> = ({ className }) => {
         <div className={styles.adImage}>
           <div className={styles.imagePlaceholder}>
             <div className={styles.scenicImage}>
-              <div className={styles.road}></div>
-              <div className={styles.buildings}></div>
-              <div className={styles.lake}></div>
-              <div className={styles.mountains}></div>
               <div className={styles.goraLogo}>GORA</div>
               <div className={styles.sensarLogo}>sensarR DEVELOPMENT</div>
               <button className={styles.mainButton}>Отримати пропозицію</button>
