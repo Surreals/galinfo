@@ -6,6 +6,7 @@ import CurrencyRates from "@/app/components/hero/CurrencyRates";
 import WeatherWidget from "@/app/components/hero/WeatherWidget";
 import adBannerIndfomo from '@/assets/images/Ad Banner black.png';
 import banner3 from '@/assets/images/banner3.png';
+import { getBreadCrumbsNav } from "@/assets/utils/getTranslateCategory";
 
 interface ArticlePageProps {
   params: Promise<{
@@ -286,6 +287,8 @@ export default async function ArticlePage({ params, searchParams }: ArticlePageP
   const newsData2 = generateRandomNews(8);
   const newsData3 = generateRandomNews(8);
 
+  console.log(articleData?.category, 'cat')
+
   return (
     <>
       <div className={styles.container}>
@@ -295,7 +298,7 @@ export default async function ArticlePage({ params, searchParams }: ArticlePageP
         <Breadcrumbs 
           items={[
             { label: 'ГОЛОВНА', href: '/' },
-            { label: articleData.category, href: `/category/${articleData.category.toLowerCase()}` },
+            { label: articleData.category, href: `/category/${getBreadCrumbsNav(articleData.category.toLowerCase())}` },
             { label: 'НОВИНА' }
           ]} 
         />
@@ -378,7 +381,7 @@ export default async function ArticlePage({ params, searchParams }: ArticlePageP
               alt="banner3" 
               width={600} 
               height={240} 
-              className={styles.banner3}
+              className={styles.fomoLogo}
               priority={false}
             />
           </div>

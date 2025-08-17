@@ -191,7 +191,7 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
                 alt="banner3" 
                 width={600} 
                 height={240} 
-                className={styles.banner3}
+                className={styles.banner}
                 priority={false}
               />
           </div>

@@ -24,3 +24,30 @@ export function getCategoryTitle(category: string): string {
       return "Невідома категорія";
   }
 }
+
+export function getBreadCrumbsNav(category: string): string {
+  switch (category) {
+    case  "суспільство":
+      return "society";
+    case  "політика":
+      return "politics";
+    case "економіка":
+      return  "economy";
+    case "культура":
+      return "culture";
+    case "здоров'я":
+      return "health";
+    case "спорт" :
+      return "sport";
+    case "кримінал" :
+      return "crime";
+    case "надзвичайне" :
+      return "emergency";
+    case "історія" :
+      return "history";
+    case "технології" :
+      return "technologies";
+    default:
+      return "Невідома категорія";
+  }
+}
