@@ -286,5 +286,14 @@
   object-fit: cover;
 }
 
+.banner3 {
+  display: block;
+  width: 100% !important;
+  height: auto !important;
+  border-radius: 8px;
+  object-fit: cover;
+  margin-bottom: 24px;
+}
+
 
 

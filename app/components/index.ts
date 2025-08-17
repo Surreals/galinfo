@@ -7,3 +7,4 @@ export { default as CategoryTitle } from './categoryTitle';
 export { default as NewsList } from './listNews';
 export { default as AdBanner } from './adBanner';
 export { default as ArticleLink } from './articleLink';
+export { default as Breadcrumbs } from './breadcrumbs';

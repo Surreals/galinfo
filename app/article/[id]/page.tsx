@@ -1,4 +1,4 @@
-import { AllNews, CategoryNews, ColumnNews, MainNews, CategoryTitle, AdBanner } from "@/app/components";
+import { AllNews, CategoryNews, ColumnNews, MainNews, CategoryTitle, AdBanner, Breadcrumbs } from "@/app/components";
 import NewsList from "@/app/components/listNews/listNews";
 import Image from "next/image";
 import styles from "./page.module.css";
@@ -291,6 +291,14 @@ export default async function ArticlePage({ params, searchParams }: ArticlePageP
       <div className={styles.container}>
         {/* Основний контент - ліва частина */}
         <div className={styles.mainContent}>
+        {/* Breadcrumbs навігація */}
+        <Breadcrumbs 
+          items={[
+            { label: 'ГОЛОВНА', href: '/' },
+            { label: articleData.category, href: `/category/${articleData.category.toLowerCase()}` },
+            { label: 'НОВИНА' }
+          ]} 
+        />
         <AdBanner className={styles.adBannerStandard} />
           {/* Заголовок статті */}
           <div className={styles.articleHeader}>
@@ -370,7 +378,7 @@ export default async function ArticlePage({ params, searchParams }: ArticlePageP
               alt="banner3" 
               width={600} 
               height={240} 
-              className={styles.fomoLogo}
+              className={styles.banner3}
               priority={false}
             />
           </div>

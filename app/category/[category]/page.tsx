@@ -1,4 +1,4 @@
-import { AllNews, CategoryNews, ColumnNews, MainNews, CategoryTitle, AdBanner } from "@/app/components";
+import { AllNews, CategoryNews, ColumnNews, MainNews, CategoryTitle, AdBanner, Breadcrumbs } from "@/app/components";
 import NewsList from "@/app/components/listNews/listNews";
 import Image from "next/image";
 import arrowRight from "@/assets/icons/arrowRight.svg";
@@ -83,6 +83,13 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
       <div className={styles.container}>
         {/* Основний контент - ліва частина */}
         <div className={styles.mainContent}>
+          {/* Breadcrumbs навігація */}
+        <Breadcrumbs 
+          items={[
+            { label: 'ГОЛОВНА', href: '/' },
+            { label: getCategoryTitle(category).toUpperCase() }
+          ]} 
+        />
           {/* Тайтл кСатегорії */}
           <CategoryTitle
             title={getCategoryTitle(category)}
@@ -184,7 +191,7 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
                 alt="banner3" 
                 width={600} 
                 height={240} 
-                className={styles.fomoLogo}
+                className={styles.banner3}
                 priority={false}
               />
           </div>
