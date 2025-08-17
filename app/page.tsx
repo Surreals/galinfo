@@ -6,9 +6,7 @@ export default function HomePage() {
     <>
       <div className={styles.container}>
         <Hero/>
-        
 
-        
         <ColumnNews
           newsQuantity={4}
           smallImg={true}
