@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 export default function TestDBPage() {
   const [connectionStatus, setConnectionStatus] = useState<string>('');
@@ -8,6 +8,24 @@ export default function TestDBPage() {
   const [customQuery, setCustomQuery] = useState<string>('');
   const [customResult, setCustomResult] = useState<any>(null);
   const [loading, setLoading] = useState<boolean>(false);
+  const [connectionInfo, setConnectionInfo] = useState<any>(null);
+
+  // Load connection info on component mount
+  useEffect(() => {
+    const loadConnectionInfo = async () => {
+      try {
+        const response = await fetch('/api/test-db/connection-info');
+        if (response.ok) {
+          const data = await response.json();
+          setConnectionInfo(data);
+        }
+      } catch (error) {
+        console.error('Failed to load connection info:', error);
+      }
+    };
+    
+    loadConnectionInfo();
+  }, []);
 
   const testConnection = async () => {
     setLoading(true);
@@ -56,6 +74,33 @@ export default function TestDBPage() {
     <div className="container mx-auto p-6 max-w-4xl">
       <h1 className="text-3xl font-bold mb-6">Database Connection Test</h1>
       
+      {/* Connection Info Section */}
+      {connectionInfo && (
+        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+          <h2 className="text-xl font-semibold mb-4 text-blue-800">Connection Configuration</h2>
+          <div className="grid grid-cols-2 gap-4 text-sm">
+            <div>
+              <span className="font-medium">Host:</span> {connectionInfo.host}
+            </div>
+            <div>
+              <span className="font-medium">Port:</span> {connectionInfo.port}
+            </div>
+            <div>
+              <span className="font-medium">Database:</span> {connectionInfo.database}
+            </div>
+            <div>
+              <span className="font-medium">User:</span> {connectionInfo.user}
+            </div>
+            <div>
+              <span className="font-medium">Environment:</span> {connectionInfo.environment}
+            </div>
+            <div>
+              <span className="font-medium">SSL:</span> {connectionInfo.ssl ? 'Enabled' : 'Disabled'}
+            </div>
+          </div>
+        </div>
+      )}
+      
       {/* Connection Test Section */}
       <div className="bg-white rounded-lg shadow-md p-6 mb-6">
         <h2 className="text-xl font-semibold mb-4">Test Database Connection</h2>
@@ -90,7 +135,7 @@ export default function TestDBPage() {
           <textarea
             value={customQuery}
             onChange={(e) => setCustomQuery(e.target.value)}
-            placeholder="Enter your SQL query here (e.g., SELECT * FROM users LIMIT 5)"
+            placeholder="Enter your SQL query here (e.g., SELECT 1 as test, NOW() as current_time)"
             className="w-full p-3 border border-gray-300 rounded-md h-24 resize-none"
           />
         </div>
@@ -116,10 +161,10 @@ export default function TestDBPage() {
       <div className="mt-6 bg-yellow-50 border border-yellow-200 rounded-lg p-4">
         <h3 className="font-semibold text-yellow-800 mb-2">Setup Instructions:</h3>
         <ol className="list-decimal list-inside text-yellow-700 space-y-1">
-          <li>Create a <code className="bg-yellow-100 px-1 rounded">.env.local</code> file in your project root</li>
-          <li>Add your database credentials (see <code className="bg-yellow-100 px-1 rounded">env.example</code>)</li>
-          <li>Make sure your MariaDB server is running</li>
+          <li>Your <code className="bg-yellow-100 px-1 rounded">.env.local</code> file is configured to connect to {process.env.NODE_ENV === 'development' ? 'your remote MariaDB server' : 'localhost'}</li>
+          <li>SSL is currently disabled to avoid connection issues</li>
           <li>Click "Test Connection" to verify the setup</li>
+          <li>Use the custom query section to test specific SQL commands</li>
         </ol>
       </div>
     </div>

@@ -20,16 +20,9 @@ const dbConfig = {
   waitForConnections: true,
   connectionLimit: 10,
   queueLimit: 0,
-  // Add SSL configuration for remote connections (only if server supports it)
-  ssl: process.env.DB_HOST !== '127.0.0.1' && process.env.DB_HOST !== 'localhost' ? {
-    rejectUnauthorized: false,
-    // Allow fallback to non-SSL if server doesn't support it
-    minVersion: 'TLSv1.2'
-  } : undefined,
   // Add connection timeout for remote connections
   connectTimeout: process.env.DB_HOST !== '127.0.0.1' && process.env.DB_HOST !== 'localhost' ? 60000 : 10000,
 };
-
 
 // Create connection pool
 const pool = mysql.createPool(dbConfig);
@@ -43,6 +36,28 @@ export async function testConnection() {
     return true;
   } catch (error) {
     console.error('❌ Database connection failed:', error);
+    
+    // Handle SSL-specific errors
+    if (error instanceof Error && error.message.includes('secure connection')) {
+      console.log('🔄 SSL connection failed, trying to connect without SSL...');
+      
+      // Try to create a new connection without SSL
+      try {
+        const nonSslConfig = { ...dbConfig };
+        
+        const mysql = require('mysql2/promise');
+        const tempPool = mysql.createPool(nonSslConfig);
+        const connection = await tempPool.getConnection();
+        console.log('✅ Database connected successfully without SSL!');
+        connection.release();
+        await tempPool.end();
+        return true;
+      } catch (sslError) {
+        console.error('❌ Non-SSL connection also failed:', sslError);
+        return false;
+      }
+    }
+    
     return false;
   }
 }
