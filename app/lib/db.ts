@@ -1,4 +1,8 @@
 import mysql from 'mysql2/promise';
+import * as dotenv from 'dotenv';
+
+// Завантажує .env при старті процеса
+dotenv.config();
 console.log('DB_PASSWORD:', process.env.DB_PASSWORD ? 'SET' : 'MISSING');
 console.log('process:', process.env);
 
