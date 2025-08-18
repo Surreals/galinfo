@@ -1,5 +1,6 @@
 import mysql from 'mysql2/promise';
 console.log('DB_PASSWORD:', process.env.DB_PASSWORD ? 'SET' : 'MISSING');
+console.log('process:', process);
 
 // Database configuration
 const dbConfig = {
