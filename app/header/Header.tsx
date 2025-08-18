@@ -50,7 +50,7 @@ export default function Header() {
   return (
     <header className={styles.headerMain}>
       <div className={styles.header}>
-        <Link href={'./'} className={styles.logo}>
+        <Link href="/" className={styles.logo}>
           <Image
             src={galinfoLogo}
             alt="Galinfo Logo"
@@ -59,7 +59,6 @@ export default function Header() {
             className={styles.logoImage}
           />
         </Link>
-
         <nav className={styles.headerNav}>
           <ul className={styles.navList}>
             <li>
