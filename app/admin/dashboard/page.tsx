@@ -2,13 +2,20 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import dynamic from 'next/dynamic';
 import styles from './dashboard.module.css';
+
+// Dynamically import the NewsEditor to avoid SSR issues
+const NewsEditor = dynamic(() => import('../components/NewsEditor'), {
+  ssr: false,
+  loading: () => <div className={styles.loading}>Loading editor...</div>,
+});
 
 interface NewsItem {
   id: number;
   nheader: string;
   nsubheader?: string;
-  ndate: string;
+  ndate: string | number;
   ntime: string;
   ntype: number;
   approved: number;
@@ -53,6 +60,9 @@ export default function AdminDashboard() {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [itemsPerPage] = useState(20);
+  const [showEditor, setShowEditor] = useState(false);
+  const [editingNewsId, setEditingNewsId] = useState<number | null>(null);
+  const [editorMode, setEditorMode] = useState<'create' | 'edit'>('create');
   const router = useRouter();
 
   useEffect(() => {
@@ -170,8 +180,76 @@ export default function AdminDashboard() {
     }
   };
 
+  const handleCreateNews = () => {
+    setEditorMode('create');
+    setEditingNewsId(null);
+    setShowEditor(true);
+  };
+
+  const handleEditNews = (newsId: number) => {
+    setEditorMode('edit');
+    setEditingNewsId(newsId);
+    setShowEditor(true);
+  };
+
+  const handleSaveNews = async (newsData: any, headers: any, body: any) => {
+    try {
+      const response = await fetch('/api/admin/news/save', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ newsData, headers, body }),
+      });
+
+      if (response.ok) {
+        const result = await response.json();
+        alert(result.message);
+        setShowEditor(false);
+        fetchNews(currentPage); // Refresh the news list
+      } else {
+        const data = await response.json();
+        throw new Error(data.error || 'Failed to save news');
+      }
+    } catch (err) {
+      throw err;
+    }
+  };
+
+  const handleCancelEditor = () => {
+    setShowEditor(false);
+    setEditingNewsId(null);
+  };
+
   if (!user) {
     return <div>Loading...</div>;
+  }
+
+  if (showEditor) {
+    return (
+      <div className={styles.container}>
+        <header className={styles.header}>
+          <div className={styles.headerContent}>
+            <h1>GalInfo Admin Dashboard</h1>
+            <div className={styles.userInfo}>
+              <span>Welcome, {user.name}</span>
+              <button onClick={handleLogout} className={styles.logoutButton}>
+                Logout
+              </button>
+            </div>
+          </div>
+        </header>
+
+        <main className={styles.main}>
+          <NewsEditor
+            newsId={editingNewsId || undefined}
+            onSave={handleSaveNews}
+            onCancel={handleCancelEditor}
+            initialData={editingNewsId ? undefined : undefined} // Will be loaded when editing
+          />
+        </main>
+      </div>
+    );
   }
 
   return (
@@ -249,12 +327,20 @@ export default function AdminDashboard() {
             <>
               <div className={styles.newsHeader}>
                 <h2>News List ({news.length} items)</h2>
-                <button 
-                  onClick={() => fetchNews(currentPage)} 
-                  className={styles.refreshButton}
-                >
-                  Refresh
-                </button>
+                <div className={styles.newsHeaderActions}>
+                  <button 
+                    onClick={handleCreateNews}
+                    className={styles.createButton}
+                  >
+                    Create New News
+                  </button>
+                  <button 
+                    onClick={() => fetchNews(currentPage)} 
+                    className={styles.refreshButton}
+                  >
+                    Refresh
+                  </button>
+                </div>
               </div>
 
               {news.length === 0 ? (
@@ -268,11 +354,11 @@ export default function AdminDashboard() {
                           {item.nheader || 'No Title'}
                         </h3>
                         {item.nsubheader && (
-                          <p className={styles.newsSubtitle}>{item.nsubtitle}</p>
+                          <p className={styles.newsSubtitle}>{item.nsubheader}</p>
                         )}
                         <div className={styles.newsMeta}>
                           <span>ID: {item.id}</span>
-                          <span>Date: {new Date(item.ndate * 1000).toLocaleDateString()}</span>
+                          <span>Date: {typeof item.ndate === 'number' ? new Date(item.ndate * 1000).toLocaleDateString() : new Date(item.ndate).toLocaleDateString()}</span>
                           <span>Type: {item.ntype}</span>
                           <span className={item.approved ? styles.approved : styles.notApproved}>
                             {item.approved ? 'Approved' : 'Not Approved'}
@@ -282,6 +368,12 @@ export default function AdminDashboard() {
                       </div>
                       
                       <div className={styles.newsActions}>
+                        <button
+                          onClick={() => handleEditNews(item.id)}
+                          className={styles.editButton}
+                        >
+                          Edit
+                        </button>
                         {!item.approved && (
                           <button
                             onClick={() => handleNewsAction(item.id, 'approve')}

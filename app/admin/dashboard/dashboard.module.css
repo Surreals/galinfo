@@ -143,6 +143,12 @@
   font-weight: 600;
 }
 
+.newsHeaderActions {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
 .refreshButton {
   background: #48bb78;
   color: white;
@@ -156,6 +162,37 @@
 
 .refreshButton:hover {
   background: #38a169;
+}
+
+.createButton {
+  background: #667eea;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.3s ease;
+}
+
+.createButton:hover {
+  background: #5a67d8;
+}
+
+.editButton {
+  background: #3182ce;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.editButton:hover {
+  background: #2c5aa0;
 }
 
 .loading, .error, .noNews {

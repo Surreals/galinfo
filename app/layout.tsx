@@ -50,7 +50,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${openSans.variable} antialiased`}>
+      <body className={`${openSans.variable} antialiased`} suppressHydrationWarning={true}>
         <ConfigProvider
           theme={customTheme}
         >

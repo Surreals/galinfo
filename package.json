@@ -10,9 +10,18 @@
     "test:db": "node scripts/test-db-connection.js"
   },
   "dependencies": {
+    "@tiptap/extension-color": "^3.2.0",
+    "@tiptap/extension-highlight": "^3.2.0",
+    "@tiptap/extension-image": "^3.2.0",
+    "@tiptap/extension-link": "^3.2.0",
+    "@tiptap/extension-text-align": "^3.2.0",
+    "@tiptap/pm": "^3.2.0",
+    "@tiptap/react": "^3.2.0",
+    "@tiptap/starter-kit": "^3.2.0",
     "antd": "^5.26.7",
     "axios": "^1.11.0",
     "classnames": "^2.5.1",
+    "dayjs": "^1.11.13",
     "dotenv": "^17.2.1",
     "mysql2": "^3.14.3",
     "next": "15.4.5",
@@ -26,6 +35,8 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "eslint": "^9.33.0",
+    "eslint-config-next": "15.4.6",
     "tailwindcss": "^4",
     "typescript": "^5"
   },

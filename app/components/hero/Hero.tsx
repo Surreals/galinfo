@@ -6,6 +6,8 @@ import { Carousel } from 'antd';
 import NewsList from "@/app/components/listNews";
 import CurrencyRates from "./CurrencyRates";
 import WeatherWidget from "./WeatherWidget";
+import dayjs from 'dayjs';
+import 'dayjs/locale/uk';
 
 import arrowRight from "@/assets/icons/arrowRight.svg";
 import roundArrowRight from "@/assets/icons/roundArrowRight.svg";
@@ -13,13 +15,15 @@ import roundArrowLeft from "@/assets/icons/roundArrowLeft.svg";
 
 import styles from './Hero.module.scss';
 
+dayjs.locale('uk');
+
 export default function Hero() {
   const carouselRef = useRef<any>(null);
 
   const [isMobile, setIsMobile] = useState(false);
+  const [newsData, setNewsData] = useState<Array<{ id: string; title: string; time: string; imageUrl?: string; url: string }>>([]);
 
   useEffect(() => {
-    // Функція перевірки ширини
     const handleResize = () => {
       setIsMobile(window.innerWidth < 1000);
     };
@@ -52,24 +56,22 @@ export default function Hero() {
       "kyiv-art-project-hero"
     ];
 
-    return Array.from({ length: count }, (_, index) => ({
-      id: `hero-${index + 1}`,
-      title: titles[Math.floor(Math.random() * titles.length)],
-      time: new Date(
-        Date.now() - Math.floor(Math.random() * 1e8)
-      ).toLocaleString("uk-UA", {
-        day: "2-digit",
-        month: "long",
-        year: "numeric",
-        hour: "2-digit",
-        minute: "2-digit",
-      }),
-      imageUrl: `https://picsum.photos/seed/${Math.random()}/300/200`,
-      url: `/article/${articleIds[Math.floor(Math.random() * articleIds.length)]}-${index + 1}`,
-    }));
+    return Array.from({ length: count }, (_, index) => {
+      const randomPastMs = Math.floor(Math.random() * 1e8);
+      return {
+        id: `hero-${index + 1}`,
+        title: titles[Math.floor(Math.random() * titles.length)],
+        time: dayjs(Date.now() - randomPastMs).format('DD MMMM YYYY HH:mm'),
+        imageUrl: `https://picsum.photos/seed/${Math.random()}/300/200`,
+        url: `/article/${articleIds[Math.floor(Math.random() * articleIds.length)]}-${index + 1}`,
+      };
+    });
   };
 
-  const newsData = generateRandomNews(8);
+  useEffect(() => {
+    // Generate client-only to avoid SSR hydration mismatches
+    setNewsData(generateRandomNews(8));
+  }, []);
 
   const onChange = (currentSlide: number) => {
     console.log(currentSlide);
@@ -93,7 +95,6 @@ export default function Hero() {
       title: "У Львові запрацював сучасний центр реабілітації для онкопацієнтів",// Пейзаж
     },
   ];
-
 
   const contentStyle: React.CSSProperties = {
     margin: 0,

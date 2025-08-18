@@ -1,0 +1,223 @@
+.richTextEditor {
+  width: 100%;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  padding: 8px;
+  background: #f9fafb;
+  border: 1px solid #d1d5db;
+  border-bottom: none;
+  border-radius: 8px 8px 0 0;
+}
+
+.toolbarButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 32px;
+  height: 32px;
+  padding: 4px 8px;
+  border: 1px solid #d1d5db;
+  border-radius: 4px;
+  background: white;
+  color: #374151;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.toolbarButton:hover {
+  background: #f3f4f6;
+  border-color: #9ca3af;
+}
+
+.toolbarButton.active {
+  background: #3b82f6;
+  color: white;
+  border-color: #2563eb;
+}
+
+.toolbarDivider {
+  width: 1px;
+  height: 24px;
+  background: #d1d5db;
+  margin: 0 4px;
+}
+
+.colorPicker {
+  display: inline-flex;
+  align-items: center;
+}
+
+.colorInput {
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: 1px solid #d1d5db;
+  border-radius: 4px;
+  cursor: pointer;
+  background: none;
+}
+
+.colorInput::-webkit-color-swatch-wrapper {
+  padding: 0;
+}
+
+.colorInput::-webkit-color-swatch {
+  border: none;
+  border-radius: 3px;
+}
+
+.editorContent {
+  border: 1px solid #d1d5db;
+  border-top: none;
+  border-radius: 0 0 8px 8px;
+  padding: 16px;
+  min-height: 300px;
+  background: white;
+  transition: border-color 0.2s ease;
+}
+
+.editorContent:focus-within {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.placeholder {
+  color: #9ca3af;
+  font-style: italic;
+  pointer-events: none;
+  user-select: none;
+}
+
+/* TipTap Content Styles */
+.editorContent :global(.ProseMirror) {
+  outline: none;
+  min-height: 200px;
+}
+
+.editorContent :global(.ProseMirror p) {
+  margin: 0.5em 0;
+  line-height: 1.6;
+}
+
+.editorContent :global(.ProseMirror h1) {
+  font-size: 2em;
+  font-weight: bold;
+  margin: 0.67em 0;
+  line-height: 1.2;
+}
+
+.editorContent :global(.ProseMirror h2) {
+  font-size: 1.5em;
+  font-weight: bold;
+  margin: 0.83em 0;
+  line-height: 1.3;
+}
+
+.editorContent :global(.ProseMirror h3) {
+  font-size: 1.17em;
+  font-weight: bold;
+  margin: 1em 0;
+  line-height: 1.4;
+}
+
+.editorContent :global(.ProseMirror ul),
+.editorContent :global(.ProseMirror ol) {
+  margin: 0.5em 0;
+  padding-left: 1.5em;
+}
+
+.editorContent :global(.ProseMirror li) {
+  margin: 0.25em 0;
+}
+
+.editorContent :global(.ProseMirror blockquote) {
+  margin: 1em 0;
+  padding-left: 1em;
+  border-left: 3px solid #d1d5db;
+  color: #6b7280;
+}
+
+.editorContent :global(.ProseMirror code) {
+  background: #f3f4f6;
+  padding: 0.2em 0.4em;
+  border-radius: 3px;
+  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+  font-size: 0.9em;
+}
+
+.editorContent :global(.ProseMirror pre) {
+  background: #1f2937;
+  color: #f9fafb;
+  padding: 1em;
+  border-radius: 6px;
+  overflow-x: auto;
+  margin: 1em 0;
+}
+
+.editorContent :global(.ProseMirror pre code) {
+  background: none;
+  padding: 0;
+  color: inherit;
+}
+
+.editorContent :global(.ProseMirror a) {
+  color: #3b82f6;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.editorContent :global(.ProseMirror a:hover) {
+  color: #2563eb;
+}
+
+.editorContent :global(.ProseMirror img) {
+  max-width: 100%;
+  height: auto;
+  border-radius: 4px;
+  margin: 0.5em 0;
+}
+
+.editorContent :global(.ProseMirror .is-editor-empty:first-child::before) {
+  color: #9ca3af;
+  content: attr(data-placeholder);
+  float: left;
+  height: 0;
+  pointer-events: none;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .toolbar {
+    padding: 6px;
+    gap: 2px;
+  }
+  
+  .toolbarButton {
+    min-width: 28px;
+    height: 28px;
+    font-size: 12px;
+  }
+  
+  .editorContent {
+    padding: 12px;
+    min-height: 250px;
+  }
+}
+
+@media (max-width: 480px) {
+  .toolbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .toolbarButton {
+    justify-content: flex-start;
+    text-align: left;
+  }
+}
