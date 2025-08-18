@@ -4,10 +4,11 @@ import * as path from 'path';
 
 // Load environment variables from multiple possible locations
 dotenv.config({ path: '.env.local' });
+dotenv.config({ path: '.env.production' });
 dotenv.config({ path: '.env' });
 dotenv.config({ path: path.join(process.cwd(), '.env.local') });
+dotenv.config({ path: path.join(process.cwd(), '.env.production') });
 dotenv.config({ path: path.join(process.cwd(), '.env') });
-
 
 // Database configuration with fallbacks
 const dbConfig = {
@@ -19,6 +20,14 @@ const dbConfig = {
   waitForConnections: true,
   connectionLimit: 10,
   queueLimit: 0,
+  // Add SSL configuration for remote connections (only if server supports it)
+  ssl: process.env.DB_HOST !== '127.0.0.1' && process.env.DB_HOST !== 'localhost' ? {
+    rejectUnauthorized: false,
+    // Allow fallback to non-SSL if server doesn't support it
+    minVersion: 'TLSv1.2'
+  } : undefined,
+  // Add connection timeout for remote connections
+  connectTimeout: process.env.DB_HOST !== '127.0.0.1' && process.env.DB_HOST !== 'localhost' ? 60000 : 10000,
 };
 
 
