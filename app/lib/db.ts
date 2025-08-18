@@ -1,12 +1,24 @@
 import mysql from 'mysql2/promise';
 import * as dotenv from 'dotenv';
+import * as path from 'path';
 
-// Завантажує .env при старті процеса
-dotenv.config();
-console.log('DB_PASSWORD:', process.env.DB_PASSWORD ? 'SET' : 'MISSING');
-console.log('process:', process.env);
+// Load environment variables from multiple possible locations
+dotenv.config({ path: '.env.local' });
+dotenv.config({ path: '.env' });
+dotenv.config({ path: path.join(process.cwd(), '.env.local') });
+dotenv.config({ path: path.join(process.cwd(), '.env') });
 
-// Database configuration
+// Debug environment variables
+console.log('=== Database Environment Debug ===');
+console.log('Current working directory:', process.cwd());
+console.log('DB_HOST:', process.env.DB_HOST || 'NOT SET');
+console.log('DB_USER:', process.env.DB_USER || 'NOT SET');
+console.log('DB_PASSWORD:', process.env.DB_PASSWORD ? 'SET (' + process.env.DB_PASSWORD.substring(0, 3) + '...)' : 'MISSING');
+console.log('DB_NAME:', process.env.DB_NAME || 'NOT SET');
+console.log('DB_PORT:', process.env.DB_PORT || 'NOT SET');
+console.log('NODE_ENV:', process.env.NODE_ENV || 'NOT SET');
+
+// Database configuration with fallbacks
 const dbConfig = {
   host: process.env.DB_HOST || '127.0.0.1',
   user: process.env.DB_USER || 'root',
@@ -17,6 +29,14 @@ const dbConfig = {
   connectionLimit: 10,
   queueLimit: 0,
 };
+
+console.log('Final DB Config:', {
+  host: dbConfig.host,
+  user: dbConfig.user,
+  database: dbConfig.database,
+  port: dbConfig.port,
+  passwordSet: !!dbConfig.password
+});
 
 // Create connection pool
 const pool = mysql.createPool(dbConfig);
