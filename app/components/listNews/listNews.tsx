@@ -5,7 +5,6 @@ import Image from "next/image";
 
 import {AccentSquare, ViewAllButton} from "@/app/shared";
 import arrowRight from "@/assets/icons/arrowRight.svg";
-import settings from "@/assets/icons/settingsIcon.svg";
 
 import styles from "./listNews.module.scss";
 
@@ -23,7 +22,6 @@ type NewsListProps = {
   widthPercent?: number;
   title?: string;
   arrowRightIcon?: boolean;
-  settingsIcon?: boolean;
   showMoreButton?: boolean;
   moreButtonUrl?: string;
   mobileLayout?: 'column' | 'horizontal'; // Новий пропс для контролю мобільного відображення
@@ -35,7 +33,6 @@ export default function NewsList({
    widthPercent = 100,
    title,
    arrowRightIcon = false,
-    settingsIcon = false,
    showMoreButton = false,
    moreButtonUrl = "#",
    mobileLayout = 'column', // За замовчуванням - колонка
@@ -76,14 +73,6 @@ export default function NewsList({
               width={10}
               height={8}
             />
-          </span>}
-          {settingsIcon && <span className={styles.titleIcon}>
-              <Image
-                  src={settings}
-                  alt={'Settings'}
-                  width={18}
-                  height={18}
-              />
           </span>}
         </div>
       )}

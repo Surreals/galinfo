@@ -2,13 +2,13 @@
 
 import { AllNews, CategoryNews, ColumnNews, Hero, ArticleLink } from "@/app/components";
 import { useHomePageData } from "@/app/hooks/useHomePageData";
-import { useMobileContext } from "@/app/contexts/MobileContext";
+import { useIsMobile } from "@/app/hooks/useIsMobile";
 import styles from "./page.module.css";
 
 
 export default function HomePage() {
   const { data, loading, error } = useHomePageData();
-  const { isMobile } = useMobileContext();
+  const isMobile = useIsMobile();
 
   if (loading) {
     console.log('Loading...');
@@ -25,22 +25,20 @@ export default function HomePage() {
   return (
     <>
       <div className={styles.container}>
-
+      {!isMobile ? (
+        <>
           <Hero />
           <ColumnNews
-          isMobile={isMobile}
             mobileLayout="horizontal"
             newsQuantity={4}
             smallImg={true}
             category="ПОЛІТИКА"
             secondCategory="ВІЙНА З РОСІЄЮ"
-            settingsIcon
             isHomePage={true}
             showNewsList={true}
           />
           <CategoryNews mobileLayout="horizontal" category="ЕВРОПА"/>
           <ColumnNews
-          isMobile={isMobile}
             mobileLayout="horizontal"
             newsQuantity={5}
             category="ЗДОРОВʼЯ"
@@ -49,9 +47,8 @@ export default function HomePage() {
             showNewsList={true}
             isHomePage={true}
           />
-          <CategoryNews isMobile={isMobile} mobileLayout="horizontal" category="ЗДОРОВ'Я"/>
+          <CategoryNews mobileLayout="horizontal" category="ІСТОРІЯ"/>
           <ColumnNews
-          isMobile={isMobile}
             mobileLayout="horizontal"
             newsQuantity={5}
             category="КРИМІНАЛ"
@@ -59,10 +56,48 @@ export default function HomePage() {
             arrowRightIcon
             isHomePage={true}
           />
-          <CategoryNews isMobile={isMobile} mobileLayout="horizontal" category="КУЛЬТУРА"/>
+          <CategoryNews category="КУЛЬТУРА"/>
           <AllNews/>
-       
-      
+        </>
+      ) : (
+        // Десктопна версія - збільшена кількість новин
+        <>
+          <Hero />
+          <ColumnNews
+            isMobile={isMobile}
+            mobileLayout="horizontal"
+            newsQuantity={4}
+            smallImg={true}
+            category="ПОЛІТИКА"
+            secondCategory="ВІЙНА З РОСІЄЮ"
+            isHomePage={true}
+            showNewsList={true}
+          />
+          <CategoryNews mobileLayout="horizontal" category="ЕВРОПА"/>
+          <ColumnNews
+            isMobile={isMobile}
+            mobileLayout="horizontal"
+            newsQuantity={5}
+            category="ЗДОРОВʼЯ"
+            secondCategory="СУСПІЛЬСТВО"
+            arrowRightIcon
+            showNewsList={true}
+            isHomePage={true}
+          />
+          <CategoryNews mobileLayout="horizontal" category="ІСТОРІЯ"/>
+          <ColumnNews
+            isMobile={isMobile}
+            mobileLayout="horizontal"
+            newsQuantity={5}
+            category="КРИМІНАЛ"
+            secondCategory="СПОРТ"
+            arrowRightIcon
+            isHomePage={true}
+          />
+          <CategoryNews mobileLayout="horizontal" category="КУЛЬТУРА"/>
+          <AllNews/>
+        </>
+      )}
       </div>
     </>
   );

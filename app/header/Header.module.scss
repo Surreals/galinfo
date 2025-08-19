@@ -1,7 +1,13 @@
 .headerMain {
-  box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
   background-color: var(--color-white);
   position: relative;
+  font-family: var(--font-rubik), sans-serif;
+
+  .secondaryHeaderBox {
+    width: 100%;
+    border-bottom: 1px solid var(--color-tertiary);
+    border-top: 1px solid var(--color-tertiary);
+  }
 
   .radioBox {
     display: none;
@@ -25,7 +31,7 @@
     }
 
     .sectionTitle {
-        font-weight: 600;
+        font-weight: 500;
         font-size: 28px;
         letter-spacing: 0.15em;
         margin-bottom: 4px;
@@ -77,7 +83,6 @@
       background-color: var(--color-accent);
       padding: 8px 12px;
       height: 44px;
-      box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
       border-radius: 8px;
       cursor: pointer;
       transition: background-color 0.2s ease;
@@ -130,7 +135,7 @@
       .sityText {
         text-align: center;
         color: var(--color-primary);
-        font-weight: 600;
+        font-weight: 500;
         font-size: 16px;
       }
     }
@@ -143,6 +148,8 @@
   display: flex;
   align-items: center;
   gap: 10px;
+  max-width: 1440px;
+  margin: 0 auto;
   justify-content: space-between;
 
   .burgerMenuContainer {
@@ -159,7 +166,6 @@
     background-color: var(--color-accent);
     padding: 8px 12px;
     height: 44px;
-    box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
     border-radius: 8px;
     cursor: pointer;
     transition: background-color 0.2s ease;
@@ -200,7 +206,7 @@
       padding: 4px;
       cursor: pointer;
       font-size: 14px;
-      font-weight: 600;
+      font-weight: 500;
       transition: color 0.2s ease;
     }
 
@@ -218,11 +224,11 @@
 }
 
 .secondaryHeader {
-  border-bottom: 1px solid var(--color-tertiary);
-  border-top: 1px solid var(--color-tertiary);
   padding: 0 80px;
   display: flex;
   align-items: center;
+  max-width: 1440px;
+  margin: 0 auto;
 
 
   .text {
@@ -287,7 +293,7 @@
 
     .boltText {
       font-size: 14px;
-      font-weight: 700;
+      font-weight: 500;
       margin: 0;
     }
 
@@ -295,7 +301,7 @@
       -webkit-background-clip: text;
       background-clip: text;
       display: inline-block;
-      font-weight: 700;
+      font-weight: 500;
       font-size: 14px;
       margin: 0;
     }
@@ -305,7 +311,7 @@
       -webkit-background-clip: text;
       background-clip: text;
       display: inline-block;
-      font-weight: 700;
+      font-weight: 500;
       font-size: 14px;
       margin: 0;
     }
@@ -328,6 +334,8 @@
       align-items: center;
       justify-content: space-between;
       display: flex;
+      border-bottom: 1px solid var(--color-tertiary);
+
 
       .exchangeBox {
         display: flex;
@@ -343,7 +351,7 @@
           .exchangeType {
             text-align: center;
             color: var(--color-primary);
-            font-weight: 600;
+            font-weight: 500;
             font-size: 16px;
           }
 
