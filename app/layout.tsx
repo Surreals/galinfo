@@ -4,6 +4,7 @@ import { ConfigProvider } from "antd";
 
 import Footer from "@/app/footer/Footer";
 import Header from "@/app/header/Header";
+import {MobileProvider} from "@/app/contexts/MobileContext";
 
 import "./globals.css";
 import "antd/dist/reset.css";
@@ -56,19 +57,22 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-    <body
-      className={`${openSans.variable} ${rubik.variable} antialiased`}
-      suppressHydrationWarning={true}
-    >
-    <ConfigProvider
-      theme={customTheme}
-    >
-      <Header/>
-      {children}
-      <Footer/>
-    </ConfigProvider>
-    </body>
-    </html>
+    <MobileProvider>
+      <html lang="en">
+      <body
+        className={`${openSans.variable} ${rubik.variable} antialiased`}
+        suppressHydrationWarning={true}
+      >
+      <ConfigProvider
+        theme={customTheme}
+      >
+        <Header/>
+        {children}
+        <Footer/>
+      </ConfigProvider>
+      </body>
+      </html>
+    </MobileProvider>
+
   );
 }
