@@ -104,6 +104,10 @@ export default function AdminPage() {
               <span className={styles.quickActionIcon}>🗄️</span>
               <span>Тест БД</span>
             </Link>
+            <Link href="/admin/test-homepage-api" className={styles.quickAction}>
+              <span className={styles.quickActionIcon}>🔌</span>
+              <span>Тест API</span>
+            </Link>
           </div>
         </div>
       </div>
