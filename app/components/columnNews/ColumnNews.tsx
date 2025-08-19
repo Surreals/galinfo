@@ -5,6 +5,7 @@ import NewsList from '../listNews/listNews';
 import styles from './ColumnNews.module.css';
 import arrowRight from "@/assets/icons/arrowRight.svg";
 import adBannerIndfomo from '@/assets/images/Ad Banner white.png';
+import { useState, useEffect } from 'react';
 
 // Інтерфейси для типізації даних
 export interface ColumnNewsItem {
@@ -32,6 +33,7 @@ export interface ColumnNewsProps {
   hideHeader?: boolean;
   className?: string; // Додаємо можливість передавати додатковий CSS клас
   isMobile?: boolean;
+  mobileLayout?: 'column' | 'horizontal'; // Новий пропс для контролю мобільного відображення
 }
 
 export default function ColumnNews({ 
@@ -47,8 +49,28 @@ export default function ColumnNews({
   showNewsList = true,
   hideHeader = false,
   className = "",
-  isMobile = false
+  isMobile = false,
+  mobileLayout = 'column' // За замовчуванням - колонка
 }: ColumnNewsProps) {
+  // Визначаємо, чи потрібно показувати горизонтальне відображення
+  // Горизонтальне відображення застосовується тільки на мобільних пристроях
+  const [isMobileDevice, setIsMobileDevice] = useState(false);
+  
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobileDevice(window.innerWidth < 1000);
+    };
+
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  // Горизонтальне відображення застосовується на мобільних пристроях
+  // коли mobileLayout === 'horizontal'
+  const shouldShowHorizontal = isMobileDevice && mobileLayout === 'horizontal';
+
   // Мокові дані для прикладу (будуть замінені на реальні дані)
   const mockNews: ColumnNewsItem[] = [
     {
@@ -158,9 +180,15 @@ export default function ColumnNews({
 
         {/* Основний контент з новинами */}
         <div className={styles.mainContent}>
-          {/* Список новин у колонці */}
-          <div className={styles.newsList}>
-          {!hideHeader && (
+                  {/* Список новин у колонці */}
+            {!hideHeader && isMobile && (
+            <div className={styles.header}>
+              <AccentSquare className={styles.titleAccent}/>
+              <h2 className={styles.title}>{category}</h2>
+            </div>
+            )}
+        <div className={`${styles.newsList} ${shouldShowHorizontal ? styles.newsListHorizontal : ''}`}>
+        {!hideHeader && !isMobile && (
             <div className={styles.header}>
               <AccentSquare className={styles.titleAccent}/>
               <h2 className={styles.title}>{category}</h2>
@@ -169,7 +197,7 @@ export default function ColumnNews({
             {isLoading ? (
               // Скелетон для завантаження
               Array.from({length: 5}).map((_, index) => (
-                <div key={index} className={styles.newsItem}>
+                <div key={index} className={`${styles.newsItem} ${shouldShowHorizontal ? styles.newsItemHorizontal : ''}`}>
                   <div className={smallImg ? styles.skeletonImageSmall : styles.skeletonImage}></div>
                   <div className={smallImg ? styles.skeletonContentSmall : styles.skeletonContent}>
                     <div className={smallImg ? styles.skeletonTitleSmall : styles.skeletonTitle}></div>
@@ -181,7 +209,7 @@ export default function ColumnNews({
             ) : (
               // Відображення новин
               displayNews.map((item) => (
-                <article key={item.id} className={styles.newsItem}>
+                <article key={item.id} className={`${styles.newsItem} ${shouldShowHorizontal ? styles.newsItemHorizontal : ''}`}>
                   <Link href={item.url} className={styles.newsLink}>
                     <div className={smallImg ? styles.imageContainerSmall : styles.imageContainer}>
                       <Image
@@ -209,8 +237,9 @@ export default function ColumnNews({
           {showNewsList && (
             <div className={styles.listNewsContainer}>
               <NewsList
-                settingsIcon={settingsIcon}
-                arrowRightIcon={arrowRightIcon}
+                  mobileLayout={mobileLayout}
+                  settingsIcon={settingsIcon}
+                  arrowRightIcon={arrowRightIcon}
                   title={secondCategory}
                   data={newsData}
                   showImagesAt={[0, 1]}

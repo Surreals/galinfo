@@ -29,7 +29,7 @@ export default function HomePage() {
         <>
           <Hero />
           <ColumnNews
-          // mobileLayout="horizontal"
+            mobileLayout="horizontal"
             newsQuantity={4}
             smallImg={true}
             category="ПОЛІТИКА"
@@ -40,7 +40,7 @@ export default function HomePage() {
           />
           <CategoryNews mobileLayout="horizontal" category="ЕВРОПА"/>
           <ColumnNews
-          //mobileLayout="horizontal"
+            mobileLayout="horizontal"
             newsQuantity={5}
             category="ЗДОРОВʼЯ"
             secondCategory="СУСПІЛЬСТВО"
@@ -50,7 +50,7 @@ export default function HomePage() {
           />
           <CategoryNews mobileLayout="horizontal" category="ЗДОРОВ'Я"/>
           <ColumnNews
-          //mobileLayout="horizontal"
+            mobileLayout="horizontal"
             newsQuantity={5}
             category="КРИМІНАЛ"
             secondCategory="СПОРТ"
@@ -66,6 +66,7 @@ export default function HomePage() {
           <Hero />
           <ColumnNews
             isMobile={isMobile}
+            mobileLayout="horizontal"
             newsQuantity={4}
             smallImg={true}
             category="ПОЛІТИКА"
@@ -76,7 +77,8 @@ export default function HomePage() {
           />
           <CategoryNews mobileLayout="horizontal" category="ЕВРОПА"/>
           <ColumnNews
-          isMobile={isMobile}
+            isMobile={isMobile}
+            mobileLayout="horizontal"
             newsQuantity={5}
             category="ЗДОРОВʼЯ"
             secondCategory="СУСПІЛЬСТВО"
@@ -86,14 +88,15 @@ export default function HomePage() {
           />
           <CategoryNews mobileLayout="horizontal" category="ЗДОРОВ'Я"/>
           <ColumnNews
-          isMobile={isMobile}
+            isMobile={isMobile}
+            mobileLayout="horizontal"
             newsQuantity={5}
             category="КРИМІНАЛ"
             secondCategory="СПОРТ"
             arrowRightIcon
             isHomePage={true}
           />
-          <CategoryNews category="КУЛЬТУРА"/>
+          <CategoryNews mobileLayout="horizontal" category="КУЛЬТУРА"/>
           <AllNews/>
         </>
       )}
