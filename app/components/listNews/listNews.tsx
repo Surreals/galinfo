@@ -26,6 +26,7 @@ type NewsListProps = {
   settingsIcon?: boolean;
   showMoreButton?: boolean;
   moreButtonUrl?: string;
+  mobileLayout?: 'column' | 'horizontal'; // Новий пропс для контролю мобільного відображення
 };
 
 export default function NewsList({
@@ -37,6 +38,7 @@ export default function NewsList({
     settingsIcon = false,
    showMoreButton = false,
    moreButtonUrl = "#",
+   mobileLayout = 'column', // За замовчуванням - колонка
  }: NewsListProps) {
 
   const [isMobile, setIsMobile] = useState(false);
@@ -55,6 +57,9 @@ export default function NewsList({
       window.removeEventListener("resize", handleResize);
     };
   }, []);
+
+  // Визначаємо, чи потрібно показувати горизонтальне відображення
+  const shouldShowHorizontal = isMobile && mobileLayout === 'horizontal';
 
   return (
     <div style={{ width: `${widthPercent}%` }} className={styles.container}>
@@ -83,12 +88,13 @@ export default function NewsList({
         </div>
       )}
 
-      <ul className={styles.list}>
+      <ul className={`${styles.list} ${shouldShowHorizontal ? styles.listHorizontal : ''}`}>
         {data.map((item, index) => (
-          <li key={item.id || index} className={styles.item}>
+          <li key={item.id || index} className={`${styles.item} ${shouldShowHorizontal ? styles.itemHorizontal : ''}`}>
             {item.url ? (
-              <a href={item.url} className={styles.itemLink}>
-                {showImagesAt.includes(index) && item.imageUrl && (
+              <a href={item.url} className={`${styles.itemLink} ${shouldShowHorizontal ? styles.itemLinkHorizontal : ''}`}>
+                {/* Показуємо зображення на мобільних для кожної новини при горизонтальному відображенні, або за параметром showImagesAt */}
+                {(shouldShowHorizontal || showImagesAt.includes(index)) && item.imageUrl && (
                   <img
                     src={item.imageUrl}
                     alt={item.title}
@@ -102,7 +108,8 @@ export default function NewsList({
               </a>
             ) : (
               <>
-                {showImagesAt.includes(index) && item.imageUrl && (
+                {/* Показуємо зображення на мобільних для кожної новини при горизонтальному відображенні, або за параметром showImagesAt */}
+                {(shouldShowHorizontal || showImagesAt.includes(index)) && item.imageUrl && (
                   <img
                     src={item.imageUrl}
                     alt={item.title}

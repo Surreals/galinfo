@@ -78,6 +78,10 @@
   margin-bottom: 16px;
 }
 
+.image:hover {
+  transform: scale(1.02);
+}
+
 .textBlock {
   display: flex;
   flex-direction: column;
@@ -133,5 +137,75 @@
 
   &:hover {
     background-color: #d1d5db;
+  }
+}
+
+/* Горизонтальне відображення для мобільних пристроїв */
+.listHorizontal {
+  flex-direction: row !important;
+  overflow-x: auto !important;
+  overflow-y: hidden !important;
+  scroll-snap-type: x mandatory !important;
+  gap: 20px !important;
+  padding-bottom: 16px !important;
+  -webkit-overflow-scrolling: touch !important;
+  /* Приховуємо скроллбар для кращого UX */
+  scrollbar-width: none !important; /* Firefox */
+  -ms-overflow-style: none !important; /* IE and Edge */
+  /* Плавна анімація скролу */
+  scroll-behavior: smooth !important;
+}
+
+/* Приховуємо скроллбар для WebKit браузерів */
+.listHorizontal::-webkit-scrollbar {
+  display: none !important;
+}
+
+.itemHorizontal {
+  flex: 0 0 auto !important;
+  width: 280px !important;
+  scroll-snap-align: start !important;
+  transition: transform 0.3s ease !important;
+}
+
+.itemHorizontal:hover {
+  transform: translateY(-2px) !important;
+}
+
+.itemLinkHorizontal {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 12px !important;
+}
+
+/* Стилі для фото при горизонтальному відображенні */
+.itemHorizontal .image {
+  width: 280px !important;
+  height: 180px !important;
+  object-fit: cover !important;
+  border-radius: 8px !important;
+  flex-shrink: 0 !important;
+}
+
+/* Медіа-запити для мобільних пристроїв */
+@media (max-width: 1000px) {
+  .itemHorizontal {
+    width: 260px !important;
+  }
+  
+  .itemHorizontal .image {
+    width: 260px !important;
+    height: 160px !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .itemHorizontal {
+    width: 240px !important;
+  }
+  
+  .itemHorizontal .image {
+    width: 240px !important;
+    height: 140px !important;
   }
 }

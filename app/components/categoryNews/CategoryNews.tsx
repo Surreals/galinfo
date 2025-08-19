@@ -1,7 +1,10 @@
+'use client';
+
 import Link from 'next/link';
 import Image from 'next/image';
 import { AccentSquare, ViewAllButton } from '@/app/shared';
 import styles from './CategoryNews.module.css';
+import { useState, useEffect } from 'react';
 
 // Інтерфейси для типізації даних
 export interface CategoryNewsItem {
@@ -21,6 +24,8 @@ export interface CategoryNewsProps {
   isLoading?: boolean;
   hideHeader?: boolean;
   className?: string; // Додаємо можливість передавати додатковий CSS клас
+  height?: number;
+  mobileLayout?: 'column' | 'horizontal'; // Новий пропс для контролю мобільного відображення
 }
 
 export default function CategoryNews({ 
@@ -28,8 +33,26 @@ export default function CategoryNews({
   news = [], 
   isLoading = false,
   hideHeader = false,
-  className = ""
+  height = 200,
+  className = "",
+  mobileLayout = 'column' // За замовчуванням - колонка
 }: CategoryNewsProps) {
+  // Визначаємо, чи потрібно показувати горизонтальне відображення
+  // Горизонтальне відображення застосовується тільки на мобільних пристроях
+  const [isMobile, setIsMobile] = useState(false);
+  
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 1000);
+    };
+
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  const shouldShowHorizontal = isMobile && mobileLayout === 'horizontal';
   // Мокові дані для прикладу (будуть замінені на реальні дані)
   const mockNews: CategoryNewsItem[] = [
     {
@@ -124,11 +147,11 @@ export default function CategoryNews({
         )}
 
         {/* Сітка новин */}
-        <div className={styles.newsGrid}>
+        <div className={`${styles.newsGrid} ${shouldShowHorizontal ? styles.newsGridHorizontal : ''}`}>
           {isLoading ? (
             // Скелетон для завантаження
             Array.from({ length: 8 }).map((_, index) => (
-              <div key={index} className={styles.newsItem}>
+              <div key={index} className={`${styles.newsItem} ${shouldShowHorizontal ? styles.newsItemHorizontal : ''}`}>
                 <div className={styles.skeletonImage}></div>
                 <div className={styles.skeletonTitle}></div>
                 <div className={styles.skeletonDate}></div>
@@ -137,14 +160,17 @@ export default function CategoryNews({
           ) : (
             // Відображення новин
             displayNews.map((item) => (
-              <article key={item.id} className={styles.newsItem}>
+              <article key={item.id} className={`${styles.newsItem} ${shouldShowHorizontal ? styles.newsItemHorizontal : ''}`}>
                 <Link href={item.url} className={styles.newsLink}>
-                  <div className={styles.imageContainer}>
+                  <div style={{
+                    height: height,
+                  }} 
+                  className={styles.imageContainer}>
                     <Image 
                       src={item.imageUrl} 
                       alt={item.imageAlt}
                       width={300}
-                      height={200}
+                      height={height}
                       className={styles.newsImage}
                     />
                     {item.isImportant && (

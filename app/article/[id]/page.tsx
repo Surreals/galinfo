@@ -366,7 +366,8 @@ export default async function ArticlePage({ params, searchParams }: ArticlePageP
           <AdBanner className={styles.adBannerStandard} />
           
           {/* Категорія новин - без заголовка */}
-          <CategoryNews 
+          <CategoryNews
+            height={133} 
             category="ЕКОНОМІКА" 
             hideHeader={true} 
             className={styles.categoryNewsStandard}
@@ -381,7 +382,7 @@ export default async function ArticlePage({ params, searchParams }: ArticlePageP
               alt="banner3" 
               width={600} 
               height={240} 
-              className={styles.fomoLogo}
+              className={styles.banner3}
               priority={false}
             />
           </div>
@@ -393,6 +394,7 @@ export default async function ArticlePage({ params, searchParams }: ArticlePageP
           
           <div className={styles.newsColumn}>
             <NewsList
+              arrowRightIcon
               title="ПОЛІТИКА"
               data={newsData1}
               showImagesAt={[0, 1]}

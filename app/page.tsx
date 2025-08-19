@@ -23,11 +23,9 @@ export default function HomePage() {
     <>
       <div className={styles.container}>
         <Hero />
-        
-
-
 
         <ColumnNews
+        mobileLayout="horizontal"
           newsQuantity={4}
           smallImg={true}
           category="ПОЛІТИКА"
@@ -36,18 +34,20 @@ export default function HomePage() {
           isHomePage={true}
           showNewsList={true}
         />
-        <CategoryNews category="ЕВРОПА"/>
+        <CategoryNews mobileLayout="horizontal" category="ЕВРОПА"/>
         <ColumnNews
-          newsQuantity={8}
+        mobileLayout="horizontal"
+          newsQuantity={5}
           category="ЗДОРОВʼЯ"
           secondCategory="СУСПІЛЬСТВО"
           arrowRightIcon
           showNewsList={true}
           isHomePage={true}
         />
-        <CategoryNews category="ЗДОРОВ'Я"/>
+        <CategoryNews mobileLayout="horizontal" category="ЗДОРОВ'Я"/>
         <ColumnNews
-          newsQuantity={8}
+        mobileLayout="horizontal"
+          newsQuantity={5}
           category="КРИМІНАЛ"
           secondCategory="СПОРТ"
           arrowRightIcon

@@ -2,6 +2,7 @@
 
 import { useRef, useEffect, useState } from "react";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { Carousel } from 'antd';
 import NewsList from "@/app/components/listNews";
 import CurrencyRates from "./CurrencyRates";
@@ -19,6 +20,7 @@ dayjs.locale('uk');
 
 export default function Hero() {
   const carouselRef = useRef<any>(null);
+  const router = useRouter();
 
   const [isMobile, setIsMobile] = useState(false);
   const [newsData, setNewsData] = useState<Array<{ id: string; title: string; time: string; imageUrl?: string; url: string }>>([]);
@@ -77,22 +79,30 @@ export default function Hero() {
     console.log(currentSlide);
   };
 
+  const handleCarouselClick = (url: string) => {
+    router.push(url);
+  };
+
   const carouselItems = [
     {
       src: "https://images.pexels.com/photos/417074/pexels-photo-417074.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1", // Місто
       title: "У Львові запрацював сучасний центр реабілітації для онкопацієнтів",
+      url: "/article/lviv-rehabilitation-center-hero",
     },
     {
       src: "https://images.pexels.com/photos/1103970/pexels-photo-1103970.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
-      title: "У Львові запрацював сучасний центр реабілітації для онкопацієнтів",// Природа
+      title: "Новий парк відкрили у центрі міста з унікальними зонами відпочинку",
+      url: "/article/lviv-city-park-hero",
     },
     {
       src: "https://images.pexels.com/photos/1679646/pexels-photo-1679646.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
-      title: "У Львові запрацював сучасний центр реабілітації для онкопацієнтів",// Архітектура
+      title: "Архітектурний проект: реставрація історичних будівель Львова",
+      url: "/article/lviv-architecture-restoration-hero",
     },
     {
       src: "https://images.pexels.com/photos/2356040/pexels-photo-2356040.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
-      title: "У Львові запрацював сучасний центр реабілітації для онкопацієнтів",// Пейзаж
+      title: "Екологічна ініціатива: створення зелених зон у місті",
+      url: "/article/lviv-eco-initiative-hero",
     },
   ];
 
@@ -117,10 +127,17 @@ export default function Hero() {
             >
               {carouselItems.map((item, index) => (
                 <div key={index} className={styles.carouselItem}>
-                  <div>
+                  <div 
+                    onClick={() => handleCarouselClick(item.url)}
+                    style={{ cursor: 'pointer' }}
+                  >
                     <img alt={'img'} src={item.src} className={styles.heroImg}/>
                   </div>
-                  <div className={styles.carouselContent}>
+                  <div 
+                    className={styles.carouselContent}
+                    onClick={() => handleCarouselClick(item.url)}
+                    style={{ cursor: 'pointer' }}
+                  >
                     <p className={styles.carouselTime}>15 хвилин тому</p>
                     <h3 className={styles.carouselTitle}>{item.title}</h3>
                   </div>
@@ -175,6 +192,7 @@ export default function Hero() {
         />
 
         <NewsList
+        mobileLayout="horizontal"
           data={newsData}
           showImagesAt={[3]}
           widthPercent={isMobile ? 100 : 25}

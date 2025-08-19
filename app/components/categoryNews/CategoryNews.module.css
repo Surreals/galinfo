@@ -46,10 +46,57 @@
   max-width: 1440px;
 }
 
+/* Горизонтальне відображення новин для мобільних пристроїв */
+.newsGridHorizontal {
+  display: flex !important;
+  flex-direction: row !important;
+  overflow-x: auto !important;
+  overflow-y: hidden !important;
+  scroll-snap-type: x mandatory !important;
+  gap: 20px !important;
+  padding-bottom: 16px !important;
+  -webkit-overflow-scrolling: touch !important;
+  /* Приховуємо скроллбар для кращого UX */
+  scrollbar-width: none !important; /* Firefox */
+  -ms-overflow-style: none !important; /* IE and Edge */
+  /* Плавна анімація скролу */
+  scroll-behavior: smooth !important;
+}
+
+/* Приховуємо скроллбар для WebKit браузерів */
+.newsGridHorizontal::-webkit-scrollbar {
+  display: none !important;
+}
+
 .newsItem {
   display: flex;
   flex-direction: column;
   width: 100%;
+}
+
+/* Стилі для горизонтального відображення елементів */
+.newsItemHorizontal {
+  flex: 0 0 auto !important;
+  width: 300px !important;
+  scroll-snap-align: start !important;
+  transition: transform 0.3s ease !important;
+}
+
+.newsItemHorizontal:hover {
+  transform: translateY(-2px) !important;
+}
+
+/* Стилі для фото при горизонтальному відображенні */
+.newsItemHorizontal .imageContainer {
+  width: 300px !important;
+  height: 200px !important;
+  flex-shrink: 0 !important;
+}
+
+.newsItemHorizontal .newsImage {
+  width: 300px !important;
+  height: 200px !important;
+  object-fit: cover !important;
 }
 
 .newsLink {
@@ -75,7 +122,6 @@
 .imageContainer {
   position: relative;
   width: 100%;
-  height: 200px;
   margin-bottom: 12px;
   border-radius: 8px;
   overflow: hidden;
@@ -284,5 +330,48 @@
   .importantTag {
     font-size: 9px;
     padding: 2px 5px;
+  }
+} 
+
+/* Медіа-запити для мобільних пристроїв */
+@media (max-width: 1000px) {
+  .newsGridHorizontal {
+    gap: 16px !important;
+    padding-bottom: 12px !important;
+  }
+
+  .newsItemHorizontal {
+    width: 280px !important;
+  }
+  
+  .newsItemHorizontal .imageContainer {
+    width: 280px !important;
+    height: 180px !important;
+  }
+  
+  .newsItemHorizontal .newsImage {
+    width: 280px !important;
+    height: 180px !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .newsGridHorizontal {
+    gap: 12px !important;
+    padding-bottom: 8px !important;
+  }
+
+  .newsItemHorizontal {
+    width: 240px !important;
+  }
+  
+  .newsItemHorizontal .imageContainer {
+    width: 240px !important;
+    height: 160px !important;
+  }
+  
+  .newsItemHorizontal .newsImage {
+    width: 240px !important;
+    height: 160px !important;
   }
 } 

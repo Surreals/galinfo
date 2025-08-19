@@ -19,10 +19,9 @@
   align-items: center;
 }
 
-.separator {
+.arrow {
   margin: 0 8px;
-  color: #9ca3af;
-  font-weight: 400;
+  flex-shrink: 0;
 }
 
 .breadcrumbLink {
@@ -55,7 +54,7 @@
     font-size: 12px;
   }
   
-  .separator {
+  .arrow {
     margin: 0 6px;
   }
 }

@@ -41,8 +41,7 @@
 }
 
 .container {
-  width: 100%;
-  /* max-width: 1280px; */
+  max-width: 1440px;
   margin: 0 auto;
   padding: 48px 80px 14px 80px;
 }
@@ -68,7 +67,7 @@
 .title {
   font-family: 'Open Sans', sans-serif;
   font-weight: 600;
-  font-size: 20px;
+  font-size: 12px;
   line-height: 1.2;
   letter-spacing: 0.025em;
   height: 28px;
@@ -95,7 +94,7 @@
 .link {
   font-family: 'Open Sans', sans-serif;
   font-weight: 600;
-  font-size: 14px;
+  font-size: 12px;
   line-height: 1.2;
   letter-spacing: 0;
   display: block;
@@ -130,11 +129,8 @@
 }
 
 .bottomSection {
-  width: 100%;
-  max-width: 1440px;
-  margin: 0 auto;
-  padding: 14px 80px 48px 80px;
   text-align: center;
+  padding: 24px 0 48px 0;
 }
 
 .logo {
@@ -149,7 +145,7 @@
 }
 
 .copyright {
-  font-size: 14px;
+  font-size: 12px;
   margin-bottom: 14px;
 }
 
@@ -181,7 +177,7 @@
 }
 
 .andText {
-  font-size: 14px;
+  font-size: 12px;
   font-weight: 500;
   color: var(--color-white);
 }
@@ -218,7 +214,7 @@
 }
 
 .fomoText {
-  font-size: 14px;
+  font-size: 12px;
   font-weight: 500;
   color: var(--color-white);
 }
@@ -259,7 +255,7 @@
 }
 
 .bytcdText {
-  font-size: 14px;
+  font-size: 12px;
   font-weight: 700;
   color: var(--color-white);
 }
@@ -273,11 +269,11 @@
 /* Адаптивні стилі для різних розмірів екрану */
 @media (max-width: 1200px) {
   .container {
-    padding: 48px 40px;
+    padding: 48px 40px 14px 40px;
   }
   
   .bottomSection {
-    padding: 48px 40px;
+    padding: 14px 0 48px 0;
   }
   
   .flexContainer {
@@ -287,11 +283,11 @@
 
 @media (max-width: 1000px) {
   .container {
-    padding: 32px 20px;
+    padding: 32px 20px 14px 20px;
   }
   
   .bottomSection {
-    padding: 32px 20px;
+    padding: 14px 0 32px 0;
   }
   
   .flexContainer {
@@ -332,26 +328,28 @@
   }
 }
 
-@media (max-width: 480px) {
+@media (max-width: 768px) {
   .container {
-    padding: 24px 16px;
+    padding: 24px 16px 14px 16px;
   }
   
   .bottomSection {
-    padding: 24px 16px;
+    padding: 14px 0 24px 0;
+  }
+}
+
+@media (max-width: 480px) {
+  .container {
+    padding: 24px 12px 14px 12px;
+  }
+  
+  .bottomSection {
+    padding: 14px 0 24px 0;
   }
   
   .grid {
     grid-template-columns: 1fr;
     gap: 16px;
-  }
-  
-  .title {
-    font-size: 18px;
-  }
-  
-  .link {
-    font-size: 11px;
   }
   
   .logoImage {
@@ -366,9 +364,5 @@
   
   .fomoButton, .bytcdButton {
     padding: 8px 12px;
-  }
-  
-  .fomoText, .bytcdText, .andText {
-    font-size: 12px;
   }
 }

@@ -112,6 +112,7 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
           
           {/* Основна категорія - без заголовка */}
           <CategoryNews 
+            height={133}
             category={category.toUpperCase()} 
             hideHeader={true} 
             className={styles.categoryNewsStandard}
@@ -150,6 +151,7 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
           
           {/* Категорія новин - без заголовка */}
           <CategoryNews 
+            height={133}
             category="ЗДОРОВ'Я" 
             hideHeader={true} 
             className={styles.categoryNewsStandard}
@@ -191,7 +193,7 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
                 alt="banner3" 
                 width={600} 
                 height={240} 
-                className={styles.banner}
+                className={styles.banner3}
                 priority={false}
               />
           </div>
@@ -203,6 +205,7 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
           
           <div className={styles.newsColumn}>
             <NewsList
+            arrowRightIcon
               title="ПОЛІТИКА"
               data={newsData1}
               showImagesAt={[0, 1]}
@@ -228,6 +231,7 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
           
           <div className={styles.newsColumn}>
             <NewsList
+            arrowRightIcon
               title="ЕКОНОМІКА"
               data={newsData2}
               showImagesAt={[0, 1]}
@@ -242,6 +246,7 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
           
           <div className={styles.newsColumn}>
             <NewsList
+            arrowRightIcon
               title="СПОРТ"
               data={newsData3}
               showImagesAt={[0, 1]}
