@@ -10,7 +10,7 @@ import CurrencyRates from "@/app/components/hero/CurrencyRates";
 import WeatherWidget from "@/app/components/hero/WeatherWidget";
 import adBannerIndfomo from '@/assets/images/Ad Banner black.png';
 import banner3 from '@/assets/images/banner3.png';
-import { useIsMobile } from "@/app/hooks/useIsMobile";
+import { useMobileContext } from "@/app/contexts/MobileContext";
 
 interface CategoryPageClientProps {
   category: string;
@@ -25,20 +25,24 @@ export const CategoryPageClient: React.FC<CategoryPageClientProps> = ({
   newsData2, 
   newsData3 
 }) => {
-  const isMobile = useIsMobile();
+  const { isMobile } = useMobileContext();
 
   return (
     <>
       <div className={styles.container}>
         {/* Основний контент - ліва частина */}
         <div className={styles.mainContent}>
+          
           {/* Breadcrumbs навігація */}
+          {!isMobile &&
           <Breadcrumbs 
             items={[
               { label: 'ГОЛОВНА', href: '/' },
               { label: getCategoryTitle(category).toUpperCase() }
             ]} 
           />
+          }
+  
           
           {/* Тайтл категорії */}
           <CategoryTitle
@@ -70,6 +74,7 @@ export const CategoryPageClient: React.FC<CategoryPageClientProps> = ({
           
           {/* Колонка новин - без заголовка */}
           <ColumnNews 
+            mobileLayout="horizontal"
             newsQuantity={4} 
             smallImg={true} 
             category="ПОЛІТИКА" 
@@ -84,6 +89,7 @@ export const CategoryPageClient: React.FC<CategoryPageClientProps> = ({
           
           {/* Колонка новин - без заголовка */}
           <ColumnNews 
+            mobileLayout="horizontal"
             newsQuantity={8} 
             category="ЕВРОПА" 
             secondCategory=""
@@ -93,8 +99,45 @@ export const CategoryPageClient: React.FC<CategoryPageClientProps> = ({
           />
           
           {/* Рекламний банер */}
+          {isMobile ? <div className={styles.newsColumn}>
+            <Image 
+              src={banner3} 
+              alt="banner3" 
+              width={600} 
+              height={240} 
+              className={styles.banner3}
+              priority={false}
+            />
+          </div> :
           <AdBanner className={styles.adBannerStandard} />
-          
+        }
+        {isMobile &&
+          <div className={styles.newsColumn}>
+            <NewsList
+              mobileLayout="horizontal"
+              arrowRightIcon
+              title="ПОЛІТИКА"
+              data={newsData1}
+              showImagesAt={[0, 1]}
+              showMoreButton={true}
+              moreButtonUrl="/category/politics"
+              widthPercent={100}
+            />
+          </div>
+        }
+
+        {isMobile && <div className={styles.newsColumn}>
+        <div className={styles.rightSeparator}></div>
+            <Image 
+              src={adBannerIndfomo} 
+              alt="IN-FOMO Banner" 
+              width={600} 
+              height={240} 
+              className={styles.fomoLogo}
+              priority={false}
+            />
+          </div>
+        }
           {/* Категорія новин - без заголовка */}
           <CategoryNews 
             height={133}
@@ -104,28 +147,31 @@ export const CategoryPageClient: React.FC<CategoryPageClientProps> = ({
           />
           
           {/* Колонка новин - без заголовка */}
-          <ColumnNews 
-            newsQuantity={8} 
-            category="КРИМІНАЛ" 
-            secondCategory="false" 
-            showNewsList={false} 
-            hideHeader={true} 
-            className={styles.columnNewsStandard}
-          />
-          
-          {/* Колонка новин - без заголовка */}
-          <ColumnNews 
-            newsQuantity={4} 
-            smallImg={true} 
-            category="КУЛЬТУРА" 
-            secondCategory=""
-            showNewsList={false} 
-            hideHeader={true} 
-            className={styles.columnNewsStandard}
-          />
+          {!isMobile &&
+          <>
+            <ColumnNews 
+              newsQuantity={4} 
+              smallImg={true} 
+              category="КУЛЬТУРА" 
+              secondCategory=""
+              showNewsList={false} 
+              hideHeader={true} 
+              className={styles.columnNewsStandard}
+            />
+            <ColumnNews 
+              newsQuantity={8} 
+              category="КРИМІНАЛ" 
+              secondCategory="false" 
+              showNewsList={false} 
+              hideHeader={true} 
+              className={styles.columnNewsStandard}
+            />
+          </>
+}
         </div>
 
         {/* Права частина - три колонки NewsList */}
+        {!isMobile &&
         <div className={styles.sidebar}>
           <div className={styles.newsColumn}>
             <Image 
@@ -137,10 +183,12 @@ export const CategoryPageClient: React.FC<CategoryPageClientProps> = ({
               priority={false}
             />
           </div>
+          {!isMobile &&
           <div className={styles.infoSection}>
             <CurrencyRates />
             <WeatherWidget />
           </div>
+          }
           <div className={styles.rightSeparator}></div>
           
           <div className={styles.newsColumn}>
@@ -199,13 +247,15 @@ export const CategoryPageClient: React.FC<CategoryPageClientProps> = ({
             />
           </div>
         </div>
+    }
       </div>
-      
+      {!isMobile &&
       <div className={styles.containerAllNews}>
         <AllNews
           customTitle="Більше новин"
         />
       </div>
+      }
     </>
   );
 };

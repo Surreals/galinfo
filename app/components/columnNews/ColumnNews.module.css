@@ -786,8 +786,8 @@
   }
   
   .newsItemHorizontal .imageContainerSmall {
-    width: 160px !important;
-    height: 120px !important;
+    width: 240px !important;
+    height: 160px !important;
   }
   
   .newsItemHorizontal .newsImage {

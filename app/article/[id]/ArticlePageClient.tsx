@@ -10,7 +10,7 @@ import WeatherWidget from "@/app/components/hero/WeatherWidget";
 import adBannerIndfomo from '@/assets/images/Ad Banner black.png';
 import banner3 from '@/assets/images/banner3.png';
 import { getBreadCrumbsNav } from "@/assets/utils/getTranslateCategory";
-import { useIsMobile } from "@/app/hooks/useIsMobile";
+import { useMobileContext } from "@/app/contexts/MobileContext";
 
 interface ArticlePageClientProps {
   articleData: any;
@@ -25,7 +25,7 @@ export const ArticlePageClient: React.FC<ArticlePageClientProps> = ({
   newsData2, 
   newsData3 
 }) => {
-  const isMobile = useIsMobile();
+  const { isMobile } = useMobileContext();
 
   return (
     <>

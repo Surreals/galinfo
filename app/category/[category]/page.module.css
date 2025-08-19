@@ -6,6 +6,7 @@
   padding: 24px 80px 0 80px; /* Повертаємо падінги, оскільки тепер вони в загальному контейнері */
 }
 
+
 .containerAllNews {
   display: flex;
   gap: 24px; /* Убираємо gap між блоками */
@@ -171,7 +172,7 @@
 
 @media (max-width: 768px) {
   .container {
-    flex-direction: column;
+    flex-direction: column-reverse;
     gap: 1rem;
     padding: 0 1rem;
   }
