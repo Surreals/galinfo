@@ -1,0 +1,197 @@
+.adminNavigation {
+  width: 100%;
+}
+
+.mainNavBar {
+  background: #2c3e50;
+  color: white;
+  padding: 0 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 60px;
+}
+
+.navLogo {
+  display: flex;
+  align-items: center;
+}
+
+.logoIcon {
+  width: 40px;
+  height: 40px;
+  background: linear-gradient(135deg, #e91e63, #9c27b0);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 20px;
+  color: white;
+  margin-right: 1rem;
+}
+
+.navTabs {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  flex: 1;
+  justify-content: center;
+}
+
+.navTab {
+  padding: 0.75rem 1.5rem;
+  color: #bdc3c7;
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  border-bottom: 3px solid transparent;
+  white-space: nowrap;
+}
+
+.navTab:hover {
+  color: white;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.navTab.active {
+  color: white;
+  background: #34495e;
+  border-bottom-color: #3498db;
+}
+
+.closeButton {
+  background: #e74c3c;
+  color: white;
+  border: none;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s ease;
+}
+
+.closeButton:hover {
+  background: #c0392b;
+}
+
+.subNavBar {
+  background: #34495e;
+  color: white;
+  padding: 0 1rem;
+  border-bottom: 1px solid #2c3e50;
+}
+
+.subNavTabs {
+  display: flex;
+  align-items: center;
+  gap: 0;
+}
+
+.subNavTab {
+  padding: 0.75rem 1.5rem;
+  color: #bdc3c7;
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  border-bottom: 3px solid transparent;
+  white-space: nowrap;
+}
+
+.subNavTab:hover {
+  color: white;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.subNavTab.active {
+  color: white;
+  background: #2c3e50;
+  border-bottom-color: #3498db;
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+  .navTabs {
+    gap: 0.5rem;
+  }
+  
+  .navTab {
+    padding: 0.75rem 1rem;
+    font-size: 13px;
+  }
+  
+  .subNavTab {
+    padding: 0.75rem 1rem;
+    font-size: 13px;
+  }
+}
+
+@media (max-width: 768px) {
+  .mainNavBar {
+    padding: 0 0.5rem;
+    height: 50px;
+  }
+  
+  .navTabs {
+    overflow-x: auto;
+    justify-content: flex-start;
+    padding: 0 0.5rem;
+  }
+  
+  .navTab {
+    padding: 0.5rem 0.75rem;
+    font-size: 12px;
+    min-width: max-content;
+  }
+  
+  .subNavBar {
+    padding: 0 0.5rem;
+  }
+  
+  .subNavTabs {
+    overflow-x: auto;
+    padding: 0 0.5rem;
+  }
+  
+  .subNavTab {
+    padding: 0.5rem 0.75rem;
+    font-size: 12px;
+    min-width: max-content;
+  }
+  
+  .logoIcon {
+    width: 32px;
+    height: 32px;
+    font-size: 16px;
+    margin-right: 0.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .mainNavBar {
+    flex-direction: column;
+    height: auto;
+    padding: 0.5rem;
+  }
+  
+  .navTabs {
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-top: 0.5rem;
+  }
+  
+  .subNavBar {
+    padding: 0.5rem;
+  }
+  
+  .subNavTabs {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+}

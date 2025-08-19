@@ -1,49 +1,351 @@
-.editorContainer {
+.newsEditorContainer {
   background: white;
-  border-radius: 12px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
   overflow: hidden;
-  max-width: 1200px;
+  max-width: 1400px;
   margin: 0 auto;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 
 .editorHeader {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
-  padding: 1.5rem 2rem;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+  background: #f8f9fa;
+  border-bottom: 1px solid #e9ecef;
+  padding: 1rem 1.5rem;
 }
 
-.editorHeader h2 {
+.editorHeader h1 {
   margin: 0;
-  font-size: 24px;
+  font-size: 20px;
   font-weight: 600;
+  color: #333;
 }
 
-.headerActions {
-  display: flex;
-  gap: 1rem;
-}
-
-.saveButton, .cancelButton {
+.errorMessage {
+  background: #f8d7da;
+  color: #721c24;
   padding: 0.75rem 1.5rem;
-  border: none;
-  border-radius: 8px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.3s ease;
+  border-bottom: 1px solid #f5c6cb;
   font-size: 14px;
 }
 
+.editorMainContent {
+  display: flex;
+  min-height: 600px;
+}
+
+/* Left Content Area */
+.contentArea {
+  flex: 1;
+  border-right: 1px solid #e9ecef;
+  background: white;
+}
+
+.tabNavigation {
+  display: flex;
+  background: #f8f9fa;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.tabButton {
+  padding: 0.75rem 1.5rem;
+  border: none;
+  background: transparent;
+  color: #6c757d;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  transition: all 0.2s ease;
+}
+
+.tabButton:hover {
+  color: #495057;
+  background: #e9ecef;
+}
+
+.tabButton.active {
+  color: #007bff;
+  border-bottom-color: #007bff;
+  background: white;
+}
+
+.tabContent {
+  padding: 1.5rem;
+}
+
+.mainTab {
+  max-width: 800px;
+}
+
+.formSection {
+  margin-bottom: 2rem;
+}
+
+.formLabel {
+  display: block;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 0.5rem;
+  font-size: 14px;
+}
+
+.headlineInput {
+  width: 100%;
+  padding: 0.75rem;
+  border: 2px solid #e9ecef;
+  border-radius: 6px;
+  font-size: 16px;
+  transition: border-color 0.2s ease;
+}
+
+.headlineInput:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+}
+
+.leadTextarea {
+  width: 100%;
+  padding: 0.75rem;
+  border: 2px solid #e9ecef;
+  border-radius: 6px;
+  font-size: 14px;
+  resize: vertical;
+  min-height: 100px;
+  font-family: inherit;
+  transition: border-color 0.2s ease;
+}
+
+.leadTextarea:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+}
+
+.richTextWrapper {
+  border: 2px solid #e9ecef;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.topBlocksTab,
+.metadataTab {
+  padding: 2rem;
+  text-align: center;
+  color: #6c757d;
+}
+
+.topBlocksTab h3,
+.metadataTab h3 {
+  margin-bottom: 1rem;
+  color: #333;
+}
+
+/* Right Sidebar */
+.sidebar {
+  width: 350px;
+  background: #f8f9fa;
+  padding: 1.5rem;
+  overflow-y: auto;
+  max-height: 600px;
+}
+
+.sidebarSection {
+  margin-bottom: 1.5rem;
+}
+
+.sidebarLabel {
+  display: block;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 0.5rem;
+  font-size: 13px;
+}
+
+.sidebarSelect,
+.sidebarInput {
+  width: 100%;
+  padding: 0.5rem;
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+  font-size: 13px;
+  background: white;
+  transition: border-color 0.2s ease;
+}
+
+.sidebarSelect:focus,
+.sidebarInput:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.1);
+}
+
+.imageIndicator {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem;
+  background: white;
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+}
+
+.cameraIcon {
+  font-size: 16px;
+}
+
+.imageCount {
+  font-weight: 600;
+  color: #333;
+}
+
+.authorSection {
+  background: white;
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+  padding: 0.75rem;
+}
+
+.authorRow {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.authorLabel {
+  font-size: 12px;
+  color: #6c757d;
+  min-width: 80px;
+}
+
+.authorRow .sidebarSelect {
+  flex: 1;
+  font-size: 12px;
+  padding: 0.25rem;
+}
+
+.authorCheckbox {
+  margin-top: 0.75rem;
+}
+
+.authorCheckbox label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 12px;
+  color: #333;
+  cursor: pointer;
+}
+
+.authorCheckbox input[type="checkbox"] {
+  width: 14px;
+  height: 14px;
+  accent-color: #007bff;
+}
+
+.checkboxGroup {
+  background: white;
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+  padding: 0.75rem;
+}
+
+.checkboxItem {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+  font-size: 12px;
+  color: #333;
+  cursor: pointer;
+}
+
+.checkboxItem:last-child {
+  margin-bottom: 0;
+}
+
+.checkboxItem input[type="checkbox"] {
+  width: 14px;
+  height: 14px;
+  accent-color: #007bff;
+}
+
+.timeSection {
+  background: white;
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+  padding: 0.75rem;
+}
+
+.timeRow,
+.dateRow {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.timeRow:last-child,
+.dateRow:last-child {
+  margin-bottom: 0;
+}
+
+.timeRow span,
+.dateRow span {
+  font-size: 12px;
+  color: #6c757d;
+  min-width: 50px;
+}
+
+.timeSelect,
+.dateSelect {
+  padding: 0.25rem;
+  border: 1px solid #ced4da;
+  border-radius: 3px;
+  font-size: 12px;
+  background: white;
+  min-width: 60px;
+}
+
+.timeSelect:focus,
+.dateSelect:focus {
+  outline: none;
+  border-color: #007bff;
+}
+
+/* Bottom Action Buttons */
+.bottomActions {
+  display: flex;
+  gap: 1rem;
+  padding: 1.5rem;
+  background: #f8f9fa;
+  border-top: 1px solid #e9ecef;
+  justify-content: center;
+}
+
+.saveButton,
+.lockButton,
+.deleteButton {
+  padding: 0.75rem 2rem;
+  border: none;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-width: 120px;
+}
+
 .saveButton {
-  background: #48bb78;
+  background: #28a745;
   color: white;
 }
 
 .saveButton:hover:not(:disabled) {
-  background: #38a169;
+  background: #218838;
   transform: translateY(-1px);
 }
 
@@ -53,241 +355,124 @@
   transform: none;
 }
 
-.cancelButton {
-  background: rgba(255, 255, 255, 0.2);
+.lockButton {
+  background: #6f42c1;
   color: white;
-  border: 1px solid rgba(255, 255, 255, 0.3);
-}
-
-.cancelButton:hover {
-  background: rgba(255, 255, 255, 0.3);
-  border-color: rgba(255, 255, 255, 0.5);
-}
-
-.error {
-  background: #fee;
-  color: #c53030;
-  padding: 1rem 2rem;
-  border-bottom: 1px solid #fecaca;
-  font-size: 14px;
-}
-
-.editorContent {
-  padding: 2rem;
-}
-
-.section {
-  margin-bottom: 2.5rem;
-}
-
-.section h3 {
-  color: #2d3748;
   font-size: 18px;
-  font-weight: 600;
-  margin: 0 0 1.5rem 0;
-  padding-bottom: 0.5rem;
-  border-bottom: 2px solid #e2e8f0;
 }
 
-.formGrid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 1.5rem;
+.lockButton:hover {
+  background: #5a32a3;
+  transform: translateY(-1px);
 }
 
-.formGroup {
-  display: flex;
-  flex-direction: column;
+.deleteButton {
+  background: #dc3545;
+  color: white;
 }
 
-.formGroup label {
-  font-weight: 500;
-  color: #4a5568;
-  margin-bottom: 0.5rem;
-  font-size: 14px;
-}
-
-.input, .textarea, .select {
-  padding: 0.75rem;
-  border: 2px solid #e2e8f0;
-  border-radius: 8px;
-  font-size: 14px;
-  transition: all 0.3s ease;
-  background: white;
-}
-
-.input:focus, .textarea:focus, .select:focus {
-  outline: none;
-  border-color: #667eea;
-  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-}
-
-.input::placeholder, .textarea::placeholder {
-  color: #a0aec0;
-}
-
-.textarea {
-  resize: vertical;
-  min-height: 80px;
-  font-family: inherit;
-}
-
-.select {
-  cursor: pointer;
-}
-
-.editorWrapper {
-  border: 2px solid #e2e8f0;
-  border-radius: 8px;
-  overflow: hidden;
-}
-
-.quillEditor {
-  min-height: 400px;
-}
-
-/* React Quill Customization */
-.quillEditor .ql-toolbar {
-  border: none;
-  border-bottom: 1px solid #e2e8f0;
-  background: #f7fafc;
-  padding: 0.75rem;
-}
-
-.quillEditor .ql-container {
-  border: none;
-  font-size: 16px;
-  line-height: 1.6;
-}
-
-.quillEditor .ql-editor {
-  min-height: 350px;
-  padding: 1.5rem;
-  color: #2d3748;
-}
-
-.quillEditor .ql-editor.ql-blank::before {
-  color: #a0aec0;
-  font-style: italic;
-}
-
-.checkboxGrid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 1rem;
-}
-
-.checkbox {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  cursor: pointer;
-  padding: 0.75rem;
-  border: 1px solid #e2e8f0;
-  border-radius: 8px;
-  background: #f7fafc;
-  transition: all 0.3s ease;
-}
-
-.checkbox:hover {
-  background: #edf2f7;
-  border-color: #cbd5e0;
-}
-
-.checkbox input[type="checkbox"] {
-  width: 18px;
-  height: 18px;
-  accent-color: #667eea;
-  cursor: pointer;
-}
-
-.checkbox span {
-  font-weight: 500;
-  color: #4a5568;
-  font-size: 14px;
-}
-
-.editorFooter {
-  padding: 1.5rem 2rem;
-  border-top: 1px solid #e2e8f0;
-  background: #f7fafc;
-  display: flex;
-  justify-content: flex-end;
-  gap: 1rem;
+.deleteButton:hover {
+  background: #c82333;
+  transform: translateY(-1px);
 }
 
 /* Responsive Design */
-@media (max-width: 768px) {
-  .editorHeader {
+@media (max-width: 1200px) {
+  .editorMainContent {
     flex-direction: column;
-    gap: 1rem;
+  }
+  
+  .sidebar {
+    width: 100%;
+    max-height: none;
+  }
+  
+  .contentArea {
+    border-right: none;
+    border-bottom: 1px solid #e9ecef;
+  }
+}
+
+@media (max-width: 768px) {
+  .newsEditorContainer {
+    margin: 0;
+    border-radius: 0;
+  }
+  
+  .tabNavigation {
+    flex-wrap: wrap;
+  }
+  
+  .tabButton {
+    flex: 1;
+    min-width: 120px;
     text-align: center;
   }
   
-  .headerActions {
-    width: 100%;
-    justify-content: center;
-  }
-  
-  .editorContent {
+  .tabContent {
     padding: 1rem;
   }
   
-  .formGrid {
-    grid-template-columns: 1fr;
+  .sidebar {
+    padding: 1rem;
   }
   
-  .checkboxGrid {
-    grid-template-columns: 1fr;
-  }
-  
-  .editorFooter {
+  .bottomActions {
     flex-direction: column;
     align-items: stretch;
   }
   
-  .saveButton, .cancelButton {
+  .saveButton,
+  .lockButton,
+  .deleteButton {
     width: 100%;
   }
 }
 
 @media (max-width: 480px) {
   .editorHeader {
-    padding: 1rem;
+    padding: 0.75rem 1rem;
   }
   
-  .editorContent {
+  .editorHeader h1 {
+    font-size: 18px;
+  }
+  
+  .tabContent {
     padding: 0.75rem;
   }
   
-  .editorFooter {
+  .sidebar {
+    padding: 0.75rem;
+  }
+  
+  .bottomActions {
     padding: 1rem;
   }
   
-  .section h3 {
-    font-size: 16px;
-  }
-  
-  .input, .textarea, .select {
-    padding: 0.5rem;
+  .headlineInput,
+  .leadTextarea {
     font-size: 16px; /* Prevent zoom on iOS */
   }
 }
 
 /* Loading States */
-.editorContainer.loading {
+.newsEditorContainer.loading {
   opacity: 0.7;
   pointer-events: none;
 }
 
 /* Focus States */
-.input:focus, .textarea:focus, .select:focus {
+.headlineInput:focus,
+.leadTextarea:focus,
+.sidebarSelect:focus,
+.sidebarInput:focus {
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.15);
+  box-shadow: 0 4px 12px rgba(0, 123, 255, 0.15);
 }
 
 /* Animation for form elements */
-.formGroup {
+.formSection {
   animation: fadeInUp 0.3s ease-out;
 }
 
@@ -302,21 +487,21 @@
   }
 }
 
-/* Custom scrollbar for textarea */
-.textarea::-webkit-scrollbar {
-  width: 8px;
+/* Custom scrollbar for sidebar */
+.sidebar::-webkit-scrollbar {
+  width: 6px;
 }
 
-.textarea::-webkit-scrollbar-track {
+.sidebar::-webkit-scrollbar-track {
   background: #f1f1f1;
-  border-radius: 4px;
+  border-radius: 3px;
 }
 
-.textarea::-webkit-scrollbar-thumb {
+.sidebar::-webkit-scrollbar-thumb {
   background: #c1c1c1;
-  border-radius: 4px;
+  border-radius: 3px;
 }
 
-.textarea::-webkit-scrollbar-thumb:hover {
+.sidebar::-webkit-scrollbar-thumb:hover {
   background: #a8a8a8;
 }

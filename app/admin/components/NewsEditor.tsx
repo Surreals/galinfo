@@ -76,7 +76,10 @@ interface NewsEditorProps {
   };
 }
 
+type TabType = 'main' | 'top-blocks' | 'metadata';
+
 export default function NewsEditor({ newsId, onSave, onCancel, initialData }: NewsEditorProps) {
+  const [activeTab, setActiveTab] = useState<TabType>('main');
   const [newsData, setNewsData] = useState<NewsData>({
     ndate: new Date().toISOString().split('T')[0],
     ntime: new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', second: '2-digit' }),
@@ -133,6 +136,43 @@ export default function NewsEditor({ newsId, onSave, onCancel, initialData }: Ne
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [isClient, setIsClient] = useState(false);
+
+  // Mock data for dropdowns - in real app, these would come from API
+  const categories = [
+    { id: '1', name: 'Суспільство', nameEn: 'Society' },
+    { id: '2', name: 'Політика', nameEn: 'Politics' },
+    { id: '3', name: 'Економіка', nameEn: 'Economy' },
+    { id: '4', name: 'Статті', nameEn: 'Articles' },
+    { id: '5', name: 'Культура', nameEn: 'Culture' },
+    { id: '6', name: 'Інтерв\'ю', nameEn: 'Interview' },
+    { id: '7', name: 'Здоров\'я', nameEn: 'Health' },
+    { id: '8', name: 'Війна з Росією', nameEn: 'War with Russia' },
+    { id: '9', name: 'Спорт', nameEn: 'Sport' },
+  ];
+
+  const regions = [
+    { id: '1', name: 'Україна', nameEn: 'Ukraine' },
+    { id: '2', name: 'Львів', nameEn: 'Lviv' },
+    { id: '3', name: 'Європа', nameEn: 'Europe' },
+    { id: '4', name: 'Світ', nameEn: 'World' },
+    { id: '5', name: 'Волинь', nameEn: 'Volyn' },
+  ];
+
+  const authors = [
+    { id: 1, name: 'Максим Бурич', nameEn: 'Maksym Burych' },
+    { id: 2, name: 'блогери', nameEn: 'bloggers' },
+  ];
+
+  const priorities = [
+    { id: 0, name: 'Звичайний', nameEn: 'Normal' },
+    { id: 1, name: 'Високий', nameEn: 'High' },
+    { id: 2, name: 'Критичний', nameEn: 'Critical' },
+  ];
+
+  const templates = [
+    { id: 0, name: 'По замовчуванню', nameEn: 'Default' },
+    { id: 1, name: 'Спеціальний', nameEn: 'Special' },
+  ];
 
   // Prevent hydration mismatch by only rendering on client
   useEffect(() => {
@@ -208,6 +248,10 @@ export default function NewsEditor({ newsId, onSave, onCancel, initialData }: Ne
     }
   };
 
+  const getCharacterCount = (text: string) => {
+    return text.length;
+  };
+
   // Don't render anything until client-side
   if (!isClient) {
     return (
@@ -218,276 +262,437 @@ export default function NewsEditor({ newsId, onSave, onCancel, initialData }: Ne
   }
 
   return (
-    <div className="editorContainer">
+    <div className="newsEditorContainer">
       <div className="editorHeader">
-        <h2>{newsId ? 'Edit News' : 'Create New News'}</h2>
-        <div className="headerActions">
-          <button
-            onClick={handleSave}
-            disabled={loading}
-            className="saveButton"
-          >
-            {loading ? 'Saving...' : 'Save News'}
-          </button>
-          <button
-            onClick={onCancel}
-            className="cancelButton"
-          >
-            Cancel
-          </button>
-        </div>
+        <h1>Редагувати новину</h1>
       </div>
 
       {error && (
-        <div className="error">
+        <div className="errorMessage">
           {error}
         </div>
       )}
 
-      <div className="editorContent">
-        {/* Basic Information */}
-        <div className="section">
-          <h3>Basic Information</h3>
-          <div className="formGrid">
-            <div className="formGroup">
-              <label htmlFor="nheader">News Header *</label>
-              <input
-                type="text"
-                id="nheader"
-                value={headers.nheader}
-                onChange={(e) => handleHeaderChange('nheader', e.target.value)}
-                placeholder="Enter news header"
-                className="input"
-              />
-            </div>
+      <div className="editorMainContent">
+        {/* Left Content Area */}
+        <div className="contentArea">
+          {/* Navigation Tabs */}
+          <div className="tabNavigation">
+            <button
+              className={`tabButton ${activeTab === 'main' ? 'active' : ''}`}
+              onClick={() => setActiveTab('main')}
+            >
+              Основні заголовки
+            </button>
+            <button
+              className={`tabButton ${activeTab === 'top-blocks' ? 'active' : ''}`}
+              onClick={() => setActiveTab('top-blocks')}
+            >
+              Для ТОР БЛОКІВ
+            </button>
+            <button
+              className={`tabButton ${activeTab === 'metadata' ? 'active' : ''}`}
+              onClick={() => setActiveTab('metadata')}
+            >
+              Мета дані
+            </button>
+          </div>
 
-            <div className="formGroup">
-              <label htmlFor="nteaser">News Teaser</label>
-              <textarea
-                id="nteaser"
-                value={headers.nteaser}
-                onChange={(e) => handleHeaderChange('nteaser', e.target.value)}
-                placeholder="Enter news teaser"
-                className="textarea"
-                rows={3}
-              />
-            </div>
+          {/* Tab Content */}
+          <div className="tabContent">
+            {activeTab === 'main' && (
+              <div className="mainTab">
+                {/* Headline Section */}
+                <div className="formSection">
+                  <label className="formLabel">
+                    Заголовок({getCharacterCount(headers.nheader)})
+                  </label>
+                  <input
+                    type="text"
+                    className="headlineInput"
+                    value={headers.nheader}
+                    onChange={(e) => handleHeaderChange('nheader', e.target.value)}
+                    placeholder="Введіть заголовок новини"
+                  />
+                </div>
 
-            <div className="formGroup">
-              <label htmlFor="nsubheader">News Subheader</label>
-              <input
-                type="text"
-                id="nsubheader"
-                value={headers.nsubheader}
-                onChange={(e) => handleHeaderChange('nsubheader', e.target.value)}
-                placeholder="Enter news subheader"
-                className="input"
-              />
-            </div>
+                {/* Lead Section */}
+                <div className="formSection">
+                  <label className="formLabel">
+                    Лід({getCharacterCount(headers.nteaser)})
+                  </label>
+                  <textarea
+                    className="leadTextarea"
+                    value={headers.nteaser}
+                    onChange={(e) => handleHeaderChange('nteaser', e.target.value)}
+                    placeholder="Введіть лід новини"
+                    rows={4}
+                  />
+                </div>
 
-            <div className="formGroup">
-              <label htmlFor="urlkey">URL Key</label>
-              <input
-                type="text"
-                id="urlkey"
-                value={newsData.urlkey}
-                onChange={(e) => handleNewsDataChange('urlkey', e.target.value)}
-                placeholder="Auto-generated from header"
-                className="input"
-              />
-            </div>
+                {/* Full News Text Section */}
+                <div className="formSection">
+                  <label className="formLabel">
+                    Повний текст новини
+                  </label>
+                  <div className="richTextWrapper">
+                    <RichTextEditor
+                      value={body.nbody}
+                      onChange={(content) => setBody({ nbody: content })}
+                      placeholder="Введіть повний текст новини..."
+                    />
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {activeTab === 'top-blocks' && (
+              <div className="topBlocksTab">
+                <h3>Налаштування для ТОР БЛОКІВ</h3>
+                <p>Тут будуть налаштування для топ блоків новин</p>
+              </div>
+            )}
+
+            {activeTab === 'metadata' && (
+              <div className="metadataTab">
+                <h3>Мета дані новини</h3>
+                <p>Тут будуть мета дані новини</p>
+              </div>
+            )}
           </div>
         </div>
 
-        {/* Content Editor */}
-        <div className="section">
-          <h3>News Content</h3>
-          <div className="editorWrapper">
-            <RichTextEditor
-              value={body.nbody}
-              onChange={(content) => setBody({ nbody: content })}
-              placeholder="Write your news content here..."
+        {/* Right Sidebar */}
+        <div className="sidebar">
+          {/* Language Selector */}
+          <div className="sidebarSection">
+            <label className="sidebarLabel">Мова</label>
+            <select
+              className="sidebarSelect"
+              value={newsData.lang}
+              onChange={(e) => handleNewsDataChange('lang', parseInt(e.target.value))}
+            >
+              <option value={1}>УКР</option>
+              <option value={2}>ENG</option>
+            </select>
+          </div>
+
+          {/* Article Type */}
+          <div className="sidebarSection">
+            <label className="sidebarLabel">Тип статті</label>
+            <select
+              className="sidebarSelect"
+              value={newsData.ntype}
+              onChange={(e) => handleNewsDataChange('ntype', parseInt(e.target.value))}
+            >
+              <option value={1}>Новина</option>
+              <option value={2}>Стаття</option>
+              <option value={3}>Інтерв'ю</option>
+            </select>
+          </div>
+
+          {/* Image Indicator */}
+          <div className="sidebarSection">
+            <div className="imageIndicator">
+              <span className="cameraIcon">📷</span>
+              <span className="imageCount">1</span>
+            </div>
+          </div>
+
+          {/* Categories */}
+          <div className="sidebarSection">
+            <label className="sidebarLabel">Рубрики</label>
+            <select
+              className="sidebarSelect"
+              value={newsData.rubric}
+              onChange={(e) => handleNewsDataChange('rubric', e.target.value)}
+            >
+              {categories.map(cat => (
+                <option key={cat.id} value={cat.id}>{cat.name}</option>
+              ))}
+            </select>
+          </div>
+
+          {/* Region */}
+          <div className="sidebarSection">
+            <label className="sidebarLabel">Регіон</label>
+            <select
+              className="sidebarSelect"
+              value={newsData.region}
+              onChange={(e) => handleNewsDataChange('region', e.target.value)}
+            >
+              {regions.map(region => (
+                <option key={region.id} value={region.id}>{region.name}</option>
+              ))}
+            </select>
+          </div>
+
+          {/* Topic */}
+          <div className="sidebarSection">
+            <label className="sidebarLabel">Тема</label>
+            <select className="sidebarSelect">
+              <option value="">Виберіть тему</option>
+            </select>
+          </div>
+
+          {/* Tags */}
+          <div className="sidebarSection">
+            <label className="sidebarLabel">Теги</label>
+            <input
+              type="text"
+              className="sidebarInput"
+              placeholder="Погода,Україна"
+              value={newsData.bytheme}
+              onChange={(e) => handleNewsDataChange('bytheme', e.target.value)}
             />
           </div>
-        </div>
 
-        {/* News Settings */}
-        <div className="section">
-          <h3>News Settings</h3>
-          <div className="formGrid">
-            <div className="formGroup">
-              <label htmlFor="ndate">Date</label>
-              <input
-                type="date"
-                id="ndate"
-                value={newsData.ndate}
-                onChange={(e) => handleNewsDataChange('ndate', e.target.value)}
-                className="input"
-              />
-            </div>
-
-            <div className="formGroup">
-              <label htmlFor="ntime">Time</label>
-              <input
-                type="time"
-                id="ntime"
-                value={newsData.ntime}
-                onChange={(e) => handleNewsDataChange('ntime', e.target.value)}
-                className="input"
-              />
-            </div>
-
-            <div className="formGroup">
-              <label htmlFor="ntype">News Type</label>
-              <select
-                id="ntype"
-                value={newsData.ntype}
-                onChange={(e) => handleNewsDataChange('ntype', parseInt(e.target.value))}
-                className="select"
-              >
-                <option value={1}>Type 1</option>
-                <option value={2}>Type 2</option>
-                <option value={3}>Type 3</option>
-                <option value={4}>Type 4</option>
-                <option value={5}>Type 5</option>
-                <option value={6}>Type 6</option>
-              </select>
-            </div>
-
-            <div className="formGroup">
-              <label htmlFor="rubric">Rubric</label>
-              <select
-                id="rubric"
-                value={newsData.rubric}
-                onChange={(e) => handleNewsDataChange('rubric', e.target.value)}
-                className="select"
-              >
-                <option value="1">Rubric 1</option>
-                <option value="2">Rubric 2</option>
-                <option value="3">Rubric 3</option>
-                <option value="4">Rubric 4</option>
-                <option value="5">Rubric 5</option>
-                <option value="101">Rubric 101</option>
-                <option value="103">Rubric 103</option>
-              </select>
-            </div>
-
-            <div className="formGroup">
-              <label htmlFor="region">Region</label>
-              <select
-                id="region"
-                value={newsData.region}
-                onChange={(e) => handleNewsDataChange('region', e.target.value)}
-                className="select"
-              >
-                <option value="1">Region 1</option>
-                <option value="2">Region 2</option>
-                <option value="3">Region 3</option>
-                <option value="4">Region 4</option>
-                <option value="5">Region 5</option>
-                <option value="6">Region 6</option>
-                <option value="7">Region 7</option>
-              </select>
-            </div>
-
-            <div className="formGroup">
-              <label htmlFor="nweight">Weight</label>
-              <input
-                type="number"
-                id="nweight"
-                value={newsData.nweight}
-                onChange={(e) => handleNewsDataChange('nweight', parseInt(e.target.value))}
-                className="input"
-                min="0"
-                max="100"
-              />
+          {/* Author Information */}
+          <div className="sidebarSection">
+            <label className="sidebarLabel">Автор</label>
+            <div className="authorSection">
+              <div className="authorRow">
+                <span className="authorLabel">Редактор:</span>
+                <select
+                  className="sidebarSelect"
+                  value={newsData.nauthor}
+                  onChange={(e) => handleNewsDataChange('nauthor', parseInt(e.target.value))}
+                >
+                  {authors.map(author => (
+                    <option key={author.id} value={author.id}>{author.name}</option>
+                  ))}
+                </select>
+              </div>
+              <div className="authorRow">
+                <span className="authorLabel">Автор / журналіст:</span>
+                <select
+                  className="sidebarSelect"
+                  value={newsData.nauthor}
+                  onChange={(e) => handleNewsDataChange('nauthor', parseInt(e.target.value))}
+                >
+                  {authors.map(author => (
+                    <option key={author.id} value={author.id}>{author.name}</option>
+                  ))}
+                </select>
+              </div>
+              <div className="authorCheckbox">
+                <label>
+                  <input
+                    type="checkbox"
+                    checked={newsData.showauthor === 1}
+                    onChange={(e) => handleNewsDataChange('showauthor', e.target.checked ? 1 : 0)}
+                  />
+                  Відображати інформацію про автора
+                </label>
+              </div>
             </div>
           </div>
-        </div>
 
-        {/* Flags and Options */}
-        <div className="section">
-          <h3>Flags and Options</h3>
-          <div className="checkboxGrid">
-            <label className="checkbox">
-              <input
-                type="checkbox"
-                checked={newsData.approved === 1}
-                onChange={(e) => handleNewsDataChange('approved', e.target.checked ? 1 : 0)}
-              />
-              <span>Approved</span>
-            </label>
+          {/* Article Priority */}
+          <div className="sidebarSection">
+            <label className="sidebarLabel">Пріоритет статті</label>
+            <select
+              className="sidebarSelect"
+              value={newsData.nweight}
+              onChange={(e) => handleNewsDataChange('nweight', parseInt(e.target.value))}
+            >
+              {priorities.map(priority => (
+                <option key={priority.id} value={priority.id}>{priority.name}</option>
+              ))}
+            </select>
+          </div>
 
-            <label className="checkbox">
-              <input
-                type="checkbox"
-                checked={newsData.rated === 1}
-                onChange={(e) => handleNewsDataChange('rated', e.target.checked ? 1 : 0)}
-              />
-              <span>Rated</span>
-            </label>
+          {/* Template */}
+          <div className="sidebarSection">
+            <label className="sidebarLabel">Шаблон</label>
+            <select
+              className="sidebarSelect"
+              value={newsData.layout}
+              onChange={(e) => handleNewsDataChange('layout', parseInt(e.target.value))}
+            >
+              {templates.map(template => (
+                <option key={template.id} value={template.id}>{template.name}</option>
+              ))}
+            </select>
+          </div>
 
-            <label className="checkbox">
-              <input
-                type="checkbox"
-                checked={newsData.suggest === 1}
-                onChange={(e) => handleNewsDataChange('suggest', e.target.checked ? 1 : 0)}
-              />
-              <span>Suggested</span>
-            </label>
+          {/* Additional Parameters */}
+          <div className="sidebarSection">
+            <label className="sidebarLabel">Додаткові параметри</label>
+            <div className="checkboxGroup">
+              <label className="checkboxItem">
+                <input
+                  type="checkbox"
+                  checked={newsData.headlineblock === 1}
+                  onChange={(e) => handleNewsDataChange('headlineblock', e.target.checked ? 1 : 0)}
+                />
+                Головна стрічка
+              </label>
+              <label className="checkboxItem">
+                <input
+                  type="checkbox"
+                  checked={newsData.maininblock === 1}
+                  onChange={(e) => handleNewsDataChange('maininblock', e.target.checked ? 1 : 0)}
+                />
+                Блок в головній стрічці
+              </label>
+              <label className="checkboxItem">
+                <input
+                  type="checkbox"
+                  checked={newsData.hiderss === 1}
+                  onChange={(e) => handleNewsDataChange('hiderss', e.target.checked ? 1 : 0)}
+                />
+                НЕ транслювати в RSS
+              </label>
+              <label className="checkboxItem">
+                <input
+                  type="checkbox"
+                  checked={newsData.nocomment === 1}
+                  onChange={(e) => handleNewsDataChange('nocomment', e.target.checked ? 1 : 0)}
+                />
+                Заборонити коментарі
+              </label>
+              <label className="checkboxItem">
+                <input
+                  type="checkbox"
+                  checked={newsData.maininblock === 1}
+                  onChange={(e) => handleNewsDataChange('maininblock', e.target.checked ? 1 : 0)}
+                />
+                Головна в блоці рубрик
+              </label>
+            </div>
+          </div>
 
-            <label className="checkbox">
-              <input
-                type="checkbox"
-                checked={newsData.headlineblock === 1}
-                onChange={(e) => handleNewsDataChange('headlineblock', e.target.checked ? 1 : 0)}
-              />
-              <span>Headline Block</span>
-            </label>
+          {/* Publication Time */}
+          <div className="sidebarSection">
+            <label className="sidebarLabel">Час публікації</label>
+            <div className="timeSection">
+              <div className="timeRow">
+                <span>Годин:</span>
+                <select
+                  className="timeSelect"
+                  value={newsData.ntime.split(':')[0]}
+                  onChange={(e) => {
+                    const time = newsData.ntime.split(':');
+                    time[0] = e.target.value;
+                    handleNewsDataChange('ntime', time.join(':'));
+                  }}
+                >
+                  {Array.from({ length: 24 }, (_, i) => (
+                    <option key={i} value={i.toString().padStart(2, '0')}>
+                      {i.toString().padStart(2, '0')}
+                    </option>
+                  ))}
+                </select>
+                <span>Хвилин:</span>
+                <select
+                  className="timeSelect"
+                  value={newsData.ntime.split(':')[1]}
+                  onChange={(e) => {
+                    const time = newsData.ntime.split(':');
+                    time[1] = e.target.value;
+                    handleNewsDataChange('ntime', time.join(':'));
+                  }}
+                >
+                  {Array.from({ length: 60 }, (_, i) => (
+                    <option key={i} value={i.toString().padStart(2, '0')}>
+                      {i.toString().padStart(2, '0')}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div className="dateRow">
+                <span>Число:</span>
+ <select
+                  className="dateSelect"
+                  value={new Date(newsData.ndate).getDate()}
+                  onChange={(e) => {
+                    const date = new Date(newsData.ndate);
+                    date.setDate(parseInt(e.target.value));
+                    handleNewsDataChange('ndate', date.toISOString().split('T')[0]);
+                  }}
+                >
+                  {Array.from({ length: 31 }, (_, i) => (
+                    <option key={i + 1} value={i + 1}>{i + 1}</option>
+                  ))}
+                </select>
+                <span>Місяць:</span>
+                <select
+                  className="dateSelect"
+                  value={new Date(newsData.ndate).getMonth() + 1}
+                  onChange={(e) => {
+                    const date = new Date(newsData.ndate);
+                    date.setMonth(parseInt(e.target.value) - 1);
+                    handleNewsDataChange('ndate', date.toISOString().split('T')[0]);
+                  }}
+                >
+                  {[
+                    'Січень', 'Лютий', 'Березень', 'Квітень', 'Травень', 'Червень',
+                    'Липень', 'Серпень', 'Вересень', 'Жовтень', 'Листопад', 'Грудень'
+                  ].map((month, i) => (
+                    <option key={i + 1} value={i + 1}>{month}</option>
+                  ))}
+                </select>
+                <span>Рік:</span>
+                <select
+                  className="dateSelect"
+                  value={new Date(newsData.ndate).getFullYear()}
+                  onChange={(e) => {
+                    const date = new Date(newsData.ndate);
+                    date.setFullYear(parseInt(e.target.value));
+                    handleNewsDataChange('ndate', date.toISOString().split('T')[0]);
+                  }}
+                >
+                  {Array.from({ length: 10 }, (_, i) => {
+                    const year = new Date().getFullYear() - 5 + i;
+                    return (
+                      <option key={year} value={year}>{year}</option>
+                    );
+                  })}
+                </select>
+              </div>
+            </div>
+          </div>
 
-            <label className="checkbox">
-              <input
-                type="checkbox"
-                checked={newsData.maininblock === 1}
-                onChange={(e) => handleNewsDataChange('maininblock', e.target.checked ? 1 : 0)}
-              />
-              <span>Main in Block</span>
-            </label>
-
-            <label className="checkbox">
-              <input
-                type="checkbox"
-                checked={newsData.photo === 1}
-                onChange={(e) => handleNewsDataChange('photo', e.target.checked ? 1 : 0)}
-              />
-              <span>Has Photo</span>
-            </label>
-
-            <label className="checkbox">
-              <input
-                type="checkbox"
-                checked={newsData.video === 1}
-                onChange={(e) => handleNewsDataChange('video', e.target.checked ? 1 : 0)}
-              />
-              <span>Has Video</span>
-            </label>
+          {/* Publishing Options */}
+          <div className="sidebarSection">
+            <label className="sidebarLabel">Публікація</label>
+            <div className="checkboxGroup">
+              <label className="checkboxItem">
+                <input
+                  type="checkbox"
+                  checked={newsData.approved === 1}
+                  onChange={(e) => handleNewsDataChange('approved', e.target.checked ? 1 : 0)}
+                />
+                Опублікувати на сайті
+              </label>
+              <label className="checkboxItem">
+                <input
+                  type="checkbox"
+                  checked={newsData.twitter_status === 'published'}
+                  onChange={(e) => handleNewsDataChange('twitter_status', e.target.checked ? 'published' : 'draft')}
+                />
+                Опублікувати в Twitter
+              </label>
+            </div>
           </div>
         </div>
       </div>
 
-      <div className="editorFooter">
+      {/* Bottom Action Buttons */}
+      <div className="bottomActions">
         <button
           onClick={handleSave}
           disabled={loading}
           className="saveButton"
         >
-          {loading ? 'Saving...' : 'Save News'}
+          ЗБЕРЕГТИ
         </button>
-        <button
-          onClick={onCancel}
-          className="cancelButton"
-        >
-          Cancel
+        <button className="lockButton">
+          🔒
+        </button>
+        <button className="deleteButton">
+          ВИДАЛИТИ
         </button>
       </div>
     </div>

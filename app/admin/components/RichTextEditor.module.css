@@ -1,212 +1,262 @@
-.richTextEditor {
-  width: 100%;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+.rich-text-editor {
+  border: 1px solid #e9ecef;
+  border-radius: 6px;
+  overflow: hidden;
+  background: white;
 }
 
 .toolbar {
+  background: #f8f9fa;
+  border-bottom: 1px solid #e9ecef;
+  padding: 0.75rem;
   display: flex;
   flex-wrap: wrap;
-  gap: 4px;
-  padding: 8px;
-  background: #f9fafb;
-  border: 1px solid #d1d5db;
-  border-bottom: none;
-  border-radius: 8px 8px 0 0;
+  gap: 0.5rem;
+  align-items: center;
 }
 
-.toolbarButton {
-  display: inline-flex;
+.toolbar-group {
+  display: flex;
   align-items: center;
-  justify-content: center;
+  gap: 0.25rem;
+}
+
+.toolbar-divider {
+  width: 1px;
+  height: 24px;
+  background: #dee2e6;
+  margin: 0 0.5rem;
+}
+
+.toolbar-button {
+  padding: 0.5rem;
+  border: 1px solid transparent;
+  background: transparent;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
   min-width: 32px;
   height: 32px;
-  padding: 4px 8px;
-  border: 1px solid #d1d5db;
-  border-radius: 4px;
-  background: white;
-  color: #374151;
-  font-size: 14px;
-  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   transition: all 0.2s ease;
 }
 
-.toolbarButton:hover {
-  background: #f3f4f6;
-  border-color: #9ca3af;
+.toolbar-button:hover {
+  background: #e9ecef;
+  border-color: #ced4da;
 }
 
-.toolbarButton.active {
-  background: #3b82f6;
+.toolbar-button.active {
+  background: #007bff;
   color: white;
-  border-color: #2563eb;
+  border-color: #007bff;
 }
 
-.toolbarDivider {
-  width: 1px;
-  height: 24px;
-  background: #d1d5db;
-  margin: 0 4px;
+.toolbar-select {
+  padding: 0.25rem 0.5rem;
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+  background: white;
+  font-size: 12px;
+  min-width: 80px;
+  cursor: pointer;
 }
 
-.colorPicker {
-  display: inline-flex;
+.toolbar-select:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.1);
+}
+
+.color-picker {
+  display: flex;
   align-items: center;
+  gap: 0.25rem;
+  position: relative;
 }
 
-.colorInput {
-  width: 32px;
-  height: 32px;
-  padding: 0;
-  border: 1px solid #d1d5db;
+.color-input {
+  width: 24px;
+  height: 24px;
+  border: 1px solid #ced4da;
   border-radius: 4px;
   cursor: pointer;
-  background: none;
-}
-
-.colorInput::-webkit-color-swatch-wrapper {
   padding: 0;
 }
 
-.colorInput::-webkit-color-swatch {
+.color-input::-webkit-color-swatch-wrapper {
+  padding: 0;
+}
+
+.color-input::-webkit-color-swatch {
   border: none;
   border-radius: 3px;
 }
 
-.editorContent {
-  border: 1px solid #d1d5db;
-  border-top: none;
-  border-radius: 0 0 8px 8px;
-  padding: 16px;
+.color-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: #333;
+  min-width: 16px;
+}
+
+.editor-content {
   min-height: 300px;
+  padding: 1rem;
   background: white;
-  transition: border-color 0.2s ease;
 }
 
-.editorContent:focus-within {
-  border-color: #3b82f6;
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-}
-
-.placeholder {
-  color: #9ca3af;
-  font-style: italic;
-  pointer-events: none;
-  user-select: none;
-}
-
-/* TipTap Content Styles */
-.editorContent :global(.ProseMirror) {
+.editor-content .ProseMirror {
   outline: none;
-  min-height: 200px;
-}
-
-.editorContent :global(.ProseMirror p) {
-  margin: 0.5em 0;
+  min-height: 280px;
   line-height: 1.6;
+  color: #333;
 }
 
-.editorContent :global(.ProseMirror h1) {
-  font-size: 2em;
-  font-weight: bold;
-  margin: 0.67em 0;
-  line-height: 1.2;
+.editor-content .ProseMirror p {
+  margin: 0 0 1rem 0;
 }
 
-.editorContent :global(.ProseMirror h2) {
-  font-size: 1.5em;
-  font-weight: bold;
-  margin: 0.83em 0;
-  line-height: 1.3;
+.editor-content .ProseMirror h1,
+.editor-content .ProseMirror h2,
+.editor-content .ProseMirror h3 {
+  margin: 1.5rem 0 1rem 0;
+  color: #333;
 }
 
-.editorContent :global(.ProseMirror h3) {
-  font-size: 1.17em;
-  font-weight: bold;
-  margin: 1em 0;
-  line-height: 1.4;
+.editor-content .ProseMirror h1 {
+  font-size: 1.8rem;
+  font-weight: 700;
 }
 
-.editorContent :global(.ProseMirror ul),
-.editorContent :global(.ProseMirror ol) {
-  margin: 0.5em 0;
-  padding-left: 1.5em;
+.editor-content .ProseMirror h2 {
+  font-size: 1.5rem;
+  font-weight: 600;
 }
 
-.editorContent :global(.ProseMirror li) {
-  margin: 0.25em 0;
+.editor-content .ProseMirror h3 {
+  font-size: 1.3rem;
+  font-weight: 600;
 }
 
-.editorContent :global(.ProseMirror blockquote) {
-  margin: 1em 0;
-  padding-left: 1em;
-  border-left: 3px solid #d1d5db;
-  color: #6b7280;
+.editor-content .ProseMirror ul,
+.editor-content .ProseMirror ol {
+  margin: 1rem 0;
+  padding-left: 2rem;
 }
 
-.editorContent :global(.ProseMirror code) {
-  background: #f3f4f6;
-  padding: 0.2em 0.4em;
+.editor-content .ProseMirror li {
+  margin: 0.5rem 0;
+}
+
+.editor-content .ProseMirror blockquote {
+  border-left: 4px solid #007bff;
+  margin: 1rem 0;
+  padding-left: 1rem;
+  font-style: italic;
+  color: #6c757d;
+}
+
+.editor-content .ProseMirror code {
+  background: #f8f9fa;
+  padding: 0.2rem 0.4rem;
   border-radius: 3px;
-  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+  font-family: 'Courier New', monospace;
   font-size: 0.9em;
 }
 
-.editorContent :global(.ProseMirror pre) {
-  background: #1f2937;
-  color: #f9fafb;
-  padding: 1em;
+.editor-content .ProseMirror pre {
+  background: #f8f9fa;
+  padding: 1rem;
   border-radius: 6px;
   overflow-x: auto;
-  margin: 1em 0;
+  margin: 1rem 0;
 }
 
-.editorContent :global(.ProseMirror pre code) {
+.editor-content .ProseMirror pre code {
   background: none;
   padding: 0;
-  color: inherit;
 }
 
-.editorContent :global(.ProseMirror a) {
-  color: #3b82f6;
-  text-decoration: underline;
-  cursor: pointer;
+.editor-content .ProseMirror table {
+  border-collapse: collapse;
+  margin: 1rem 0;
+  width: 100%;
 }
 
-.editorContent :global(.ProseMirror a:hover) {
-  color: #2563eb;
+.editor-content .ProseMirror th,
+.editor-content .ProseMirror td {
+  border: 1px solid #dee2e6;
+  padding: 0.5rem;
+  text-align: left;
 }
 
-.editorContent :global(.ProseMirror img) {
+.editor-content .ProseMirror th {
+  background: #f8f9fa;
+  font-weight: 600;
+}
+
+.editor-content .ProseMirror img {
   max-width: 100%;
   height: auto;
-  border-radius: 4px;
-  margin: 0.5em 0;
+  border-radius: 6px;
+  margin: 1rem 0;
 }
 
-.editorContent :global(.ProseMirror .is-editor-empty:first-child::before) {
-  color: #9ca3af;
-  content: attr(data-placeholder);
-  float: left;
-  height: 0;
+.editor-content .ProseMirror a {
+  color: #007bff;
+  text-decoration: underline;
+}
+
+.editor-content .ProseMirror a:hover {
+  color: #0056b3;
+}
+
+.placeholder {
+  color: #6c757d;
+  font-style: italic;
   pointer-events: none;
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+}
+
+.youtube-embed {
+  margin: 1rem 0;
+  text-align: center;
+}
+
+.youtube-embed iframe {
+  max-width: 100%;
+  border-radius: 6px;
 }
 
 /* Responsive Design */
 @media (max-width: 768px) {
   .toolbar {
-    padding: 6px;
-    gap: 2px;
+    padding: 0.5rem;
+    gap: 0.25rem;
   }
   
-  .toolbarButton {
+  .toolbar-button {
     min-width: 28px;
     height: 28px;
     font-size: 12px;
   }
   
-  .editorContent {
-    padding: 12px;
-    min-height: 250px;
+  .toolbar-select {
+    min-width: 60px;
+    font-size: 11px;
+  }
+  
+  .toolbar-divider {
+    margin: 0 0.25rem;
+  }
+  
+  .editor-content {
+    padding: 0.75rem;
   }
 }
 
@@ -216,8 +266,16 @@
     align-items: stretch;
   }
   
-  .toolbarButton {
-    justify-content: flex-start;
-    text-align: left;
+  .toolbar-group {
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+  
+  .toolbar-divider {
+    display: none;
+  }
+  
+  .editor-content {
+    padding: 0.5rem;
   }
 }

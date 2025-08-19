@@ -1,0 +1,326 @@
+.rubricsPage {
+  min-height: 100vh;
+  background: #f8f9fa;
+}
+
+.mainContent {
+  padding: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.header h1 {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #2c3e50;
+  margin: 0;
+}
+
+.languageSelector {
+  display: flex;
+  align-items: center;
+}
+
+.languageSelect {
+  padding: 0.5rem 1rem;
+  border: 1px solid #dee2e6;
+  border-radius: 6px;
+  background: white;
+  font-size: 14px;
+  cursor: pointer;
+  min-width: 80px;
+}
+
+.languageSelect:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.1);
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.addButton {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: #28a745;
+  color: white;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  font-weight: bold;
+  transition: all 0.2s ease;
+}
+
+.addButton:hover {
+  background: #218838;
+  transform: scale(1.05);
+}
+
+.plusIcon {
+  line-height: 1;
+}
+
+.bulkActions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.bulkAction {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: #6f42c1;
+  color: white;
+  border: none;
+  cursor: pointer;
+  font-size: 18px;
+  font-weight: bold;
+  transition: all 0.2s ease;
+}
+
+.bulkAction:hover {
+  background: #5a32a3;
+  transform: scale(1.05);
+}
+
+.tableContainer {
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+.rubricsTable {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.rubricsTable th {
+  background: #f8f9fa;
+  padding: 1rem;
+  text-align: left;
+  font-weight: 600;
+  color: #495057;
+  border-bottom: 2px solid #dee2e6;
+  font-size: 14px;
+}
+
+.nameColumn {
+  width: 70%;
+}
+
+.operationsColumn {
+  width: 30%;
+}
+
+.tableRow {
+  border-bottom: 1px solid #e9ecef;
+  transition: background 0.2s ease;
+}
+
+.tableRow:hover {
+  background: #f8f9fa;
+}
+
+.tableRow:last-child {
+  border-bottom: none;
+}
+
+.nameCell {
+  padding: 1rem;
+  vertical-align: middle;
+}
+
+.rubricName {
+  font-weight: 500;
+  color: #2c3e50;
+  font-size: 16px;
+}
+
+.rubricId {
+  color: #6c757d;
+  font-size: 14px;
+  margin-left: 0.5rem;
+}
+
+.operationsCell {
+  padding: 1rem;
+  vertical-align: middle;
+}
+
+.operationButtons {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.operationButton {
+  width: 32px;
+  height: 32px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  transition: all 0.2s ease;
+  background: #e9ecef;
+  color: #495057;
+}
+
+.operationButton:hover {
+  transform: scale(1.1);
+}
+
+.operationButton:first-child,
+.operationButton:nth-child(2) {
+  background: #17a2b8;
+  color: white;
+}
+
+.operationButton:nth-child(3) {
+  background: #ffc107;
+  color: #212529;
+}
+
+.visibilityButton {
+  background: #e9ecef;
+  color: #6c757d;
+}
+
+.visibilityButton.visible {
+  background: #28a745;
+  color: white;
+}
+
+.visibilityButton.hidden {
+  background: #6c757d;
+  color: white;
+}
+
+.deleteButton {
+  background: #dc3545;
+  color: white;
+}
+
+.deleteButton:hover {
+  background: #c82333;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .mainContent {
+    padding: 1rem;
+  }
+  
+  .header {
+    flex-direction: column;
+    gap: 1rem;
+    align-items: flex-start;
+  }
+  
+  .header h1 {
+    font-size: 1.5rem;
+  }
+  
+  .actions {
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+  
+  .addButton {
+    width: 40px;
+    height: 40px;
+    font-size: 20px;
+  }
+  
+  .bulkAction {
+    width: 36px;
+    height: 36px;
+    font-size: 16px;
+  }
+  
+  .rubricsTable th,
+  .rubricsTable td {
+    padding: 0.75rem 0.5rem;
+  }
+  
+  .operationButtons {
+    gap: 0.25rem;
+  }
+  
+  .operationButton {
+    width: 28px;
+    height: 28px;
+    font-size: 12px;
+  }
+  
+  .rubricName {
+    font-size: 14px;
+  }
+  
+  .rubricId {
+    font-size: 12px;
+    display: block;
+    margin-left: 0;
+    margin-top: 0.25rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .mainContent {
+    padding: 0.5rem;
+  }
+  
+  .header h1 {
+    font-size: 1.25rem;
+  }
+  
+  .addButton {
+    width: 36px;
+    height: 36px;
+    font-size: 18px;
+  }
+  
+  .bulkAction {
+    width: 32px;
+    height: 32px;
+    font-size: 14px;
+  }
+  
+  .rubricsTable th,
+  .rubricsTable td {
+    padding: 0.5rem 0.25rem;
+  }
+  
+  .operationButton {
+    width: 24px;
+    height: 24px;
+    font-size: 10px;
+  }
+  
+  .rubricName {
+    font-size: 13px;
+  }
+  
+  .rubricId {
+    font-size: 11px;
+  }
+}
