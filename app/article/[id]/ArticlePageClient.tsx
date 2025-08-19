@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { AllNews, CategoryNews, ColumnNews, MainNews, CategoryTitle, AdBanner, Breadcrumbs } from "@/app/components";
+import { AllNews, CategoryNews, ColumnNews, MainNews, CategoryTitle, AdBanner, Breadcrumbs, ArticleMeta } from "@/app/components";
 import NewsList from "@/app/components/listNews/listNews";
 import Image from "next/image";
 import styles from "./page.module.css";
@@ -33,6 +33,7 @@ export const ArticlePageClient: React.FC<ArticlePageClientProps> = ({
         {/* Основний контент - ліва частина */}
         <div className={styles.mainContent}>
           {/* Breadcrumbs навігація */}
+          {!isMobile &&
           <Breadcrumbs 
             items={[
               { label: 'ГОЛОВНА', href: '/' },
@@ -40,7 +41,15 @@ export const ArticlePageClient: React.FC<ArticlePageClientProps> = ({
               { label: 'НОВИНА' }
             ]} 
           />
+          }
           <AdBanner className={styles.adBannerStandard} />
+          
+          {/* Метадані статті - дата та соціальні мережі */}
+          <ArticleMeta 
+            date={articleData.publishedAt || articleData.createdAt || new Date().toISOString()} 
+            isMobile={isMobile}
+          />
+          
           
           {/* Заголовок статті */}
           <div className={styles.articleHeader}>
@@ -89,15 +98,45 @@ export const ArticlePageClient: React.FC<ArticlePageClientProps> = ({
           
           {/* Рекламний банер */}
           <AdBanner className={styles.adBannerStandard} />
+
+          {isMobile && 
+          <> 
+            <div className={styles.newsColumn}>
+              <NewsList
+                mobileLayout='horizontal'
+                arrowRightIcon
+                title="НОВИНИ ЛЬВОВА"
+                data={newsData1}
+                showImagesAt={[0, 1]}
+                showMoreButton={true}
+                moreButtonUrl="/category/politics"
+                widthPercent={100}
+              />
+            </div>
+            <div className={styles.rightSeparator}></div>
+            <div className={styles.newsColumn}>
+              <Image 
+                src={banner3} 
+                alt="banner3" 
+                width={600} 
+                height={240} 
+                className={styles.banner3}
+                priority={false}
+              />
+          </div>
+        </>
+          }
           
           {/* Колонка новин - без заголовка */}
           <ColumnNews 
+            isMobile={isMobile}
+            mobileLayout='horizontal'
             newsQuantity={4} 
             smallImg={true} 
-            category="ПОЛІТИКА" 
-            secondCategory=""
+            category="СВІЖІ НОВИНИ" 
+            secondCategory="СВІЖІ НОВИНИ"
             showNewsList={false} 
-            hideHeader={true} 
+            hideHeader={false} 
             className={styles.columnNewsStandard}
           />
           
@@ -106,14 +145,29 @@ export const ArticlePageClient: React.FC<ArticlePageClientProps> = ({
           
           {/* Категорія новин - без заголовка */}
           <CategoryNews
+            isMobile={isMobile}
             height={133} 
-            category="ЕКОНОМІКА" 
-            hideHeader={true} 
+            category="ТОП НОВИНИ" 
+            hideHeader={false} 
             className={styles.categoryNewsStandard}
           />
+
+          {isMobile && <div style={{
+            marginBottom: 24
+          }} className={styles.newsColumn}>
+            <Image 
+              src={adBannerIndfomo} 
+              alt="IN-FOMO Banner" 
+              width={600} 
+              height={240} 
+              className={styles.fomoLogo}
+              priority={false}
+            />
+          </div>}
         </div>
 
         {/* Права частина - три колонки NewsList */}
+        {!isMobile &&
         <div className={styles.sidebar}>
           <div className={styles.newsColumn}>
             <Image 
@@ -125,10 +179,12 @@ export const ArticlePageClient: React.FC<ArticlePageClientProps> = ({
               priority={false}
             />
           </div>
+          {!isMobile &&
           <div className={styles.infoSection}>
             <CurrencyRates />
             <WeatherWidget />
           </div>
+          }
           <div className={styles.rightSeparator}></div>
           
           <div className={styles.newsColumn}>
@@ -156,13 +212,16 @@ export const ArticlePageClient: React.FC<ArticlePageClientProps> = ({
             />
           </div>
         </div>
+}
       </div>
       
+      {/* {!isMobile &&
       <div className={styles.containerAllNews}>
         <AllNews
           customTitle="Більше новин"
         />
-      </div>
+      </div> */}
+
     </>
   );
 };

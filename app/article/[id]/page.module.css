@@ -24,6 +24,11 @@
   padding-right: 0;
 }
 
+/* Метадані статті - дата та соціальні мережі */
+.articleMeta {
+  margin-bottom: 20px;
+}
+
 /* Заголовок статті */
 .articleHeader {
   margin-bottom: 24px;
@@ -295,7 +300,7 @@
 
 @media (max-width: 768px) {
   .container {
-    flex-direction: column;
+    flex-direction: column-reverse;
     gap: 1rem;
     padding: 0 1rem;
   }
@@ -311,6 +316,10 @@
   
   .containerAllNews {
     padding: 0 1rem;
+  }
+  
+  .articleMeta {
+    margin-bottom: 16px;
   }
   
   .articleTitle {
@@ -333,6 +342,10 @@
   
   .containerAllNews {
     padding: 0 0.5rem;
+  }
+  
+  .articleMeta {
+    margin-bottom: 12px;
   }
   
   .articleTitle {

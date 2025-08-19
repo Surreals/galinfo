@@ -1,0 +1,145 @@
+.articleMeta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  padding: 0;
+  position: relative;
+}
+
+.dateTime {
+  font-size: 14px;
+  color: var(--color-secondary);
+  font-weight: 400;
+  line-height: 1.4;
+}
+
+.socialIcons {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.socialButton {
+  background: none;
+  border: none;
+  padding: 8px;
+  cursor: pointer;
+  border-radius: 50%;
+  transition: background-color 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.socialButton:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+.socialButton:active {
+  background-color: rgba(0, 0, 0, 0.1);
+}
+
+.rightSeparator {
+    width: 100%;
+    height: 1px;
+    background-color: var(--color-tertiary);
+    margin: 24px 0;
+    opacity: 1;
+  }
+
+
+
+/* Мобільна кнопка поділення */
+.mobileShareButton {
+  background: none;
+  border: none;
+  padding: 8px;
+  cursor: pointer;
+  border-radius: 50%;
+  transition: background-color 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.mobileShareButton:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+.mobileShareButton:active {
+  background-color: rgba(0, 0, 0, 0.1);
+}
+
+.socialButton svg {
+  color: var(--color-primary);
+  transition: color 0.2s ease;
+}
+
+.socialButton:hover svg {
+  color: var(--color-primary);
+}
+
+.mobileShareButton svg {
+  color: var(--color-primary);
+  transition: color 0.2s ease;
+}
+
+.mobileShareButton:hover svg {
+  color: var(--color-primary);
+}
+
+/* Сепаратор для мобільної версії */
+.mobileSeparator {
+  width: 100%;
+  height: 2px;
+  background-color: var(--color-tertiary);
+  margin: 0px 0 24px 0;
+  opacity: 0.7;
+  display: none; /* Прихований за замовчуванням */
+}
+
+/* Мобільні стилі */
+@media (max-width: 768px) {
+  .articleMeta {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0;
+    margin-bottom: 20px;
+  }
+  
+  .dateTime {
+    font-size: 13px;
+  }
+  
+  .socialIcons {
+    gap: 16px;
+  }
+  
+  .socialButton {
+    padding: 10px;
+  }
+  
+  .mobileSeparator {
+    display: block;
+  }
+}
+
+@media (max-width: 480px) {
+  .articleMeta {
+    margin-bottom: 0px;
+  }
+  
+  .dateTime {
+    font-size: 12px;
+  }
+  
+  .socialIcons {
+    gap: 14px;
+  }
+  
+  .socialButton {
+    padding: 8px;
+  }
+}
