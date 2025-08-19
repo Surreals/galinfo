@@ -1,10 +1,9 @@
 import type { Metadata } from "next";
-import { Open_Sans } from "next/font/google";
+import { Open_Sans, Rubik } from "next/font/google";
 import { ConfigProvider } from "antd";
 
 import Footer from "@/app/footer/Footer";
 import Header from "@/app/header/Header";
-import { MobileProvider } from "@/app/contexts/MobileContext";
 
 import "./globals.css";
 import "antd/dist/reset.css";
@@ -13,6 +12,13 @@ const openSans = Open_Sans({
   variable: "--font-open-sans",
   subsets: ["latin"],
   weight: ["400", "600", "700"],
+  display: "swap",
+});
+
+const rubik = Rubik({
+  variable: "--font-rubik",
+  subsets: ["latin", "cyrillic", "hebrew"],
+  weight: ["300", "400", "500", "700"],
   display: "swap",
 });
 
@@ -51,17 +57,18 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${openSans.variable} antialiased`} suppressHydrationWarning={true}>
-        <ConfigProvider
-          theme={customTheme}
-        >
-          <MobileProvider>
-            <Header/>
-            {children}
-            <Footer/>
-          </MobileProvider>
-        </ConfigProvider>
-      </body>
+    <body
+      className={`${openSans.variable} ${rubik.variable} antialiased`}
+      suppressHydrationWarning={true}
+    >
+    <ConfigProvider
+      theme={customTheme}
+    >
+      <Header/>
+      {children}
+      <Footer/>
+    </ConfigProvider>
+    </body>
     </html>
   );
 }

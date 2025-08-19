@@ -207,13 +207,13 @@ export default function Hero() {
         }
 
         <NewsList
-        mobileLayout="horizontal"
+          mobileLayout="horizontal"
           data={newsData}
           showImagesAt={[0, 1]}
           widthPercent={isMobile ? 100 : 25}
           title="НОВИНИ ЛЬВОВА"
           showMoreButton
-          settingsIcon
+          arrowRightIcon
           moreButtonUrl="/lviv-news"
         />
       </div>

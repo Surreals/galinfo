@@ -29,12 +29,6 @@ export default function CurrencyRates() {
     <div className={styles.currencySection}>
       <div className={styles.titleBox}>
         <h4 className={styles.sectionTitle}>КУРСИ ВАЛЮТ</h4>
-        <Image
-          src={arrowRight}
-          alt={'Arrow right'}
-          width={10}
-          height={8}
-        />
       </div>
       <div className={styles.exchangeTable}>
         <div className={styles.exchangeTableHeader}>

@@ -8,12 +8,6 @@ export default function WeatherWidget() {
     <div className={styles.weatherSection}>
       <div className={styles.titleBox}>
         <h4 className={styles.sectionTitle}>ПОГОДА</h4>
-        <Image
-          src={arrowRight}
-          alt={'Arrow right'}
-          width={10}
-          height={8}
-        />
       </div>
       <div>
         <link

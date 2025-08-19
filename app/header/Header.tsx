@@ -68,7 +68,7 @@ export default function Header() {
             </li>
             <li>
               <Link href={paths.politics} className={styles.link}>
-                ПОЛІТИА
+                ПОЛІТИКА
               </Link>
             </li>
             <li>
@@ -135,36 +135,38 @@ export default function Header() {
           </div>
         </div>
       </div>
-      <div className={styles.secondaryHeader}>
-        <p className={styles.text}>
-          Агенція інформації та аналітики "Гал-інфо"
-        </p>
-        <div className={styles.infoContainer}>
-          {/* Статичний блок "ТЕРМІНОВІ НОВИНИ" */}
-          <Link href={paths.society} className={styles.newInfoLink}>
-            <p className={styles.boltText}>ТЕРМІНОВІ НОВИНИ</p>
-            <Image src={dotIcon} alt="Dot Logo" width={8} height={8}/>
-          </Link>
+      <div className={styles.secondaryHeaderBox}>
+        <div className={styles.secondaryHeader}>
+          <p className={styles.text}>
+            Агенція інформації та аналітики "Гал-інфо"
+          </p>
+          <div className={styles.infoContainer}>
+            {/* Статичний блок "ТЕРМІНОВІ НОВИНИ" */}
+            <Link href={paths.society} className={styles.newInfoLink}>
+              <p className={styles.boltText}>ТЕРМІНОВІ НОВИНИ</p>
+              <Image src={dotIcon} alt="Dot Logo" width={8} height={8}/>
+            </Link>
 
-          <div className={styles.marqueeWrapper}>
-            <div className={styles.marqueeContent}>
-              <Link href={paths.society} className={styles.newInfoLink}>
-                <p className={styles.gradientTextStart}>“ ВАЖЛИВА НОВИНА 1 ................. “</p>
-                <Image src={dotIcon} alt="Dot Logo" width={8} height={8}/>
-              </Link>
-              <Link href={paths.society} className={styles.newInfoLink}>
-                <p className={styles.gradientTextEnd}>“ ВАЖЛИВА НОВИНА 2 ................. “</p>
-                <Image src={dotIcon} alt="Dot Logo" width={8} height={8}/>
-              </Link>
+            <div className={styles.marqueeWrapper}>
+              <div className={styles.marqueeContent}>
+                <Link href={paths.society} className={styles.newInfoLink}>
+                  <p className={styles.gradientTextStart}>“ ВАЖЛИВА НОВИНА 1 ................. “</p>
+                  <Image src={dotIcon} alt="Dot Logo" width={8} height={8}/>
+                </Link>
+                <Link href={paths.society} className={styles.newInfoLink}>
+                  <p className={styles.gradientTextEnd}>“ ВАЖЛИВА НОВИНА 2 ................. “</p>
+                  <Image src={dotIcon} alt="Dot Logo" width={8} height={8}/>
+                </Link>
 
-              <Link href={paths.society} className={styles.newInfoLink}>
-                <p className={styles.gradientTextStart}>“ ВАЖЛИВА НОВИНА 1 ................. “</p>
-                <Image src={dotIcon} alt="Dot Logo" width={8} height={8}/>
-              </Link>
-              <Link href={paths.society} className={styles.newInfoLink}>
-                <p className={styles.gradientTextEnd}>“ ВАЖЛИВА НОВИНА 2 ................. “</p>
-                <Image src={dotIcon} alt="Dot Logo" width={8} height={8}/>
-              </Link>
+                <Link href={paths.society} className={styles.newInfoLink}>
+                  <p className={styles.gradientTextStart}>“ ВАЖЛИВА НОВИНА 1 ................. “</p>
+                  <Image src={dotIcon} alt="Dot Logo" width={8} height={8}/>
+                </Link>
+                <Link href={paths.society} className={styles.newInfoLink}>
+                  <p className={styles.gradientTextEnd}>“ ВАЖЛИВА НОВИНА 2 ................. “</p>
+                  <Image src={dotIcon} alt="Dot Logo" width={8} height={8}/>
+                </Link>
+              </div>
             </div>
           </div>
         </div>

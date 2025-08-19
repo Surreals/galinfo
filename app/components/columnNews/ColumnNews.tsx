@@ -27,7 +27,6 @@ export interface ColumnNewsProps {
   isHomePage?: boolean;
   smallImg?: boolean;
   arrowRightIcon?: boolean;
-  settingsIcon?: boolean;
   newsQuantity?: number;
   showNewsList?: boolean;
   hideHeader?: boolean;
@@ -43,7 +42,6 @@ export default function ColumnNews({
   isLoading = false,
   isHomePage = false,
  arrowRightIcon = false,
-   settingsIcon = false,
   smallImg = false,
   newsQuantity = 4,
   showNewsList = true,
@@ -238,7 +236,6 @@ export default function ColumnNews({
             <div className={styles.listNewsContainer}>
               <NewsList
                   mobileLayout={mobileLayout}
-                  settingsIcon={settingsIcon}
                   arrowRightIcon={arrowRightIcon}
                   title={secondCategory}
                   data={newsData}
