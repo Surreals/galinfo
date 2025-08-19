@@ -7,7 +7,8 @@
   --color-tertiary: #999999;     /* Світло-сірий */
   --color-white: #FFFFFF;        /* Білий */
   --color-accent: #C70850;       /* Маджента/рожевий */
-  --color-accent-hover: #DA0457;       /* Маджента/рожевий ховер */
+  --color-accent-hover: #DA0457;
+  --color-border: #CFCFCF /* Маджента/рожевий ховер */
 }
 
 p, h1, h2, h3, h4, h5, h6, ol, ul, dl {

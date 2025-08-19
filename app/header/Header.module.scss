@@ -3,6 +3,90 @@
   position: relative;
   font-family: var(--font-rubik), sans-serif;
 
+  .flexContainer {
+    display: flex;
+    gap: 60px;
+    justify-content: space-between;
+    width: 100%;
+    max-width: 1440px;
+    margin: 0 auto;
+    padding: 48px 80px;
+  }
+
+  .title {
+    cursor: default;
+    font-family: 'Open Sans', sans-serif;
+    font-weight: 600;
+    font-size: 28px;
+    line-height: 1.2;
+    letter-spacing: 0.025em;
+    padding-bottom: 3px;
+    text-transform: capitalize;
+    border-bottom: 1px solid var(--color-tertiary);
+  }
+
+  .list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    width: 100%;
+  }
+
+  .linkSlider {
+    font-family: 'Open Sans', sans-serif;
+    font-weight: 600;
+    font-size: 12px;
+    line-height: 1.2;
+    letter-spacing: 0;
+    display: block;
+    vertical-align: middle;
+    transition: color 0.2s ease;
+    width: 100%;
+  }
+
+  .linkSlider:hover {
+    color: var(--color-accent);
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    width: 100%;
+  }
+
+  .gridColumn {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    width: 100%;
+  }
+
+  .column {
+    flex: 1;
+    min-width: 200px;
+    max-width: 300px;
+  }
+
+  .categoriesColumn {
+    flex: 2;
+    min-width: 400px;
+  }
+
+  .moreNewsBlock {
+    overflow: hidden;
+    max-height: 0;
+    opacity: 0;
+    padding: 0;
+
+    transition: max-height 0.4s ease, opacity 0.4s ease, padding 0.4s ease;
+
+    &.open {
+      max-height: 300px;
+      opacity: 1;
+    }
+  }
+
   .secondaryHeaderBox {
     width: 100%;
     border-bottom: 1px solid var(--color-tertiary);
@@ -388,6 +472,10 @@
   }
 
   .headerMain {
+    .secondaryHeaderBox {
+      border-bottom: none;
+      border-top: none;
+    }
     .infoSection {
       display: flex;
       border-top: 1px solid var(--color-tertiary);
@@ -404,6 +492,9 @@
     padding: 16px 40px;
   }
   .headerMain {
+    .flexContainer {
+      gap: 40px;
+    }
     .infoSection {
       padding: 8px 40px;
     }
@@ -416,6 +507,19 @@
   }
 
   .headerMain {
+    .flexContainer {
+      flex-direction: column;
+      gap: 32px;
+    }
+
+    .column,
+    .categoriesColumn {
+      flex: none;
+      width: 100%;
+      max-width: none;
+      min-width: auto;
+    }
+
     .infoSection {
       padding: 8px 20px;
     }

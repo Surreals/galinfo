@@ -33,6 +33,7 @@ export default function HomePage() {
             newsQuantity={4}
             smallImg={true}
             category="ПОЛІТИКА"
+            arrowRightIcon
             secondCategory="ВІЙНА З РОСІЄЮ"
             isHomePage={true}
             showNewsList={true}

@@ -17,6 +17,7 @@ import styles from "@/app/header/Header.module.scss";
 
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isMoreNewsOpen, setIsMoreNewsOpen] = useState(false);
   const [isClosing, setIsClosing] = useState(false);
 
   useEffect(() => {
@@ -30,6 +31,10 @@ export default function Header() {
       document.body.style.overflow = "";
     };
   }, [isMenuOpen]);
+
+  const toggleMoreNews = () => {
+    setIsMoreNewsOpen(prev => !prev);
+  };
 
   const handleCloseMenu = () => {
     setIsClosing(true);
@@ -102,7 +107,7 @@ export default function Header() {
               </Link>
             </li>
             <li>
-              <Link href={paths.crime} className={styles.link}>
+              <Link href="#" onClick={toggleMoreNews} className={styles.link}>
                 БІЛЬШЕ НОВИН...
               </Link>
             </li>
@@ -132,6 +137,114 @@ export default function Header() {
                 height={40}
               />
             </a>
+          </div>
+        </div>
+      </div>
+      <div
+        className={`${styles.moreNewsBlock} ${isMoreNewsOpen ? styles.open : ''}`}
+      >
+        <div className={styles.flexContainer}>
+          {/* ТОП ТЕМИ */}
+          <div className={styles.column}>
+            <h3 className={styles.title}>ТОП ТЕМИ</h3>
+            <div className={styles.divider}></div>
+            <ul className={styles.list}>
+              <li>
+                <Link href={paths.frankConversation} className={styles.linkSlider}>
+                  ВІДВЕРТА РОЗМОВА З
+                </Link>
+              </li>
+              <li>
+                <Link href={paths.lvivDistricts} className={styles.linkSlider}>
+                  РАЙОНИ ЛЬВОВА
+                </Link>
+              </li>
+              <li>
+                <Link href={paths.pressService} className={styles.linkSlider}>
+                  ПРЕССЛУЖБА
+                </Link>
+              </li>
+            </ul>
+          </div>
+
+          {/* КАТЕГОРІЇ */}
+          <div className={styles.categoriesColumn}>
+            <h3 className={styles.title}>КАТЕГОРІЇ</h3>
+            <div className={styles.divider}></div>
+            <div className={styles.grid}>
+              {/* Підколонка 1 - Регіони */}
+              <div className={styles.gridColumn}>
+                <Link href={paths.lvivRegion} className={styles.linkSlider}>
+                  ЛЬВІВЩИНА
+                </Link>
+                <Link href={paths.ternopilRegion} className={styles.linkSlider}>
+                  ТЕРНОПІЛЬЩИНА
+                </Link>
+                <Link href={paths.volyn} className={styles.linkSlider}>
+                  ВОЛИНЬ
+                </Link>
+                <Link href={paths.ukraine} className={styles.linkSlider}>
+                  УКРАЇНА
+                </Link>
+                <Link href={paths.eu} className={styles.linkSlider}>
+                  ЄС
+                </Link>
+                <Link href={paths.world} className={styles.linkSlider}>
+                  СВІТ
+                </Link>
+              </div>
+
+              {/* Підколонка 2 - Теми */}
+              <div className={styles.gridColumn}>
+                <Link href={paths.society} className={styles.linkSlider}>
+                  СУСПІЛЬСТВО
+                </Link>
+                <Link href={paths.politics} className={styles.linkSlider}>
+                  ПОЛІТИКА
+                </Link>
+                <Link href={paths.economy} className={styles.linkSlider}>
+                  ЕКОНОМІКА
+                </Link>
+                <Link href={paths.culture} className={styles.linkSlider}>
+                  КУЛЬТУРА
+                </Link>
+                <Link href={paths.health} className={styles.linkSlider}>
+                  ЗДОРОВ'Я
+                </Link>
+              </div>
+
+              {/* Підколонка 3 - Додаткові теми */}
+              <div className={styles.gridColumn}>
+                <Link href={paths.sport} className={styles.linkSlider}>
+                  СПОРТ
+                </Link>
+                <Link href={paths.crime} className={styles.linkSlider}>
+                  КРИМІНАЛ
+                </Link>
+                <Link href={paths.emergency} className={styles.linkSlider}>
+                  НАДЗВИЧАЙНІ ПОДІЇ
+                </Link>
+                <Link href={paths.history} className={styles.linkSlider}>
+                  ІСТОРІЯ
+                </Link>
+                <Link href={paths.technologies} className={styles.linkSlider}>
+                  ТЕХНОЛОГІЇ
+                </Link>
+              </div>
+
+              {/* Підколонка 4 - Типи контенту */}
+              <div className={styles.gridColumn}>
+                <Link href={paths.news} className={styles.linkSlider}>
+                  НОВИНА
+                </Link>
+                <Link href={paths.article} className={styles.linkSlider}>
+                  СТАТТЯ
+                </Link>
+                <Link href={paths.interview} className={styles.linkSlider}>
+                  ІНТЕРВ'Ю
+                </Link>
+              </div>
+            </div>
           </div>
         </div>
       </div>
