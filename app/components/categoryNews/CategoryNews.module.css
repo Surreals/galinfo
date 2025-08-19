@@ -249,7 +249,7 @@
 
 @media (max-width: 1000px) {
   .categoryNewsSection {
-    /*padding: 32px 0;*/
+    padding: 32px 0;
   }
   
   .container {
@@ -290,7 +290,7 @@
 
 @media (max-width: 480px) {
   .categoryNewsSection {
-    /*padding: 24px 0;*/
+    padding: 24px 0;
   }
   
   .container {

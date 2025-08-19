@@ -13,6 +13,7 @@ import 'dayjs/locale/uk';
 import arrowRight from "@/assets/icons/arrowRight.svg";
 import roundArrowRight from "@/assets/icons/roundArrowRight.svg";
 import roundArrowLeft from "@/assets/icons/roundArrowLeft.svg";
+import adBannerIndfomo from '@/assets/images/Ad Banner white.png';
 
 import styles from './Hero.module.scss';
 
@@ -176,7 +177,7 @@ export default function Hero() {
       <div className={styles.containerHeroInfo}>
         <NewsList
           data={newsData}
-          showImagesAt={[3]}
+          showImagesAt={isMobile ? [] : [3]}
           widthPercent={isMobile ? 100 : 45}
           showMoreButton={false}
         />
@@ -186,15 +187,29 @@ export default function Hero() {
           moreButtonUrl="/economics"
           data={newsData}
           arrowRightIcon
-          showImagesAt={[0]}
+          showImagesAt={[0, 1]}
           widthPercent={isMobile ? 100 : 25}
           showMoreButton
         />
 
+        {isMobile &&
+            <>
+              <div className={styles.rightSeparator}></div>              
+                <Image 
+                src={adBannerIndfomo} 
+                alt="IN-FOMO Banner" 
+                width={600} 
+                height={240} 
+                className={styles.fomoLogo}
+                priority={false}
+              />
+          </>
+        }
+
         <NewsList
         mobileLayout="horizontal"
           data={newsData}
-          showImagesAt={[3]}
+          showImagesAt={[0, 1]}
           widthPercent={isMobile ? 100 : 25}
           title="НОВИНИ ЛЬВОВА"
           showMoreButton

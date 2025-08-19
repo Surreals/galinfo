@@ -1,0 +1,168 @@
+'use client';
+
+import React from 'react';
+import { AllNews, CategoryNews, ColumnNews, MainNews, CategoryTitle, AdBanner, Breadcrumbs } from "@/app/components";
+import NewsList from "@/app/components/listNews/listNews";
+import Image from "next/image";
+import styles from "./page.module.css";
+import CurrencyRates from "@/app/components/hero/CurrencyRates";
+import WeatherWidget from "@/app/components/hero/WeatherWidget";
+import adBannerIndfomo from '@/assets/images/Ad Banner black.png';
+import banner3 from '@/assets/images/banner3.png';
+import { getBreadCrumbsNav } from "@/assets/utils/getTranslateCategory";
+import { useIsMobile } from "@/app/hooks/useIsMobile";
+
+interface ArticlePageClientProps {
+  articleData: any;
+  newsData1: any[];
+  newsData2: any[];
+  newsData3: any[];
+}
+
+export const ArticlePageClient: React.FC<ArticlePageClientProps> = ({ 
+  articleData, 
+  newsData1, 
+  newsData2, 
+  newsData3 
+}) => {
+  const isMobile = useIsMobile();
+
+  return (
+    <>
+      <div className={styles.container}>
+        {/* Основний контент - ліва частина */}
+        <div className={styles.mainContent}>
+          {/* Breadcrumbs навігація */}
+          <Breadcrumbs 
+            items={[
+              { label: 'ГОЛОВНА', href: '/' },
+              { label: articleData.category, href: `/category/${getBreadCrumbsNav(articleData.category.toLowerCase())}` },
+              { label: 'НОВИНА' }
+            ]} 
+          />
+          <AdBanner className={styles.adBannerStandard} />
+          
+          {/* Заголовок статті */}
+          <div className={styles.articleHeader}>
+            <h1 className={styles.articleTitle}>{articleData.title}</h1>
+            <p className={styles.articleLead}>{articleData.lead}</p>
+          </div>
+          
+          {/* Основне зображення статті */}
+          <div className={styles.articleImage}>
+            <Image 
+              src={articleData.imageUrl}
+              alt={articleData.imageAlt}
+              width={800}
+              height={500}
+              className={styles.mainImage}
+              priority={true}
+            />
+            <div className={styles.imageCredits}>
+              <span className={styles.photoCredit}>{articleData.photoCredit}</span>
+              <span className={styles.source}>{articleData.source}</span>
+            </div>
+          </div>
+          
+          {/* Основний текст статті */}
+          <div className={styles.articleContent}>
+            {articleData.content.split('\n\n').map((paragraph: string, index: number) => (
+              <p key={index} className={styles.paragraph}>
+                {paragraph}
+              </p>
+            ))}
+          </div>
+          
+          {/* Метадані статті */}
+          <div className={styles.articleMetadata}>
+            <div className={styles.tags}>
+              {articleData.tags.map((tag: string, index: number) => (
+                <span key={index} className={styles.tag}>
+                  {tag}
+                </span>
+              ))}
+            </div>
+            <div className={styles.authorInfo}>
+              Автор: {articleData.author}
+            </div>
+          </div>
+          
+          {/* Рекламний банер */}
+          <AdBanner className={styles.adBannerStandard} />
+          
+          {/* Колонка новин - без заголовка */}
+          <ColumnNews 
+            newsQuantity={4} 
+            smallImg={true} 
+            category="ПОЛІТИКА" 
+            secondCategory=""
+            showNewsList={false} 
+            hideHeader={true} 
+            className={styles.columnNewsStandard}
+          />
+          
+          {/* Рекламний банер */}
+          <AdBanner className={styles.adBannerStandard} />
+          
+          {/* Категорія новин - без заголовка */}
+          <CategoryNews
+            height={133} 
+            category="ЕКОНОМІКА" 
+            hideHeader={true} 
+            className={styles.categoryNewsStandard}
+          />
+        </div>
+
+        {/* Права частина - три колонки NewsList */}
+        <div className={styles.sidebar}>
+          <div className={styles.newsColumn}>
+            <Image 
+              src={banner3} 
+              alt="banner3" 
+              width={600} 
+              height={240} 
+              className={styles.banner3}
+              priority={false}
+            />
+          </div>
+          <div className={styles.infoSection}>
+            <CurrencyRates />
+            <WeatherWidget />
+          </div>
+          <div className={styles.rightSeparator}></div>
+          
+          <div className={styles.newsColumn}>
+            <NewsList
+              arrowRightIcon
+              title="ПОЛІТИКА"
+              data={newsData1}
+              showImagesAt={[0, 1]}
+              showMoreButton={true}
+              moreButtonUrl="/category/politics"
+              widthPercent={100}
+            />
+          </div>
+          
+          {/* Сепаратор між правими компонентами */}
+          <div className={styles.rightSeparator}></div>
+          <div className={styles.newsColumn}>
+            <Image 
+              src={adBannerIndfomo} 
+              alt="IN-FOMO Banner" 
+              width={600} 
+              height={240} 
+              className={styles.fomoLogo}
+              priority={false}
+            />
+          </div>
+        </div>
+      </div>
+      
+      <div className={styles.containerAllNews}>
+        <AllNews
+          customTitle="Більше новин"
+        />
+      </div>
+    </>
+  );
+};

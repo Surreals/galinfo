@@ -4,6 +4,7 @@ import { AccentSquare, ViewAllButton } from '@/app/shared';
 import NewsList from '../listNews/listNews';
 import styles from './ColumnNews.module.css';
 import arrowRight from "@/assets/icons/arrowRight.svg";
+import adBannerIndfomo from '@/assets/images/Ad Banner white.png';
 
 // Інтерфейси для типізації даних
 export interface ColumnNewsItem {
@@ -30,6 +31,7 @@ export interface ColumnNewsProps {
   showNewsList?: boolean;
   hideHeader?: boolean;
   className?: string; // Додаємо можливість передавати додатковий CSS клас
+  isMobile?: boolean;
 }
 
 export default function ColumnNews({ 
@@ -44,7 +46,8 @@ export default function ColumnNews({
   newsQuantity = 4,
   showNewsList = true,
   hideHeader = false,
-  className = ""
+  className = "",
+  isMobile = false
 }: ColumnNewsProps) {
   // Мокові дані для прикладу (будуть замінені на реальні дані)
   const mockNews: ColumnNewsItem[] = [
@@ -205,16 +208,29 @@ export default function ColumnNews({
           {/* ListNews компонент - тільки коли showNewsList=true */}
           {showNewsList && (
             <div className={styles.listNewsContainer}>
-            <NewsList
-              settingsIcon={settingsIcon}
-              arrowRightIcon={arrowRightIcon}
-                title={secondCategory}
-                data={newsData}
-                showImagesAt={[0, 1]}
-                showMoreButton={true}
-                moreButtonUrl="/all-news"
-                widthPercent={100}
-              />
+              <NewsList
+                settingsIcon={settingsIcon}
+                arrowRightIcon={arrowRightIcon}
+                  title={secondCategory}
+                  data={newsData}
+                  showImagesAt={[0, 1]}
+                  showMoreButton={true}
+                  moreButtonUrl="/all-news"
+                  widthPercent={100}
+                />
+                {!smallImg && !isMobile &&
+                <>
+                  <div className={styles.rightSeparator}></div>              
+                    <Image 
+                    src={adBannerIndfomo} 
+                    alt="IN-FOMO Banner" 
+                    width={600} 
+                    height={240} 
+                    className={styles.fomoLogo}
+                    priority={false}
+                  />
+              </>
+                }
             </div>
           )}
         </div>

@@ -590,3 +590,19 @@
     width: 300px;
   }
 } 
+
+.fomoLogo {
+  display: block;
+  width: 100% !important;
+  height: auto !important;
+  border-radius: 8px;
+  object-fit: cover;
+}
+
+.rightSeparator {
+  width: 100%;
+  height: 1px;
+  background-color: var(--color-tertiary);
+  margin: 24px 0;
+  opacity: 1;
+}

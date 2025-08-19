@@ -157,8 +157,21 @@
   }
 }
 
+.fomoLogo {
+  display: block;
+  width: 100% !important;
+  height: auto !important;
+  border-radius: 8px;
+  object-fit: cover;
+}
 
-
+.rightSeparator {
+  width: 100%;
+  height: 1px;
+  background-color: var(--color-tertiary);
+  margin: 24px 0;
+  opacity: 1;
+}
 
 @media (max-width: 1400px) {
  .heroSection {
@@ -208,5 +221,9 @@
     .container {
       padding: 24px 16px 50px 16px;
     }
+    .rightSeparator {
+      margin: 10px 0;
+    }
   }
 }
+
