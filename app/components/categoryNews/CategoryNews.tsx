@@ -26,6 +26,7 @@ export interface CategoryNewsProps {
   className?: string; // Додаємо можливість передавати додатковий CSS клас
   height?: number;
   mobileLayout?: 'column' | 'horizontal'; // Новий пропс для контролю мобільного відображення
+  isMobile?: boolean;
 }
 
 export default function CategoryNews({ 
@@ -35,11 +36,12 @@ export default function CategoryNews({
   hideHeader = false,
   height = 200,
   className = "",
-  mobileLayout = 'column' // За замовчуванням - колонка
+  mobileLayout = 'column', // За замовчуванням - колонка (по дві новини в рядок з квадратними фото)
+  isMobile = false
 }: CategoryNewsProps) {
   // Визначаємо, чи потрібно показувати горизонтальне відображення
   // Горизонтальне відображення застосовується тільки на мобільних пристроях
-  const [isMobile, setIsMobile] = useState(false);
+  const [isMobileResize, setIsMobile] = useState(false);
   
   useEffect(() => {
     const handleResize = () => {
@@ -52,7 +54,7 @@ export default function CategoryNews({
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  const shouldShowHorizontal = isMobile && mobileLayout === 'horizontal';
+  const shouldShowHorizontal = isMobileResize && mobileLayout === 'horizontal';
   // Мокові дані для прикладу (будуть замінені на реальні дані)
   const mockNews: CategoryNewsItem[] = [
     {
@@ -152,7 +154,13 @@ export default function CategoryNews({
             // Скелетон для завантаження
             Array.from({ length: 8 }).map((_, index) => (
               <div key={index} className={`${styles.newsItem} ${shouldShowHorizontal ? styles.newsItemHorizontal : ''}`}>
-                <div className={styles.skeletonImage}></div>
+                <div 
+                  className={styles.skeletonImage}
+                  style={{
+                    height: shouldShowHorizontal ? height : 'auto',
+                    aspectRatio: shouldShowHorizontal ? 'auto' : '1'
+                  }}
+                ></div>
                 <div className={styles.skeletonTitle}></div>
                 <div className={styles.skeletonDate}></div>
               </div>
@@ -163,14 +171,14 @@ export default function CategoryNews({
               <article key={item.id} className={`${styles.newsItem} ${shouldShowHorizontal ? styles.newsItemHorizontal : ''}`}>
                 <Link href={item.url} className={styles.newsLink}>
                   <div style={{
-                    height: height,
+                    height: shouldShowHorizontal ? height : 'auto',
                   }} 
                   className={styles.imageContainer}>
                     <Image 
                       src={item.imageUrl} 
                       alt={item.imageAlt}
                       width={300}
-                      height={height}
+                      height={shouldShowHorizontal ? height : 300}
                       className={styles.newsImage}
                     />
                     {item.isImportant && (
