@@ -22,7 +22,8 @@
     letter-spacing: 0.025em;
     padding-bottom: 3px;
     text-transform: capitalize;
-    border-bottom: 1px solid var(--color-tertiary);
+    border-bottom: 2px solid var(--color-border);
+    margin-bottom: .5em;
   }
 
   .list {
