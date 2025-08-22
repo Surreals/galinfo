@@ -349,7 +349,7 @@
 
 @media (max-width: 480px) {
   .categoryNewsSection {
-    padding: 24px 0;
+    padding: 0px 0;
   }
   
   .container {
@@ -357,7 +357,7 @@
   }
   
   .header {
-    margin-bottom: 20px;
+    margin-bottom: 16px;
   }
   
   .title {
@@ -408,13 +408,13 @@
   }
   
   .newsTitle {
-    font-size: 12px;
-    line-height: 1.2;
-    margin-bottom: 6px;
+    font-size: 16px;
+    /* line-height: 1.2; */
+    /* margin-bottom: 6px; */
   }
   
   .newsDate {
-    font-size: 10px;
+    font-size: 12px;
   }
   
   .importantTag {

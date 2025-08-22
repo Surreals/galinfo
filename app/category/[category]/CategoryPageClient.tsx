@@ -112,7 +112,9 @@ export const CategoryPageClient: React.FC<CategoryPageClientProps> = ({
           <AdBanner className={styles.adBannerStandard} />
         }
         {isMobile &&
-          <div className={styles.newsColumn}>
+          <div style={{
+            padding: '0 16px'
+          }} className={styles.newsColumn}>
             <NewsList
               mobileLayout="horizontal"
               arrowRightIcon
@@ -135,6 +137,9 @@ export const CategoryPageClient: React.FC<CategoryPageClientProps> = ({
               height={240} 
               className={styles.fomoLogo}
               priority={false}
+              style={{
+                marginBottom: '24px'
+              }}
             />
           </div>
         }

@@ -195,15 +195,9 @@ export default function WeatherWidget() {
           </div>
         </div>
 
-        {/* Скрипт для завантаження даних для Івано-Франківська */}
+        {/* Скрипт для завантаження даних */}
         <Script
-          src="https://sinoptik.ua/api/informer/content?loc=ivano-frankivsk&cem=gRYJ2sbUGk=WPQ6YbAD7cM=0cTYUcnEUbrjv2r3YPS5ePkC"
-          strategy="lazyOnload"
-        />
-        
-        {/* Скрипт для завантаження даних для Львова */}
-        <Script
-          src="https://sinoptik.ua/api/informer/content?loc=lviv&cem=gRYJ2sbUGk=WPQ6YbAD7cM=0cTYUcnEUbrjv2r3YPS5ePkC"
+          src="https://sinoptik.ua/api/informer/content?loc=bwCOPQ6RBMAlPUoebrAObrFr&cem=gRYJ2sbUGk=WPQ6YbAD7cM=0cTYUcnEUbrjv2r3YPS5ePkC"
           strategy="lazyOnload"
         />
       </div>

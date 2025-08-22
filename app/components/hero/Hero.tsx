@@ -176,6 +176,7 @@ export default function Hero() {
       </div>
       <div className={styles.containerHeroInfo}>
         <NewsList
+          showSeparator={true}
           data={newsData}
           showImagesAt={isMobile ? [] : [3]}
           widthPercent={isMobile ? 100 : 45}

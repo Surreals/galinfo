@@ -33,6 +33,7 @@ export interface ColumnNewsProps {
   className?: string; // Додаємо можливість передавати додатковий CSS клас
   isMobile?: boolean;
   mobileLayout?: 'column' | 'horizontal'; // Новий пропс для контролю мобільного відображення
+  showSeparator?: boolean;
 }
 
 export default function ColumnNews({ 
@@ -48,7 +49,8 @@ export default function ColumnNews({
   hideHeader = false,
   className = "",
   isMobile = false,
-  mobileLayout = 'column' // За замовчуванням - колонка
+  mobileLayout = 'column', // За замовчуванням - колонка
+  showSeparator = false
 }: ColumnNewsProps) {
   // Визначаємо, чи потрібно показувати горизонтальне відображення
   // Горизонтальне відображення застосовується тільки на мобільних пристроях
@@ -235,6 +237,7 @@ export default function ColumnNews({
           {showNewsList && (
             <div className={styles.listNewsContainer}>
               <NewsList
+                showSeparator={showSeparator}
                   mobileLayout={mobileLayout}
                   arrowRightIcon={arrowRightIcon}
                   title={secondCategory}

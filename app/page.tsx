@@ -65,6 +65,7 @@ export default function HomePage() {
         <>
           <Hero />
           <ColumnNews
+          showSeparator={true}
             isMobile={isMobile}
             mobileLayout="horizontal"
             newsQuantity={4}
@@ -76,6 +77,7 @@ export default function HomePage() {
           />
           <CategoryNews mobileLayout="horizontal" category="ЕВРОПА"/>
           <ColumnNews
+          showSeparator={true}
             isMobile={isMobile}
             mobileLayout="horizontal"
             newsQuantity={5}
@@ -87,6 +89,7 @@ export default function HomePage() {
           />
           <CategoryNews mobileLayout="horizontal" category="ІСТОРІЯ"/>
           <ColumnNews
+          showSeparator={true}
             isMobile={isMobile}
             mobileLayout="horizontal"
             newsQuantity={5}

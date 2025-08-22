@@ -25,6 +25,7 @@ type NewsListProps = {
   showMoreButton?: boolean;
   moreButtonUrl?: string;
   mobileLayout?: 'column' | 'horizontal'; // Новий пропс для контролю мобільного відображення
+  showSeparator?: boolean;
 };
 
 export default function NewsList({
@@ -36,6 +37,7 @@ export default function NewsList({
    showMoreButton = false,
    moreButtonUrl = "#",
    mobileLayout = 'column', // За замовчуванням - колонка
+   showSeparator = false
  }: NewsListProps) {
 
   const [isMobile, setIsMobile] = useState(false);
@@ -119,6 +121,9 @@ export default function NewsList({
         <div className={styles.moreBtnWrapper}>
           <ViewAllButton href="/all-news" />
         </div>
+      )}
+      {isMobile && showSeparator && (
+        <div className={styles.separator}></div>
       )}
     </div>
   );

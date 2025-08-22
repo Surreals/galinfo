@@ -607,7 +607,7 @@
   }
   
   .header {
-    margin-bottom: 20px;
+    margin-bottom: 0px;
     justify-content: center !important;
   }
   
@@ -760,7 +760,7 @@
   
   .newsItemHorizontal .newsDate,
   .newsItemHorizontal .newsDateSmall {
-    font-size: 11px !important;
+    font-size: 12px !important;
     font-weight: 400 !important;
     color: var(--color-secondary) !important;
     margin-top: auto !important;
@@ -811,7 +811,7 @@
   /* Стилі для заголовка та дати на мобільних */
   .newsItemHorizontal .newsTitle,
   .newsItemHorizontal .newsTitleSmall {
-    font-size: 12px !important;
+    font-size: 16px !important;
     -webkit-line-clamp: 2 !important;
     font-weight: 600 !important;
     color: var(--color-primary) !important;
@@ -821,7 +821,7 @@
   
   .newsItemHorizontal .newsDate,
   .newsItemHorizontal .newsDateSmall {
-    font-size: 10px !important;
+    font-size: 12px !important;
     font-weight: 400 !important;
     color: var(--color-secondary) !important;
     margin-top: auto !important;

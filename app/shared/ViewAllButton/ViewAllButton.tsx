@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { useIsMobile } from '../../hooks/useIsMobile';
 import styles from './ViewAllButton.module.css';
 
 export interface ViewAllButtonProps {
@@ -12,6 +13,8 @@ export default function ViewAllButton({
   text = "ВСІ НОВИНИ З РУБРИКИ",
   className 
 }: ViewAllButtonProps) {
+  const isMobile = useIsMobile();
+  
   return (
     <div className={`${styles.viewAllContainer} ${className || ''}`}>
       <Link href={href} className={styles.viewAllButton}>

@@ -101,7 +101,9 @@ export const ArticlePageClient: React.FC<ArticlePageClientProps> = ({
 
           {isMobile && 
           <> 
-            <div className={styles.newsColumn}>
+            <div style={{
+              padding: '0 16px'
+            }} className={styles.newsColumn}>
               <NewsList
                 mobileLayout='horizontal'
                 arrowRightIcon

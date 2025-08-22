@@ -42,9 +42,25 @@
   }
 }
 
+@media (max-width: 768px) {
+  .viewAllContainer {
+    justify-content: center;
+    width: 100%;
+  }
+  
+  .viewAllButton {
+    width: 100%;
+    justify-content: flex-start;
+    padding: 12px 16px;
+    font-size: 14px;
+    border-radius: 8px;
+  }
+}
+
 @media (max-width: 480px) {
   .viewAllButton {
-    padding: 6px 12px;
-    font-size: 11px;
+    padding: 12px 16px;
+    font-size: 14px;
+    border-radius: 8px;
   }
 } 
