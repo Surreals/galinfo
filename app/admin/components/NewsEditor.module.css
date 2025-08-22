@@ -10,7 +10,7 @@
 
 .editorHeader {
   background: #f8f9fa;
-  border-bottom: 1px solid #e9ecef;
+  border-bottom: 1px solid var(--color-border);
   padding: 1rem 1.5rem;
 }
 
@@ -25,7 +25,7 @@
   background: #f8d7da;
   color: #721c24;
   padding: 0.75rem 1.5rem;
-  border-bottom: 1px solid #f5c6cb;
+  border-bottom: 1px solid var(--color-border);
   font-size: 14px;
 }
 
@@ -37,14 +37,14 @@
 /* Left Content Area */
 .contentArea {
   flex: 1;
-  border-right: 1px solid #e9ecef;
+  border-right: 1px solid var(--color-border);
   background: white;
 }
 
 .tabNavigation {
   display: flex;
   background: #f8f9fa;
-  border-bottom: 1px solid #e9ecef;
+  border-bottom: 1px solid var(--color-border);
 }
 
 .tabButton {
@@ -93,7 +93,7 @@
 .headlineInput {
   width: 100%;
   padding: 0.75rem;
-  border: 2px solid #e9ecef;
+  border: 2px solid var(--color-border);
   border-radius: 6px;
   font-size: 16px;
   transition: border-color 0.2s ease;
@@ -108,7 +108,7 @@
 .leadTextarea {
   width: 100%;
   padding: 0.75rem;
-  border: 2px solid #e9ecef;
+  border: 2px solid var(--color-border);
   border-radius: 6px;
   font-size: 14px;
   resize: vertical;
@@ -124,7 +124,7 @@
 }
 
 .richTextWrapper {
-  border: 2px solid #e9ecef;
+  border: 2px solid var(--color-border);
   border-radius: 6px;
   overflow: hidden;
 }

@@ -33,7 +33,7 @@
 
 .filterSelect {
   padding: 10px 12px;
-  border: 2px solid #dee2e6;
+  border: 2px solid var(--color-border);
   border-radius: 8px;
   background: white;
   font-size: 14px;
@@ -75,7 +75,7 @@
   overflow: hidden;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
   transition: all 0.3s ease;
-  border: 1px solid #f1f3f4;
+  border: 1px solid var(--color-border);
 }
 
 .newsCard:hover {
@@ -195,7 +195,7 @@
   align-items: center;
   gap: 20px;
   padding: 30px 0;
-  border-top: 1px solid #e9ecef;
+  border-top: 1px solid var(--color-border);
 }
 
 .paginationInfo {
@@ -214,7 +214,7 @@
 
 .paginationButton {
   padding: 10px 16px;
-  border: 2px solid #dee2e6;
+  border: 2px solid var(--color-border);
   background: white;
   color: #495057;
   border-radius: 8px;

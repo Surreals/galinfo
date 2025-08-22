@@ -1,5 +1,5 @@
 .rich-text-editor {
-  border: 1px solid #e9ecef;
+  border: 1px solid var(--color-border);
   border-radius: 6px;
   overflow: hidden;
   background: white;
@@ -7,7 +7,7 @@
 
 .toolbar {
   background: #f8f9fa;
-  border-bottom: 1px solid #e9ecef;
+  border-bottom: 1px solid var(--color-border);
   padding: 0.75rem;
   display: flex;
   flex-wrap: wrap;
