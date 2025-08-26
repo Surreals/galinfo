@@ -28,10 +28,10 @@
 
 .title {
   font-family: 'Open Sans', sans-serif;
-  font-weight: 700;
+  font-weight: 600;
   font-size: 28px;
   line-height: 1.2;
-  color: var(--color-primary);
+  color: var(--color-title);
   margin: 0;
   cursor: pointer;
   text-transform: uppercase;
@@ -136,7 +136,12 @@
 }
 
 .newsLink:hover {
-  opacity: 0.8;
+  .imageContainerSmall {
+    opacity: 0.8;
+  }
+  .fomoLogo {
+    opacity: 0.8;
+  }
   .newsTitle, .newsTitleSmall {
     color: var(--color-accent);
   }

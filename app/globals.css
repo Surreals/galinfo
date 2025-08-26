@@ -6,8 +6,9 @@
   --color-secondary: #5B5B5B;    /* Темно-сірий */
   --color-tertiary: #999999;     /* Світло-сірий */
   --color-white: #FFFFFF;        /* Білий */
-  --color-accent: #C70850;       /* Маджента/рожевий */
+  --color-accent: #c7084f;       /* Маджента/рожевий */
   --color-accent-hover: #DA0457;
+  --color-title: #c7084f;
   --color-border: #CFCFCF /* Маджента/рожевий ховер */
 }
 

@@ -22,10 +22,10 @@
 
 .title {
   font-family: 'Open Sans', sans-serif;
-  font-weight: 700;
+  font-weight: 600;
   font-size: 28px;
   line-height: 1.2;
-  color: var(--color-primary);
+  color: var(--color-title);
   margin: 0;
   text-transform: uppercase;
   transition: color 0.3s ease;
