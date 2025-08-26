@@ -107,7 +107,11 @@ export default function Header() {
               </Link>
             </li>
             <li>
-              <Link href="#" onClick={toggleMoreNews} className={styles.link}>
+              <Link href="#"
+                    onMouseEnter={() => setIsMoreNewsOpen(true)}
+                    onMouseLeave={() => setIsMoreNewsOpen(false)}
+                    className={styles.link}
+              >
                 БІЛЬШЕ НОВИН...
               </Link>
             </li>
