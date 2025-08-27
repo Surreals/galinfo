@@ -176,34 +176,41 @@
 @media (max-width: 1400px) {
  .heroSection {
    .heroBox {
-     .infoSection {
-       display: none;
-     }
-
      .carouselBox {
-       max-width: 100%;
+       max-width: 68%;
      }
    }
  }
 }
 
-@media (max-width: 1200px) {
+@media (max-width: 1250px) {
   .heroSection {
-    .containerHeroInfo {
-      padding: 24px 40px 98px 40px;;
-    }
-    .container {
-      padding: 24px 40px 50px 40px;
+    .heroBox {
+      .infoSection {
+        display: none;
+      }
+
+      .carouselBox {
+        max-width: 100%;
+      }
     }
   }
 }
+
+//@media (max-width: 1200px) {
+//  .heroSection {
+//    .containerHeroInfo {
+//      padding: 24px 40px 98px 40px;;
+//    }
+//  }
+//}
 
 
 @media (max-width: 1000px) {
   .heroSection {
     .containerHeroInfo {
       flex-direction: column;
-      padding: 24px 20px 40px 20px;;
+      //padding: 24px 20px 40px 20px;;
     }
     .container {
       padding: 24px 20px 50px 20px;

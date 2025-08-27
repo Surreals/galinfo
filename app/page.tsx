@@ -3,6 +3,7 @@
 import { AllNews, CategoryNews, ColumnNews, Hero, ArticleLink } from "@/app/components";
 import { useHomePageData } from "@/app/hooks/useHomePageData";
 import { useIsMobile } from "@/app/hooks/useIsMobile";
+
 import styles from "./page.module.css";
 
 
@@ -21,6 +22,8 @@ export default function HomePage() {
   if (!data) {
     console.log('No data');
   }
+
+  console.log(data);
 
   return (
     <>

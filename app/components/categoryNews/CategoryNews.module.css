@@ -238,7 +238,7 @@
 /* Адаптивні стилі для різних розмірів екрану */
 @media (max-width: 1200px) {
   .container {
-    padding: 0 40px;
+    padding: 0;
   }
   
   .newsGrid {
@@ -261,10 +261,7 @@
   .categoryNewsSection {
     padding: 32px 0;
   }
-  
-  .container {
-    padding: 0 20px;
-  }
+
   
   .header {
     margin-bottom: 40px;
@@ -352,10 +349,6 @@
 @media (max-width: 480px) {
   .categoryNewsSection {
     padding: 0px 0;
-  }
-  
-  .container {
-    padding: 0 16px;
   }
   
   .header {

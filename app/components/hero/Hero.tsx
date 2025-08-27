@@ -77,7 +77,7 @@ export default function Hero() {
   }, []);
 
   const onChange = (currentSlide: number) => {
-    console.log(currentSlide);
+    // console.log(currentSlide);
   };
 
   const handleCarouselClick = (url: string) => {
@@ -206,7 +206,6 @@ export default function Hero() {
               />
           </>
         }
-
         <NewsList
           mobileLayout="horizontal"
           data={newsData}
@@ -221,3 +220,7 @@ export default function Hero() {
     </section>
   )
 }
+
+
+
+

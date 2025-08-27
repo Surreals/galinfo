@@ -435,7 +435,7 @@
 /* Адаптивні стилі для різних розмірів екрану */
 @media (max-width: 1200px) {
   .container {
-    padding: 0 40px;
+    padding: 0;
   }
   
   .title {
@@ -509,10 +509,7 @@
   .columnNewsSection {
     padding: 32px 0;
   }
-  
-  .container {
-    padding: 0 20px;
-  }
+
   
   .header {
     margin-bottom: 24px;
@@ -606,11 +603,7 @@
   .columnNewsSection {
     padding: 24px 0;
   }
-  
-  .container {
-    padding: 0 16px;
-  }
-  
+
   .header {
     margin-bottom: 0px;
     justify-content: center !important;
