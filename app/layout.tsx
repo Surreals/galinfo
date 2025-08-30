@@ -24,22 +24,64 @@ const rubik = Rubik({
 });
 
 const customTheme = {
+  token: {
+    colorPrimary: "#c7084f",
+    borderRadius: 8,
+    controlHeight: 46,
+  },
   components: {
     Carousel: {
       arrowSize: 14,
       dotActiveWidth: 34,
       dotGap: 5,
-      colorBgContainer: "rgb(199,8,80)",
+      colorBgContainer: "#c7084f",
       dotHeight: 12,
-      "dotOffset": -34
+      dotOffset: -34,
     },
     Input: {
-      activeBorderColor: "rgb(255,255,255)",
-      hoverBorderColor: "rgb(207,207,207)",
+      activeBorderColor: "#c7084f",
+      hoverBorderColor: "#c7084f",
       colorBorder: "rgb(207,207,207)",
       controlHeight: 46,
-      borderRadius: 8
-    }
+      borderRadius: 8,
+    },
+    Tabs: {
+      itemSelectedColor: "#c7084f",
+      inkBarColor: "#c7084f",
+      itemActiveColor: "#c7084f",
+      titleFontSize: 15,
+      titleFontWeight: 600,
+    },
+    Upload: {
+      colorPrimary: "#c7084f",
+      colorPrimaryHover: "#a70641",
+      colorBorder: "rgb(207,207,207)",
+      borderRadiusLG: 8,
+    },
+    Select: {
+      activeBorderColor: "#c7084f",
+      hoverBorderColor: "#c7084f",
+      borderRadius: 8,
+      controlHeight: 46,
+    },
+    Checkbox: {
+      colorPrimary: "#c7084f",
+      colorPrimaryHover: "#a70641",
+      borderRadiusSM: 4,
+    },
+    DatePicker: {
+      activeBorderColor: "#c7084f",
+      hoverBorderColor: "#c7084f",
+      borderRadius: 8,
+      controlHeight: 46,
+      colorPrimary: "#c7084f",
+    },
+    Radio: {
+      colorPrimary: "#c7084f",
+      colorPrimaryHover: "#a70641",
+      dotSize: 12,
+      borderRadiusSM: 4,
+    },
   },
 };
 
