@@ -1,2 +1,0 @@
-/*JSloader*/
-				setvalue("candyplace_home72890","<a href=\"https://www.tayfun.in.ua/?utm_source=banner&utm_medium=mainpromo&utm_campaign=galinfo.\"><img src=\"/var/things/8318bb6660e0830f3bd64303be338617.jpg\" ></a>")

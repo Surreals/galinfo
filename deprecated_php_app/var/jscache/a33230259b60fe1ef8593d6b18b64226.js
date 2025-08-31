@@ -1,2 +1,0 @@
-/*JSloader*/
-				setvalue("candyplace_read3001","<a href=\"http://kasa.in.ua/pershyi-chvert-final-halytskoi-lihy-kvn-lviv\"><img src=\"/var/things/c009d9ee8f638309895a33d6dbfe0cf1.gif\" style=\"width:300px;height:200px\"></a>")

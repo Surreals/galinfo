@@ -1,2 +1,0 @@
-/*JSloader*/
-				setvalue("candyplace_read0","<!-- Composite Start -->\r\n<div id=\"M811772ScriptRootC1323718\"></div>\r\n<script src=\"https://jsc.mgid.com/g/a/galinfo.com.ua.1323718.js\" async></script>\r\n<!-- Composite End -->")

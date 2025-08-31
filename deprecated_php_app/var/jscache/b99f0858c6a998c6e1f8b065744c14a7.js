@@ -1,2 +1,0 @@
-/*JSloader*/
-				setvalue("candyplace_home72890","<a href=\"https://lviv.kontramarka.ua/uk/foma-ta-gurt-mandri-cas-letit-44731.html\"><img src=\"/var/things/3ea77826952be4809a8e9ca7a47dc4d2.jpg\" style=\"width:860px;height:90px\"></a>")

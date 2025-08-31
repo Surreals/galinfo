@@ -1,2 +1,0 @@
-/*JSloader*/
-				setvalue("candyplace_read3000","<a href=\"https://lviv.kontramarka.ua/uk/litauci-zinki-85046.html\"><img src=\"/var/things/a736abfb956fd056f164725afa66e3f9.gif\" style=\"width:300px;height:250px\"></a>")

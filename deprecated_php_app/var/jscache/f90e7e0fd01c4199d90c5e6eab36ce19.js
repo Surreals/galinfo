@@ -1,2 +1,0 @@
-/*JSloader*/
-				setvalue("candyplace_home72890","<a href=\"http://ticketclub.com.ua/eventsession/3978/\"><img src=\"/var/things/8cd01197c5eac04bcd56ff2fc4eeff81.jpg\" style=\"width:730px;height:90px\"></a>")

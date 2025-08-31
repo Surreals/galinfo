@@ -1,2 +1,0 @@
-/*JSloader*/
-				setvalue("candyplace_read0","<div data-la-block=\"f0f7adb0-b573-4123-ae15-d4d1fa538985\"></div>\r\n<script async src=\"//xxyolk.com/10w7l1291ivlmp003y8hq/867vqu678pkyoazd6u.php\">\r\n</script>")

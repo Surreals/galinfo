@@ -1,2 +1,0 @@
-/*JSloader*/
-				setvalue("candyplace_home3001","<script async src=\"//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js\"></script>\r\n<ins class=\"adsbygoogle\"\r\n     style=\"display:inline-block;width:860px;height:90px\"\r\n     data-ad-client=\"ca-pub-2721832832858898\"\r\n     data-ad-slot=\"5079982546\"></ins>\r\n<script>\r\n     (adsbygoogle = window.adsbygoogle || []).push({});\r\n</script>")
