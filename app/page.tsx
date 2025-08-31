@@ -1,29 +1,13 @@
 'use client';
 
 import { AllNews, CategoryNews, ColumnNews, Hero, ArticleLink } from "@/app/components";
-import { useHomePageData } from "@/app/hooks/useHomePageData";
 import { useIsMobile } from "@/app/hooks/useIsMobile";
 
 import styles from "./page.module.css";
 
 
 export default function HomePage() {
-  const { data, loading, error } = useHomePageData();
   const isMobile = useIsMobile();
-
-  if (loading) {
-    console.log('Loading...');
-  }
-
-  if (error) {
-    console.log('Error:', error);
-  }
-
-  if (!data) {
-    console.log('No data');
-  }
-
-  console.log(data);
 
   return (
     <>

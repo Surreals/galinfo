@@ -14,11 +14,15 @@ import dotIcon from "@/assets/icons/dotIcon.svg"
 import burgerMenu from "@/assets/icons/burgerMenu.svg"
 
 import styles from "@/app/header/Header.module.scss";
+import { useMenuData } from "@/app/hooks/useMenuData";
 
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isMoreNewsOpen, setIsMoreNewsOpen] = useState(false);
   const [isClosing, setIsClosing] = useState(false);
+  
+  // Fetch dynamic menu data
+  const { menuData, loading, error } = useMenuData();
 
   useEffect(() => {
     if (isMenuOpen) {
@@ -52,6 +56,11 @@ export default function Header() {
     }
   };
 
+  // Fallback to static data if dynamic data is not available
+  const mainCategories = menuData?.mainCategories || [];
+  const regions = menuData?.regions || [];
+  const additionalItems = menuData?.additionalItems || [];
+
   return (
     <header className={styles.headerMain}>
       <div className={styles.header}>
@@ -66,46 +75,61 @@ export default function Header() {
         </Link>
         <nav className={styles.headerNav}>
           <ul className={styles.navList}>
-            <li>
-              <Link href={paths.society} className={styles.link}>
-                СУСПІЛЬСТВО
-              </Link>
-            </li>
-            <li>
-              <Link href={paths.politics} className={styles.link}>
-                ПОЛІТИКА
-              </Link>
-            </li>
-            <li>
-              <Link href={paths.economy} className={styles.link}>
-                ЕКОНОМІКА
-              </Link>
-            </li>
-            <li>
-              <Link href={paths.culture} className={styles.link}>
-                КУЛЬТУРА
-              </Link>
-            </li>
-            <li>
-              <Link href={paths.health} className={styles.link}>
-                ЗДОРОВ'Я
-              </Link>
-            </li>
-            <li>
-              <Link href={paths.health} className={styles.link}>
-                ВІЙНА З РОСІЄЮ
-              </Link>
-            </li>
-            <li>
-              <Link href={paths.sport} className={styles.link}>
-                СПОРТ
-              </Link>
-            </li>
-            <li>
-              <Link href={paths.crime} className={styles.link}>
-                КРИМІНАЛ
-              </Link>
-            </li>
+            {/* Dynamic main categories from database */}
+            {mainCategories.map((category) => (
+              <li key={category.id}>
+                <Link href={category.link} className={styles.link}>
+                  {category.title.toUpperCase()}
+                </Link>
+              </li>
+            ))}
+            
+            {/* Fallback to static categories if no dynamic data */}
+            {mainCategories.length === 0 && (
+              <>
+                <li>
+                  <Link href={paths.society} className={styles.link}>
+                    СУСПІЛЬСТВО
+                  </Link>
+                </li>
+                <li>
+                  <Link href={paths.politics} className={styles.link}>
+                    ПОЛІТИКА
+                  </Link>
+                </li>
+                <li>
+                  <Link href={paths.economy} className={styles.link}>
+                    ЕКОНОМІКА
+                  </Link>
+                </li>
+                <li>
+                  <Link href={paths.culture} className={styles.link}>
+                    КУЛЬТУРА
+                  </Link>
+                </li>
+                <li>
+                  <Link href={paths.health} className={styles.link}>
+                    ЗДОРОВ'Я
+                  </Link>
+                </li>
+                <li>
+                  <Link href={paths.health} className={styles.link}>
+                    ВІЙНА З РОСІЄЮ
+                  </Link>
+                </li>
+                <li>
+                  <Link href={paths.sport} className={styles.link}>
+                    СПОРТ
+                  </Link>
+                </li>
+                <li>
+                  <Link href={paths.crime} className={styles.link}>
+                    КРИМІНАЛ
+                  </Link>
+                </li>
+              </>
+            )}
+            
             <li>
               <Link href="#"
                     onMouseEnter={() => setIsMoreNewsOpen(true)}
@@ -178,43 +202,63 @@ export default function Header() {
             <div className={styles.grid}>
               {/* Підколонка 1 - Регіони */}
               <div className={styles.gridColumn}>
-                <Link href={paths.lvivRegion} className={styles.linkSlider}>
-                  ЛЬВІВЩИНА
-                </Link>
-                <Link href={paths.ternopilRegion} className={styles.linkSlider}>
-                  ТЕРНОПІЛЬЩИНА
-                </Link>
-                <Link href={paths.volyn} className={styles.linkSlider}>
-                  ВОЛИНЬ
-                </Link>
-                <Link href={paths.ukraine} className={styles.linkSlider}>
-                  УКРАЇНА
-                </Link>
-                <Link href={paths.eu} className={styles.linkSlider}>
-                  ЄС
-                </Link>
-                <Link href={paths.world} className={styles.linkSlider}>
-                  СВІТ
-                </Link>
+                {regions.map((region) => (
+                  <Link key={region.id} href={region.link} className={styles.linkSlider}>
+                    {region.title.toUpperCase()}
+                  </Link>
+                ))}
+                {/* Fallback to static regions if no dynamic data */}
+                {regions.length === 0 && (
+                  <>
+                    <Link href={paths.lvivRegion} className={styles.linkSlider}>
+                      ЛЬВІВЩИНА
+                    </Link>
+                    <Link href={paths.ternopilRegion} className={styles.linkSlider}>
+                      ТЕРНОПІЛЬЩИНА
+                    </Link>
+                    <Link href={paths.volyn} className={styles.linkSlider}>
+                      ВОЛИНЬ
+                    </Link>
+                    <Link href={paths.ukraine} className={styles.linkSlider}>
+                      УКРАЇНА
+                    </Link>
+                    <Link href={paths.eu} className={styles.linkSlider}>
+                      ЄС
+                    </Link>
+                    <Link href={paths.world} className={styles.linkSlider}>
+                      СВІТ
+                    </Link>
+                  </>
+                )}
               </div>
 
               {/* Підколонка 2 - Теми */}
               <div className={styles.gridColumn}>
-                <Link href={paths.society} className={styles.linkSlider}>
-                  СУСПІЛЬСТВО
-                </Link>
-                <Link href={paths.politics} className={styles.linkSlider}>
-                  ПОЛІТИКА
-                </Link>
-                <Link href={paths.economy} className={styles.linkSlider}>
-                  ЕКОНОМІКА
-                </Link>
-                <Link href={paths.culture} className={styles.linkSlider}>
-                  КУЛЬТУРА
-                </Link>
-                <Link href={paths.health} className={styles.linkSlider}>
-                  ЗДОРОВ'Я
-                </Link>
+                {mainCategories.slice(0, 5).map((category) => (
+                  <Link key={category.id} href={category.link} className={styles.linkSlider}>
+                    {category.title.toUpperCase()}
+                  </Link>
+                ))}
+                {/* Fallback to static categories if no dynamic data */}
+                {mainCategories.length === 0 && (
+                  <>
+                    <Link href={paths.society} className={styles.linkSlider}>
+                      СУСПІЛЬСТВО
+                    </Link>
+                    <Link href={paths.politics} className={styles.linkSlider}>
+                      ПОЛІТИКА
+                    </Link>
+                    <Link href={paths.economy} className={styles.linkSlider}>
+                      ЕКОНОМІКА
+                    </Link>
+                    <Link href={paths.culture} className={styles.linkSlider}>
+                      КУЛЬТУРА
+                    </Link>
+                    <Link href={paths.health} className={styles.linkSlider}>
+                      ЗДОРОВ'Я
+                    </Link>
+                  </>
+                )}
               </div>
 
               {/* Підколонка 3 - Додаткові теми */}
@@ -238,15 +282,25 @@ export default function Header() {
 
               {/* Підколонка 4 - Типи контенту */}
               <div className={styles.gridColumn}>
-                <Link href={paths.news} className={styles.linkSlider}>
-                  НОВИНА
-                </Link>
-                <Link href={paths.article} className={styles.linkSlider}>
-                  СТАТТЯ
-                </Link>
-                <Link href={paths.interview} className={styles.linkSlider}>
-                  ІНТЕРВ'Ю
-                </Link>
+                {additionalItems.slice(0, 3).map((item) => (
+                  <Link key={item.param} href={item.link} className={styles.linkSlider}>
+                    {item.title.toUpperCase()}
+                  </Link>
+                ))}
+                {/* Fallback to static items if no dynamic data */}
+                {additionalItems.length === 0 && (
+                  <>
+                    <Link href={paths.news} className={styles.linkSlider}>
+                      НОВИНА
+                    </Link>
+                    <Link href={paths.article} className={styles.linkSlider}>
+                      СТАТТЯ
+                    </Link>
+                    <Link href={paths.interview} className={styles.linkSlider}>
+                      ІНТЕРВ'Ю
+                    </Link>
+                  </>
+                )}
               </div>
             </div>
           </div>
@@ -267,20 +321,20 @@ export default function Header() {
             <div className={styles.marqueeWrapper}>
               <div className={styles.marqueeContent}>
                 <Link href={paths.society} className={styles.newInfoLink}>
-                  <p className={styles.gradientTextStart}>“ ВАЖЛИВА НОВИНА 1 ................. “</p>
+                  <p className={styles.gradientTextStart}>" ВАЖЛИВА НОВИНА 1 ................. "</p>
                   <Image src={dotIcon} alt="Dot Logo" width={8} height={8}/>
                 </Link>
                 <Link href={paths.society} className={styles.newInfoLink}>
-                  <p className={styles.gradientTextEnd}>“ ВАЖЛИВА НОВИНА 2 ................. “</p>
+                  <p className={styles.gradientTextEnd}>" ВАЖЛИВА НОВИНА 2 ................. "</p>
                   <Image src={dotIcon} alt="Dot Logo" width={8} height={8}/>
                 </Link>
 
                 <Link href={paths.society} className={styles.newInfoLink}>
-                  <p className={styles.gradientTextStart}>“ ВАЖЛИВА НОВИНА 1 ................. “</p>
+                  <p className={styles.gradientTextStart}>" ВАЖЛИВА НОВИНА 1 ................. "</p>
                   <Image src={dotIcon} alt="Dot Logo" width={8} height={8}/>
                 </Link>
                 <Link href={paths.society} className={styles.newInfoLink}>
-                  <p className={styles.gradientTextEnd}>“ ВАЖЛИВА НОВИНА 2 ................. “</p>
+                  <p className={styles.gradientTextEnd}>" ВАЖЛИВА НОВИНА 2 ................. "</p>
                   <Image src={dotIcon} alt="Dot Logo" width={8} height={8}/>
                 </Link>
               </div>
@@ -336,28 +390,45 @@ export default function Header() {
             <h3 className={styles.sectionTitle}>КАТЕГОРІЇ</h3>
             <hr className={styles.divider}/>
             <div className={styles.categories}>
-              <Link className={styles.textCategory} href="#">ЛЬВІВЩИНА</Link>
-              <Link className={styles.textCategory} href="#">СУСПІЛЬСТВО</Link>
-              <Link className={styles.textCategory} href="#">ТЕРНОПІЛЬЩИНА</Link>
-              <Link className={styles.textCategory} href="#">ПОЛІТИКА</Link>
-              <Link className={styles.textCategory} href="#">ВОЛИНЬ</Link>
-              <Link className={styles.textCategory} href="#">ЕКОНОМІКА</Link>
-              <Link className={styles.textCategory} href="#">УКРАЇНА</Link>
-              <Link className={styles.textCategory} href="#">КУЛЬТУРА</Link>
-              <Link className={styles.textCategory} href="#">ЄС</Link>
-              <Link className={styles.textCategory} href="#">ЗДОРОВ'Я</Link>
-              <Link className={styles.textCategory} href="#">СВІТ</Link>
-              <span></span>
-              <Link className={styles.textCategory} href="#">СПОРТ</Link>
-              <Link className={styles.textCategory} href="#">НОВИНА</Link>
-              <Link className={styles.textCategory} href="#">КРИМІНАЛ</Link>
-              <Link className={styles.textCategory} href="#">СТАТТЯ</Link>
-              <Link className={styles.textCategory} href="#">НАДЗВИЧАЙНІ ПОДІЇ</Link>
-              <Link className={styles.textCategory} href="#">ІНТЕРВ'Ю</Link>
-              <Link className={styles.textCategory} href="#">ІСТОРІЯ</Link>
-              <span></span>
-              <Link className={styles.textCategory} href="#">ТЕХНОЛОГІЇ</Link>
-              <span></span>
+              {/* Dynamic categories from database */}
+              {regions.map((region) => (
+                <Link key={region.id} className={styles.textCategory} href={region.link}>
+                  {region.title.toUpperCase()}
+                </Link>
+              ))}
+              {mainCategories.map((category) => (
+                <Link key={category.id} className={styles.textCategory} href={category.link}>
+                  {category.title.toUpperCase()}
+                </Link>
+              ))}
+              
+              {/* Fallback to static categories if no dynamic data */}
+              {regions.length === 0 && mainCategories.length === 0 && (
+                <>
+                  <Link className={styles.textCategory} href="#">ЛЬВІВЩИНА</Link>
+                  <Link className={styles.textCategory} href="#">СУСПІЛЬСТВО</Link>
+                  <Link className={styles.textCategory} href="#">ТЕРНОПІЛЬЩИНА</Link>
+                  <Link className={styles.textCategory} href="#">ПОЛІТИКА</Link>
+                  <Link className={styles.textCategory} href="#">ВОЛИНЬ</Link>
+                  <Link className={styles.textCategory} href="#">ЕКОНОМІКА</Link>
+                  <Link className={styles.textCategory} href="#">УКРАЇНА</Link>
+                  <Link className={styles.textCategory} href="#">КУЛЬТУРА</Link>
+                  <Link className={styles.textCategory} href="#">ЄС</Link>
+                  <Link className={styles.textCategory} href="#">ЗДОРОВ'Я</Link>
+                  <Link className={styles.textCategory} href="#">СВІТ</Link>
+                  <span></span>
+                  <Link className={styles.textCategory} href="#">СПОРТ</Link>
+                  <Link className={styles.textCategory} href="#">НОВИНА</Link>
+                  <Link className={styles.textCategory} href="#">КРИМІНАЛ</Link>
+                  <Link className={styles.textCategory} href="#">СТАТТЯ</Link>
+                  <Link className={styles.textCategory} href="#">НАДЗВИЧАЙНІ ПОДІЇ</Link>
+                  <Link className={styles.textCategory} href="#">ІНТЕРВ'Ю</Link>
+                  <Link className={styles.textCategory} href="#">ІСТОРІЯ</Link>
+                  <span></span>
+                  <Link className={styles.textCategory} href="#">ТЕХНОЛОГІЇ</Link>
+                  <span></span>
+                </>
+              )}
             </div>
             <div className={styles.radioBox}>
               <a className={styles.radioLogo} target={'_blank'} href={'https://lviv.fm/'}>
