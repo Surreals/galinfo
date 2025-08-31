@@ -7,6 +7,8 @@ import { Carousel } from 'antd';
 import NewsList from "@/app/components/listNews";
 import CurrencyRates from "./CurrencyRates";
 import WeatherWidget from "./WeatherWidget";
+import { useHeroNews } from "@/app/hooks/useHeroNews";
+import { formatNewsDate, generateArticleUrl, getNewsImage, getNewsTitle, getNewsTeaser } from "@/app/lib/newsUtils";
 import dayjs from 'dayjs';
 import 'dayjs/locale/uk';
 
@@ -24,6 +26,7 @@ export default function Hero() {
   const router = useRouter();
 
   const [isMobile, setIsMobile] = useState(false);
+  const { heroNews, loading: heroLoading, error: heroError } = useHeroNews();
   const [newsData, setNewsData] = useState<Array<{ id: string; title: string; time: string; imageUrl?: string; url: string }>>([]);
 
   useEffect(() => {
@@ -40,41 +43,29 @@ export default function Hero() {
     };
   }, []);
 
-  const generateRandomNews = (count: number) => {
-    const titles = [
-      "Зеленський підписав новий закон Зеленський підписав новий закон ",
-      "В Україні прогнозують грози Зеленський підписав новий закон",
-      "Трамп дав нове інтерв'ю Зеленський підписав новий закон",
-      "На Львівщині відкрили парк Зеленський підписав новий закон",
-      "Вчені винайшли новий велосипед Зеленський підписав новий закон",
-      "Новий арт-проєкт у центрі Києва Зеленський підписав новий закон",
-    ];
-
-    const articleIds = [
-      "zelensky-new-law-hero",
-      "ukraine-thunderstorms-hero",
-      "trump-interview-hero",
-      "lviv-region-park-hero",
-      "scientists-bicycle-hero",
-      "kyiv-art-project-hero"
-    ];
-
-    return Array.from({ length: count }, (_, index) => {
-      const randomPastMs = Math.floor(Math.random() * 1e8);
-      return {
-        id: `hero-${index + 1}`,
-        title: titles[Math.floor(Math.random() * titles.length)],
-        time: dayjs(Date.now() - randomPastMs).format('DD MMMM YYYY HH:mm'),
-        imageUrl: `https://picsum.photos/seed/${Math.random()}/300/200`,
-        url: `/article/${articleIds[Math.floor(Math.random() * articleIds.length)]}-${index + 1}`,
-      };
-    });
-  };
-
+  // Transform hero news data for the news lists
   useEffect(() => {
-    // Generate client-only to avoid SSR hydration mismatches
-    setNewsData(generateRandomNews(8));
-  }, []);
+    if (heroNews && heroNews.length > 0) {
+      const transformedNews = heroNews.map((item) => ({
+        id: item.id,
+        title: getNewsTitle(item),
+        time: formatNewsDate(item.ndate, item.udate),
+        imageUrl: getNewsImage(item) || `https://picsum.photos/seed/${item.id}/300/200`,
+        url: generateArticleUrl(item),
+      }));
+      
+      // Generate additional news items to fill the lists if needed
+      const additionalNews = Array.from({ length: Math.max(0, 8 - transformedNews.length) }, (_, index) => ({
+        id: `additional-${index + 1}`,
+        title: `Додаткова новина ${index + 1}`,
+        time: dayjs().subtract(index + 1, 'hour').format('HH:mm'),
+        imageUrl: `https://picsum.photos/seed/additional-${index + 1}/300/200`,
+        url: `/article/additional-${index + 1}`,
+      }));
+      
+      setNewsData([...transformedNews, ...additionalNews]);
+    }
+  }, [heroNews]);
 
   const onChange = (currentSlide: number) => {
     // console.log(currentSlide);
@@ -84,9 +75,17 @@ export default function Hero() {
     router.push(url);
   };
 
-  const carouselItems = [
+  // Transform hero news for carousel
+  const carouselItems = heroNews.slice(0, 4).map((item) => ({
+    src: getNewsImage(item) || "https://images.pexels.com/photos/417074/pexels-photo-417074.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
+    title: getNewsTitle(item),
+    url: generateArticleUrl(item),
+  }));
+
+  // Fallback carousel items if no hero news
+  const fallbackCarouselItems = [
     {
-      src: "https://images.pexels.com/photos/417074/pexels-photo-417074.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1", // Місто
+      src: "https://images.pexels.com/photos/417074/pexels-photo-417074.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
       title: "У Львові запрацював сучасний центр реабілітації для онкопацієнтів",
       url: "/article/lviv-rehabilitation-center-hero",
     },
@@ -107,6 +106,8 @@ export default function Hero() {
     },
   ];
 
+  const finalCarouselItems = carouselItems.length > 0 ? carouselItems : fallbackCarouselItems;
+
   const contentStyle: React.CSSProperties = {
     margin: 0,
     height: '160px',
@@ -115,6 +116,28 @@ export default function Hero() {
     textAlign: 'center',
     background: '#364d79',
   };
+
+  // Show loading state
+  if (heroLoading) {
+    return (
+      <section className={styles.heroSection}>
+        <div className={styles.container}>
+          <div className={styles.heroBox}>
+            <div className={styles.carouselBox}>
+              <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '400px' }}>
+                <p>Завантаження новин...</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  // Show error state
+  if (heroError) {
+    console.error('Hero news error:', heroError);
+  }
 
   return (
     <section className={styles.heroSection}>
@@ -126,7 +149,7 @@ export default function Hero() {
               autoplay
               ref={carouselRef}
             >
-              {carouselItems.map((item, index) => (
+              {finalCarouselItems.map((item, index) => (
                 <div key={index} className={styles.carouselItem}>
                   <div 
                     onClick={() => handleCarouselClick(item.url)}
@@ -139,7 +162,9 @@ export default function Hero() {
                     onClick={() => handleCarouselClick(item.url)}
                     style={{ cursor: 'pointer' }}
                   >
-                    <p className={styles.carouselTime}>15 хвилин тому</p>
+                    <p className={styles.carouselTime}>
+                      {heroNews[index] ? formatNewsDate(heroNews[index].ndate, heroNews[index].udate) : '15 хвилин тому'}
+                    </p>
                     <h3 className={styles.carouselTitle}>{item.title}</h3>
                   </div>
                   <button
@@ -175,23 +200,35 @@ export default function Hero() {
         </div>
       </div>
       <div className={styles.containerHeroInfo}>
-        <NewsList
-          showSeparator={true}
-          data={newsData}
-          showImagesAt={isMobile ? [] : [3]}
-          widthPercent={isMobile ? 100 : 45}
-          showMoreButton={false}
-        />
+        {heroLoading ? (
+          <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '200px' }}>
+            <p>Завантаження новин...</p>
+          </div>
+        ) : (
+          <NewsList
+            showSeparator={true}
+            data={newsData}
+            showImagesAt={isMobile ? [] : [3]}
+            widthPercent={isMobile ? 100 : 45}
+            showMoreButton={false}
+          />
+        )}
 
-        <NewsList
-          title="ЕКОНОМІКА"
-          moreButtonUrl="/economics"
-          data={newsData}
-          arrowRightIcon
-          showImagesAt={[0, 1]}
-          widthPercent={isMobile ? 100 : 25}
-          showMoreButton
-        />
+        {heroLoading ? (
+          <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '150px' }}>
+            <p>Завантаження...</p>
+          </div>
+        ) : (
+          <NewsList
+            title="ЕКОНОМІКА"
+            moreButtonUrl="/economics"
+            data={newsData}
+            arrowRightIcon
+            showImagesAt={[0, 1]}
+            widthPercent={isMobile ? 100 : 25}
+            showMoreButton
+          />
+        )}
 
         {isMobile &&
             <>
@@ -206,16 +243,22 @@ export default function Hero() {
               />
           </>
         }
-        <NewsList
-          mobileLayout="horizontal"
-          data={newsData}
-          showImagesAt={[0, 1]}
-          widthPercent={isMobile ? 100 : 25}
-          title="НОВИНИ ЛЬВОВА"
-          showMoreButton
-          arrowRightIcon
-          moreButtonUrl="/lviv-news"
-        />
+        {heroLoading ? (
+          <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '150px' }}>
+            <p>Завантаження...</p>
+          </div>
+        ) : (
+          <NewsList
+            mobileLayout="horizontal"
+            data={newsData}
+            showImagesAt={[0, 1]}
+            widthPercent={isMobile ? 100 : 25}
+            title="НОВИНИ ЛЬВОВА"
+            showMoreButton
+            arrowRightIcon
+            moreButtonUrl="/lviv-news"
+          />
+        )}
       </div>
     </section>
   )

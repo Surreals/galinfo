@@ -86,8 +86,8 @@ const customTheme = {
 };
 
 export const metadata: Metadata = {
-  title: "Galinfo",
-  description: "Galinfo",
+  title: "Гал-Інфо - Агенція інформації та аналітики. Львівські новини",
+  description: "Агенція інформації та аналітики 'Гал-інфо'",
   icons: {
     icon: '/favicon.ico',
   },
