@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { executeQuery } from '@/app/lib/db';
+import { formatNewsImages } from '@/app/lib/imageUtils';
 
 // Типи новин
 const ARTICLE_TYPES = {
@@ -105,7 +106,7 @@ export async function GET(
     let imagesData: any[] = [];
     if (imageIds.length > 0) {
       const imagesQuery = `
-        SELECT id, filename, title_ua, title_en, title_ru
+        SELECT id, filename, title_ua
         FROM a_pics
         WHERE id IN (${imageIds.map(() => '?').join(',')})
       `;
@@ -116,14 +117,7 @@ export async function GET(
     const response = {
       news: newsData.map(news => ({
         ...news,
-        images: news.images ? news.images.split(',').map(id => {
-          const image = imagesData.find(img => img.id == id.trim());
-          return image ? {
-            id: image.id,
-            filename: image.filename,
-            title: image[`title_${lang === '1' ? 'ua' : lang === '2' ? 'en' : 'ru'}`] || image.title_ua
-          } : null;
-        }).filter(Boolean) : []
+        images: news.images ? formatNewsImages(imagesData, news.images.split(',').map((id: string) => parseInt(id.trim())).filter((id: number) => !isNaN(id)), lang) : []
       })),
       pagination: {
         page,

@@ -1,10 +1,43 @@
 'use client';
 
+import { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import { useAdminAuth } from '@/app/contexts/AdminAuthContext';
 import Link from 'next/link';
 import AdminNavigation from './components/AdminNavigation';
 import styles from './admin.module.css';
 
 export default function AdminPage() {
+  const { isAuthenticated, isLoading } = useAdminAuth();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (!isLoading && !isAuthenticated) {
+      router.push('/admin/login');
+      return;
+    }
+  }, [isAuthenticated, isLoading, router]);
+
+  // Redirect to dashboard if already authenticated
+  useEffect(() => {
+    if (isAuthenticated && !isLoading) {
+      // router.push('/admin/dashboard');
+    }
+  }, [isAuthenticated, isLoading, router]);
+
+  if (isLoading) {
+    return (
+      <div className={styles.loadingContainer}>
+        <div className={styles.loadingSpinner}></div>
+        <p>Перевірка авторизації...</p>
+      </div>
+    );
+  }
+
+  if (!isAuthenticated || isLoading) {
+    return null;
+  }
+
   const adminSections = [
     {
       id: 'news',
@@ -107,6 +140,18 @@ export default function AdminPage() {
             <Link href="/admin/test-homepage-api" className={styles.quickAction}>
               <span className={styles.quickActionIcon}>🔌</span>
               <span>Тест API</span>
+            </Link>
+            <Link href="/admin/test-category-news" className={styles.quickAction}>
+              <span className={styles.quickActionIcon}>📋</span>
+              <span>Тест новин по категорії</span>
+            </Link>
+            <Link href="/admin/test-menu" className={styles.quickAction}>
+              <span className={styles.quickActionIcon}>🍽️</span>
+              <span>Тест меню</span>
+            </Link>
+            <Link href="/admin/test-news" className={styles.quickAction}>
+              <span className={styles.quickActionIcon}>📰</span>
+              <span>Тест системи новин</span>
             </Link>
           </div>
         </div>

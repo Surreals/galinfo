@@ -3,6 +3,8 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import dynamic from 'next/dynamic';
+import ProtectedAdminRoute from '@/app/components/ProtectedAdminRoute';
+import { useAdminAuth } from '@/app/contexts/AdminAuthContext';
 import styles from './dashboard.module.css';
 
 // Dynamically import the NewsEditor to avoid SSR issues
@@ -53,7 +55,6 @@ export default function AdminDashboard() {
   const [news, setNews] = useState<NewsItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  const [user, setUser] = useState<User | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterApproved, setFilterApproved] = useState<'all' | '1' | '0'>('all');
   const [filterType, setFilterType] = useState<'all' | string>('all');
@@ -64,25 +65,13 @@ export default function AdminDashboard() {
   const [editingNewsId, setEditingNewsId] = useState<number | null>(null);
   const [editorMode, setEditorMode] = useState<'create' | 'edit'>('create');
   const router = useRouter();
+  const { user } = useAdminAuth();
 
   useEffect(() => {
-    // Check if user is logged in
-    const adminUser = localStorage.getItem('adminUser');
-    const adminToken = localStorage.getItem('adminToken');
-    
-    if (!adminUser || !adminToken) {
-      router.push('/admin');
-      return;
-    }
-
-    try {
-      setUser(JSON.parse(adminUser));
+    if (user) {
       fetchNews();
-    } catch (err) {
-      console.error('Error parsing user data:', err);
-      router.push('/admin');
     }
-  }, [router]);
+  }, [user]);
 
   const fetchNews = async (page = 1) => {
     try {
@@ -137,11 +126,7 @@ export default function AdminDashboard() {
     }
   };
 
-  const handleLogout = () => {
-    localStorage.removeItem('adminUser');
-    localStorage.removeItem('adminToken');
-    router.push('/admin');
-  };
+
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -227,45 +212,42 @@ export default function AdminDashboard() {
 
   if (showEditor) {
     return (
-      <div className={styles.container}>
-        <header className={styles.header}>
-          <div className={styles.headerContent}>
-            <h1>GalInfo Admin Dashboard</h1>
-            <div className={styles.userInfo}>
-              <span>Welcome, {user.name}</span>
-              <button onClick={handleLogout} className={styles.logoutButton}>
-                Logout
-              </button>
+      <ProtectedAdminRoute>
+        <div className={styles.container}>
+          <header className={styles.header}>
+            <div className={styles.headerContent}>
+              <h1>GalInfo Admin Dashboard</h1>
+              <div className={styles.userInfo}>
+                <span>Welcome, {user?.name}</span>
+              </div>
             </div>
-          </div>
-        </header>
+          </header>
 
-        <main className={styles.main}>
-          <NewsEditor
-            newsId={editingNewsId || undefined}
-            onSave={handleSaveNews}
-            onCancel={handleCancelEditor}
-            initialData={editingNewsId ? undefined : undefined} // Will be loaded when editing
-          />
-        </main>
-      </div>
+          <main className={styles.main}>
+            <NewsEditor
+              newsId={editingNewsId || undefined}
+              onSave={handleSaveNews}
+              onCancel={handleCancelEditor}
+              initialData={editingNewsId ? undefined : undefined} // Will be loaded when editing
+            />
+          </main>
+        </div>
+      </ProtectedAdminRoute>
     );
   }
 
   return (
-    <div className={styles.container}>
-      {/* Header */}
-      <header className={styles.header}>
-        <div className={styles.headerContent}>
-          <h1>GalInfo Admin Dashboard</h1>
-          <div className={styles.userInfo}>
-            <span>Welcome, {user.name}</span>
-            <button onClick={handleLogout} className={styles.logoutButton}>
-              Logout
-            </button>
+    <ProtectedAdminRoute>
+      <div className={styles.container}>
+        {/* Header */}
+        <header className={styles.header}>
+          <div className={styles.headerContent}>
+            <h1>GalInfo Admin Dashboard</h1>
+            <div className={styles.userInfo}>
+              <span>Welcome, {user?.name}</span>
+            </div>
           </div>
-        </div>
-      </header>
+        </header>
 
       {/* Main Content */}
       <main className={styles.main}>
@@ -431,5 +413,6 @@ export default function AdminDashboard() {
         </div>
       </main>
     </div>
+    </ProtectedAdminRoute>
   );
 }

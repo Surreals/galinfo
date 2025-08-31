@@ -3,6 +3,8 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { useAdminAuth } from '@/app/contexts/AdminAuthContext';
+import styles from './AdminNavigation.module.css';
 
 interface AdminNavigationProps {
   onClose?: () => void;
@@ -11,6 +13,7 @@ interface AdminNavigationProps {
 export default function AdminNavigation({ onClose }: AdminNavigationProps) {
   const pathname = usePathname();
   const [activeMainTab, setActiveMainTab] = useState('site');
+  const { user, logout } = useAdminAuth();
 
   const mainTabs = [
     { id: 'news', label: 'Новини / Статті', href: '/admin/news' },
@@ -20,6 +23,7 @@ export default function AdminNavigation({ onClose }: AdminNavigationProps) {
     { id: 'properties', label: 'Властивості', href: '/admin/properties' },
     { id: 'users', label: 'Користувачі', href: '/admin/users' },
     { id: 'advertising', label: 'Реклама', href: '/admin/advertising' },
+    { id: 'test', label: 'Тестування', href: '/admin/test-category-news' },
   ];
 
   const siteSubTabs = [
@@ -32,7 +36,17 @@ export default function AdminNavigation({ onClose }: AdminNavigationProps) {
     { id: 'voting', label: 'Голосування', href: '/admin/site/voting' },
   ];
 
+  const testSubTabs = [
+    { id: 'category-news', label: 'Новини по категорії', href: '/admin/test-category-news' },
+    { id: 'news', label: 'Система новин', href: '/admin/test-news' },
+    { id: 'db', label: 'База даних', href: '/admin/test-db' },
+    { id: 'homepage-api', label: 'API головної сторінки', href: '/admin/test-homepage-api' },
+    { id: 'editor', label: 'Редактор', href: '/admin/test-editor' },
+    { id: 'menu', label: 'Меню', href: '/admin/test-menu' },
+  ];
+
   const isSiteSection = pathname.startsWith('/admin/site');
+  const isTestSection = pathname.startsWith('/admin/test');
   const currentSubTab = pathname.split('/').pop() || '';
 
   return (
@@ -56,6 +70,19 @@ export default function AdminNavigation({ onClose }: AdminNavigationProps) {
           ))}
         </div>
 
+        {/* User Menu */}
+        {user && (
+          <div className={styles.userMenu}>
+            <div className={styles.userInfo}>
+              <span className={styles.userName}>{user.name}</span>
+              <span className={styles.userEmail}>{user.email}</span>
+            </div>
+            <button className={styles.logoutButton} onClick={logout}>
+              Вийти
+            </button>
+          </div>
+        )}
+
         {onClose && (
           <button className="closeButton" onClick={onClose}>
             ✕
@@ -68,6 +95,23 @@ export default function AdminNavigation({ onClose }: AdminNavigationProps) {
         <div className="subNavBar">
           <div className="subNavTabs">
             {siteSubTabs.map((tab) => (
+              <Link
+                key={tab.id}
+                href={tab.href}
+                className={`subNavTab ${currentSubTab === tab.id ? 'active' : ''}`}
+              >
+                {tab.label}
+              </Link>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Secondary Navigation Bar (Test Section) */}
+      {isTestSection && (
+        <div className="subNavBar">
+          <div className="subNavTabs">
+            {testSubTabs.map((tab) => (
               <Link
                 key={tab.id}
                 href={tab.href}
