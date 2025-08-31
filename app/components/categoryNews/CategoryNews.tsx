@@ -20,6 +20,7 @@ export interface CategoryNewsItem {
 
 export interface CategoryNewsProps {
   category: string;
+  categoryId?: number;
   news?: CategoryNewsItem[];
   isLoading?: boolean;
   hideHeader?: boolean;

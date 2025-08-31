@@ -14,7 +14,7 @@ import dotIcon from "@/assets/icons/dotIcon.svg"
 import burgerMenu from "@/assets/icons/burgerMenu.svg"
 
 import styles from "@/app/header/Header.module.scss";
-import { useMenuData } from "@/app/hooks/useMenuData";
+import { useMenuContext } from "@/app/contexts/MenuContext";
 
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -22,7 +22,7 @@ export default function Header() {
   const [isClosing, setIsClosing] = useState(false);
   
   // Fetch dynamic menu data
-  const { menuData, loading, error } = useMenuData();
+  const { menuData, loading, error } = useMenuContext();
 
   useEffect(() => {
     if (isMenuOpen) {

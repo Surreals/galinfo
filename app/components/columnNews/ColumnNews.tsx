@@ -22,6 +22,8 @@ export interface ColumnNewsItem {
 export interface ColumnNewsProps {
   category: string;
   secondCategory: string;
+  categoryId?: number;
+  secondCategoryId?: number;
   news?: ColumnNewsItem[];
   isLoading?: boolean;
   isHomePage?: boolean;

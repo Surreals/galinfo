@@ -8,7 +8,8 @@
   --color-white: #FFFFFF;        /* Білий */
   --color-accent: #c7084f;       /* Маджента/рожевий */
   --color-accent-hover: #DA0457;
-  --color-title: #c7084f;
+  /* --color-title: #c7084f; */
+  --color-title: #000;
   --color-border: #CFCFCF /* Маджента/рожевий ховер */
 }
 

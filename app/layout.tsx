@@ -5,6 +5,7 @@ import { ConfigProvider } from "antd";
 import Footer from "@/app/footer/Footer";
 import Header from "@/app/header/Header";
 import {MobileProvider} from "@/app/contexts/MobileContext";
+import {MenuProvider} from "@/app/contexts/MenuContext";
 
 import "./globals.css";
 import "antd/dist/reset.css";
@@ -99,22 +100,23 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <MobileProvider>
-      <html lang="en">
+    <html lang="en">
       <body
         className={`${openSans.variable} ${rubik.variable} antialiased`}
         suppressHydrationWarning={true}
       >
-      <ConfigProvider
-        theme={customTheme}
-      >
-        <Header/>
-        {children}
-        <Footer/>
-      </ConfigProvider>
+        <ConfigProvider
+          theme={customTheme}
+        >
+          <MobileProvider>
+            <MenuProvider>
+              <Header/>
+              {children}
+              <Footer/>
+            </MenuProvider>
+          </MobileProvider>
+        </ConfigProvider>
       </body>
-      </html>
-    </MobileProvider>
-
+    </html>
   );
 }
