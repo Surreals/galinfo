@@ -1,0 +1,69 @@
+@font-face {
+    font-family: 'lato';
+    src: url('Lato-Medium-webfont.eot');
+    src: url('Lato-Medium-webfont.eot?#iefix') format('embedded-opentype'),
+         url('Lato-Medium-webfont.woff2') format('woff2'),
+         url('Lato-Medium-webfont.woff') format('woff'),
+         url('Lato-Medium-webfont.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+
+}
+
+
+
+
+/*@font-face {
+    font-family: 'lato';
+    src: url('Lato-MediumItalic-webfont.eot');
+    src: url('Lato-MediumItalic-webfont.eot?#iefix') format('embedded-opentype'),
+         url('Lato-MediumItalic-webfont.woff2') format('woff2'),
+         url('Lato-MediumItalic-webfont.woff') format('woff'),
+         url('Lato-MediumItalic-webfont.ttf') format('truetype');
+    font-weight: normal;
+    font-style: italic;
+
+}*/
+
+
+
+
+@font-face {
+    font-family: 'lato';
+    src: url('Lato-HeavyItalic-webfont.eot');
+    src: url('Lato-HeavyItalic-webfont.eot?#iefix') format('embedded-opentype'),
+         url('Lato-HeavyItalic-webfont.woff2') format('woff2'),
+         url('Lato-HeavyItalic-webfont.woff') format('woff'),
+         url('Lato-HeavyItalic-webfont.ttf') format('truetype');
+    font-weight: bold;
+    font-style: italic;
+
+}
+
+
+
+
+@font-face {
+    font-family: 'lato';
+    src: url('Lato-Heavy-webfont.eot');
+    src: url('Lato-Heavy-webfont.eot?#iefix') format('embedded-opentype'),
+         url('Lato-Heavy-webfont.woff2') format('woff2'),
+         url('Lato-Heavy-webfont.woff') format('woff'),
+         url('Lato-Heavy-webfont.ttf') format('truetype');
+    font-weight: bold;
+    font-style: normal;
+
+}
+
+
+@font-face {
+    font-family: 'lato';
+    src: url('Lato-LightItalic-webfont.eot');
+    src: url('Lato-LightItalic-webfont.eot?#iefix') format('embedded-opentype'),
+         url('Lato-LightItalic-webfont.woff2') format('woff2'),
+         url('Lato-LightItalic-webfont.woff') format('woff'),
+         url('Lato-LightItalic-webfont.ttf') format('truetype');
+    font-weight: normal;
+    font-style: italic;
+
+}

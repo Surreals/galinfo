@@ -1,0 +1,2 @@
+/*JSloader*/
+				setvalue("candyplace_read3001","<script async src=\"//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js\"></script>\r\n<!-- Galinfo ПРАВИЙ -->\r\n<ins class=\"adsbygoogle\"\r\n     style=\"display:inline-block;width:300px;height:600px\"\r\n     data-ad-client=\"ca-pub-2721832832858898\"\r\n     data-ad-slot=\"7816786249\"></ins>\r\n<script>\r\n(adsbygoogle = window.adsbygoogle || []).push({});\r\n</script>")

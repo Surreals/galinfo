@@ -1,0 +1,10 @@
+User-agent: *
+Disallow: /search
+Disallow: /*?print
+Disallow: /login/
+Disallow: /myaccount
+Disallow: /register
+Disallow: /gazda
+
+Sitemap: https://galinfo.com.ua/sitemap/main_sitemap.xml
+Host: https://galinfo.com.ua

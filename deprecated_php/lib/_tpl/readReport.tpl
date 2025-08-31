@@ -1,0 +1,46 @@
+<div class="twowrapper">
+	<div class="mcontent read">
+		<span class="i728">{<ZML:ban:home72890>}</span>
+		<header>
+		{<ZML:currentrubric>}
+			<h1>{<ZML:header>}</h1>
+		</header>
+		<a href="?print" target="_blank" class='printer mobile'><img src='/im/printer.png'></a>
+		<div class="spacer"></div>
+
+		<aside class="articleinfo">
+
+			<div class="date">
+				<span>
+					<b>{<ZML:wday>}</b>
+					<b>{<ZML:date>} {<ZML:month>}, {<ZML:year>}</b>
+					<time>{<ZML:time>}</time>
+				</span>
+				<a href="?print" target="_blank" class='printer desktop'><img src='/im/printer.png'></a>
+				<div class="clearfix"></div>
+			</div>
+
+			<div class="panel">
+				{<ZML:fnc:socialButtons>}
+			</div>
+			{<ZML:tags>}
+
+		</aside>
+		
+		<article>
+			<h5>{<ZML:teaser>}</h5>
+			{<ZML:blogauthor>}
+			{<ZML:body>}
+			{<ZML:images>}
+			<a href="?print" target="_blank" class='printer'><img src='/im/printer.png'></a>
+			{<ZML:tpl:founderror,1>}
+		</article>
+
+		<div class="spacer"></div>
+		{<ZML:relativenews>}
+		<span class="i728">{<ZML:ban:read0>}</span>
+
+		{<ZML:mod:comments>}
+
+	</div>
+</div>

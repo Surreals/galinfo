@@ -1,0 +1,24 @@
+
+
+@font-face {
+    font-family: 'merri';
+    src: local('☺'), url('Merriweather_Light-webfont.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+
+}
+
+
+
+@font-face {
+    font-family: 'merri';
+    src: url('Merriweather-Bold-webfont.eot');
+    src: url('Merriweather-Bold-webfont.eot?#iefix') format('embedded-opentype'),
+         url('Merriweather-Bold-webfont.woff2') format('woff2'),
+         url('Merriweather-Bold-webfont.woff') format('woff'),
+         url('Merriweather-Bold-webfont.ttf') format('truetype'),
+         url('Merriweather-Bold-webfont.svg#merriweatherbold') format('svg');
+    font-weight: bold;
+    font-style: normal;
+
+}

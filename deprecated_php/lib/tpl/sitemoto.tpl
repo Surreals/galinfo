@@ -1,0 +1,1 @@
+<em class="sitemoto fserif">Ви <span style="color:#6c0">можете</span> <span style="color:#f30">жити</span> <span style="color:#666600">так</span>, <span style="color:#D00">ніби</span> все <span style="color:#99CC00">на</span> <span style="color:#FF9900">цьому</span> <span style="color:#33CC00">світі</span> <span style="color:#669900">диво!</span></em>

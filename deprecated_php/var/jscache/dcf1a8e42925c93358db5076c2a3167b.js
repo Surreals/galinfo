@@ -1,0 +1,2 @@
+/*JSloader*/
+				setvalue("candyplace_read3000","<a href=\"https://sites.google.com/site/danceinlviv/\"><img src=\"/var/things/4c84bdfd640642a0f83d9671cef2f0be.gif\" style=\"width:300px;height:250px\"></a>")

@@ -1,0 +1,2 @@
+/*JSloader*/
+				setvalue("candyplace_home72890","<a href=\"https://coffeeok.com.ua/ua/\" target=\"_blank\">\r\n  <img src=\"https://galinfo.com.ua/var/things/b9476c592d9c365e0b0b561570aa2609.png\" \r\n       alt=\"Банер\" \r\n       style=\"width: 100%; max-width: 860px; height: auto; display: block; margin: 0 auto;\">\r\n</a>")

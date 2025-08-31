@@ -1,0 +1,4 @@
+RewriteEngine on
+Options +FollowSymlinks
+RewriteBase /
+RewriteRule .* /err404.php [L]

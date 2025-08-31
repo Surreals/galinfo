@@ -1,0 +1,2 @@
+/*JSloader*/
+				setvalue("candyplace_home72890","<a href=\"https://concert.ua/eventpage/virtuozy-kieva-lvov\"><img src=\"/var/things/2e47d56457a6f232c77f07e13fad73c9.jpg\" style=\"width:730px;height:90px\"></a>")

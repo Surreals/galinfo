@@ -1,0 +1,2 @@
+/*JSloader*/
+				setvalue("candyplace_home300250","<script async src=\"https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2721832832858898\"\r\n     crossorigin=\"anonymous\"></script>\r\n<!-- Головна. під ТОПами 1 -->\r\n<ins class=\"adsbygoogle\"\r\n     style=\"display:block\"\r\n     data-ad-client=\"ca-pub-2721832832858898\"\r\n     data-ad-slot=\"9843711176\"\r\n     data-ad-format=\"auto\"\r\n     data-full-width-responsive=\"true\"></ins>\r\n<script>\r\n     (adsbygoogle = window.adsbygoogle || []).push({});\r\n</script>")

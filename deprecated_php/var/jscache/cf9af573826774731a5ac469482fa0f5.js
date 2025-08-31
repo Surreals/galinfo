@@ -1,0 +1,2 @@
+/*JSloader*/
+				setvalue("candyplace_read3001","<iframe class=\"embed-responsive-item\" frameborder=\"0\" height=\"450\" scrolling=\"yes\" src=\"http://nbc.clientmediaserver.com/20160414_rio_medal_count/index.html\" style=\"border:0px solid #000000;\" width=\"320\"></iframe>")

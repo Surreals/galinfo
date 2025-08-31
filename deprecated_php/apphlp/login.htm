@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html 
+     PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<title>iPress prototype</title>
+	<meta name="description" content="" />
+	<meta name="keywords" content="" />
+	<meta name="generator" content="zmolo.com" />
+	<link rel="stylesheet" type="text/css" href="/css/ipress.css" />
+	<link rel="alternate" type="application/rss+xml" title="RSS 2.0" href="http://ds/rss/export.rss" />
+	<script type="text/javascript" src="/js/jquery.js"></script>
+	<script type="text/javascript" src="/js/core.js"></script>
+
+</head>
+<body>
+
+	
+	<div class="frm" id='commentform' style="display:block;text-align:left;width:620px;margin:0;">
+		<div id='errmess'></div>
+		<form name="ad" method=post>
+			
+			<div class="w45prc fl">
+				<h2>Авторизація</h2>
+				<div class="beigebox m15 p15" style="border:#FFF solid 1px;">
+					<p>Логін</p>
+					<input name="uname" type="text" value="" style="width:190px;">
+					<br>
+					<p>Пароль</p>
+					<input name="upass" type="assword" value="" style="width:190px;">
+					
+					
+				</div>
+
+				<input type="button" class="sbmt" name="commentnow" value="Ok" onClick="return chUp('addcomment','ad',1);" style="float:right;margin-top:-50px;margin-right:15px;">
+
+				<div class="clean pt15"></div>
+				<a href="" class="checked">Зареєструватися</a>
+			</div>
+
+			<div class="w50prc fr">
+				
+				
+				<div class="pl30" style="border-left:#E00 2px solid;">
+					<h2>Вхід через соціальну мережу</h2>
+					<div style="padding-right:50px;color:#555;margin-bottom:15px;">Ви можете розмістити коментар, використовуючи для авторизації акаунт соціальних мереж:</div>
+					<div class="soclogin">
+						<a href=""><img src="/im/facebook.png">Facebook</a>
+						<a href=""><img src="/im/twitter.png">Twitter</a>
+						<a href=""><img src="/im/googleplus.png">Google</a>
+						<a href=""><img src="/im/vc.png">ВКонтакті</a>
+					</div>
+					
+					<div class="clean"></div>
+				</div>
+
+				
+
+			</div>
+
+			<div class="clean pt20"></div>
+			
+		</form>
+	</div>
+
+</body>
+</html>
+

@@ -1,0 +1,9 @@
+AuthUserFile /home/galinfo/web/galinfo.com.ua/.htpasswd
+#AuthGroupFile /dev/null
+AuthName "Secure Document"
+AuthType Basic
+require user editor
+
+RewriteEngine on
+RewriteBase /
+RewriteRule ^/adm/admjs.js$ /adm/adm_js.php [L]

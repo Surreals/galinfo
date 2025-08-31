@@ -1,0 +1,2 @@
+/*JSloader*/
+				setvalue("candyplace_read3000","<a href=\"https://www.facebook.com/lvivwaveradio/\"><img src=\"/var/things/df8d0c4e38487044cbeca132a0fa6e68.jpg\" style=\"width:300px;height:500px\"></a>")

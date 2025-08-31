@@ -1,0 +1,2 @@
+/*JSloader*/
+				setvalue("candyplace_home72890","<a href=\"http://www.concert.ua/booking/prodelki-angelov-lviv\"><img src=\"/var/things/db532d7061fbaaab798fc1865524c0db.jpg\" style=\"width:730px;height:90px\"></a>")

@@ -1,0 +1,83 @@
+
+@font-face {
+    font-family: 'neris';
+    src: url('Neris-SemiBold-webfont.eot');
+    src: url('Neris-SemiBold-webfont.eot?#iefix') format('embedded-opentype'),
+         url('Neris-SemiBold-webfont.woff2') format('woff2'),
+         url('Neris-SemiBold-webfont.woff') format('woff'),
+         url('Neris-SemiBold-webfont.ttf') format('truetype');
+    font-weight: 100;
+    font-style: normal;
+
+}
+
+
+@font-face {
+    font-family: 'neris';
+    src: url('Neris-Light-webfont.eot');
+    src: url('Neris-Light-webfont.eot?#iefix') format('embedded-opentype'),
+         url('Neris-Light-webfont.woff2') format('woff2'),
+         url('Neris-Light-webfont.woff') format('woff'),
+         url('Neris-Light-webfont.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+
+}
+
+
+
+
+@font-face {
+    font-family: 'neris';
+    src: url('Neris-LightItalic-webfont.eot');
+    src: url('Neris-LightItalic-webfont.eot?#iefix') format('embedded-opentype'),
+         url('Neris-LightItalic-webfont.woff2') format('woff2'),
+         url('Neris-LightItalic-webfont.woff') format('woff'),
+         url('Neris-LightItalic-webfont.ttf') format('truetype');
+    font-weight: 300;
+    font-style: italic;
+
+}
+
+
+
+
+@font-face {
+    font-family: 'neris';
+    src: url('Neris-Thin-webfont.eot');
+    src: url('Neris-Thin-webfont.eot?#iefix') format('embedded-opentype'),
+         url('Neris-Thin-webfont.woff2') format('woff2'),
+         url('Neris-Thin-webfont.woff') format('woff'),
+         url('Neris-Thin-webfont.ttf') format('truetype');
+    font-weight: 200;
+    font-style: normal;
+
+}
+
+
+
+
+@font-face {
+    font-family: 'neris';
+    src: url('Neris-Black-webfont.eot');
+    src: url('Neris-Black-webfont.eot?#iefix') format('embedded-opentype'),
+         url('Neris-Black-webfont.woff2') format('woff2'),
+         url('Neris-Black-webfont.woff') format('woff'),
+         url('Neris-Black-webfont.ttf') format('truetype');
+    font-weight: 900;
+    font-style: normal;
+
+}
+
+
+@font-face {
+    font-family: 'neris';
+    src: url('Neris-BlackItalic-webfont.eot');
+    src: url('Neris-BlackItalic-webfont.eot?#iefix') format('embedded-opentype'),
+         url('Neris-BlackItalic-webfont.woff2') format('woff2'),
+         url('Neris-BlackItalic-webfont.woff') format('woff'),
+         url('Neris-BlackItalic-webfont.ttf') format('truetype');
+    font-weight: 900;
+    font-style: italic;
+
+}

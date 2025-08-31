@@ -1,0 +1,63 @@
+#order deny,allow
+#deny from all
+#allow from 91.201.235.87
+#allow from 46.118.124.46
+
+RewriteEngine on
+Options +FollowSymlinks
+RewriteBase /
+#RewriteCond %{ENV:REDIRECT_STATUS} !=503
+#RewriteRule ^(.*)$ /$1 [R=503,L]
+
+<IfModule mod_dir.c>
+	DirectoryIndex gi2index.php index.php
+</IfModule>
+
+#RewriteCond %{HTTPS} off
+#RewriteCond %{THE_REQUEST} !rss[\/\\]export.rss [NC]
+#RewriteRule ^ https://%{SERVER_NAME}%{REQUEST_URI} [R=301,L]
+
+RewriteRule ^manifest.json$ /media/manifest.json [L]
+
+#RewriteCond %{HTTPS} on
+#RewriteCond %{THE_REQUEST} rss[\/\\]export.rss [NC]
+#RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+
+RewriteCond %{REQUEST_URI} !=/server-status
+RewriteCond %{REQUEST_URI} !=/server-info
+RewriteRule ^(server-info|server-status) - [L]
+
+RewriteCond %{HTTP_HOST} !^galinfo\.com\.ua$
+RewriteRule (.*) https://galinfo.com.ua/$1 [R=301,L]
+
+RewriteRule ^(media|var|im|css)(.+).php$ [R=404,L]
+
+#RewriteRule ^media/gallery(.+)$						http://galinfo.com.ua/gallery$1 [R=301,L]
+RewriteRule ^gallery(.+)$						media/gallery$1 [R=301,L]
+
+RewriteRule ^gallery.php$ - [G]
+RewriteRule ^archive.php$ /oldarch.php?%{QUERY_STRING} [L]
+
+RewriteCond %{REQUEST_URI} ^/$
+RewriteRule .* /gi2index.php?ns=home&%{QUERY_STRING}  [L]	 ############################################### IMPORTANT
+
+RewriteRule ^subject(.*)$					/articles$1 [R=301,L]
+
+RewriteRule ^rss[\/\\]export.rss				/apphlp/rssindex.php?pphtm=rsschannel&ns=all [L]
+RewriteRule ^rss[\/\\]ukrnetxml.rss$			/apphlp/rssindex.php?pphtm=rsschannel&ns=ukrnet [L]
+RewriteRule ^rss[\/\\]yandexml.rss$			/apphlp/rssindex.php?pphtm=rsschannel&ns=yandex [L]
+RewriteRule ^([^\.\/\\]+)[\/\\]xml[\/\\]googlenews.xml$				/rssindex.php?lng=$1&pphtm=rsschannel&ns=googlenews [L]
+RewriteRule ^([^\.\/\\]+)[\/\\]xml[\/\\]yandexnews.xml$				/rssindex.php?lng=$1&pphtm=rsschannel&ns=yandexnews [L]
+RewriteRule ^(gallery/cached70x50/(.+))$							/apphlp/getim70x50.php?p=$1			
+RewriteRule ^(gallery/w300/(.+))$									/apphlp/getim300.php?p=$1						
+RewriteRule ^(media/video/stills/w193/(.+))$						/apphlp/getimvideo193.php?p=$1						
+
+RewriteRule ^([^\.\/\\]+)[\/\\]rss[\/\\](region|rubric|theme)[\/\\]([^\.\/\\]+).rss$	/rssindex.php?lng=$1&pphtm=rsschannel&ns=$2&$2_id=$3 [L]
+
+RewriteRule ^myaccount[\/\\]([^\.\/\\]+)[\/\\]$		/gi2index.php?pphtm=myaccount&action=$1&%{QUERY_STRING}  [L]
+RewriteRule ^login[\/\\]$							/apphlp/loginform.php?%{QUERY_STRING}   [L]	
+
+RewriteCond $1 !^(gi2index\.php|gazda|sitemap|webstat|red|media|var|im|favs|bgs|js|css|img|gallery|apphlp|robots\.txt|(.+)\.php) [NC]
+RewriteCond $1 !^((.+)\.htm|favicon\.ico)$
+RewriteRule ^(.*)$ /gi2index.php?/$1&%{QUERY_STRING} [L]
