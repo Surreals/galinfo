@@ -46,13 +46,17 @@ export default function Hero() {
   // Transform hero news data for the news lists
   useEffect(() => {
     if (heroNews && heroNews.length > 0) {
-      const transformedNews = heroNews.map((item) => ({
-        id: item.id,
-        title: getNewsTitle(item),
-        time: formatNewsDate(item.ndate, item.udate),
-        imageUrl: getNewsImage(item) || `https://picsum.photos/seed/${item.id}/300/200`,
-        url: generateArticleUrl(item),
-      }));
+      const transformedNews = heroNews.map((item) => {
+        const imageUrl = getNewsImage(item);
+        
+        return {
+          id: item.id,
+          title: getNewsTitle(item),
+          time: formatNewsDate(item.ndate, item.udate),
+          imageUrl: imageUrl || `https://picsum.photos/seed/${item.id}/300/200`,
+          url: generateArticleUrl(item),
+        };
+      });
       
       // Generate additional news items to fill the lists if needed
       const additionalNews = Array.from({ length: Math.max(0, 8 - transformedNews.length) }, (_, index) => ({

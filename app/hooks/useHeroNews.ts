@@ -15,6 +15,7 @@ interface HeroNewsItem {
   sheader: string;
   steaser: string;
   qty: number;
+  image_filenames: string;
 }
 
 interface HeroNewsResponse {

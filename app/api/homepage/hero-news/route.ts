@@ -20,16 +20,19 @@ export async function GET() {
         a_news_headers.nteaser,
         a_news_slideheaders.sheader,
         a_news_slideheaders.steaser,
-        a_statcomm.qty
+        a_statcomm.qty,
+        GROUP_CONCAT(a_pics.filename) as image_filenames
       FROM a_news USE KEY (PRIMARY)
       LEFT JOIN a_news_headers USE KEY (PRIMARY) ON a_news.id = a_news_headers.id
       LEFT JOIN a_news_slideheaders USE KEY (PRIMARY) ON a_news.id = a_news_slideheaders.id
       LEFT JOIN a_news_specialids ON a_news.id = a_news_specialids.newsid
       LEFT JOIN a_statcomm USE KEY (PRIMARY) ON a_news.id = a_statcomm.id
+      LEFT JOIN a_pics ON FIND_IN_SET(a_pics.id, a_news.images)
       WHERE a_news_specialids.section = 1 
         AND a_news_specialids.newsid <> 0 
         AND a_news.approved = 1 
         AND a_news.udate < UNIX_TIMESTAMP()
+      GROUP BY a_news.id
       ORDER BY a_news_specialids.id 
       LIMIT 4
     `);
@@ -51,15 +54,18 @@ export async function GET() {
           a_news_headers.nteaser,
           a_news_slideheaders.sheader,
           a_news_slideheaders.steaser,
-          a_statcomm.qty
+          a_statcomm.qty,
+          GROUP_CONCAT(a_pics.filename) as image_filenames
         FROM a_news USE KEY (nweight)
         LEFT JOIN a_news_headers USE KEY (PRIMARY) ON a_news.id = a_news_headers.id
         LEFT JOIN a_news_slideheaders USE KEY (PRIMARY) ON a_news.id = a_news_slideheaders.id
         LEFT JOIN a_statcomm USE KEY (PRIMARY) ON a_news.id = a_statcomm.id
+        LEFT JOIN a_pics ON FIND_IN_SET(a_pics.id, a_news.images)
         WHERE a_news.lang = "1"
           AND a_news.nweight = 2
           AND a_news.approved = 1
           AND a_news.udate < UNIX_TIMESTAMP()
+        GROUP BY a_news.id
         ORDER BY a_news.udate DESC
         LIMIT 4
       `);
