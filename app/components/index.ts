@@ -11,3 +11,4 @@ export { default as Breadcrumbs } from './breadcrumbs';
 export { ArticleMeta } from './articleMeta';
 export { default as NewsListByRubric } from './NewsList';
 export { default as NewsDetail } from './NewsDetail';
+export { default as NewsSearch } from './NewsSearch';
