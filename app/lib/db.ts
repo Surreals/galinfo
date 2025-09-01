@@ -22,6 +22,13 @@ const dbConfig = {
   queueLimit: 0,
   // Add connection timeout for remote connections
   connectTimeout: process.env.DB_HOST !== '127.0.0.1' && process.env.DB_HOST !== 'localhost' ? 60000 : 10000,
+  // Add charset to ensure proper encoding
+  charset: 'utf8mb4',
+  // Add support for multiple statements (disabled for security)
+  multipleStatements: false,
+  // Add connection retry options
+  enableKeepAlive: true,
+  keepAliveInitialDelay: 0,
 };
 
 // Create connection pool
@@ -62,15 +69,39 @@ export async function testConnection() {
   }
 }
 
-// Execute query function
+// Execute query function with retry logic
 export async function executeQuery<T = any>(query: string, params?: any[]): Promise<T[]> {
-  try {
-    const [rows] = await pool.execute(query, params);
-    return rows as T[];
-  } catch (error) {
-    console.error('Query execution failed:', error);
-    throw error;
+  const maxRetries = 3;
+  let lastError: any;
+  
+  for (let attempt = 1; attempt <= maxRetries; attempt++) {
+    try {
+      const [rows] = await pool.execute(query, params);
+      return rows as T[];
+    } catch (error) {
+      lastError = error;
+      console.error(`Query execution failed (attempt ${attempt}/${maxRetries}):`, error);
+      
+      // If it's a malformed packet error, try to reconnect
+      if (error instanceof Error && 
+          (error.message.includes('Malformed communication packet') || 
+           error.message.includes('Lost connection') ||
+           error.message.includes('Connection lost'))) {
+        
+        if (attempt < maxRetries) {
+          console.log(`Attempting to reconnect and retry query (attempt ${attempt + 1}/${maxRetries})...`);
+          // Wait a bit before retrying
+          await new Promise(resolve => setTimeout(resolve, 1000 * attempt));
+          continue;
+        }
+      }
+      
+      // For other errors, don't retry
+      break;
+    }
   }
+  
+  throw lastError;
 }
 
 // Close pool function

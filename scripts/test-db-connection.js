@@ -1,80 +1,109 @@
 #!/usr/bin/env node
 
 const mysql = require('mysql2/promise');
-require('dotenv').config({ path: '.env.local' });
+require('dotenv').config();
 
-async function testConnection() {
-  const config = {
+async function testDatabaseConnection() {
+  console.log('🔍 Testing database connection...');
+  
+  const dbConfig = {
     host: process.env.DB_HOST || '127.0.0.1',
     user: process.env.DB_USER || 'root',
     password: process.env.DB_PASSWORD || '',
     database: process.env.DB_NAME || 'galinfodb_db',
     port: parseInt(process.env.DB_PORT || '3306'),
-    // Try SSL first, but allow fallback to non-SSL
-    ssl: process.env.DB_HOST !== '127.0.0.1' && process.env.DB_HOST !== 'localhost' ? {
-      rejectUnauthorized: false,
-      minVersion: 'TLSv1.2'
-    } : undefined,
-    // Add connection timeout for remote connections
-    connectTimeout: process.env.DB_HOST !== '127.0.0.1' && process.env.DB_HOST !== 'localhost' ? 60000 : 10000,
+    connectTimeout: 60000,
+    charset: 'utf8mb4',
+    multipleStatements: false,
+    enableKeepAlive: true,
+    keepAliveInitialDelay: 0,
   };
-
-  console.log('🔍 Testing database connection...');
-  console.log('📍 Host:', config.host);
-  console.log('👤 User:', config.user);
-  console.log('🗄️  Database:', config.database);
-  console.log('🔌 Port:', config.port);
-  console.log('🔒 SSL:', config.ssl ? 'Enabled (with fallback)' : 'Disabled');
-  console.log('⏱️  Timeout:', config.connectTimeout, 'ms');
-  console.log('');
-
+  
+  console.log('📋 Database configuration:');
+  console.log(`  Host: ${dbConfig.host}`);
+  console.log(`  Port: ${dbConfig.port}`);
+  console.log(`  Database: ${dbConfig.database}`);
+  console.log(`  User: ${dbConfig.user}`);
+  console.log(`  Password: ${dbConfig.password ? '[SET]' : '[NOT SET]'}`);
+  
   try {
-    const connection = await mysql.createConnection(config);
-    console.log('✅ Database connected successfully!');
+    // Test basic connection
+    console.log('\n🔌 Testing basic connection...');
+    const connection = await mysql.createConnection(dbConfig);
+    console.log('✅ Basic connection successful!');
     
-    // Test a simple query
+    // Test simple query
+    console.log('\n📝 Testing simple query...');
     const [rows] = await connection.execute('SELECT 1 as test');
-    console.log('✅ Query test successful:', rows);
+    console.log('✅ Simple query successful:', rows);
+    
+    // Test table existence
+    console.log('\n📊 Testing table existence...');
+    const [tables] = await connection.execute(`
+      SELECT TABLE_NAME 
+      FROM INFORMATION_SCHEMA.TABLES 
+      WHERE TABLE_SCHEMA = ? 
+      AND TABLE_NAME IN ('a_news', 'a_news_headers', 'a_statcomm', 'a_statview')
+    `, [dbConfig.database]);
+    
+    console.log('✅ Available tables:', tables.map(t => t.TABLE_NAME));
+    
+    // Test search query structure
+    console.log('\n🔍 Testing search query structure...');
+    const searchTerm = '%test%';
+    const lang = '1';
+    const limit = 10;
+    const offset = 0;
+    
+    const testQuery = `
+      SELECT 
+        a_news.id,
+        a_news.ndate,
+        a_news_headers.nheader,
+        a_news_headers.nsubheader,
+        a_news_headers.nteaser
+      FROM a_news
+      LEFT JOIN a_news_headers ON a_news.id = a_news_headers.id
+      WHERE a_news.udate < UNIX_TIMESTAMP() 
+        AND a_news.approved = 1 
+        AND a_news.lang = ? 
+        AND (a_news_headers.nheader LIKE ? OR a_news_headers.nsubheader LIKE ? OR a_news_headers.nteaser LIKE ?)
+      ORDER BY a_news.udate DESC
+      LIMIT ? OFFSET ?
+    `;
+    
+    const [searchResults] = await connection.execute(testQuery, [
+      lang, searchTerm, searchTerm, searchTerm, limit, offset
+    ]);
+    
+    console.log(`✅ Search query successful! Found ${searchResults.length} results`);
     
     await connection.end();
-    return true;
-  } catch (error) {
-    console.error('❌ Database connection failed:');
-    console.error('Error code:', error.code);
-    console.error('Error message:', error.message);
+    console.log('\n🎉 All tests passed! Database connection is working properly.');
     
-    // If SSL fails, try without SSL
-    if (error.code === 'HANDSHAKE_NO_SSL_SUPPORT' || error.code === 'ECONNRESET') {
-      console.log('\n🔄 SSL connection failed, trying without SSL...');
-      
-      const nonSslConfig = { ...config };
-      delete nonSslConfig.ssl;
-      
-      try {
-        const connection = await mysql.createConnection(nonSslConfig);
-        console.log('✅ Database connected successfully without SSL!');
-        
-        // Test a simple query
-        const [rows] = await connection.execute('SELECT 1 as test');
-        console.log('✅ Query test successful:', rows);
-        
-        await connection.end();
-        return true;
-      } catch (sslError) {
-        console.error('❌ Non-SSL connection also failed:');
-        console.error('Error code:', sslError.code);
-        console.error('Error message:', sslError.message);
-        console.error('Error details:', sslError);
-        return false;
-      }
-    } else {
-      console.error('Error details:', error);
-      return false;
+  } catch (error) {
+    console.error('\n❌ Database connection test failed:', error);
+    
+    if (error.code === 'ER_ACCESS_DENIED_ERROR') {
+      console.log('\n💡 Possible solutions:');
+      console.log('  1. Check your database credentials in .env file');
+      console.log('  2. Ensure the user has proper permissions');
+      console.log('  3. Verify the database exists');
+    } else if (error.code === 'ECONNREFUSED') {
+      console.log('\n💡 Possible solutions:');
+      console.log('  1. Check if MySQL server is running');
+      console.log('  2. Verify the host and port are correct');
+      console.log('  3. Check firewall settings');
+    } else if (error.code === 'ER_MALFORMED_PACKET') {
+      console.log('\n💡 Possible solutions:');
+      console.log('  1. Check network connectivity');
+      console.log('  2. Verify MySQL server version compatibility');
+      console.log('  3. Try increasing connection timeout');
     }
+    
+    process.exit(1);
   }
 }
 
 // Run the test
-testConnection().then(success => {
-  process.exit(success ? 0 : 1);
-});
+testDatabaseConnection();

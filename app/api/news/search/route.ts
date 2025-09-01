@@ -47,7 +47,7 @@ export async function GET(request: NextRequest) {
     
     const whereClause = whereConditions.join(' AND ');
     
-    // Запит для пошуку новин
+    // Запит для пошуку новин - виправлений для уникнення помилок з параметрами
     const searchQuery = `
       SELECT 
         a_news.id,
@@ -65,8 +65,8 @@ export async function GET(request: NextRequest) {
         a_news_headers.nheader,
         a_news_headers.nsubheader,
         a_news_headers.nteaser,
-        a_statcomm.qty as comments_count,
-        a_statview.qty as views_count,
+        COALESCE(a_statcomm.qty, 0) as comments_count,
+        COALESCE(a_statview.qty, 0) as views_count,
         CASE 
           WHEN a_news_headers.nheader LIKE ? THEN 3
           WHEN a_news_headers.nsubheader LIKE ? THEN 2
@@ -90,11 +90,74 @@ export async function GET(request: NextRequest) {
       WHERE ${whereClause}
     `;
     
-    // Виконання запитів
-    const [searchData, countData] = await Promise.all([
-      executeQuery(searchQuery, [...queryParams, limit, offset]),
-      executeQuery(countQuery, queryParams)
-    ]);
+    // Підготовка параметрів для пошукового запиту
+    const searchQueryParams = [...queryParams, limit, offset];
+    
+    // Виконання запитів з кращою обробкою помилок
+    let searchData: any[] = [];
+    let countData: any[] = [];
+    
+    try {
+      [searchData, countData] = await Promise.all([
+        executeQuery(searchQuery, searchQueryParams),
+        executeQuery(countQuery, queryParams)
+      ]);
+    } catch (dbError) {
+      console.error('Database query error:', dbError);
+      
+      // Якщо помилка пов'язана з параметрами, спробуємо спростити запит
+      if (dbError instanceof Error && dbError.message.includes('Malformed communication packet')) {
+        console.log('Attempting simplified query...');
+        
+        const simplifiedSearchQuery = `
+          SELECT 
+            a_news.id,
+            a_news.ndate,
+            a_news.ntime,
+            a_news.ntype,
+            a_news.images,
+            a_news.urlkey,
+            a_news.photo,
+            a_news.video,
+            a_news.comments,
+            a_news.printsubheader,
+            a_news.rubric,
+            a_news.nweight,
+            a_news_headers.nheader,
+            a_news_headers.nsubheader,
+            a_news_headers.nteaser,
+            COALESCE(a_statcomm.qty, 0) as comments_count,
+            COALESCE(a_statview.qty, 0) as views_count
+          FROM a_news
+          LEFT JOIN a_news_headers ON a_news.id = a_news_headers.id
+          LEFT JOIN a_statcomm ON a_news.id = a_statcomm.id
+          LEFT JOIN a_statview ON a_news.id = a_statview.id
+          WHERE a_news.udate < UNIX_TIMESTAMP() 
+            AND a_news.approved = 1 
+            AND a_news.lang = ? 
+            AND (a_news_headers.nheader LIKE ? OR a_news_headers.nsubheader LIKE ? OR a_news_headers.nteaser LIKE ?)
+          ORDER BY a_news.udate DESC
+          LIMIT ? OFFSET ?
+        `;
+        
+        const simplifiedCountQuery = `
+          SELECT COUNT(*) as total
+          FROM a_news
+          LEFT JOIN a_news_headers ON a_news.id = a_news_headers.id
+          WHERE a_news.udate < UNIX_TIMESTAMP() 
+            AND a_news.approved = 1 
+            AND a_news.lang = ? 
+            AND (a_news_headers.nheader LIKE ? OR a_news_headers.nsubheader LIKE ? OR a_news_headers.nteaser LIKE ?)
+        `;
+        
+        [searchData, countData] = await Promise.all([
+          executeQuery(simplifiedSearchQuery, [lang, searchTerm, searchTerm, searchTerm, limit, offset]),
+          executeQuery(simplifiedCountQuery, [lang, searchTerm, searchTerm, searchTerm])
+        ]);
+      } else {
+        throw dbError;
+      }
+    }
     
     const total = countData[0]?.total || 0;
     const totalPages = Math.ceil(total / limit);
@@ -108,12 +171,17 @@ export async function GET(request: NextRequest) {
     
     let imagesData: any[] = [];
     if (imageIds.length > 0) {
-      const imagesQuery = `
-        SELECT id, filename, title_ua
-        FROM a_pics
-        WHERE id IN (${imageIds.map(() => '?').join(',')})
-      `;
-      imagesData = await executeQuery(imagesQuery, imageIds);
+      try {
+        const imagesQuery = `
+          SELECT id, filename, title_ua
+          FROM a_pics
+          WHERE id IN (${imageIds.map(() => '?').join(',')})
+        `;
+        imagesData = await executeQuery(imagesQuery, imageIds);
+      } catch (imageError) {
+        console.error('Error fetching images:', imageError);
+        // Continue without images if there's an error
+      }
     }
     
     // Формування відповіді
@@ -147,7 +215,7 @@ export async function GET(request: NextRequest) {
   } catch (error) {
     console.error('Error searching news:', error);
     return NextResponse.json(
-      { error: 'Failed to search news' },
+      { error: 'Failed to search news', details: error instanceof Error ? error.message : 'Unknown error' },
       { status: 500 }
     );
   }
