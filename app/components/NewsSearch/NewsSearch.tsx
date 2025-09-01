@@ -84,7 +84,7 @@ const NewsSearch: React.FC = () => {
       }
     } catch (error) {
       console.error('Error searching news:', error);
-      setError('Помилка з'єднання з сервером');
+      setError('Помилка з\'єднання з сервером');
     } finally {
       setLoading(false);
     }
