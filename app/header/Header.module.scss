@@ -241,6 +241,51 @@
   margin: 0 auto;
   justify-content: space-between;
 
+  .moreNewsItem {
+
+    .link {
+      padding: 4px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 500;
+      transition: color 0.2s ease;
+      white-space: nowrap;
+    }
+  }
+
+  .headerNav {
+    display: flex;
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+
+  }
+
+  .navListWrapper {
+    position: relative; // обов’язково для абсолютного позиціонування псевдоелемента
+    overflow: hidden; // ховає зайве
+  }
+
+  .navListWrapper::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 1%; // регулюй плавність
+    height: 100%;
+    z-index: 2;
+    pointer-events: none; // щоб клік не блокував
+    background: linear-gradient(to left, #fff 0%, rgba(255, 255, 255, 0) 100%);
+  }
+
+  .logo {
+    flex-shrink: 0;
+  }
+
+  .svgBox {
+    flex-shrink: 0;
+  }
+
   .burgerMenuContainer {
     align-items: center;
     display: flex;
@@ -285,11 +330,18 @@
     }
   }
 
-  .navList {    align-items: center;
+  .navList {
+    align-items: center;
     margin: 0;
     display: flex;
     gap: 10px;
     line-height: 1.2;
+    padding: 0;
+
+    overflow: hidden;
+    white-space: nowrap;
+    flex-wrap: nowrap;
+
 
     .link {
       padding: 4px;
@@ -297,6 +349,7 @@
       font-size: 14px;
       font-weight: 500;
       transition: color 0.2s ease;
+      white-space: nowrap;
     }
 
     .link:hover {
@@ -470,6 +523,10 @@
     .headerNav {
       display: none;
     }
+
+      .moreNewsItem {
+        display: none;
+      }
 
     .burgerMenuIcon {
       display: flex;
