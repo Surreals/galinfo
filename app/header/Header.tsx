@@ -12,9 +12,9 @@ import radioLogo from "@/assets/logos/radioLogo.svg"
 import searchIcon from "@/assets/icons/searchIcon.svg"
 import dotIcon from "@/assets/icons/dotIcon.svg"
 import burgerMenu from "@/assets/icons/burgerMenu.svg"
+import { useMenuContext } from "@/app/contexts/MenuContext";
 
 import styles from "@/app/header/Header.module.scss";
-import { useMenuContext } from "@/app/contexts/MenuContext";
 
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -23,6 +23,8 @@ export default function Header() {
   
   // Fetch dynamic menu data
   const { menuData, loading, error } = useMenuContext();
+
+  console.log('menuData', menuData)
 
   useEffect(() => {
     if (isMenuOpen) {
@@ -60,6 +62,7 @@ export default function Header() {
   const mainCategories = menuData?.mainCategories || [];
   const regions = menuData?.regions || [];
   const additionalItems = menuData?.additionalItems || [];
+  const specialThemesItem = menuData?.specialThemes || [];
 
   return (
     <header className={styles.headerMain}>
@@ -74,73 +77,75 @@ export default function Header() {
           />
         </Link>
         <nav className={styles.headerNav}>
-          <ul className={styles.navList}>
-            {/* Dynamic main categories from database */}
-            {mainCategories.map((category) => (
-              <li key={category.id}>
-                <Link href={category.link} className={styles.link}>
-                  {category.title.toUpperCase()}
-                </Link>
-              </li>
-            ))}
-            
-            {/* Fallback to static categories if no dynamic data */}
-            {mainCategories.length === 0 && (
-              <>
-                <li>
-                  <Link href={paths.society} className={styles.link}>
-                    СУСПІЛЬСТВО
+          <div className={styles.navListWrapper}>
+            <ul className={styles.navList}>
+              {/* Dynamic main categories from database */}
+              {mainCategories.map((category) => (
+                <li key={category.id}>
+                  <Link href={category.link} className={styles.link}>
+                    {category.title.toUpperCase()}
                   </Link>
                 </li>
-                <li>
-                  <Link href={paths.politics} className={styles.link}>
-                    ПОЛІТИКА
-                  </Link>
-                </li>
-                <li>
-                  <Link href={paths.economy} className={styles.link}>
-                    ЕКОНОМІКА
-                  </Link>
-                </li>
-                <li>
-                  <Link href={paths.culture} className={styles.link}>
-                    КУЛЬТУРА
-                  </Link>
-                </li>
-                <li>
-                  <Link href={paths.health} className={styles.link}>
-                    ЗДОРОВ'Я
-                  </Link>
-                </li>
-                <li>
-                  <Link href={paths.health} className={styles.link}>
-                    ВІЙНА З РОСІЄЮ
-                  </Link>
-                </li>
-                <li>
-                  <Link href={paths.sport} className={styles.link}>
-                    СПОРТ
-                  </Link>
-                </li>
-                <li>
-                  <Link href={paths.crime} className={styles.link}>
-                    КРИМІНАЛ
-                  </Link>
-                </li>
-              </>
-            )}
-            
-            <li>
-              <Link href="#"
-                    onMouseEnter={() => setIsMoreNewsOpen(true)}
-                    onMouseLeave={() => setIsMoreNewsOpen(false)}
-                    className={styles.link}
-              >
-                БІЛЬШЕ НОВИН...
-              </Link>
-            </li>
-          </ul>
+              ))}
+
+              {/* Fallback to static categories if no dynamic data */}
+              {mainCategories.length === 0 && (
+                <>
+                  <li>
+                    <Link href={paths.society} className={styles.link}>
+                      СУСПІЛЬСТВО
+                    </Link>
+                  </li>
+                  <li>
+                    <Link href={paths.politics} className={styles.link}>
+                      ПОЛІТИКА
+                    </Link>
+                  </li>
+                  <li>
+                    <Link href={paths.economy} className={styles.link}>
+                      ЕКОНОМІКА
+                    </Link>
+                  </li>
+                  <li>
+                    <Link href={paths.culture} className={styles.link}>
+                      КУЛЬТУРА
+                    </Link>
+                  </li>
+                  <li>
+                    <Link href={paths.health} className={styles.link}>
+                      ЗДОРОВ'Я
+                    </Link>
+                  </li>
+                  <li>
+                    <Link href={paths.health} className={styles.link}>
+                      ВІЙНА З РОСІЄЮ
+                    </Link>
+                  </li>
+                  <li>
+                    <Link href={paths.sport} className={styles.link}>
+                      СПОРТ
+                    </Link>
+                  </li>
+                  <li>
+                    <Link href={paths.crime} className={styles.link}>
+                      КРИМІНАЛ
+                    </Link>
+                  </li>
+                </>
+              )}
+            </ul>
+          </div>
+
         </nav>
+        <div className={styles.moreNewsItem}>
+          <Link
+            href="#"
+            onMouseEnter={() => setIsMoreNewsOpen(true)}
+            className={styles.link}
+          >
+            БІЛЬШЕ НОВИН...
+          </Link>
+        </div>
         <div className={styles.burgerMenuContainer}>
           <div
             className={styles.burgerMenuIcon}
@@ -169,6 +174,7 @@ export default function Header() {
         </div>
       </div>
       <div
+        onMouseLeave={() => setIsMoreNewsOpen(false)}
         className={`${styles.moreNewsBlock} ${isMoreNewsOpen ? styles.open : ''}`}
       >
         <div className={styles.flexContainer}>
@@ -177,21 +183,21 @@ export default function Header() {
             <h3 className={styles.title}>ТОП ТЕМИ</h3>
             <div className={styles.divider}></div>
             <ul className={styles.list}>
-              <li>
-                <Link href={paths.frankConversation} className={styles.linkSlider}>
-                  ВІДВЕРТА РОЗМОВА З
+              {specialThemesItem.map((region) => (
+                <Link key={region.id} href={region.link} className={styles.linkSlider}>
+                  {region.title.toUpperCase()}
                 </Link>
-              </li>
-              <li>
-                <Link href={paths.lvivDistricts} className={styles.linkSlider}>
-                  РАЙОНИ ЛЬВОВА
-                </Link>
-              </li>
-              <li>
-                <Link href={paths.pressService} className={styles.linkSlider}>
-                  ПРЕССЛУЖБА
-                </Link>
-              </li>
+              ))}
+              {/* Fallback to static regions if no dynamic data */}
+              {specialThemesItem.length === 0 && (
+                <>
+                  <Link href={paths.frankConversation} className={styles.linkSlider}>
+                    ВІДВЕРТА РОЗМОВА З
+                  </Link>
+                  <Link href={paths.lvivDistricts} className={styles.linkSlider}>РАЙОНИ ЛЬВОВА</Link>
+                  <Link href={paths.pressService} className={styles.linkSlider}>ПРЕССЛУЖБА</Link>
+                </>
+              )}
             </ul>
           </div>
 
@@ -263,26 +269,36 @@ export default function Header() {
 
               {/* Підколонка 3 - Додаткові теми */}
               <div className={styles.gridColumn}>
-                <Link href={paths.sport} className={styles.linkSlider}>
-                  СПОРТ
-                </Link>
-                <Link href={paths.crime} className={styles.linkSlider}>
-                  КРИМІНАЛ
-                </Link>
-                <Link href={paths.emergency} className={styles.linkSlider}>
-                  НАДЗВИЧАЙНІ ПОДІЇ
-                </Link>
-                <Link href={paths.history} className={styles.linkSlider}>
-                  ІСТОРІЯ
-                </Link>
-                <Link href={paths.technologies} className={styles.linkSlider}>
-                  ТЕХНОЛОГІЇ
-                </Link>
+                {mainCategories.slice(5).map((category) => (
+                  <Link key={category.id} href={category.link} className={styles.linkSlider}>
+                    {category.title.toUpperCase()}
+                  </Link>
+                ))}
+                {/* Fallback to static categories if no dynamic data */}
+                {mainCategories.length === 0 && (
+                  <>
+                    <Link href={paths.sport} className={styles.linkSlider}>
+                      СПОРТ
+                    </Link>
+                    <Link href={paths.crime} className={styles.linkSlider}>
+                      КРИМІНАЛ
+                    </Link>
+                    <Link href={paths.emergency} className={styles.linkSlider}>
+                      НАДЗВИЧАЙНІ ПОДІЇ
+                    </Link>
+                    <Link href={paths.history} className={styles.linkSlider}>
+                      ІСТОРІЯ
+                    </Link>
+                    <Link href={paths.technologies} className={styles.linkSlider}>
+                      ТЕХНОЛОГІЇ
+                    </Link>
+                  </>
+                )}
               </div>
 
               {/* Підколонка 4 - Типи контенту */}
               <div className={styles.gridColumn}>
-                {additionalItems.slice(0, 3).map((item) => (
+                {additionalItems.map((item) => (
                   <Link key={item.param} href={item.link} className={styles.linkSlider}>
                     {item.title.toUpperCase()}
                   </Link>
@@ -401,7 +417,7 @@ export default function Header() {
                   {category.title.toUpperCase()}
                 </Link>
               ))}
-              
+
               {/* Fallback to static categories if no dynamic data */}
               {regions.length === 0 && mainCategories.length === 0 && (
                 <>

@@ -7,11 +7,19 @@ import paths from '@/app/paths';
 import galinfoLogo from '@/assets/logos/galInfoLogo.png';
 import inFomoLogoWhite from '@/assets/logos/inFomoLogoWhite.png';
 import arrowUpPrimary from "@/assets/icons/arrowUpPrimary.svg";
+import { useMenuContext } from "@/app/contexts/MenuContext";
 
 import styles from './Footer.module.css';
 
 export default function Footer() {
   const [isVisible, setIsVisible] = useState(false);
+
+  const { menuData } = useMenuContext();
+
+  const mainCategories = menuData?.mainCategories || [];
+  const regions = menuData?.regions || [];
+  const additionalItems = menuData?.additionalItems || [];
+  const specialThemesItem = menuData?.specialThemes || [];
 
   useEffect(() => {
     const handleScroll = () => {
@@ -82,21 +90,20 @@ export default function Footer() {
             <h3 className={styles.title}>ТОП ТЕМИ</h3>
             <div className={styles.divider}></div>
             <ul className={styles.list}>
-              <li>
-                <Link href={paths.frankConversation} className={styles.link}>
-                  ВІДВЕРТА РОЗМОВА З
-                </Link>
-              </li>
-              <li>
-                <Link href={paths.lvivDistricts} className={styles.link}>
-                  РАЙОНИ ЛЬВОВА
-                </Link>
-              </li>
-              <li>
-                <Link href={paths.pressService} className={styles.link}>
-                  ПРЕССЛУЖБА
-                </Link>
-              </li>
+              {specialThemesItem.map((item) => (
+                <li key={item.id}>
+                  <Link href={item.link} className={styles.link}>
+                    {item.title.toUpperCase()}
+                  </Link>
+                </li>
+              ))}
+              {specialThemesItem.length === 0 && (
+                <>
+                  <li><Link href={paths.frankConversation} className={styles.link}>ВІДВЕРТА РОЗМОВА З</Link></li>
+                  <li><Link href={paths.lvivDistricts} className={styles.link}>РАЙОНИ ЛЬВОВА</Link></li>
+                  <li><Link href={paths.pressService} className={styles.link}>ПРЕССЛУЖБА</Link></li>
+                </>
+              )}
             </ul>
           </div>
 
@@ -105,82 +112,47 @@ export default function Footer() {
             <h3 className={styles.title}>КАТЕГОРІЇ</h3>
             <div className={styles.divider}></div>
             <div className={styles.grid}>
-              {/* Підколонка 1 - Регіони */}
               <div className={styles.gridColumn}>
-                <Link href={paths.lvivRegion} className={styles.link}>
-                  ЛЬВІВЩИНА
-                </Link>
-                <Link href={paths.ternopilRegion} className={styles.link}>
-                  ТЕРНОПІЛЬЩИНА
-                </Link>
-                <Link href={paths.volyn} className={styles.link}>
-                  ВОЛИНЬ
-                </Link>
-                <Link href={paths.ukraine} className={styles.link}>
-                  УКРАЇНА
-                </Link>
-                <Link href={paths.eu} className={styles.link}>
-                  ЄС
-                </Link>
-                <Link href={paths.world} className={styles.link}>
-                  СВІТ
-                </Link>
+                {regions.map((region) => (
+                  <Link key={region.id} href={region.link} className={styles.link}>
+                    {region.title.toUpperCase()}
+                  </Link>
+                ))}
+                {regions.length === 0 && (
+                  <>
+                    <Link href={paths.lvivRegion} className={styles.link}>ЛЬВІВЩИНА</Link>
+                    <Link href={paths.ternopilRegion} className={styles.link}>ТЕРНОПІЛЬЩИНА</Link>
+                    <Link href={paths.volyn} className={styles.link}>ВОЛИНЬ</Link>
+                  </>
+                )}
               </div>
 
-              {/* Підколонка 2 - Теми */}
               <div className={styles.gridColumn}>
-                <Link href={paths.society} className={styles.link}>
-                  СУСПІЛЬСТВО
-                </Link>
-                <Link href={paths.politics} className={styles.link}>
-                  ПОЛІТИКА
-                </Link>
-                <Link href={paths.economy} className={styles.link}>
-                  ЕКОНОМІКА
-                </Link>
-                <Link href={paths.culture} className={styles.link}>
-                  КУЛЬТУРА
-                </Link>
-                <Link href={paths.health} className={styles.link}>
-                  ЗДОРОВ'Я
-                </Link>
+                {mainCategories.slice(0, 5).map((cat) => (
+                  <Link key={cat.id} href={cat.link} className={styles.link}>
+                    {cat.title.toUpperCase()}
+                  </Link>
+                ))}
               </div>
 
-              {/* Підколонка 3 - Додаткові теми */}
               <div className={styles.gridColumn}>
-                <Link href={paths.sport} className={styles.link}>
-                  СПОРТ
-                </Link>
-                <Link href={paths.crime} className={styles.link}>
-                  КРИМІНАЛ
-                </Link>
-                <Link href={paths.emergency} className={styles.link}>
-                  НАДЗВИЧАЙНІ ПОДІЇ
-                </Link>
-                <Link href={paths.history} className={styles.link}>
-                  ІСТОРІЯ
-                </Link>
-                <Link href={paths.technologies} className={styles.link}>
-                  ТЕХНОЛОГІЇ
-                </Link>
+                {mainCategories.slice(5).map((cat) => (
+                  <Link key={cat.id} href={cat.link} className={styles.link}>
+                    {cat.title.toUpperCase()}
+                  </Link>
+                ))}
               </div>
 
-              {/* Підколонка 4 - Типи контенту */}
               <div className={styles.gridColumn}>
-                <Link href={paths.news} className={styles.link}>
-                  НОВИНА
-                </Link>
-                <Link href={paths.article} className={styles.link}>
-                  СТАТТЯ
-                </Link>
-                <Link href={paths.interview} className={styles.link}>
-                  ІНТЕРВ'Ю
-                </Link>
+                {additionalItems.map((item) => (
+                  <Link key={item.param} href={item.link} className={styles.link}>
+                    {item.title.toUpperCase()}
+                  </Link>
+                ))}
               </div>
             </div>
           </div>
         </div>
-
         {/* Розділювальна лінія */}
         <div className={styles.separator}></div>
 
