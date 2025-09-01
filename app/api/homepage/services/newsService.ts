@@ -43,7 +43,7 @@ export async function getNewsData() {
     const slideNews = await executeQuery(`
       SELECT a_news_headers.id, a_news_headers.nheader, a_news_headers.nteaser,
              a_news.ntype, a_news.comments, a_news.images, a_news.urlkey,
-             a_news.photo, a_news.video, a_news.ndate,
+             a_news.photo, a_news.video, a_news.ndate, a_news.nweight,
              a_news_slideheaders.sheader, a_news_slideheaders.steaser, a_statcomm.qty
       FROM a_news_headers USE KEY (PRIMARY)
       LEFT JOIN a_news USE KEY (datetype) ON a_news_headers.id = a_news.id
@@ -58,7 +58,7 @@ export async function getNewsData() {
     const headlineNews = await executeQuery(`
       SELECT a_news_headers.id, a_news_headers.nheader, a_news_headers.nteaser,
              a_news.ntype, a_news.comments, a_news.images, a_news.urlkey,
-             a_news.photo, a_news.video, a_news.ndate, a_news.udate, a_statcomm.qty
+             a_news.photo, a_news.video, a_news.ndate, a_news.udate, a_news.nweight, a_statcomm.qty
       FROM a_news_headers USE KEY (PRIMARY)
       LEFT JOIN a_news ON a_news_headers.id = a_news.id
       LEFT JOIN a_statcomm USE KEY (PRIMARY) ON a_news.id = a_statcomm.id

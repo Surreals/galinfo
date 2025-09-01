@@ -66,6 +66,7 @@ export async function GET(
         a_news.comments,
         a_news.printsubheader,
         a_news.rubric,
+        a_news.nweight,
         a_news_headers.nheader,
         a_news_headers.nsubheader,
         a_news_headers.nteaser,

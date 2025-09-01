@@ -6,7 +6,7 @@ export async function getRubricNewsData() {
     const rubric4News = await executeQuery(`
       SELECT a_news_headers.id, a_news_headers.nheader, a_news.ntype, a_news.comments,
              a_news.images, a_news.urlkey, a_news.udate, a_news.ndate, a_news.photo,
-             a_news.video, a_statcomm.qty
+             a_news.video, a_news.nweight, a_statcomm.qty
       FROM a_news USE KEY (maininblock)
       LEFT JOIN a_news_headers ON a_news.id = a_news_headers.id
       LEFT JOIN a_statcomm ON a_news.id = a_statcomm.id
@@ -18,7 +18,7 @@ export async function getRubricNewsData() {
     const rubric3News = await executeQuery(`
       SELECT a_news_headers.id, a_news_headers.nheader, a_news.ntype, a_news.comments,
              a_news.images, a_news.urlkey, a_news.udate, a_news.ndate, a_news.photo,
-             a_news.video, a_statcomm.qty
+             a_news.video, a_news.nweight, a_statcomm.qty
       FROM a_news USE KEY (maininblock)
       LEFT JOIN a_news_headers ON a_news.id = a_news_headers.id
       LEFT JOIN a_statcomm ON a_news.id = a_statcomm.id
@@ -30,7 +30,7 @@ export async function getRubricNewsData() {
     const rubric2News = await executeQuery(`
       SELECT a_news_headers.id, a_news_headers.nheader, a_news.ntype, a_news.comments,
              a_news.images, a_news.urlkey, a_news.udate, a_news.ndate, a_news.photo,
-             a_news.video, a_statcomm.qty
+             a_news.video, a_news.nweight, a_statcomm.qty
       FROM a_news USE KEY (maininblock)
       LEFT JOIN a_news_headers ON a_news.id = a_news_headers.id
       LEFT JOIN a_statcomm ON a_news.id = a_statcomm.id
@@ -42,7 +42,7 @@ export async function getRubricNewsData() {
     const rubric103News = await executeQuery(`
       SELECT a_news_headers.id, a_news_headers.nheader, a_news.ntype, a_news.comments,
              a_news.images, a_news.urlkey, a_news.udate, a_news.ndate, a_news.photo,
-             a_news.video, a_statcomm.qty
+             a_news.video, a_news.nweight, a_statcomm.qty
       FROM a_news USE KEY (maininblock)
       LEFT JOIN a_news_headers ON a_news.id = a_news_headers.id
       LEFT JOIN a_statcomm ON a_news.id = a_statcomm.id
@@ -54,7 +54,7 @@ export async function getRubricNewsData() {
     const rubric5News = await executeQuery(`
       SELECT a_news_headers.id, a_news_headers.nheader, a_news.ntype, a_news.comments,
              a_news.images, a_news.urlkey, a_news.udate, a_news.ndate, a_news.photo,
-             a_news.video, a_statcomm.qty
+             a_news.video, a_news.nweight, a_statcomm.qty
       FROM a_news USE KEY (maininblock)
       LEFT JOIN a_news_headers ON a_news.id = a_news_headers.id
       LEFT JOIN a_statcomm ON a_news.id = a_statcomm.id
@@ -66,7 +66,7 @@ export async function getRubricNewsData() {
     const rubric101News = await executeQuery(`
       SELECT a_news_headers.id, a_news_headers.nheader, a_news.ntype, a_news.comments,
              a_news.images, a_news.urlkey, a_news.udate, a_news.ndate, a_news.photo,
-             a_news.video, a_statcomm.qty
+             a_news.video, a_news.nweight, a_statcomm.qty
       FROM a_news USE KEY (maininblock)
       LEFT JOIN a_news_headers ON a_news.id = a_news_headers.id
       LEFT JOIN a_statcomm ON a_news.id = a_statcomm.id
@@ -78,7 +78,7 @@ export async function getRubricNewsData() {
     // Fetch additional news for each rubric
     const rubric4AdditionalNews = await executeQuery(`
       SELECT a_news_headers.id, a_news_headers.nheader, a_news.ntype, a_news.comments,
-             a_news.urlkey, a_news.photo, a_news.video, a_statcomm.qty
+             a_news.urlkey, a_news.photo, a_news.video, a_news.nweight, a_statcomm.qty
       FROM a_news USE KEY (udate)
       LEFT JOIN a_news_headers ON a_news.id = a_news_headers.id
       LEFT JOIN a_statcomm ON a_news.id = a_statcomm.id
@@ -89,7 +89,7 @@ export async function getRubricNewsData() {
     
     const rubric3AdditionalNews = await executeQuery(`
       SELECT a_news_headers.id, a_news_headers.nheader, a_news.ntype, a_news.comments,
-             a_news.urlkey, a_news.photo, a_news.video, a_statcomm.qty
+             a_news.urlkey, a_news.photo, a_news.video, a_news.nweight, a_statcomm.qty
       FROM a_news USE KEY (udate)
       LEFT JOIN a_news_headers ON a_news.id = a_news_headers.id
       LEFT JOIN a_statcomm ON a_news.id = a_statcomm.id
@@ -100,7 +100,7 @@ export async function getRubricNewsData() {
     
     const rubric2AdditionalNews = await executeQuery(`
       SELECT a_news_headers.id, a_news_headers.nheader, a_news.ntype, a_news.comments,
-             a_news.urlkey, a_news.photo, a_news.video, a_statcomm.qty
+             a_news.urlkey, a_news.photo, a_news.video, a_news.nweight, a_statcomm.qty
       FROM a_news USE KEY (udate)
       LEFT JOIN a_news_headers ON a_news.id = a_news_headers.id
       LEFT JOIN a_statcomm ON a_news.id = a_statcomm.id
@@ -111,7 +111,7 @@ export async function getRubricNewsData() {
     
     const rubric103AdditionalNews = await executeQuery(`
       SELECT a_news_headers.id, a_news_headers.nheader, a_news.ntype, a_news.comments,
-             a_news.urlkey, a_news.photo, a_news.video, a_statcomm.qty
+             a_news.urlkey, a_news.photo, a_news.video, a_news.nweight, a_statcomm.qty
       FROM a_news USE KEY (udate)
       LEFT JOIN a_news_headers ON a_news.id = a_news_headers.id
       LEFT JOIN a_statcomm ON a_news.id = a_statcomm.id
@@ -122,7 +122,7 @@ export async function getRubricNewsData() {
     
     const rubric5AdditionalNews = await executeQuery(`
       SELECT a_news_headers.id, a_news_headers.nheader, a_news.ntype, a_news.comments,
-             a_news.urlkey, a_news.photo, a_news.video, a_statcomm.qty
+             a_news.urlkey, a_news.photo, a_news.video, a_news.nweight, a_statcomm.qty
       FROM a_news USE KEY (udate)
       LEFT JOIN a_news_headers ON a_news.id = a_news_headers.id
       LEFT JOIN a_statcomm ON a_news.id = a_statcomm.id
@@ -133,7 +133,7 @@ export async function getRubricNewsData() {
     
     const rubric101AdditionalNews = await executeQuery(`
       SELECT a_news_headers.id, a_news_headers.nheader, a_news.ntype, a_news.comments,
-             a_news.urlkey, a_news.photo, a_news.video, a_statcomm.qty
+             a_news.urlkey, a_news.photo, a_news.video, a_news.nweight, a_statcomm.qty
       FROM a_news USE KEY (udate)
       LEFT JOIN a_news_headers ON a_news.id = a_news_headers.id
       LEFT JOIN a_statcomm ON a_news.id = a_statcomm.id
