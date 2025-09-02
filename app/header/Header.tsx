@@ -16,6 +16,7 @@ import { useMenuContext } from "@/app/contexts/MenuContext";
 import SearchBox from "@/app/header/components/SearchBox";
 
 import styles from "@/app/header/Header.module.scss";
+import {useImportantNewsByLevel} from "@/app/hooks/useImportantNews";
 
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -23,6 +24,10 @@ export default function Header() {
   const [isClosing, setIsClosing] = useState(false);
 
   const { menuData } = useMenuContext();
+
+  const { importantNews } = useImportantNewsByLevel(1)
+
+  console.log(importantNews)
 
   useEffect(() => {
     if (isMenuOpen) {
@@ -326,23 +331,23 @@ export default function Header() {
 
             <div className={styles.marqueeWrapper}>
               <div className={styles.marqueeContent}>
-                <Link href={paths.society} className={styles.newInfoLink}>
-                  <p className={styles.gradientTextStart}>" ВАЖЛИВА НОВИНА 1 ................. "</p>
-                  <Image src={dotIcon} alt="Dot Logo" width={8} height={8}/>
-                </Link>
-                <Link href={paths.society} className={styles.newInfoLink}>
-                  <p className={styles.gradientTextEnd}>" ВАЖЛИВА НОВИНА 2 ................. "</p>
-                  <Image src={dotIcon} alt="Dot Logo" width={8} height={8}/>
-                </Link>
+                {
+                  importantNews && importantNews.map(item => (
+                    <Link href={''} className={styles.newInfoLink}>
+                      <p className={styles.gradientTextStart}>{item.nheader}</p>
+                      <Image src={dotIcon} alt="Dot Logo" width={8} height={8}/>
+                    </Link>
+                  ))
+                }
 
-                <Link href={paths.society} className={styles.newInfoLink}>
-                  <p className={styles.gradientTextStart}>" ВАЖЛИВА НОВИНА 1 ................. "</p>
-                  <Image src={dotIcon} alt="Dot Logo" width={8} height={8}/>
-                </Link>
-                <Link href={paths.society} className={styles.newInfoLink}>
-                  <p className={styles.gradientTextEnd}>" ВАЖЛИВА НОВИНА 2 ................. "</p>
-                  <Image src={dotIcon} alt="Dot Logo" width={8} height={8}/>
-                </Link>
+                {
+                  importantNews && importantNews.map(item => (
+                    <Link href={''} className={styles.newInfoLink}>
+                      <p className={styles.gradientTextStart}>{item.nheader}</p>
+                      <Image src={dotIcon} alt="Dot Logo" width={8} height={8}/>
+                    </Link>
+                  ))
+                }
               </div>
             </div>
           </div>

@@ -453,6 +453,7 @@
 
   .infoContainer {
     padding: 6px;
+    width: 100%;
     border-left: 1px solid var(--color-tertiary);
     align-items: center;
     display: flex;
@@ -500,7 +501,7 @@
     .marqueeContent {
       display: inline-flex;
       gap: 32px;
-      animation: marqueeScroll 15s linear infinite;
+      animation: marqueeScroll 45s linear infinite;
     }
 
     .boltText {

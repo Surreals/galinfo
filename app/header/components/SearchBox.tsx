@@ -23,6 +23,7 @@ export default function SearchBox() {
         return;
       }
 
+
       // try {
       //   // тут зроби свій API виклик
       //   const res = await fetch(`/search?q=${value}&page=1`);
