@@ -45,6 +45,7 @@ const customTheme = {
       colorBorder: "rgb(207,207,207)",
       controlHeight: 46,
       borderRadius: 8,
+      activeShadow: '',
     },
     Tabs: {
       itemSelectedColor: "#c7084f",

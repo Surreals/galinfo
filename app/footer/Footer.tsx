@@ -1,5 +1,5 @@
 "use client";
-import { useRef, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import Image from 'next/image';
 import Link from 'next/link';
 
@@ -144,7 +144,7 @@ export default function Footer() {
               </div>
 
               <div className={styles.gridColumn}>
-                {additionalItems.map((item) => (
+                {additionalItems.slice(0, 3).map((item) => (
                   <Link key={item.param} href={item.link} className={styles.link}>
                     {item.title.toUpperCase()}
                   </Link>

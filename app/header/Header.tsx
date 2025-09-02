@@ -13,6 +13,7 @@ import searchIcon from "@/assets/icons/searchIcon.svg"
 import dotIcon from "@/assets/icons/dotIcon.svg"
 import burgerMenu from "@/assets/icons/burgerMenu.svg"
 import { useMenuContext } from "@/app/contexts/MenuContext";
+import SearchBox from "@/app/header/components/SearchBox";
 
 import styles from "@/app/header/Header.module.scss";
 
@@ -20,11 +21,8 @@ export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isMoreNewsOpen, setIsMoreNewsOpen] = useState(false);
   const [isClosing, setIsClosing] = useState(false);
-  
-  // Fetch dynamic menu data
-  const { menuData, loading, error } = useMenuContext();
 
-  console.log('menuData', menuData)
+  const { menuData } = useMenuContext();
 
   useEffect(() => {
     if (isMenuOpen) {
@@ -58,7 +56,6 @@ export default function Header() {
     }
   };
 
-  // Fallback to static data if dynamic data is not available
   const mainCategories = menuData?.mainCategories || [];
   const regions = menuData?.regions || [];
   const additionalItems = menuData?.additionalItems || [];
@@ -154,14 +151,7 @@ export default function Header() {
             <Image src={burgerMenu} alt={'Burger menu'}/>
           </div>
           <div className={styles.svgBox}>
-            <div className={styles.searchIcon}>
-              <Image
-                src={searchIcon}
-                alt="Search Logo"
-                width={24}
-                height={24}
-              />
-            </div>
+            <SearchBox/>
             <a className={styles.radioLogo} target={'_blank'} href={'https://lviv.fm/'}>
               <Image
                 src={radioLogo}
@@ -298,7 +288,7 @@ export default function Header() {
 
               {/* Підколонка 4 - Типи контенту */}
               <div className={styles.gridColumn}>
-                {additionalItems.map((item) => (
+                {additionalItems.slice(0, 3).map((item) => (
                   <Link key={item.param} href={item.link} className={styles.linkSlider}>
                     {item.title.toUpperCase()}
                   </Link>
