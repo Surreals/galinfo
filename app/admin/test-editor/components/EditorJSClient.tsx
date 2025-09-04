@@ -41,11 +41,13 @@ export default function EditorJSClient({
       Checklist,
       InlineCode,
       Quote,
+      ImageTool,
     ] = await Promise.all([
       import("@editorjs/editorjs"),
       import("@editorjs/header"),
       import("@editorjs/list"),
       import("@editorjs/table"),
+      import("@editorjs/checklist"),
       import("@editorjs/inline-code"),
       import("@editorjs/quote"),
       import("@editorjs/image"),
@@ -70,6 +72,7 @@ export default function EditorJSClient({
         inlineCode: { class: (InlineCode as any).default ?? (InlineCode as any) },
         quote: { class: (Quote as any).default ?? (Quote as any) },
         image: {
+          class: (ImageTool as any).default ?? (ImageTool as any),
           config: {
             uploader: {
               uploadByUrl: async (url: string) => ({ success: 1, file: { url } }),
