@@ -107,7 +107,6 @@ export default function NewsEditorHeader() {
   return (
     <div className={styles.editorWrapper}>
       <h2 className={styles.header}>Редагувати новину</h2>
-
       <Tabs
         defaultActiveKey="1"
         items={items}

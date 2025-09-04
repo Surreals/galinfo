@@ -332,8 +332,8 @@ export default function Header() {
             <div className={styles.marqueeWrapper}>
               <div className={styles.marqueeContent}>
                 {
-                  importantNews && importantNews.map(item => (
-                    <Link href={''} className={styles.newInfoLink}>
+                  importantNews && importantNews.map((item, index) => (
+                    <Link key={index} href={''} className={styles.newInfoLink}>
                       <p className={styles.gradientTextStart}>{item.nheader}</p>
                       <Image src={dotIcon} alt="Dot Logo" width={8} height={8}/>
                     </Link>
@@ -341,8 +341,8 @@ export default function Header() {
                 }
 
                 {
-                  importantNews && importantNews.map(item => (
-                    <Link href={''} className={styles.newInfoLink}>
+                  importantNews && importantNews.map((item, index) => (
+                    <Link key={index} href={''} className={styles.newInfoLink}>
                       <p className={styles.gradientTextStart}>{item.nheader}</p>
                       <Image src={dotIcon} alt="Dot Logo" width={8} height={8}/>
                     </Link>
