@@ -48,16 +48,63 @@
     box-shadow: 0 2px 8px rgba(0,0,0,0.05);
 }
 
+.tabsBox {
+    display: flex;
+    gap: 20px;
+    flex-direction: column;
+    width: 100%;
+}
+
+.editorJSClient {
+    padding-top: 30px;
+    border: 1px solid #e8e8e8;
+    border-radius: 8px;
+    background: white;
+    width: 100%;
+}
+
+.editorJSClient:hover {
+    border: 1px solid #c7084f;
+}
+
+.editorJSClient :global(.codex-editor__redactor) {
+    padding-bottom: 30px !important;
+}
+
+.editorJSClient :global(.ce-block__content) {
+    max-width: none !important;
+    padding-left: 30px !important;
+}
+
+.editorJSClient :global(.ce-toolbar__content) {
+    max-width: none !important;
+}
+
+.editorJSClient :global(.ce-toolbar__actions) {
+    right: 0!important;
+}
+
+
+
+
+
+.ce-block__content {
+    max-width: none;
+    padding-left: 50px;
+}
 
 .header {
     font-size: 20px;
     font-weight: 600;
+    margin: 0;
+    padding: 0;
 }
 
 .tabContent {
     display: flex;
     flex-direction: column;
-    gap: 16px;
+    gap: 24px;
+    width: 100%;
 }
 
 .field {
