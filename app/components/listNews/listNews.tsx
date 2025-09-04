@@ -5,6 +5,7 @@ import Image from "next/image";
 
 import {AccentSquare, ViewAllButton} from "@/app/shared";
 import arrowRight from "@/assets/icons/arrowRight.svg";
+import { useNewsByRubric } from '@/app/hooks/useNewsByRubric';
 
 import styles from "./listNews.module.scss";
 
@@ -24,8 +25,20 @@ type NewsListProps = {
   arrowRightIcon?: boolean;
   showMoreButton?: boolean;
   moreButtonUrl?: string;
-  mobileLayout?: 'column' | 'horizontal'; // Новий пропс для контролю мобільного відображення
+  mobileLayout?: 'column' | 'horizontal';
   showSeparator?: boolean;
+  // Нові пропси для роботи з API
+  categoryId?: number;
+  useRealData?: boolean;
+  config?: {
+    apiParams?: {
+      page?: number;
+      limit?: number;
+      lang?: string;
+      approved?: boolean;
+      type?: string;
+    };
+  };
 };
 
 export default function NewsList({
@@ -37,7 +50,10 @@ export default function NewsList({
    showMoreButton = false,
    moreButtonUrl = "#",
    mobileLayout = 'column', // За замовчуванням - колонка
-   showSeparator = false
+   showSeparator = false,
+   categoryId,
+   useRealData = false,
+   config
  }: NewsListProps) {
 
   const [isMobile, setIsMobile] = useState(false);
@@ -56,6 +72,38 @@ export default function NewsList({
       window.removeEventListener("resize", handleResize);
     };
   }, []);
+
+  // Використовуємо хук для отримання реальних даних
+  const {
+    data: apiData,
+    loading: apiLoading,
+    error: apiError
+  } = useNewsByRubric({
+    rubric: categoryId?.toString() || '',
+    page: config?.apiParams?.page || 1,
+    limit: config?.apiParams?.limit || 5,
+    lang: config?.apiParams?.lang || '1',
+    approved: config?.apiParams?.approved !== undefined ? config.apiParams.approved : true,
+    type: config?.apiParams?.type,
+    autoFetch: useRealData && !!categoryId
+  });
+
+  // Визначаємо, які дані використовувати
+  let displayData: NewsItem[] = [];
+
+  if (useRealData && apiData?.news) {
+    // Використовуємо реальні дані з API
+    displayData = apiData.news.map(item => ({
+      id: item.id.toString(),
+      title: item.nheader,
+      time: item.ntime,
+      imageUrl: item.images?.[0]?.url || 'https://picsum.photos/200/150?random=1',
+      url: `/article/${item.urlkey}`
+    }));
+  } else {
+    // Використовуємо передані дані
+    displayData = data;
+  }
 
   // Визначаємо, чи потрібно показувати горизонтальне відображення
   const shouldShowHorizontal = isMobile && mobileLayout === 'horizontal';
@@ -80,7 +128,7 @@ export default function NewsList({
       )}
 
       <ul className={`${styles.list} ${shouldShowHorizontal ? styles.listHorizontal : ''}`}>
-        {data.map((item, index) => (
+        {displayData.map((item, index) => (
           <li key={item.id || index} className={`${styles.item} ${shouldShowHorizontal ? styles.itemHorizontal : ''}`}>
             {item.url ? (
               <a href={item.url} className={`${styles.itemLink} ${shouldShowHorizontal ? styles.itemLinkHorizontal : ''}`}>

@@ -29,6 +29,13 @@ export const desktopSchema = {
           limit: 5,
           lang: '1',
           approved: true
+        },
+        // Параметри для NewsList (друга категорія)
+        secondCategoryApiParams: {
+          page: 1,
+          limit: 4,
+          lang: '1',
+          approved: true
         }
       }
     },
@@ -64,17 +71,31 @@ export const desktopSchema = {
           limit: 5,
           lang: '1',
           approved: true
+        },
+        // Параметри для NewsList (друга категорія)
+        secondCategoryApiParams: {
+          page: 1,
+          limit: 5,
+          lang: '1',
+          approved: true
         }
       }
     },
     {
-      type: CATEGORY_NEWS,
-      categoryId: null, // Історія - немає categoryId
-      config: {
-        mobileLayout: "horizontal",
-        useRealData: false,
-        category: "ІСТОРІЯ"
-      }
+        type: CATEGORY_NEWS,
+        categoryId: CATEGORY_IDS.SVIT,
+        config: {
+            mobileLayout: "horizontal",
+            useRealData: true,
+            limit: 8,
+            // Параметри для useNewsByRubric
+            apiParams: {
+            page: 1,
+            limit: 8,
+            lang: '1',
+            approved: true
+            }
+        }
     },
     {
       type: COLUMN_NEWS,
@@ -87,6 +108,13 @@ export const desktopSchema = {
         isHomePage: true,
         useRealData: true,
         apiParams: {
+          page: 1,
+          limit: 5,
+          lang: '1',
+          approved: true
+        },
+        // Параметри для NewsList (друга категорія)
+        secondCategoryApiParams: {
           page: 1,
           limit: 5,
           lang: '1',
@@ -132,14 +160,21 @@ export const mobileSchema = {
         showSeparator: true,
         isMobile: true,
         mobileLayout: "horizontal",
-        newsQuantity: 4,
+        newsQuantity: 5,
         smallImg: true,
         isHomePage: true,
         showNewsList: true,
         useRealData: true,
         apiParams: {
           page: 1,
-          limit: 4,
+          limit: 5,
+          lang: '1',
+          approved: true
+        },
+        // Параметри для NewsList (друга категорія)
+        secondCategoryApiParams: {
+          page: 1,
+          limit: 5,
           lang: '1',
           approved: true
         }
@@ -176,13 +211,20 @@ export const mobileSchema = {
       }
     },
     {
-      type: CATEGORY_NEWS,
-      categoryId: null, // Історія - немає categoryId
-      config: {
-        mobileLayout: "horizontal",
-        useRealData: false,
-        category: "ІСТОРІЯ"
-      }
+        type: CATEGORY_NEWS,
+        categoryId: CATEGORY_IDS.SVIT,
+        config: {
+            mobileLayout: "horizontal",
+            useRealData: true,
+            limit: 8,
+            // Параметри для useNewsByRubric
+            apiParams: {
+            page: 1,
+            limit: 8,
+            lang: '1',
+            approved: true
+            }
+        }
     },
     {
       type: COLUMN_NEWS,

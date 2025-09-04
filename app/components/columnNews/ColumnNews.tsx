@@ -47,6 +47,13 @@ export interface ColumnNewsProps {
       approved?: boolean;
       type?: string;
     };
+    secondCategoryApiParams?: {
+      page?: number;
+      limit?: number;
+      lang?: string;
+      approved?: boolean;
+      type?: string;
+    };
   };
 }
 
@@ -295,15 +302,20 @@ export default function ColumnNews({
             <div className={styles.listNewsContainer}>
               <NewsList
                 showSeparator={showSeparator}
-                  mobileLayout={mobileLayout}
-                  arrowRightIcon={arrowRightIcon}
-                  title={secondCategory}
-                  data={newsData}
-                  showImagesAt={[0, 1]}
-                  showMoreButton={true}
-                  moreButtonUrl="/all-news"
-                  widthPercent={100}
-                />
+                mobileLayout={mobileLayout}
+                arrowRightIcon={arrowRightIcon}
+                title={secondCategory}
+                categoryId={secondCategoryId}
+                useRealData={useRealData}
+                config={{
+                  apiParams: config?.secondCategoryApiParams || config?.apiParams
+                }}
+                data={newsData}
+                showImagesAt={[0, 1]}
+                showMoreButton={true}
+                moreButtonUrl="/all-news"
+                widthPercent={100}
+              />
                 {!smallImg && !isMobile &&
                 <>
                   <div className={styles.rightSeparator}></div>              
