@@ -45,8 +45,6 @@ export default function NewsEditorHeader() {
               />
             </div>
           </div>
-          <h2 className={styles.header}>Повний текст новини</h2>
-          <EditorJSClient/>
         </div>
       ),
     },
@@ -65,8 +63,6 @@ export default function NewsEditorHeader() {
               />
             </div>
           </div>
-          <h2 className={styles.header}>Повний текст новини</h2>
-          <EditorJSClient/>
         </div>
       ),
     },
@@ -103,8 +99,6 @@ export default function NewsEditorHeader() {
                 />
               </div>
             </div>
-            <h2 className={styles.header}>Повний текст новини</h2>
-            <EditorJSClient/>
           </div>
         ),
     },
@@ -118,6 +112,9 @@ export default function NewsEditorHeader() {
         defaultActiveKey="1"
         items={items}
       />
+
+      <h2 className={styles.header}>Повний текст новини</h2>
+      <EditorJSClient/>
     </div>
   );
 }
