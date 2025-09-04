@@ -5,6 +5,7 @@ import Image from 'next/image';
 import { AccentSquare, ViewAllButton } from '@/app/shared';
 import styles from './CategoryNews.module.css';
 import { useState, useEffect } from 'react';
+import { useNewsByRubric } from '@/app/hooks/useNewsByRubric';
 
 // Інтерфейси для типізації даних
 export interface CategoryNewsItem {
@@ -24,10 +25,27 @@ export interface CategoryNewsProps {
   news?: CategoryNewsItem[];
   isLoading?: boolean;
   hideHeader?: boolean;
-  className?: string; // Додаємо можливість передавати додатковий CSS клас
+  className?: string;
   height?: number;
-  mobileLayout?: 'column' | 'horizontal'; // Новий пропс для контролю мобільного відображення
+  mobileLayout?: 'column' | 'horizontal';
   isMobile?: boolean;
+  limit?: number; // Кількість новин для відображення
+  useRealData?: boolean; // Чи використовувати реальні дані з API
+  config?: {
+    mobileLayout?: 'column' | 'horizontal';
+    limit?: number;
+    showImportantTag?: boolean;
+    hideHeader?: boolean;
+    height?: number;
+    useRealData?: boolean;
+    apiParams?: {
+      page?: number;
+      limit?: number;
+      lang?: string;
+      approved?: boolean;
+      type?: string;
+    };
+  };
 }
 
 export default function CategoryNews({ 
@@ -37,11 +55,14 @@ export default function CategoryNews({
   hideHeader = false,
   height = 200,
   className = "",
-  mobileLayout = 'column', // За замовчуванням - колонка (по дві новини в рядок з квадратними фото)
-  isMobile = false
+  mobileLayout = 'column',
+  isMobile = false,
+  categoryId,
+  limit = 8,
+  useRealData = false,
+  config
 }: CategoryNewsProps) {
   // Визначаємо, чи потрібно показувати горизонтальне відображення
-  // Горизонтальне відображення застосовується тільки на мобільних пристроях
   const [isMobileResize, setIsMobile] = useState(false);
   
   useEffect(() => {
@@ -55,88 +76,103 @@ export default function CategoryNews({
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  const shouldShowHorizontal = isMobileResize && mobileLayout === 'horizontal';
-  // Мокові дані для прикладу (будуть замінені на реальні дані)
-  const mockNews: CategoryNewsItem[] = [
-    {
-      id: '1',
-      title: 'Війна на сході: як ІТ-інновації змінюють стратегію оборони',
-      date: '04 липня 2025',
-      time: '11:15',
-      url: '/article/it-innovations-war',
-      imageUrl: 'https://picsum.photos/300/200?random=1',
-      imageAlt: 'Люди за столами на IT конференції'
-    },
-    {
-      id: '2',
-      title: 'Коли дрони стали частиною війни: нові технології в бою',
-      date: '03 липня 2025',
-      time: '09:30',
-      url: '/article/drones-war-technology',
-      imageUrl: 'https://picsum.photos/300/200?random=2',
-      imageAlt: 'Військовий у формі посміхається'
-    },
-    {
-      id: '3',
-      title: 'Як "Голуб" із "Нової пошти" став "Голубом війни"',
-      date: '02 липня 2025',
-      time: '14:54',
-      url: '/article/golub-war-nova-poshta',
-      imageUrl: 'https://picsum.photos/300/200?random=3',
-      imageAlt: 'Сцена з актором на театральній виставі',
-      isImportant: true
-    },
-    {
-      id: '4',
-      title: 'Війна на сході: як ІТ-інновації змінюють стратегію оборони',
-      date: '04 липня 2025',
-      time: '11:15',
-      url: '/article/it-innovations-war-east',
-      imageUrl: 'https://picsum.photos/300/200?random=4',
-      imageAlt: 'Люди за столами на IT конференції'
-    },
-    {
-      id: '5',
-      title: 'Смертельна аварія в Бутинах і масове ДТП на трасі Львів-Винники',
-      date: '02 липня 2025',
-      time: '14:54',
-      url: '/article/fatal-accident-butyne-lviv-vynnyky',
-      imageUrl: 'https://picsum.photos/300/200?random=5',
-      imageAlt: 'Дві машини в лобовому зіткненні на дорозі',
-      isImportant: true
-    },
-    {
-      id: '6',
-      title: 'Міноборони кодифікувало та допустило до експлуатації бойовий модуль "Хижак"',
-      date: '03 липня 2025',
-      time: '09:30',
-      url: '/article/ministry-defense-hunter-module',
-      imageUrl: 'https://picsum.photos/300/200?random=6',
-      imageAlt: 'Металевий промисловий пристрій на цегляній стіні',
-      isImportant: true
-    },
-    {
-      id: '7',
-      title: 'Смертельна аварія в Бутинах і масове ДТП на трасі Львів-Винники',
-      date: '02 липня 2025',
-      time: '14:54',
-      url: '/article/fatal-accident-butyne-lviv-vynnyky-2',
-      imageUrl: 'https://picsum.photos/300/200?random=7',
-      imageAlt: 'Дві машини в лобовому зіткненні на дорозі'
-    },
-    {
-      id: '8',
-      title: 'Міноборони кодифікувало та допустило до експлуатації бойовий модуль "Хижак"',
-      date: '03 липня 2025',
-      time: '09:30',
-      url: '/article/ministry-defense-hunter-module-2',
-      imageUrl: 'https://picsum.photos/300/200?random=8',
-      imageAlt: 'Металевий промисловий пристрій на цегляній стіні'
-    }
-  ];
+  // Використовуємо хук для отримання реальних даних
+  const {
+    data: apiData,
+    loading: apiLoading,
+    error: apiError
+  } = useNewsByRubric({
+    rubric: categoryId?.toString() || '',
+    page: config?.apiParams?.page || 1,
+    limit: config?.apiParams?.limit || limit,
+    lang: config?.apiParams?.lang || '1',
+    approved: config?.apiParams?.approved !== undefined ? config.apiParams.approved : true,
+    type: config?.apiParams?.type,
+    autoFetch: useRealData && !!categoryId
+  });
 
-  // Використовуємо реальні дані або мокові
-  const displayNews = news.length > 0 ? news : mockNews;
+  // Логування даних з хука
+  useEffect(() => {
+    if (useRealData && categoryId) {
+      console.log('=== CategoryNews Debug ===');
+      console.log('Category ID:', categoryId);
+      console.log('Category Name:', category);
+      console.log('useRealData:', useRealData);
+      console.log('API Loading:', apiLoading);
+      console.log('API Error:', apiError);
+      console.log('API Data:', apiData);
+      console.log('API Params from config:', config?.apiParams);
+      
+      if (apiData?.news) {
+        console.log('News count:', apiData.news.length);
+        console.log('First news item:', apiData.news[0]);
+        console.log('Pagination:', apiData.pagination);
+        console.log('Filters:', apiData.filters);
+        
+        // Детальне логування структури першої новини
+        if (apiData.news.length > 0) {
+          const firstNews = apiData.news[0];
+          console.log('First news detailed structure:', {
+            id: firstNews.id,
+            ndate: firstNews.ndate,
+            ntime: firstNews.ntime,
+            ntype: firstNews.ntype,
+            nheader: firstNews.nheader,
+            urlkey: firstNews.urlkey,
+            rubric: firstNews.rubric,
+            images: firstNews.images
+          });
+        }
+      }
+      console.log('========================');
+    }
+  }, [apiData, apiLoading, apiError, categoryId, category, useRealData, config]);
+
+  const shouldShowHorizontal = isMobileResize && mobileLayout === 'horizontal';
+
+  // Визначаємо, які дані використовувати
+  let displayNews: CategoryNewsItem[] = [];
+  let displayLoading = isLoading;
+
+  if (useRealData && apiData?.news) {
+    // Використовуємо реальні дані з API
+    displayNews = apiData.news.map(item => ({
+      id: item.id.toString(),
+      title: item.nheader,
+      date: new Date(item.ndate).toLocaleDateString('uk-UA', {
+        day: '2-digit',
+        month: 'long',
+        year: 'numeric'
+      }),
+      time: item.ntime,
+      url: `/article/${item.urlkey}`,
+      imageUrl: item.images?.[0]?.url || 'https://picsum.photos/300/200?random=1',
+      imageAlt: item.nheader,
+      isImportant: item.ntype === 1 // ntype === 1 означає важливу новину
+    }));
+    displayLoading = apiLoading;
+  } else if (news.length > 0) {
+    // Використовуємо передані дані
+    displayNews = news;
+  } else {
+    // Якщо немає даних, показуємо порожній стан
+    displayNews = [];
+  }
+
+  // Обробка помилок
+  if (useRealData && apiError) {
+    return (
+      <section className={`${styles.categoryNewsSection} ${className}`}>
+        <div className={styles.container}>
+          <div className={styles.errorMessage}>
+            Помилка завантаження новин: {apiError}
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  console.log(displayNews, 'displayNews')
 
   return (
     <section className={`${styles.categoryNewsSection} ${className}`}>
@@ -151,7 +187,7 @@ export default function CategoryNews({
 
         {/* Сітка новин */}
         <div className={`${styles.newsGrid} ${shouldShowHorizontal ? styles.newsGridHorizontal : ''}`}>
-          {isLoading ? (
+          {displayLoading ? (
             // Скелетон для завантаження
             Array.from({ length: 8 }).map((_, index) => (
               <div key={index} className={`${styles.newsItem} ${shouldShowHorizontal ? styles.newsItemHorizontal : ''}`}>

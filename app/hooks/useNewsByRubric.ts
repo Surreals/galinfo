@@ -86,6 +86,10 @@ export function useNewsByRubric(options: UseNewsByRubricOptions): UseNewsByRubri
     setLoading(true);
     setError(null);
 
+    console.log('=== useNewsByRubric Debug ===');
+    console.log('Fetching news for rubric:', rubric);
+    console.log('Parameters:', { page, limit, type, lang, approved });
+
     try {
       const params = new URLSearchParams({
         page: page.toString(),
@@ -98,20 +102,31 @@ export function useNewsByRubric(options: UseNewsByRubricOptions): UseNewsByRubri
         params.append('type', type);
       }
 
-      const response = await fetch(`/api/news/${rubric}?${params}`);
+      const url = `/api/news/${rubric}?${params}`;
+      console.log('Request URL:', url);
+
+      const response = await fetch(url);
+      
+      console.log('Response status:', response.status);
+      console.log('Response ok:', response.ok);
       
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 
       const result = await response.json();
+      console.log('Response data:', result);
+      console.log('News count in response:', result.news?.length || 0);
+      
       setData(result);
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to fetch news';
+      console.error('Error in useNewsByRubric:', err);
       setError(errorMessage);
       console.error('Error fetching news:', err);
     } finally {
       setLoading(false);
+      console.log('=== End useNewsByRubric Debug ===');
     }
   }, [rubric, page, limit, type, lang, approved]);
 
