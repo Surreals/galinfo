@@ -21,6 +21,7 @@ interface ImportantNewsItem {
 }
 
 interface ImportantNewsResponse {
+  error: string;
   importantNews: ImportantNewsItem[];
   total: number;
 }

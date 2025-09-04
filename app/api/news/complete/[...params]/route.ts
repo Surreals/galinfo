@@ -13,16 +13,29 @@ const ARTICLE_TYPES = {
   mainmedia: 21   // Основні медіа
 };
 
+// Типи макетів (layout patterns)
+const LAYOUT_PATTERNS = {
+  '1': { pattern: 'readSimple', imageClass: 'nimages', imagePath: 'intxt' },
+  '2': { pattern: 'readSlider', imageClass: 'phimages', imagePath: 'full' },
+  '3': { pattern: 'readInlineImages', imageClass: 'phimages', imagePath: 'intxt' },
+  '4': { pattern: 'readReport', imageClass: 'phimages', imagePath: 'intxt' },
+  '10': { pattern: 'readSimple', imageClass: 'nimages', imagePath: 'intxt' }
+};
+
 export async function GET(
   request: NextRequest,
-  { params }: { params: { params: string[] } }
+  { params }: { params: Promise<{ params: string[] }> }
 ) {
   try {
     const { searchParams } = new URL(request.url);
     const lang = searchParams.get('lang') || '1';
+    const includeRelated = searchParams.get('includeRelated') !== 'false';
+    const includeAuthor = searchParams.get('includeAuthor') !== 'false';
+    const includeStatistics = searchParams.get('includeStatistics') !== 'false';
     
     // Парсинг параметрів з URL
-    const urlParts = params.params;
+    const resolvedParams = await params;
+    const urlParts = resolvedParams.params;
     if (urlParts.length < 2) {
       return NextResponse.json(
         { error: 'Invalid URL format' },
@@ -62,7 +75,7 @@ export async function GET(
       );
     }
     
-    // Основний запит для отримання новини
+    // Основний запит для отримання новини з усіма даними
     const newsQuery = `
       SELECT 
         a_news.*,
@@ -75,7 +88,8 @@ export async function GET(
         a_newsmeta.nkeywords,
         a_statcomm.qty as comments_count,
         a_statview.qty as views_count,
-        a_powerusers.uname_ua as author_name
+        a_powerusers.uname_ua as author_name,
+        a_cats.description as region_description
       FROM a_news
       LEFT JOIN a_news_headers ON a_news.id = a_news_headers.id
       LEFT JOIN a_news_body ON a_news.id = a_news_body.id
@@ -83,6 +97,7 @@ export async function GET(
       LEFT JOIN a_statcomm ON a_news.id = a_statcomm.id
       LEFT JOIN a_statview ON a_news.id = a_statview.id
       LEFT JOIN a_powerusers ON a_news.userid = a_powerusers.id
+      LEFT JOIN a_cats ON a_cats.id = a_news.region
       WHERE a_news.id = ? 
         AND a_news.urlkey = ? 
         AND a_news.ntype = ? 
@@ -102,13 +117,13 @@ export async function GET(
     
     const news = newsData[0];
     
-    // Отримання рубрик
+    // Отримання рубрик з повною інформацією
     let rubrics: any[] = [];
     if (news.rubric) {
       const rubricIds = news.rubric.split(',').map(id => id.trim());
       if (rubricIds.length > 0) {
         const rubricsQuery = `
-          SELECT id, param, title, cattype
+          SELECT id, param, title, cattype, description
           FROM a_cats
           WHERE id IN (${rubricIds.map(() => '?').join(',')}) AND lng = ?
         `;
@@ -126,7 +141,7 @@ export async function GET(
     `;
     tags = await executeQuery(tagsQuery, [id]);
     
-    // Отримання зображень
+    // Отримання зображень з повною інформацією
     let images: any[] = [];
     if (news.images) {
       const imageIds = news.images.split(',').map(id => id.trim());
@@ -140,9 +155,35 @@ export async function GET(
       }
     }
     
-    // Отримання пов'язаних новин (той же тип, рубрика)
+    // Отримання інформації про автора
+    let author: any = null;
+    if (includeAuthor && news.userid) {
+      const authorQuery = `
+        SELECT 
+          a_powerusers.id,
+          a_powerusers.uname_ua as name,
+          a_powerusers.twowords,
+          a_pics_users.filename as avatar
+        FROM a_powerusers
+        LEFT JOIN a_pics_users ON a_powerusers.id = a_pics_users.userid
+        WHERE a_powerusers.id = ?
+      `;
+      const authorData = await executeQuery(authorQuery, [news.userid]);
+      if (authorData && authorData.length > 0) {
+        const authorInfo = authorData[0];
+        author = {
+          id: authorInfo.id,
+          name: authorInfo.name,
+          twowords: authorInfo.twowords,
+          avatar: authorInfo.avatar ? `/media/avatars/tmb/${authorInfo.avatar}` : '/im/user.gif',
+          link: news.ntype === 20 ? `/bloggers/${authorInfo.id}/` : `/editor/${authorInfo.id}/`
+        };
+      }
+    }
+    
+    // Отримання пов'язаних новин
     let relatedNews: any[] = [];
-    if (news.rubric) {
+    if (includeRelated && news.rubric) {
       const relatedQuery = `
         SELECT 
           a_news.id,
@@ -151,9 +192,13 @@ export async function GET(
           a_news.ntype,
           a_news.images,
           a_news_headers.nheader,
-          a_news_headers.nteaser
+          a_news_headers.nteaser,
+          a_statcomm.qty as comments_count,
+          a_statview.qty as views_count
         FROM a_news
         LEFT JOIN a_news_headers ON a_news.id = a_news_headers.id
+        LEFT JOIN a_statcomm ON a_news.id = a_statcomm.id
+        LEFT JOIN a_statview ON a_news.id = a_statview.id
         WHERE a_news.id != ? 
           AND a_news.ntype = ?
           AND FIND_IN_SET(?, a_news.rubric) > 0
@@ -167,23 +212,73 @@ export async function GET(
     }
     
     // Оновлення статистики переглядів
-    try {
-      await executeQuery(
-        'UPDATE a_statview SET qty = qty + 1 WHERE id = ?',
-        [id]
-      );
-    } catch (error) {
-      console.warn('Failed to update view count:', error);
+    if (includeStatistics) {
+      try {
+        await executeQuery(
+          'UPDATE a_statview SET qty = qty + 1 WHERE id = ?',
+          [id]
+        );
+      } catch (error) {
+        console.warn('Failed to update view count:', error);
+      }
     }
+    
+    // Визначення макету та класів
+    const layout = news.layout || '1';
+    const layoutConfig = LAYOUT_PATTERNS[layout as keyof typeof LAYOUT_PATTERNS] || LAYOUT_PATTERNS['1'];
+    
+    // Формування мета-даних
+    const meta = {
+      title: news.ntitle || news.nheader,
+      description: news.ndescription || news.nteaser,
+      keywords: news.nkeywords || '',
+      ogTitle: news.ntitle || news.nheader,
+      ogDescription: news.ndescription || news.nteaser,
+      ogImage: images.length > 0 ? `/media/gallery/intxt/${images[0].filename}` : undefined,
+      ogType: 'article'
+    };
+    
+    // Формування breadcrumbs
+    const breadcrumbs = [];
+    
+    // Додавання рубрик до breadcrumbs
+    if (rubrics.length > 0) {
+      rubrics.forEach(rubric => {
+        breadcrumbs.push({
+          type: 'rubric' as const,
+          title: rubric.title,
+          link: `/${rubric.param}/`
+        });
+      });
+    }
+    
+    // Додавання типу статті до breadcrumbs
+    const articleTypeNames = {
+      '1': 'Новини',
+      '2': 'Статті',
+      '3': 'Фоторепортажі',
+      '4': 'Відео',
+      '5': 'Аудіо',
+      '6': 'Анонси',
+      '20': 'Блоги',
+      '21': 'Медіа'
+    };
+    
+    breadcrumbs.push({
+      type: 'article_type' as const,
+      title: articleTypeNames[news.ntype.toString() as keyof typeof articleTypeNames] || 'Новини',
+      link: `/${articleType}/`
+    });
     
     // Формування відповіді
     const response = {
       article: {
         ...news,
-        images: images.map(image => ({
+        images_data: images.map(image => ({
           id: image.id,
           filename: image.filename,
           title: image.title_ua || '',
+          title_ua: image.title_ua,
           urls: {
             full: `/media/gallery/full/${image.filename}`,
             intxt: `/media/gallery/intxt/${image.filename}`,
@@ -192,21 +287,32 @@ export async function GET(
         })),
         rubrics,
         tags,
-        relatedNews
+        relatedNews,
+        author,
+        statistics: {
+          comments_count: news.comments_count || 0,
+          views_count: news.views_count || 0,
+          rating: news.rated || 0
+        },
+        meta,
+        breadcrumbs
       },
       meta: {
         type: articleType,
         urlkey,
-        id: parseInt(id)
-      }
+        id: parseInt(id),
+        printUrl: `/${lang}/print/${new Date(news.ndate).toISOString().split('T')[0].split('-')[0]}/${new Date(news.ndate).toISOString().split('T')[0].split('-')[1]}/${new Date(news.ndate).toISOString().split('T')[0].split('-')[2]}/${urlkey}_${id}`,
+        editUrl: `/enginedoor/?act=addnews&su=edit&id=${id}`
+      },
+      layout: layoutConfig
     };
     
     return NextResponse.json(response);
     
   } catch (error) {
-    console.error('Error fetching single news:', error);
+    console.error('Error fetching complete news data:', error);
     return NextResponse.json(
-      { error: 'Failed to fetch article' },
+      { error: 'Failed to fetch complete article data' },
       { status: 500 }
     );
   }
