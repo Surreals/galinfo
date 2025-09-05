@@ -6,6 +6,7 @@ import styles from './ColumnNews.module.css';
 import arrowRight from "@/assets/icons/arrowRight.svg";
 import adBannerIndfomo from '@/assets/images/Ad Banner white.png';
 import { useState, useEffect } from 'react';
+import { useNewsByRubric } from '@/app/hooks/useNewsByRubric';
 
 // Інтерфейси для типізації даних
 export interface ColumnNewsItem {
@@ -36,26 +37,47 @@ export interface ColumnNewsProps {
   isMobile?: boolean;
   mobileLayout?: 'column' | 'horizontal'; // Новий пропс для контролю мобільного відображення
   showSeparator?: boolean;
+  // Нові пропси для роботи з API
+  useRealData?: boolean;
+  config?: {
+    apiParams?: {
+      page?: number;
+      limit?: number;
+      lang?: string;
+      approved?: boolean;
+      type?: string;
+    };
+    secondCategoryApiParams?: {
+      page?: number;
+      limit?: number;
+      lang?: string;
+      approved?: boolean;
+      type?: string;
+    };
+  };
 }
 
 export default function ColumnNews({ 
   category = "КРИМІНАЛ", 
   news = [],
   secondCategory = '',
+  categoryId,
+  secondCategoryId,
   isLoading = false,
   isHomePage = false,
- arrowRightIcon = false,
+  arrowRightIcon = false,
   smallImg = false,
   newsQuantity = 4,
   showNewsList = true,
   hideHeader = false,
   className = "",
   isMobile = false,
-  mobileLayout = 'column', // За замовчуванням - колонка
-  showSeparator = false
+  mobileLayout = 'column',
+  showSeparator = false,
+  useRealData = false,
+  config
 }: ColumnNewsProps) {
   // Визначаємо, чи потрібно показувати горизонтальне відображення
-  // Горизонтальне відображення застосовується тільки на мобільних пристроях
   const [isMobileDevice, setIsMobileDevice] = useState(false);
   
   useEffect(() => {
@@ -69,8 +91,22 @@ export default function ColumnNews({
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
+  // Використовуємо хук для отримання реальних даних
+  const {
+    data: apiData,
+    loading: apiLoading,
+    error: apiError
+  } = useNewsByRubric({
+    rubric: categoryId?.toString() || '',
+    page: config?.apiParams?.page || 1,
+    limit: config?.apiParams?.limit || newsQuantity,
+    lang: config?.apiParams?.lang || '1',
+    approved: config?.apiParams?.approved !== undefined ? config.apiParams.approved : true,
+    type: config?.apiParams?.type,
+    autoFetch: useRealData && !!categoryId
+  });
+
   // Горизонтальне відображення застосовується на мобільних пристроях
-  // коли mobileLayout === 'horizontal'
   const shouldShowHorizontal = isMobileDevice && mobileLayout === 'horizontal';
 
   // Мокові дані для прикладу (будуть замінені на реальні дані)
@@ -166,8 +202,34 @@ export default function ColumnNews({
   // Мокові дані для listNews
   const newsData = generateRandomNews(newsQuantity);
 
-  // Використовуємо реальні дані або мокові
-  const displayNews = news.length > 0 ? news : mockNews;
+  // Визначаємо, які дані використовувати
+  let displayNews: ColumnNewsItem[] = [];
+  let displayLoading = isLoading;
+
+  if (useRealData && apiData?.news) {
+    // Використовуємо реальні дані з API
+    displayNews = apiData.news.map(item => ({
+      id: item.id.toString(),
+      title: item.nheader,
+      summary: item.nteaser || item.nsubheader || '',
+      date: new Date(item.ndate).toLocaleDateString('uk-UA', {
+        day: '2-digit',
+        month: 'long',
+        year: 'numeric'
+      }),
+      time: item.ntime,
+      url: `/article/${item.urlkey}`,
+      imageUrl: item.images?.[0]?.url || 'https://picsum.photos/300/200?random=1',
+      imageAlt: item.nheader
+    }));
+    displayLoading = apiLoading;
+  } else if (news.length > 0) {
+    // Використовуємо передані дані
+    displayNews = news;
+  } else {
+    // Використовуємо мокові дані
+    displayNews = mockNews;
+  }
 
   return (
     <section className={`${styles.columnNewsSection} ${className}`}>
@@ -196,7 +258,7 @@ export default function ColumnNews({
               <h2 className={styles.title}>{category}</h2>
             </div>
             )}
-            {isLoading ? (
+            {displayLoading ? (
               // Скелетон для завантаження
               Array.from({length: 5}).map((_, index) => (
                 <div key={index} className={`${styles.newsItem} ${shouldShowHorizontal ? styles.newsItemHorizontal : ''}`}>
@@ -240,15 +302,20 @@ export default function ColumnNews({
             <div className={styles.listNewsContainer}>
               <NewsList
                 showSeparator={showSeparator}
-                  mobileLayout={mobileLayout}
-                  arrowRightIcon={arrowRightIcon}
-                  title={secondCategory}
-                  data={newsData}
-                  showImagesAt={[0, 1]}
-                  showMoreButton={true}
-                  moreButtonUrl="/all-news"
-                  widthPercent={100}
-                />
+                mobileLayout={mobileLayout}
+                arrowRightIcon={arrowRightIcon}
+                title={secondCategory}
+                categoryId={secondCategoryId}
+                useRealData={useRealData}
+                config={{
+                  apiParams: config?.secondCategoryApiParams || config?.apiParams
+                }}
+                data={newsData}
+                showImagesAt={[0, 1]}
+                showMoreButton={true}
+                moreButtonUrl="/all-news"
+                widthPercent={100}
+              />
                 {!smallImg && !isMobile &&
                 <>
                   <div className={styles.rightSeparator}></div>              

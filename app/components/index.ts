@@ -12,3 +12,4 @@ export { ArticleMeta } from './articleMeta';
 export { default as NewsListByRubric } from './NewsList';
 export { default as NewsDetail } from './NewsDetail';
 export { default as NewsSearch } from './NewsSearch';
+export { default as HomePageRenderer } from './HomePageRenderer';

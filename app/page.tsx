@@ -1,6 +1,6 @@
 'use client';
 
-import { AllNews, CategoryNews, ColumnNews, Hero, ArticleLink } from "@/app/components";
+import { AllNews, CategoryNews, ColumnNews, Hero, ArticleLink, HomePageRenderer } from "@/app/components";
 import { useIsMobile } from "@/app/hooks/useIsMobile";
 import { useMenuContext } from "@/app/contexts/MenuContext";
 import { CATEGORY_IDS, getCategoryDisplayName } from "@/app/lib/categoryUtils";
@@ -24,110 +24,132 @@ export default function HomePage() {
   return (
     <>
       <div className={styles.container}>
-      {!isMobile ? (
-        <>
-          <Hero />
-          <ColumnNews
-            mobileLayout="horizontal"
-            newsQuantity={4}
-            smallImg={true}
-            category={politicsCategory?.title || "ПОЛІТИКА"}
-            categoryId={CATEGORY_IDS.POLITICS}
-            arrowRightIcon
-            secondCategory={atoCategory?.title || "ВІЙНА З РОСІЄЮ"}
-            secondCategoryId={CATEGORY_IDS.ATO}
-            isHomePage={true}
-            showNewsList={true}
-          />
-          <CategoryNews 
-            mobileLayout="horizontal" 
-            category={evropaCategory?.title || "ЄВРОПА"}
-            categoryId={CATEGORY_IDS.EVROPA}
-          />
-          <ColumnNews
-            mobileLayout="horizontal"
-            newsQuantity={5}
-            category={healthCategory?.title || "ЗДОРОВʼЯ"}
-            categoryId={CATEGORY_IDS.HEALTH}
-            secondCategory={societyCategory?.title || "СУСПІЛЬСТВО"}
-            secondCategoryId={CATEGORY_IDS.SOCIETY}
-            arrowRightIcon
-            showNewsList={true}
-            isHomePage={true}
-          />
-          <CategoryNews mobileLayout="horizontal" category="ІСТОРІЯ"/>
-          <ColumnNews
-            mobileLayout="horizontal"
-            newsQuantity={5}
-            category={crimeCategory?.title || "КРИМІНАЛ"}
-            categoryId={CATEGORY_IDS.CRIME}
-            secondCategory={sportCategory?.title || "СПОРТ"}
-            secondCategoryId={CATEGORY_IDS.SPORT}
-            arrowRightIcon
-            isHomePage={true}
-          />
-          <CategoryNews 
-            category={cultureCategory?.title || "КУЛЬТУРА"}
-            categoryId={CATEGORY_IDS.CULTURE}
-          />
-          <AllNews/>
-        </>
-      ) : (
-        // Десктопна версія - збільшена кількість новин
-        <>
-          <Hero />
-          <ColumnNews
-          showSeparator={true}
-            isMobile={isMobile}
-            mobileLayout="horizontal"
-            newsQuantity={4}
-            smallImg={true}
-            category={politicsCategory?.title || "ПОЛІТИКА"}
-            categoryId={CATEGORY_IDS.POLITICS}
-            secondCategory={atoCategory?.title || "ВІЙНА З РОСІЄЮ"}
-            secondCategoryId={CATEGORY_IDS.ATO}
-            isHomePage={true}
-            showNewsList={true}
-          />
-          <CategoryNews 
-            mobileLayout="horizontal" 
-            category={evropaCategory?.title || "ЄВРОПА"}
-            categoryId={CATEGORY_IDS.EVROPA}
-          />
-          <ColumnNews
-          showSeparator={true}
-            isMobile={isMobile}
-            mobileLayout="horizontal"
-            newsQuantity={5}
-            category={healthCategory?.title || "ЗДОРОВʼЯ"}
-            categoryId={CATEGORY_IDS.HEALTH}
-            secondCategory={societyCategory?.title || "СУСПІЛЬСТВО"}
-            secondCategoryId={CATEGORY_IDS.SOCIETY}
-            arrowRightIcon
-            showNewsList={true}
-            isHomePage={true}
-          />
-          <CategoryNews mobileLayout="horizontal" category="ІСТОРІЯ"/>
-          <ColumnNews
-          showSeparator={true}
-            isMobile={isMobile}
-            mobileLayout="horizontal"
-            newsQuantity={5}
-            category={crimeCategory?.title || "КРИМІНАЛ"}
-            categoryId={CATEGORY_IDS.CRIME}
-            secondCategory={sportCategory?.title || "СПОРТ"}
-            secondCategoryId={CATEGORY_IDS.SPORT}
-            arrowRightIcon
-            isHomePage={true}
-          />
-          <CategoryNews 
-            mobileLayout="horizontal" 
-            category={cultureCategory?.title || "КУЛЬТУРА"}
-            categoryId={CATEGORY_IDS.CULTURE}
-          />
-          <AllNews/>
-        </>
-      )}
+        {/* Нова система з схемою */}
+        <HomePageRenderer />
+
+        {/* Старий код - закоментований для збереження історії */}
+        {/*
+        {!isMobile ? (
+          <>
+            <Hero />
+            <ColumnNews
+              mobileLayout="horizontal"
+              newsQuantity={4}
+              smallImg={true}
+              category={politicsCategory?.title || "ПОЛІТИКА"}
+              categoryId={CATEGORY_IDS.POLITICS}
+              arrowRightIcon
+              secondCategory={atoCategory?.title || "ВІЙНА З РОСІЄЮ"}
+              secondCategoryId={CATEGORY_IDS.ATO}
+              isHomePage={true}
+              showNewsList={true}
+            />
+            <CategoryNews 
+              mobileLayout="horizontal" 
+              category={evropaCategory?.title || "ЄВРОПА"}
+              categoryId={CATEGORY_IDS.EVROPA}
+              useRealData={true}
+              limit={8}
+            />
+            <ColumnNews
+              mobileLayout="horizontal"
+              newsQuantity={5}
+              category={healthCategory?.title || "ЗДОРОВʼЯ"}
+              categoryId={CATEGORY_IDS.HEALTH}
+              secondCategory={societyCategory?.title || "СУСПІЛЬСТВО"}
+              secondCategoryId={CATEGORY_IDS.SOCIETY}
+              arrowRightIcon
+              showNewsList={true}
+              isHomePage={true}
+            />
+            <CategoryNews 
+              mobileLayout="horizontal" 
+              category="ІСТОРІЯ"
+              useRealData={false}
+            />
+            <ColumnNews
+              mobileLayout="horizontal"
+              newsQuantity={5}
+              category={crimeCategory?.title || "КРИМІНАЛ"}
+              categoryId={CATEGORY_IDS.CRIME}
+              secondCategory={sportCategory?.title || "СПОРТ"}
+              secondCategoryId={CATEGORY_IDS.SPORT}
+              arrowRightIcon
+              isHomePage={true}
+            />
+            <CategoryNews 
+              category={cultureCategory?.title || "КУЛЬТУРА"}
+              categoryId={CATEGORY_IDS.CULTURE}
+              useRealData={true}
+              limit={6}
+            />
+            <AllNews/>
+          </>
+        ) : (
+          // Десктопна версія - збільшена кількість новин
+          <>
+            <Hero />
+            <ColumnNews
+            showSeparator={true}
+              isMobile={isMobile}
+              mobileLayout="horizontal"
+              newsQuantity={4}
+              smallImg={true}
+              category={politicsCategory?.title || "ПОЛІТИКА"}
+              categoryId={CATEGORY_IDS.POLITICS}
+              secondCategory={atoCategory?.title || "ВІЙНА З РОСІЄЮ"}
+              secondCategoryId={CATEGORY_IDS.ATO}
+              isHomePage={true}
+              showNewsList={true}
+            />
+            <CategoryNews 
+              mobileLayout="horizontal" 
+              category={evropaCategory?.title || "ЄВРОПА"}
+              categoryId={CATEGORY_IDS.EVROPA}
+              useRealData={true}
+              limit={8}
+            />
+            <ColumnNews
+            showSeparator={true}
+              isMobile={isMobile}
+              mobileLayout="horizontal"
+              newsQuantity={5}
+              category={healthCategory?.title || "ЗДОРОВʼЯ"}
+              categoryId={CATEGORY_IDS.HEALTH}
+              secondCategory={societyCategory?.title || "СУСПІЛЬСТВО"}
+              secondCategoryId={CATEGORY_IDS.SOCIETY}
+              arrowRightIcon
+              showNewsList={true}
+              isHomePage={true}
+            />
+            <CategoryNews 
+              mobileLayout="horizontal" 
+              category="ІСТОРІЯ"
+              useRealData={false}
+            />
+            <ColumnNews
+            showSeparator={true}
+              isMobile={isMobile}
+              mobileLayout="horizontal"
+              newsQuantity={5}
+              category={crimeCategory?.title || "КРИМІНАЛ"}
+              categoryId={CATEGORY_IDS.CRIME}
+              secondCategory={sportCategory?.title || "СПОРТ"}
+              secondCategoryId={CATEGORY_IDS.SPORT}
+              arrowRightIcon
+              isHomePage={true}
+            />
+            <CategoryNews 
+              mobileLayout="horizontal" 
+              category={cultureCategory?.title || "КУЛЬТУРА"}
+              categoryId={CATEGORY_IDS.CULTURE}
+              useRealData={true}
+              limit={6}
+            />
+            <AllNews/>
+          </>
+        )}
+        */}
       </div>
     </>
   );
