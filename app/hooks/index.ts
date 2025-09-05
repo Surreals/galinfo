@@ -5,6 +5,7 @@ export { useImportantNews, useImportantNewsByLevel, useTopImportantNews, useHigh
 export { useIsMobile } from './useIsMobile';
 export { useMenuData } from './useMenuData';
 export { useNewsByRubric } from './useNewsByRubric';
+export { useNewsByRegion } from './useNewsByRegion';
 export { useSingleNews } from './useSingleNews';
 export { 
   useCompleteNewsData, 
@@ -30,3 +31,10 @@ export type {
   UseCompleteNewsDataOptions, 
   UseCompleteNewsDataReturn 
 } from './useCompleteNewsData';
+
+export type {
+  NewsByRegionItem,
+  NewsByRegionResponse,
+  UseNewsByRegionOptions,
+  UseNewsByRegionReturn
+} from './useNewsByRegion';
