@@ -62,3 +62,15 @@ export function getCategoryDisplayName(
 ): string {
   return category?.title || fallback;
 }
+
+// Helper function to check if category is a region (cattype = 3)
+export function isRegionCategory(categoryId: number): boolean {
+  const regionIds: number[] = [
+    CATEGORY_IDS.UKRAINE,
+    CATEGORY_IDS.LVIV,
+    CATEGORY_IDS.EVROPA,
+    CATEGORY_IDS.SVIT,
+    CATEGORY_IDS.VOLYN
+  ];
+  return regionIds.includes(categoryId);
+}
