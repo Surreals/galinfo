@@ -6,6 +6,8 @@ import { AccentSquare, ViewAllButton } from '@/app/shared';
 import styles from './CategoryNews.module.css';
 import { useState, useEffect } from 'react';
 import { useNewsByRubric } from '@/app/hooks/useNewsByRubric';
+import { useNewsByRegion } from '@/app/hooks/useNewsByRegion';
+import { isRegionCategory } from '@/app/lib/categoryUtils';
 import { getImageUrlFromApi, getMainImageFromApi, hasApiImages, type ApiNewsImage } from '@/app/lib/imageUtils';
 
 // Інтерфейси для типізації даних
@@ -77,20 +79,34 @@ export default function CategoryNews({
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  // Використовуємо хук для отримання реальних даних
-  const {
-    data: apiData,
-    loading: apiLoading,
-    error: apiError
-  } = useNewsByRubric({
+  // Визначаємо, чи це регіональна категорія
+  const isRegion = categoryId ? isRegionCategory(categoryId) : false;
+
+  // Використовуємо відповідний хук залежно від типу категорії
+  const rubricHook = useNewsByRubric({
     rubric: categoryId?.toString() || '',
     page: config?.apiParams?.page || 1,
     limit: config?.apiParams?.limit || limit,
     lang: config?.apiParams?.lang || '1',
     approved: config?.apiParams?.approved !== undefined ? config.apiParams.approved : true,
     type: config?.apiParams?.type,
-    autoFetch: useRealData && !!categoryId
+    autoFetch: useRealData && !!categoryId && !isRegion
   });
+
+  const regionHook = useNewsByRegion({
+    region: categoryId?.toString() || '',
+    page: config?.apiParams?.page || 1,
+    limit: config?.apiParams?.limit || limit,
+    lang: config?.apiParams?.lang || '1',
+    approved: config?.apiParams?.approved !== undefined ? config.apiParams.approved : true,
+    type: config?.apiParams?.type,
+    autoFetch: useRealData && !!categoryId && isRegion
+  });
+
+  // Вибираємо дані з відповідного хука
+  const apiData = isRegion ? regionHook.data : rubricHook.data;
+  const apiLoading = isRegion ? regionHook.loading : rubricHook.loading;
+  const apiError = isRegion ? regionHook.error : rubricHook.error;
 
   // Логування даних з хука
   useEffect(() => {
@@ -98,6 +114,8 @@ export default function CategoryNews({
       console.log('=== CategoryNews Debug ===');
       console.log('Category ID:', categoryId);
       console.log('Category Name:', category);
+      console.log('Is Region Category:', isRegion);
+      console.log('Using Hook:', isRegion ? 'useNewsByRegion' : 'useNewsByRubric');
       console.log('useRealData:', useRealData);
       console.log('API Loading:', apiLoading);
       console.log('API Error:', apiError);
