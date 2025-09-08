@@ -6,6 +6,7 @@ import { AccentSquare, ViewAllButton } from '@/app/shared';
 import styles from './CategoryNews.module.css';
 import { useState, useEffect } from 'react';
 import { useNewsByRubric } from '@/app/hooks/useNewsByRubric';
+import { getImageUrlFromApi, getMainImageFromApi, hasApiImages, type ApiNewsImage } from '@/app/lib/imageUtils';
 
 // Інтерфейси для типізації даних
 export interface CategoryNewsItem {
@@ -136,20 +137,26 @@ export default function CategoryNews({
 
   if (useRealData && apiData?.news) {
     // Використовуємо реальні дані з API
-    displayNews = apiData.news.map(item => ({
-      id: item.id.toString(),
-      title: item.nheader,
-      date: new Date(item.ndate).toLocaleDateString('uk-UA', {
-        day: '2-digit',
-        month: 'long',
-        year: 'numeric'
-      }),
-      time: item.ntime,
-      url: `/article/${item.urlkey}`,
-      imageUrl: item.images?.[0]?.url || 'https://picsum.photos/300/200?random=1',
-      imageAlt: item.nheader,
-      isImportant: item.ntype === 1 // ntype === 1 означає важливу новину
-    }));
+    displayNews = apiData.news.map(item => {
+      // Отримуємо основне зображення з нової структури
+      const mainImage = getMainImageFromApi(item.images as ApiNewsImage[]);
+      const imageUrl = getImageUrlFromApi(mainImage, 'intxt') || 'https://picsum.photos/300/200?random=1';
+      
+      return {
+        id: item.id.toString(),
+        title: item.nheader,
+        date: new Date(item.ndate).toLocaleDateString('uk-UA', {
+          day: '2-digit',
+          month: 'long',
+          year: 'numeric'
+        }),
+        time: item.ntime,
+        url: `/article/${item.urlkey}`,
+        imageUrl: imageUrl,
+        imageAlt: item.nheader,
+        isImportant: item.ntype === 1 // ntype === 1 означає важливу новину
+      };
+    });
     displayLoading = apiLoading;
   } else if (news.length > 0) {
     // Використовуємо передані дані

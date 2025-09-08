@@ -6,6 +6,7 @@ import Image from "next/image";
 import {AccentSquare, ViewAllButton} from "@/app/shared";
 import arrowRight from "@/assets/icons/arrowRight.svg";
 import { useNewsByRubric } from '@/app/hooks/useNewsByRubric';
+import { getImageUrlFromApi, getMainImageFromApi, type ApiNewsImage } from '@/app/lib/imageUtils';
 
 import styles from "./listNews.module.scss";
 
@@ -93,13 +94,19 @@ export default function NewsList({
 
   if (useRealData && apiData?.news) {
     // Використовуємо реальні дані з API
-    displayData = apiData.news.map(item => ({
-      id: item.id.toString(),
-      title: item.nheader,
-      time: item.ntime,
-      imageUrl: item.images?.[0]?.url || 'https://picsum.photos/200/150?random=1',
-      url: `/article/${item.urlkey}`
-    }));
+    displayData = apiData.news.map(item => {
+      // Отримуємо основне зображення з нової структури
+      const mainImage = getMainImageFromApi(item.images as ApiNewsImage[]);
+      const imageUrl = getImageUrlFromApi(mainImage, 'tmb') || 'https://picsum.photos/200/150?random=1';
+      
+      return {
+        id: item.id.toString(),
+        title: item.nheader,
+        time: item.ntime,
+        imageUrl: imageUrl,
+        url: `/article/${item.urlkey}`
+      };
+    });
   } else {
     // Використовуємо передані дані
     displayData = data;

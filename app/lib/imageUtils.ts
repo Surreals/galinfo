@@ -10,6 +10,15 @@ export interface NewsImage {
   };
 }
 
+// Тип для зображення з API (як ви отримуєте з бази даних)
+export interface ApiNewsImage {
+  urls: {
+    full: string;
+    intxt: string;
+    tmb: string;
+  };
+}
+
 export interface ImageSize {
   full: string;
   intxt: string;
@@ -105,4 +114,36 @@ export function filterImagesBySize(images: NewsImage[], minWidth?: number, minHe
   // В реальному проекті тут можна додати логіку фільтрації за розмірами
   // Поки що повертаємо всі зображення
   return images || [];
+}
+
+// Отримання URL зображення з API структури
+export function getImageUrlFromApi(apiImage: ApiNewsImage | null, size: keyof ImageSize = 'intxt'): string {
+  if (!apiImage || !apiImage.urls) return '';
+  return apiImage.urls[size] || apiImage.urls.intxt || '';
+}
+
+// Отримання основного зображення з API даних
+export function getMainImageFromApi(apiImages: ApiNewsImage[] | null): ApiNewsImage | null {
+  if (!apiImages || apiImages.length === 0) return null;
+  return apiImages[0];
+}
+
+// Перевірка чи є зображення в API даних
+export function hasApiImages(apiImages: ApiNewsImage[] | null): boolean {
+  return apiImages && apiImages.length > 0;
+}
+
+// Отримання кількості зображень з API
+export function getApiImagesCount(apiImages: ApiNewsImage[] | null): number {
+  return apiImages ? apiImages.length : 0;
+}
+
+// Конвертація API зображення в NewsImage (якщо потрібно)
+export function convertApiImageToNewsImage(apiImage: ApiNewsImage, id: number = 0, filename: string = '', title: string = ''): NewsImage {
+  return {
+    id,
+    filename,
+    title,
+    urls: apiImage.urls
+  };
 }
