@@ -1,5 +1,55 @@
 import { NextResponse } from 'next/server';
 import { executeQuery } from '@/app/lib/db';
+import { generateImagePath } from '@/app/lib/imageUtils';
+
+// Функція для обробки зображень в новій структурі
+function processHeroNewsImages(newsItem: any) {
+  const images = [];
+  
+  // Обробляємо image_filenames
+  if (newsItem.image_filenames && newsItem.image_filenames.trim() !== '') {
+    const filenames = newsItem.image_filenames.split(',').map((f: string) => f.trim());
+    filenames.forEach((filename: string) => {
+      if (filename) {
+        const imagePath = generateImagePath(filename);
+        images.push({
+          urls: {
+            full: `/media/gallery/full/${imagePath}`,
+            intxt: `/media/gallery/intxt/${imagePath}`,
+            tmb: `/media/gallery/tmb/${imagePath}`
+          }
+        });
+      }
+    });
+  }
+  
+  // Якщо немає зображень з image_filenames, перевіряємо photo поле
+  if (images.length === 0 && newsItem.photo && newsItem.photo.toString().trim() !== '') {
+    const photoStr = newsItem.photo.toString();
+    if (!photoStr.startsWith('http') && !photoStr.startsWith('/')) {
+      // Якщо це filename, генеруємо шлях
+      const imagePath = generateImagePath(photoStr);
+      images.push({
+        urls: {
+          full: `/media/gallery/full/${imagePath}`,
+          intxt: `/media/gallery/intxt/${imagePath}`,
+          tmb: `/media/gallery/tmb/${imagePath}`
+        }
+      });
+    } else {
+      // Якщо це вже URL, використовуємо як є
+      images.push({
+        urls: {
+          full: photoStr,
+          intxt: photoStr,
+          tmb: photoStr
+        }
+      });
+    }
+  }
+  
+  return images;
+}
 
 export async function GET() {
   try {
@@ -70,10 +120,22 @@ export async function GET() {
         LIMIT 4
       `);
       
-      return NextResponse.json({ heroNews: fallbackNews });
+      // Обробляємо fallback новини
+      const processedFallbackNews = fallbackNews.map((item: any) => ({
+        ...item,
+        images: processHeroNewsImages(item)
+      }));
+      
+      return NextResponse.json({ heroNews: processedFallbackNews });
     }
 
-    return NextResponse.json({ heroNews });
+    // Обробляємо основні hero новини
+    const processedHeroNews = heroNews.map((item: any) => ({
+      ...item,
+      images: processHeroNewsImages(item)
+    }));
+
+    return NextResponse.json({ heroNews: processedHeroNews });
     
   } catch (error) {
     console.error('Error fetching hero news data:', error);

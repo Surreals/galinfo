@@ -1,3 +1,32 @@
+// Функція для генерації шляхів з підпапками (винесена з newsUtils для уникнення циклічних імпортів)
+export function generateImagePath(filename: string): string {
+  // Extract the part before the extension
+  const match = filename.match(/^(.+?)(\.[^.]+)$/);
+  if (!match) return filename;
+  
+  const nameWithoutExt = match[1];
+  const extension = match[2];
+  
+  // Take first 2 characters
+  const firstTwoChars = nameWithoutExt.substring(0, 2);
+  
+  // Split into individual characters and create path
+  const pathParts = firstTwoChars.split('').map(char => {
+    // If character is alphanumeric, use it; otherwise use 'other'
+    return /[A-Za-z0-9]/.test(char) ? char : 'other';
+  });
+  
+  // Ensure we have exactly 2 parts
+  while (pathParts.length < 2) {
+    pathParts.push('other');
+  }
+  
+  // Create the subdirectory path
+  const subPath = pathParts.slice(0, 2).join('/');
+  
+  return `${subPath}/${filename}`;
+}
+
 // Типи для зображень
 export interface NewsImage {
   id: number;
@@ -25,15 +54,21 @@ export interface ImageSize {
   tmb: string;
 }
 
+// Базовий URL для зображень (можна змінити через змінну середовища)
+// Для зміни додайте в .env.local: NEXT_PUBLIC_IMAGE_BASE_URL=https://your-domain.com
+const IMAGE_BASE_URL = process.env.NEXT_PUBLIC_IMAGE_BASE_URL || 'https://galinfo.com.ua';
+
 // Генерація URL для різних розмірів зображень
 export function getImageUrl(filename: string, size: keyof ImageSize = 'intxt'): string {
   if (!filename) return '';
   
+  // Генеруємо правильний шлях з підпапками
+  const imagePath = generateImagePath(filename);
   const basePath = '/media/gallery';
   const sizes: ImageSize = {
-    full: `${basePath}/full/${filename}`,
-    intxt: `${basePath}/intxt/${filename}`,
-    tmb: `${basePath}/tmb/${filename}`
+    full: `${IMAGE_BASE_URL}${basePath}/full/${imagePath}`,
+    intxt: `${IMAGE_BASE_URL}${basePath}/intxt/${imagePath}`,
+    tmb: `${IMAGE_BASE_URL}${basePath}/tmb/${imagePath}`
   };
   
   return sizes[size] || sizes.intxt;
@@ -119,7 +154,24 @@ export function filterImagesBySize(images: NewsImage[], minWidth?: number, minHe
 // Отримання URL зображення з API структури
 export function getImageUrlFromApi(apiImage: ApiNewsImage | null, size: keyof ImageSize = 'intxt'): string {
   if (!apiImage || !apiImage.urls) return '';
-  return apiImage.urls[size] || apiImage.urls.intxt || '';
+  
+  const url = apiImage.urls[size] || apiImage.urls.intxt || '';
+  
+  // Якщо URL відносний, перевіряємо чи потрібно додати підпапки
+  if (url && !url.startsWith('http')) {
+    // Якщо URL не містить підпапки (наприклад, /media/gallery/tmb/volgnpz.jpg),
+    // то потрібно додати підпапки на основі імені файлу
+    const filename = url.split('/').pop();
+    if (filename && !url.includes('/' + filename.charAt(0) + '/')) {
+      // Генеруємо правильний шлях з підпапками
+      const basePath = url.substring(0, url.lastIndexOf('/'));
+      const correctPath = `${basePath}/${generateImagePath(filename)}`;
+      return `${IMAGE_BASE_URL}${correctPath}`;
+    }
+    return `${IMAGE_BASE_URL}${url}`;
+  }
+  
+  return url;
 }
 
 // Отримання основного зображення з API даних
@@ -130,7 +182,7 @@ export function getMainImageFromApi(apiImages: ApiNewsImage[] | null): ApiNewsIm
 
 // Перевірка чи є зображення в API даних
 export function hasApiImages(apiImages: ApiNewsImage[] | null): boolean {
-  return apiImages && apiImages.length > 0;
+  return !!(apiImages && apiImages.length > 0);
 }
 
 // Отримання кількості зображень з API
@@ -146,4 +198,28 @@ export function convertApiImageToNewsImage(apiImage: ApiNewsImage, id: number = 
     title,
     urls: apiImage.urls
   };
+}
+
+// Функції для роботи з базовим URL
+export function getImageBaseUrl(): string {
+  return IMAGE_BASE_URL;
+}
+
+// Функція для отримання базового URL з можливістю перевизначення
+export function getImageBaseUrlWithFallback(customUrl?: string): string {
+  return customUrl || IMAGE_BASE_URL;
+}
+
+// Функція для перевірки, чи потрібно додавати базовий URL
+export function ensureFullImageUrl(url: string, customBaseUrl?: string): string {
+  if (!url) return '';
+  
+  // Якщо URL вже повний, повертаємо як є
+  if (url.startsWith('http://') || url.startsWith('https://')) {
+    return url;
+  }
+  
+  // Якщо URL відносний, додаємо базовий домен
+  const baseUrl = customBaseUrl || IMAGE_BASE_URL;
+  return `${baseUrl}${url}`;
 }

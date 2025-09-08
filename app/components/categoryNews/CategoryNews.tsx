@@ -9,6 +9,7 @@ import { useNewsByRubric } from '@/app/hooks/useNewsByRubric';
 import { useNewsByRegion } from '@/app/hooks/useNewsByRegion';
 import { isRegionCategory } from '@/app/lib/categoryUtils';
 import { getImageUrlFromApi, getMainImageFromApi, hasApiImages, type ApiNewsImage } from '@/app/lib/imageUtils';
+import { getUniversalNewsImageIntxt } from '@/app/lib/newsUtils';
 
 // Інтерфейси для типізації даних
 export interface CategoryNewsItem {
@@ -156,9 +157,8 @@ export default function CategoryNews({
   if (useRealData && apiData?.news) {
     // Використовуємо реальні дані з API
     displayNews = apiData.news.map(item => {
-      // Отримуємо основне зображення з нової структури
-      const mainImage = getMainImageFromApi(item.images as ApiNewsImage[]);
-      const imageUrl = getImageUrlFromApi(mainImage, 'intxt') || 'https://picsum.photos/300/200?random=1';
+      // Використовуємо універсальну функцію getUniversalNewsImageIntxt з newsUtils
+      const imageUrl = getUniversalNewsImageIntxt(item) || 'https://picsum.photos/300/200?random=1';
       
       return {
         id: item.id.toString(),

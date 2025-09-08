@@ -5,7 +5,13 @@ interface HeroNewsItem {
   ndate: string;
   ntime: string;
   ntype: number;
-  images: string;
+  images: Array<{
+    urls: {
+      full: string;
+      intxt: string;
+      tmb: string;
+    };
+  }>;
   urlkey: string;
   photo: string;
   video: string;
