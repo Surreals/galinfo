@@ -1,6 +1,6 @@
 'use client';
 
-import { CategoryNews, ColumnNews, Hero, AllNews, HeroRenderer } from '@/app/components';
+import { CategoryNews, ColumnNews, Hero, AllNews, HeroRenderer, AdBanner } from '@/app/components';
 import { desktopSchema, mobileSchema } from '@/app/lib/schema';
 import { heroSchema, heroInfoSchema, heroInfoMobileSchema } from '@/app/lib/heroSchema';
 import { CATEGORY_IDS } from '@/app/lib/categoryUtils';
@@ -67,6 +67,15 @@ export default function HomePageRenderer({
       
       case 'AllNews':
         return <AllNews key={`all-news-${index}`} />;
+      
+      case 'AdBanner':
+      case 'AD_BANNER':
+        return (
+          <AdBanner 
+            key={`ad-banner-${index}`}
+            className={block.config?.className}
+          />
+        );
       
       default:
         console.warn(`Unknown block type: ${block.type}`);

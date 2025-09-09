@@ -4,6 +4,7 @@ const COLUMN_NEWS = 'ColumnNews'
 const CATEGORY_NEWS = 'CategoryNews'
 const HERO = 'Hero'
 const ALL_NEWS = 'AllNews'
+const AD_BANNER = 'AdBanner'
 
 // Схема для десктопної версії
 export const desktopSchema = {
@@ -56,6 +57,13 @@ export const desktopSchema = {
       }
     },
     {
+      type: AD_BANNER,
+      config: {
+        show: true,
+        className: 'adBannerStandard'
+      }
+    },
+    {
       type: COLUMN_NEWS,
       categoryId: CATEGORY_IDS.HEALTH,
       sideCategoryId: CATEGORY_IDS.SOCIETY,
@@ -96,6 +104,13 @@ export const desktopSchema = {
             approved: true
             }
         }
+    },
+    {
+      type: AD_BANNER,
+      config: {
+        show: true,
+        className: 'adBannerStandard'
+      }
     },
     {
       type: COLUMN_NEWS,

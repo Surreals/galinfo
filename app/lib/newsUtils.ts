@@ -57,10 +57,12 @@ export function generateArticleUrl(newsItem: NewsItem): string {
   }
   
   // Generate URL from date and id (similar to PHP app's articleLink function)
-  const dateParts = newsItem.ndate.split('-');
-  if (dateParts.length === 3) {
-    const [year, month, day] = dateParts;
-    return `/article/${year}/${month}/${day}/${newsItem.id}`;
+  if (newsItem.ndate && typeof newsItem.ndate === 'string') {
+    const dateParts = newsItem.ndate.split('-');
+    if (dateParts.length === 3) {
+      const [year, month, day] = dateParts;
+      return `/article/${year}/${month}/${day}/${newsItem.id}`;
+    }
   }
   
   // Fallback to simple id-based URL

@@ -1,0 +1,555 @@
+import { CATEGORY_IDS } from './categoryUtils';
+
+// Константи для типів блоків
+export const BREADCRUMBS = 'BREADCRUMBS';
+export const CATEGORY_TITLE = 'CATEGORY_TITLE';
+export const MAIN_NEWS = 'MAIN_NEWS';
+export const CATEGORY_NEWS = 'CATEGORY_NEWS';
+export const COLUMN_NEWS = 'COLUMN_NEWS';
+export const NEWS_LIST = 'NEWS_LIST';
+export const AD_BANNER = 'AD_BANNER';
+export const CURRENCY_RATES = 'CURRENCY_RATES';
+export const WEATHER_WIDGET = 'WEATHER_WIDGET';
+export const ALL_NEWS = 'ALL_NEWS';
+export const INFO_SECTION = 'INFO_SECTION';
+export const BANNER_IMAGE = 'BANNER_IMAGE';
+export const SEPARATOR = 'SEPARATOR';
+export const RIGHT_SEPARATOR = 'RIGHT_SEPARATOR';
+
+// Схема для десктопної версії сторінки категорії
+export const categoryDesktopSchema = {
+  blocks: [
+    // Breadcrumbs (тільки для десктопу)
+    {
+      type: BREADCRUMBS,
+      config: {
+        show: true,
+        items: [
+          { label: 'ГОЛОВНА', href: '/' },
+          { label: 'CATEGORY_TITLE' } // Буде замінено на реальну назву категорії
+        ]
+      }
+    },
+    
+    // Заголовок категорії
+    {
+      type: CATEGORY_TITLE,
+      config: {
+        show: true,
+        className: 'categoryTitleStandard'
+      }
+    },
+    
+    // Основна новина (перша новина з поточної категорії)
+    {
+      type: MAIN_NEWS,
+      config: {
+        show: true,
+        className: 'mainNewsStandard',
+        showSeparator: true
+      }
+    },
+    
+    // Основна категорія новин (без заголовка, використовує categoryId з URL)
+    {
+      type: CATEGORY_NEWS,
+      categoryId: 'CURRENT_CATEGORY', // Спеціальне значення для поточної категорії
+      config: {
+        show: true,
+        height: 133,
+        hideHeader: true,
+        className: 'categoryNewsStandard',
+        showSeparator: true,
+        apiParams: {
+          page: 1,
+          limit: 8,
+          lang: '1',
+          approved: true,
+          type: null
+        }
+      }
+    },
+    
+    // Рекламний банер
+    {
+      type: AD_BANNER,
+      config: {
+        show: true,
+        className: 'adBannerStandard'
+      }
+    },
+
+    // Колонка новин - Політика
+    {
+      type: COLUMN_NEWS,
+      categoryId: 'CURRENT_CATEGORY',
+      config: {
+        show: true,
+        mobileLayout: "horizontal",
+        newsQuantity: 5,
+        smallImg: true,
+        secondCategory: "",
+        showNewsList: false,
+        hideHeader: true,
+        className: 'columnNewsStandard',
+        showSeparator: true,
+        apiParams: {
+          page: 2,
+          limit: 5,
+          lang: '1',
+          approved: true,
+          type: null
+        }
+      }
+    },
+    
+    // Рекламний банер
+    {
+      type: AD_BANNER,
+      config: {
+        show: true,
+        className: 'adBannerStandard'
+      }
+    },
+    
+    // Колонка новин - Європа
+    {
+      type: COLUMN_NEWS,
+      categoryId: 'CURRENT_CATEGORY',
+      config: {
+        show: true,
+        mobileLayout: "horizontal",
+        newsQuantity: 5,
+        secondCategory: "",
+        showNewsList: false,
+        hideHeader: true,
+        className: 'columnNewsStandard',
+        showSeparator: true,
+        apiParams: {
+          page: 3,
+          limit: 5,
+          lang: '1',
+          approved: true,
+          type: null
+        }
+      }
+    },
+    
+    // Рекламний банер (тільки для мобільної версії)
+    {
+        type: AD_BANNER,
+        config: {
+          show: true,
+          className: 'adBannerStandard'
+        }
+    },
+    // Категорія новин - Здоров'я
+    {
+      type: CATEGORY_NEWS,
+      categoryId: 'CURRENT_CATEGORY',
+      config: {
+        show: true,
+        height: 133,
+        hideHeader: true,
+        className: 'categoryNewsStandard',
+        showSeparator: true,
+        apiParams: {
+          page: 4,
+          limit: 8,
+          lang: '1',
+          approved: true,
+          type: null
+        }
+      }
+    },
+    
+    // Колонка новин - Культура (тільки для десктопу)
+    {
+      type: COLUMN_NEWS,
+      categoryId: 'CURRENT_CATEGORY',
+      config: {
+        show: true,
+        desktopOnly: true,
+        newsQuantity: 5,
+        smallImg: true,
+        secondCategory: "",
+        showNewsList: false,
+        hideHeader: true,
+        className: 'columnNewsStandard',
+        showSeparator: true,
+        apiParams: {
+          page: 5,
+          limit: 5,
+          lang: '1',
+          approved: true,
+          type: null
+        }
+      }
+    },
+    
+    // Колонка новин - Кримінал (тільки для десктопу)
+    {
+      type: COLUMN_NEWS,
+      categoryId: 'CURRENT_CATEGORY',
+      config: {
+        show: true,
+        desktopOnly: true,
+        newsQuantity: 5,
+        secondCategory: "false",
+        showNewsList: false,
+        hideHeader: true,
+        className: 'columnNewsStandard',
+        showSeparator: true,
+        apiParams: {
+          page: 6,
+          limit: 5,
+          lang: '1',
+          approved: true,
+          type: null
+        }
+      }
+    }
+  ],
+  
+  // Бокова панель для десктопу
+  sidebar: {
+    blocks: [
+      // Банер
+      {
+        type: BANNER_IMAGE,
+        config: {
+          show: true,
+          src: '/assets/images/banner3.png',
+          alt: 'banner3',
+          width: 600,
+          height: 240,
+          className: 'banner3'
+        }
+      },
+      
+      // Секція з курсами валют та погодою
+      {
+        type: INFO_SECTION,
+        config: {
+          show: true
+        },
+        children: [
+          {
+            type: CURRENCY_RATES,
+            config: { show: true }
+          },
+          {
+            type: WEATHER_WIDGET,
+            config: { show: true }
+          }
+        ]
+      },
+      
+      // Сепаратор
+      {
+        type: RIGHT_SEPARATOR,
+        config: {
+          show: true
+        }
+      },
+      
+      // NewsList - Політика
+      {
+        type: NEWS_LIST,
+        categoryId: CATEGORY_IDS.POLITICS,
+        config: {
+          show: true,
+          mobileLayout: "horizontal",
+          arrowRightIcon: true,
+          title: "ПОЛІТИКА",
+          showImagesAt: [0, 1],
+          showMoreButton: true,
+          moreButtonUrl: "/politics",
+          widthPercent: 100,
+          apiParams: {
+            page: 1,
+            limit: 8,
+            lang: '1',
+            approved: true,
+            type: null
+          }
+        }
+      },
+
+      {
+        type: RIGHT_SEPARATOR,
+        config: {
+          show: true
+        }
+      },
+      
+      // Банер IN-FOMO
+      {
+        type: BANNER_IMAGE,
+        config: {
+          show: true,
+          src: '/assets/images/Ad Banner black.png',
+          alt: 'IN-FOMO Banner',
+          width: 600,
+          height: 240,
+          className: 'fomoLogo'
+        }
+      },
+      
+      // Сепаратор
+      {
+        type: RIGHT_SEPARATOR,
+        config: {
+          show: true
+        }
+      },
+      
+      // NewsList - Економіка
+      {
+        type: NEWS_LIST,
+        categoryId: CATEGORY_IDS.ECONOMICS,
+        config: {
+          show: true,
+          mobileLayout: "horizontal",
+          arrowRightIcon: true,
+          title: "ЕКОНОМІКА",
+          showImagesAt: [0, 1],
+          showMoreButton: true,
+          moreButtonUrl: "/economy",
+          widthPercent: 100,
+          apiParams: {
+            page: 1,
+            limit: 8,
+            lang: '1',
+            approved: true,
+            type: null
+          }
+        }
+      },
+      
+      // Сепаратор
+      {
+        type: RIGHT_SEPARATOR,
+        config: {
+          show: true
+        }
+      },
+      
+      // NewsList - Спорт
+      {
+        type: NEWS_LIST,
+        categoryId: CATEGORY_IDS.SPORT,
+        config: {
+          show: true,
+          mobileLayout: "horizontal",
+          arrowRightIcon: true,
+          title: "СПОРТ",
+          showImagesAt: [0, 1],
+          showMoreButton: true,
+          moreButtonUrl: "/sport",
+          widthPercent: 100,
+          apiParams: {
+            page: 1,
+            limit: 8,
+            lang: '1',
+            approved: true,
+            type: null
+          }
+        }
+      }
+    ]
+  },
+  
+  // Футер для десктопу
+  footer: {
+    blocks: [
+      {
+        type: ALL_NEWS,
+        config: {
+          show: true,
+          customTitle: "Більше новин"
+        }
+      }
+    ]
+  }
+};
+
+// Схема для мобільної версії сторінки категорії
+export const categoryMobileSchema = {
+  blocks: [
+    // Заголовок категорії
+    {
+      type: CATEGORY_TITLE,
+      config: {
+        show: true,
+        className: 'categoryTitleStandard'
+      }
+    },
+    
+    // Основна новина (перша новина з поточної категорії)
+    {
+      type: MAIN_NEWS,
+      config: {
+        show: true,
+        className: 'mainNewsStandard',
+        showSeparator: true
+      }
+    },
+    
+    // Основна категорія новин (без заголовка, використовує categoryId з URL)
+    {
+      type: CATEGORY_NEWS,
+      categoryId: 'CURRENT_CATEGORY', // Спеціальне значення для поточної категорії
+      config: {
+        show: true,
+        height: 133,
+        hideHeader: true,
+        className: 'categoryNewsStandard',
+        showSeparator: true,
+        apiParams: {
+          page: 1,
+          limit: 8,
+          lang: '1',
+          approved: true,
+          type: null
+        }
+      }
+    },
+    
+    // Рекламний банер
+    {
+      type: AD_BANNER,
+      config: {
+        show: true,
+        className: 'adBannerStandard'
+      }
+    },
+    
+    // Колонка новин - Політика
+    {
+      type: COLUMN_NEWS,
+      categoryId: CATEGORY_IDS.POLITICS,
+      config: {
+        show: true,
+        mobileLayout: "horizontal",
+        newsQuantity: 4,
+        smallImg: true,
+        secondCategory: "",
+        showNewsList: false,
+        hideHeader: true,
+        className: 'columnNewsStandard',
+        showSeparator: true,
+        apiParams: {
+          page: 1,
+          limit: 4,
+          lang: '1',
+          approved: true,
+          type: null
+        }
+      }
+    },
+    
+    // Рекламний банер
+    {
+      type: AD_BANNER,
+      config: {
+        show: true,
+        className: 'adBannerStandard'
+      }
+    },
+    
+    // Колонка новин - Європа
+    {
+      type: COLUMN_NEWS,
+      categoryId: CATEGORY_IDS.EVROPA,
+      config: {
+        show: true,
+        mobileLayout: "horizontal",
+        newsQuantity: 8,
+        secondCategory: "",
+        showNewsList: false,
+        hideHeader: true,
+        className: 'columnNewsStandard',
+        showSeparator: true,
+        apiParams: {
+          page: 1,
+          limit: 8,
+          lang: '1',
+          approved: true,
+          type: null
+        }
+      }
+    },
+    
+    // Рекламний банер
+    {
+      type: BANNER_IMAGE,
+      config: {
+        show: true,
+        src: '/assets/images/banner3.png',
+        alt: 'banner3',
+        width: 600,
+        height: 240,
+        className: 'banner3'
+      }
+    },
+    
+    // NewsList - Політика (тільки для мобільної версії)
+    {
+      type: NEWS_LIST,
+      categoryId: CATEGORY_IDS.POLITICS,
+      config: {
+        show: true,
+        mobileOnly: true,
+        mobileLayout: "horizontal",
+        arrowRightIcon: true,
+        title: "ПОЛІТИКА",
+        showImagesAt: [0, 1],
+        showMoreButton: true,
+        moreButtonUrl: "/politics",
+        widthPercent: 100,
+        apiParams: {
+          page: 1,
+          limit: 8,
+          lang: '1',
+          approved: true,
+          type: null
+        }
+      }
+    },
+    
+    // Банер IN-FOMO (тільки для мобільної версії)
+    {
+      type: BANNER_IMAGE,
+      config: {
+        show: true,
+        mobileOnly: true,
+        src: '/assets/images/Ad Banner black.png',
+        alt: 'IN-FOMO Banner',
+        width: 600,
+        height: 240,
+        className: 'fomoLogo'
+      }
+    },
+    
+    // Категорія новин - Здоров'я
+    {
+      type: CATEGORY_NEWS,
+      categoryId: CATEGORY_IDS.HEALTH,
+      config: {
+        show: true,
+        height: 133,
+        hideHeader: true,
+        className: 'categoryNewsStandard',
+        showSeparator: true,
+        apiParams: {
+          page: 1,
+          limit: 8,
+          lang: '1',
+          approved: true,
+          type: null
+        }
+      }
+    }
+  ]
+};
