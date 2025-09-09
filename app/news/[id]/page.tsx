@@ -8,10 +8,14 @@ interface ArticlePageProps {
 }
 
 export default async function ArticlePage({ params, searchParams }: ArticlePageProps) {
-  const { id } = await params;
-  
+  const { id: urlParams } = await params;
+  const lastDashIndex = urlParams.lastIndexOf("_");
+
+  const urlkey = urlParams.substring(0, lastDashIndex);
+  const id = +(urlParams.substring(lastDashIndex + 1));
+
   // Перевіряємо, чи існує id
-  if (!id) {
+  if (!urlParams) {
     return <div>Новина не знайдена</div>;
   }
 
@@ -109,7 +113,7 @@ export default async function ArticlePage({ params, searchParams }: ArticlePageP
     return articles[articleId as keyof typeof articles] || articles['example-article'];
   };
 
-  const articleData = getArticleData(id);
+  const articleData = getArticleData(urlParams);
 
   // Функція для генерації випадкових новин для NewsList
   const generateRandomNews = (count: number) => {
@@ -162,7 +166,9 @@ export default async function ArticlePage({ params, searchParams }: ArticlePageP
   const newsData3 = generateRandomNews(8);
 
   return (
-    <ArticlePageClient 
+    <ArticlePageClient
+      urlkey={urlkey}
+      id={id}
       articleData={articleData}
       newsData1={newsData1}
       newsData2={newsData2}

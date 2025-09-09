@@ -4,7 +4,7 @@ import React from 'react';
 import styles from './ArticleMeta.module.css';
 
 interface ArticleMetaProps {
-  date: string;
+  date?: string;
   isMobile?: boolean;
 }
 

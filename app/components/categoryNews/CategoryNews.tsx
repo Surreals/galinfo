@@ -159,7 +159,7 @@ export default function CategoryNews({
     displayNews = apiData.news.map(item => {
       // Використовуємо універсальну функцію getUniversalNewsImageIntxt з newsUtils
       const imageUrl = getUniversalNewsImageIntxt(item) || 'https://picsum.photos/300/200?random=1';
-      
+
       return {
         id: item.id.toString(),
         title: item.nheader,
@@ -169,7 +169,7 @@ export default function CategoryNews({
           year: 'numeric'
         }),
         time: item.ntime,
-        url: `/article/${item.urlkey}`,
+        url: `/news/${item.urlkey}_${item.id}`,
         imageUrl: imageUrl,
         imageAlt: item.nheader,
         isImportant: item.ntype === 1 // ntype === 1 означає важливу новину

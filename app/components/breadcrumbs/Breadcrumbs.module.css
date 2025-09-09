@@ -38,9 +38,9 @@
 }
 
 .breadcrumbCurrent {
-  color: #111827;
+  color: #374151;
   text-transform: uppercase;
-  font-weight: 600;
+  cursor: default;
 }
 
 /* Responsive design */

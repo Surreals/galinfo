@@ -1,6 +1,7 @@
 'use client';
 
-import React from 'react';
+import React, {useEffect, useRef} from 'react';
+import {NewsTag, useCompleteNewsData} from "@/app/hooks";
 import { AllNews, CategoryNews, ColumnNews, MainNews, CategoryTitle, AdBanner, Breadcrumbs, ArticleMeta } from "@/app/components";
 import NewsList from "@/app/components/listNews/listNews";
 import Image from "next/image";
@@ -11,22 +12,40 @@ import adBannerIndfomo from '@/assets/images/Ad Banner black.png';
 import banner3 from '@/assets/images/banner3.png';
 import { getBreadCrumbsNav } from "@/assets/utils/getTranslateCategory";
 import { useMobileContext } from "@/app/contexts/MobileContext";
+import {getUniversalNewsImageFull } from "@/app/lib/newsUtils";
 
 interface ArticlePageClientProps {
   articleData: any;
+  urlkey: string;
+  id: number;
   newsData1: any[];
   newsData2: any[];
   newsData3: any[];
 }
 
 export const ArticlePageClient: React.FC<ArticlePageClientProps> = ({ 
-  articleData, 
-  newsData1, 
-  newsData2, 
-  newsData3 
+  articleData,
+  newsData1,
+  urlkey,
+  id
 }) => {
   const { isMobile } = useMobileContext();
 
+  const {
+    data,
+  } = useCompleteNewsData({
+    id,
+    urlkey,
+    articleType: 'news',
+  });
+
+  const bodyNews = data?.article?.nbody
+  const article = data?.article
+  const imageUrl = getUniversalNewsImageFull(article || {}) || 'https://picsum.photos/300/200?random=1';
+
+
+
+  // @ts-ignore
   return (
     <>
       <div className={styles.container}>
@@ -34,68 +53,78 @@ export const ArticlePageClient: React.FC<ArticlePageClientProps> = ({
         <div className={styles.mainContent}>
           {/* Breadcrumbs навігація */}
           {!isMobile &&
-          <Breadcrumbs 
-            items={[
-              { label: 'ГОЛОВНА', href: '/' },
-              { label: articleData.category, href: `/category/${getBreadCrumbsNav(articleData.category.toLowerCase())}` },
-              { label: 'НОВИНА' }
-            ]} 
-          />
+              <Breadcrumbs
+                  items={[
+                    { label: 'ГОЛОВНА', href: '/' },
+                    ...(article?.breadcrumbs?.map(
+                      (item: { title: string; link: string }, index: number, arr: any[]) => {
+                        // Якщо останній елемент — видаляємо href
+                        if (index === arr.length - 1) {
+                          return { label: item.title };
+                        }
+                        return { label: item.title, href: item.link };
+                      }
+                    ) || [])
+                  ]}
+              />
           }
           <AdBanner className={styles.adBannerStandard} />
           
           {/* Метадані статті - дата та соціальні мережі */}
-          <ArticleMeta 
-            date={articleData.publishedAt || articleData.createdAt || new Date().toISOString()} 
+          <ArticleMeta
+            date={article?.ndate}
             isMobile={isMobile}
           />
           
           
           {/* Заголовок статті */}
           <div className={styles.articleHeader}>
-            <h1 className={styles.articleTitle}>{articleData.title}</h1>
-            <p className={styles.articleLead}>{articleData.lead}</p>
+            <h1 className={styles.articleTitle}>{article?.nheader}</h1>
+            {
+              article?.nteaser &&
+                <p className={styles.articleLead}>{article?.nteaser}</p>
+            }
           </div>
-          
+
           {/* Основне зображення статті */}
-          <div className={styles.articleImage}>
-            <Image 
-              src={articleData.imageUrl}
-              alt={articleData.imageAlt}
-              width={800}
-              height={500}
-              className={styles.mainImage}
-              priority={true}
-            />
-            <div className={styles.imageCredits}>
-              <span className={styles.photoCredit}>{articleData.photoCredit}</span>
-              <span className={styles.source}>{articleData.source}</span>
-            </div>
+          {
+            article?.images_data && <div className={styles.articleImage}>
+                  <Image
+                      src={imageUrl}
+                      alt={imageUrl}
+                      width={800}
+                      height={500}
+                      className={styles.mainImage}
+                      priority={true}
+                  />
+                  <div className={styles.imageCredits}>
+                    { article?.images_data?.[0]?.title && <span className={styles.photoCredit}>{article?.images_data?.[0]?.title}</span> }
+                      {/*<span className={styles.source}>{articleData.source}</span>*/}
+                  </div>
+              </div>
+          }
+
+          <div className={styles.paragraph} dangerouslySetInnerHTML={{ __html: bodyNews || "" }} >
           </div>
-          
-          {/* Основний текст статті */}
-          <div className={styles.articleContent}>
-            {articleData.content.split('\n\n').map((paragraph: string, index: number) => (
-              <p key={index} className={styles.paragraph}>
-                {paragraph}
-              </p>
-            ))}
-          </div>
-          
           {/* Метадані статті */}
           <div className={styles.articleMetadata}>
+
             <div className={styles.tags}>
-              {articleData.tags.map((tag: string, index: number) => (
-                <span key={index} className={styles.tag}>
-                  {tag}
+
+              {article?.tags.map((tag: NewsTag, index: number) => (
+                <span key={tag.id || index} className={styles.tag}>
+                    {tag.tag}
                 </span>
               ))}
             </div>
-            <div className={styles.authorInfo}>
-              Автор: {articleData.author}
-            </div>
+            {
+              article?.author_name &&
+                <div className={styles.authorInfo}>
+                    Автор: {article?.author_name}
+                </div>
+            }
           </div>
-          
+
           {/* Рекламний банер */}
           <AdBanner className={styles.adBannerStandard} />
 

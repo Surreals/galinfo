@@ -1,3 +1,5 @@
+"use client";
+
 import { useState, useEffect } from 'react';
 import { MenuData, MenuItem } from '@/app/api/homepage/services/menuService';
 

@@ -215,9 +215,13 @@ export function hasNewsImages(newsItem: NewsItem): boolean {
 
 // Універсальні функції для роботи з зображеннями будь-яких новин
 export function getUniversalNewsImage(newsItem: any, size: keyof ApiImageUrls = 'intxt'): string | null {
+
+
   // Спочатку перевіряємо, чи є нова структура зображень (масив об'єктів з urls)
-  if (Array.isArray(newsItem.images) && newsItem.images.length > 0) {
-    const firstImage = newsItem.images[0];
+  if (Array.isArray(newsItem.images) && newsItem.images.length > 0 || Array.isArray(newsItem.images_data) && newsItem.images_data.length > 0) {
+    const firstImage = newsItem.images_data?.[0] || newsItem.images?.[0];
+
+    console.log('SSSSSSSSSSSS',firstImage )
     if (firstImage && firstImage.urls && firstImage.urls[size]) {
       // Якщо URL відносний, перевіряємо чи потрібно додати підпапки
       const url = firstImage.urls[size];

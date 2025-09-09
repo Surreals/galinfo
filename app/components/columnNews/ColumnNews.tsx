@@ -218,7 +218,7 @@ export default function ColumnNews({
         year: 'numeric'
       }),
       time: item.ntime,
-      url: `/article/${item.urlkey}`,
+      url: `/news/${item.urlkey}_${item.id}`,
       imageUrl: item.images?.[0]?.url || 'https://picsum.photos/300/200?random=1',
       imageAlt: item.nheader
     }));
