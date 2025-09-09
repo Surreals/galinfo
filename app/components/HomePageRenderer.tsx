@@ -1,7 +1,8 @@
 'use client';
 
-import { CategoryNews, ColumnNews, Hero, AllNews } from '@/app/components';
+import { CategoryNews, ColumnNews, Hero, AllNews, HeroRenderer } from '@/app/components';
 import { desktopSchema, mobileSchema } from '@/app/lib/schema';
+import { heroSchema, heroInfoSchema, heroInfoMobileSchema } from '@/app/lib/heroSchema';
 import { CATEGORY_IDS } from '@/app/lib/categoryUtils';
 import { useMenuContext } from '@/app/contexts/MenuContext';
 import { useIsMobile } from '@/app/hooks/useIsMobile';
@@ -24,7 +25,14 @@ export default function HomePageRenderer({
   const renderBlock = (block: any, index: number) => {
     switch (block.type) {
       case 'Hero':
-        return <Hero key={`hero-${index}`} />;
+        return (
+          <HeroRenderer 
+            key={`hero-${index}`}
+            schema={heroSchema}
+            infoSchema={isMobile ? heroInfoMobileSchema : heroInfoSchema}
+            isMobile={isMobile}
+          />
+        );
       
       case 'CategoryNews':
         const category = getCategoryById(block.categoryId);
