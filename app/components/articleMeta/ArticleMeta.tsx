@@ -5,23 +5,20 @@ import styles from './ArticleMeta.module.css';
 
 interface ArticleMetaProps {
   date?: string;
+  time?: string;
   isMobile?: boolean;
 }
 
-export const ArticleMeta: React.FC<ArticleMetaProps> = ({ date, isMobile = false }) => {
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    const options: Intl.DateTimeFormatOptions = {
-      weekday: 'short',
-      day: '2-digit',
-      month: 'long',
+export const ArticleMeta: React.FC<ArticleMetaProps> = ({ date: newsData, time, isMobile = false }) => {
+  const formatDate = (date: string): string => {
+    const dateObj = new Date(date);
+    return dateObj.toLocaleDateString('uk-UA', {
       year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    };
-    
-    return date.toLocaleDateString('uk-UA', options);
+      month: 'long',
+      day: 'numeric'
+    });
   };
+
 
   const handleShare = (platform: string) => {
     const url = window.location.href;
@@ -63,9 +60,12 @@ export const ArticleMeta: React.FC<ArticleMetaProps> = ({ date, isMobile = false
     return (
     <>
       <div className={styles.articleMeta}>
-        <div className={styles.dateTime}>
-          {formatDate(date)}
-        </div>
+        {
+          newsData ?
+            <div className={styles.dateTime}>
+              {formatDate(newsData)} {time}
+            </div> : <div></div>
+        }
         {isMobile ? (
           <button
             className={styles.mobileShareButton}

@@ -20,7 +20,7 @@ type NewsItem = {
 };
 
 type NewsListProps = {
-  data: NewsItem[];
+  data?: NewsItem[];
   showImagesAt?: number[];
   widthPercent?: number;
   title?: string;
@@ -110,7 +110,7 @@ export default function NewsList({
     });
   } else {
     // Використовуємо передані дані
-    displayData = data;
+    displayData = data || [];
   }
 
   // Визначаємо, чи потрібно показувати горизонтальне відображення

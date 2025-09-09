@@ -32,3 +32,12 @@ body {
   opacity: 1;
   background: #CFCFCF;
 }
+
+.ant-skeleton.ant-skeleton-element {
+  width: 100%!important ;
+}
+
+.ant-skeleton.ant-skeleton-element .ant-skeleton-image .ant-skeleton-image-svg {
+  max-width: 69px!important;
+  max-height: 69px!important;
+}
