@@ -338,7 +338,7 @@ export default function ColumnNews({
         {/* Кнопка "Всі новини з рубрики" */}
         {!hideHeader && (
           <>
-            <ViewAllButton href={`/category/${category.toLowerCase()}`} />
+            <ViewAllButton href={`/${category.toLowerCase()}`} />
             
           </>
         )}

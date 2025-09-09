@@ -12,29 +12,29 @@ const paths = {
   pressService: '/press-service',
   
   // КАТЕГОРІЇ - Регіони
-  lvivRegion: '/category/lviv-region',
-  ternopilRegion: '/category/ternopil-region',
-  volyn: '/category/volyn',
-  ukraine: '/category/ukraine',
-  eu: '/category/eu',
-  world: '/category/world',
+  lvivRegion: '/lviv-region',
+  ternopilRegion: '/ternopil-region',
+  volyn: '/volyn',
+  ukraine: '/ukraine',
+  eu: '/eu',
+  world: '/world',
   
   // КАТЕГОРІЇ - Теми
-  society: '/category/society',
-  politics: '/category/politics',
-  economy: '/category/economy',
-  culture: '/category/culture',
-  health: '/category/health',
-  sport: '/category/sport',
-  crime: '/category/crime',
-  emergency: '/category/emergency',
-  history: '/category/history',
-  technologies: '/category/technologies',
+  society: '/society',
+  politics: '/politics',
+  economy: '/economy',
+  culture: '/culture',
+  health: '/health',
+  sport: '/sport',
+  crime: '/crime',
+  emergency: '/emergency',
+  history: '/history',
+  technologies: '/technologies',
   
   // КАТЕГОРІЇ - Типи контенту
-  news: '/category/news',
-  article: '/category/article',
-  interview: '/category/interview',
+  news: '/news',
+  article: '/article',
+  interview: '/interview',
   
   // СТАТТІ ТА НОВИНИ
   articlePage: '/article',

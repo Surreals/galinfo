@@ -263,7 +263,7 @@ export default function CategoryNews({
         {/* Кнопка "Всі новини з рубрики" */}
         {!hideHeader && (
           <>
-            <ViewAllButton href={`/category/${category.toLowerCase()}`} />
+            <ViewAllButton href={`/${category.toLowerCase()}`} />
             
             {/* Розділювальна лінія */}
             

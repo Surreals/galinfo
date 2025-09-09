@@ -122,7 +122,7 @@ export const CategoryPageClient: React.FC<CategoryPageClientProps> = ({
               data={newsData1}
               showImagesAt={[0, 1]}
               showMoreButton={true}
-              moreButtonUrl="/category/politics"
+              moreButtonUrl="/politics"
               widthPercent={100}
             />
           </div>
@@ -204,7 +204,7 @@ export const CategoryPageClient: React.FC<CategoryPageClientProps> = ({
               data={newsData1}
               showImagesAt={[0, 1]}
               showMoreButton={true}
-              moreButtonUrl="/category/politics"
+              moreButtonUrl="/politics"
               widthPercent={100}
             />
           </div>
@@ -231,7 +231,7 @@ export const CategoryPageClient: React.FC<CategoryPageClientProps> = ({
               data={newsData2}
               showImagesAt={[0, 1]}
               showMoreButton={true}
-              moreButtonUrl="/category/economy"
+              moreButtonUrl="/economy"
               widthPercent={100}
             />
           </div>
@@ -247,7 +247,7 @@ export const CategoryPageClient: React.FC<CategoryPageClientProps> = ({
               data={newsData3}
               showImagesAt={[0, 1]}
               showMoreButton={true}
-              moreButtonUrl="/category/sport"
+              moreButtonUrl="/sport"
               widthPercent={100}
             />
           </div>

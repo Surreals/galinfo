@@ -140,7 +140,7 @@ export const ArticlePageClient: React.FC<ArticlePageClientProps> = ({
                 data={newsData1}
                 showImagesAt={[0, 1]}
                 showMoreButton={true}
-                moreButtonUrl="/category/politics"
+                moreButtonUrl="/politics"
                 widthPercent={100}
               />
             </div>
@@ -225,7 +225,7 @@ export const ArticlePageClient: React.FC<ArticlePageClientProps> = ({
               data={newsData1}
               showImagesAt={[0, 1]}
               showMoreButton={true}
-              moreButtonUrl="/category/politics"
+              moreButtonUrl="/politics"
               widthPercent={100}
             />
           </div>

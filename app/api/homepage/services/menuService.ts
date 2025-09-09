@@ -21,7 +21,7 @@ export async function getMenuData(): Promise<MenuData> {
     // Get main categories (cattype = 1) - equivalent to getRubrics()
     const mainCategories = await executeQuery<MenuItem>(
       `SELECT id, param, title, cattype, 
-              CONCAT('/category/', param, '/') as link
+              CONCAT('/', param, '/') as link
        FROM a_cats 
        WHERE cattype = 1 AND isvis = 1 AND lng = "1" 
        ORDER BY orderid`
@@ -30,7 +30,7 @@ export async function getMenuData(): Promise<MenuData> {
     // Get regions (cattype = 3) - equivalent to getRegions()
     const regions = await executeQuery<MenuItem>(
       `SELECT id, param, title, cattype,
-              CONCAT('/category/', param, '/') as link
+              CONCAT('/', param, '/') as link
        FROM a_cats 
        WHERE cattype = 3 AND isvis = 1 AND lng = "1" 
        ORDER BY orderid`
@@ -39,7 +39,7 @@ export async function getMenuData(): Promise<MenuData> {
     // Get special themes (cattype = 2) - equivalent to special categories
     const specialThemes = await executeQuery<MenuItem>(
       `SELECT id, param, title, cattype,
-              CONCAT('/category/', param, '/') as link
+              CONCAT('/', param, '/') as link
        FROM a_cats 
        WHERE cattype = 2 AND isvis = 1 AND lng = "1" 
        ORDER BY orderid 
