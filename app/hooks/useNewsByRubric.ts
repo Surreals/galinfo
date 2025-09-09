@@ -139,10 +139,21 @@ export function useNewsByRubric(options: UseNewsByRubricOptions): UseNewsByRubri
     }
   }, [fetchNews, autoFetch]);
 
-  // Скидання на першу сторінку при зміні фільтрів
+  // Оновлення внутрішнього стану при зміні пропсів
   useEffect(() => {
-    setPage(1);
-  }, [rubric, type, lang, approved]);
+    setPage(initialPage);
+    setLimit(initialLimit);
+    setType(initialType);
+    setLang(initialLang);
+    setApproved(initialApproved);
+  }, [initialPage, initialLimit, initialType, initialLang, initialApproved]);
+
+  // Скидання на першу сторінку тільки при зміні rubric (але не при зміні page)
+  useEffect(() => {
+    if (page !== initialPage) {
+      setPage(1);
+    }
+  }, [rubric]);
 
   const refetch = useCallback(() => {
     fetchNews();

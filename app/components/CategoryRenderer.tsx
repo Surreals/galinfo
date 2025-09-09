@@ -41,7 +41,7 @@ const CategoryRenderer: React.FC<CategoryRendererProps> = ({ category }) => {
   // Визначаємо, чи це регіональна категорія
   const isRegion = categoryId ? isRegionCategory(categoryId) : false;
   
-  // Використовуємо відповідний хук для поточної категорії
+  // Використовуємо відповідний хук для поточної категорії (тільки для MAIN_NEWS)
   const rubricHook = useNewsByRubric({
     rubric: categoryId?.toString() || '',
     page: 1,
@@ -85,6 +85,8 @@ const CategoryRenderer: React.FC<CategoryRendererProps> = ({ category }) => {
   const renderBlock = (block: any, index: number) => {
     const config = block.config;
     const blockCategoryId = block.categoryId === 'CURRENT_CATEGORY' ? categoryId : block.categoryId;
+    
+    
     
     if (!config?.show) return null;
 

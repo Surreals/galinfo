@@ -133,10 +133,21 @@ export function useNewsByRegion(options: UseNewsByRegionOptions): UseNewsByRegio
     }
   }, [fetchNews, autoFetch]);
 
-  // Скидання на першу сторінку при зміні фільтрів
+  // Оновлення внутрішнього стану при зміні пропсів
   useEffect(() => {
-    setPage(1);
-  }, [region, type, lang, approved]);
+    setPage(initialPage);
+    setLimit(initialLimit);
+    setType(initialType);
+    setLang(initialLang);
+    setApproved(initialApproved);
+  }, [initialPage, initialLimit, initialType, initialLang, initialApproved]);
+
+  // Скидання на першу сторінку тільки при зміні region (але не при зміні page)
+  useEffect(() => {
+    if (page !== initialPage) {
+      setPage(1);
+    }
+  }, [region]);
 
   const refetch = useCallback(() => {
     fetchNews();

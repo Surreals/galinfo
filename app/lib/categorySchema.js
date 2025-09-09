@@ -428,7 +428,7 @@ export const categoryMobileSchema = {
     // Колонка новин - Політика
     {
       type: COLUMN_NEWS,
-      categoryId: CATEGORY_IDS.POLITICS,
+      categoryId: 'CURRENT_CATEGORY',
       config: {
         show: true,
         mobileLayout: "horizontal",
@@ -461,7 +461,7 @@ export const categoryMobileSchema = {
     // Колонка новин - Європа
     {
       type: COLUMN_NEWS,
-      categoryId: CATEGORY_IDS.EVROPA,
+      categoryId: 'CURRENT_CATEGORY',
       config: {
         show: true,
         mobileLayout: "horizontal",
@@ -497,7 +497,7 @@ export const categoryMobileSchema = {
     // NewsList - Політика (тільки для мобільної версії)
     {
       type: NEWS_LIST,
-      categoryId: CATEGORY_IDS.POLITICS,
+      categoryId: 'CURRENT_CATEGORY',
       config: {
         show: true,
         mobileOnly: true,
@@ -535,7 +535,7 @@ export const categoryMobileSchema = {
     // Категорія новин - Здоров'я
     {
       type: CATEGORY_NEWS,
-      categoryId: CATEGORY_IDS.HEALTH,
+      categoryId: 'CURRENT_CATEGORY',
       config: {
         show: true,
         height: 133,
