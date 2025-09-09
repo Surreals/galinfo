@@ -28,12 +28,7 @@ export async function GET(
     
     const offset = (page - 1) * limit;
     const rubric = params.rubric;
-    
-    console.log('=== API News Debug ===');
-    console.log('Request URL:', request.url);
-    console.log('Rubric:', rubric);
-    console.log('Parameters:', { page, limit, type, lang, approved, offset });
-    
+
     // Базовий WHERE для фільтрації
     let whereConditions = [
       'a_news.udate < UNIX_TIMESTAMP()', // Тільки опубліковані
@@ -96,8 +91,7 @@ export async function GET(
       WHERE ${whereClause}
     `;
     
-    console.log('News query:', newsQuery);
-    console.log('Count query:', countQuery);
+
     
     // Виконання запитів
     const [newsData, countData] = await Promise.all([
@@ -105,15 +99,11 @@ export async function GET(
       executeQuery(countQuery, queryParams)
     ]);
     
-    console.log('Raw news data count:', newsData.length);
-    console.log('First news item:', newsData[0]);
-    console.log('Count data:', countData);
+
     
     const total = countData[0]?.total || 0;
     const totalPages = Math.ceil(total / limit);
-    
-    console.log('Total news:', total);
-    console.log('Total pages:', totalPages);
+
     
     // Отримання зображень для новин
     const imageIds = newsData
@@ -132,7 +122,6 @@ export async function GET(
         WHERE id IN (${imageIds.map(() => '?').join(',')})
       `;
       imagesData = await executeQuery(imagesQuery, imageIds);
-      console.log('Images data count:', imagesData.length);
     }
     
     // Формування відповіді
@@ -157,14 +146,7 @@ export async function GET(
       }
     };
     
-    console.log('Final response news count:', response.news.length);
-    console.log('Final response structure:', {
-      newsCount: response.news.length,
-      pagination: response.pagination,
-      filters: response.filters
-    });
-    console.log('=== End API News Debug ===');
-    
+
     return NextResponse.json(response);
     
   } catch (error) {

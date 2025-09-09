@@ -102,9 +102,10 @@ export default function NewsList({
       return {
         id: item.id.toString(),
         title: item.nheader,
+        data: item.ndate,
         time: item.ntime,
         imageUrl: imageUrl,
-        url: `/article/${item.urlkey}`
+        url: `/news/${item.urlkey}_${item.id}`,
       };
     });
   } else {
@@ -149,7 +150,7 @@ export default function NewsList({
                 )}
                 <div className={styles.textBlock}>
                   <p className={styles.itemTitle}>{item.title}</p>
-                  <p className={styles.itemTime}>{item.time}</p>
+                  <p className={styles.itemTime}> {item.date}, {item.time}</p>
                 </div>
               </a>
             ) : (

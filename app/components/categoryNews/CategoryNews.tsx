@@ -110,44 +110,6 @@ export default function CategoryNews({
   const apiLoading = isRegion ? regionHook.loading : rubricHook.loading;
   const apiError = isRegion ? regionHook.error : rubricHook.error;
 
-  // Логування даних з хука
-  useEffect(() => {
-    if (useRealData && categoryId) {
-      console.log('=== CategoryNews Debug ===');
-      console.log('Category ID:', categoryId);
-      console.log('Category Name:', category);
-      console.log('Is Region Category:', isRegion);
-      console.log('Using Hook:', isRegion ? 'useNewsByRegion' : 'useNewsByRubric');
-      console.log('useRealData:', useRealData);
-      console.log('API Loading:', apiLoading);
-      console.log('API Error:', apiError);
-      console.log('API Data:', apiData);
-      console.log('API Params from config:', config?.apiParams);
-      
-      if (apiData?.news) {
-        console.log('News count:', apiData.news.length);
-        console.log('First news item:', apiData.news[0]);
-        console.log('Pagination:', apiData.pagination);
-        console.log('Filters:', apiData.filters);
-        
-        // Детальне логування структури першої новини
-        if (apiData.news.length > 0) {
-          const firstNews = apiData.news[0];
-          console.log('First news detailed structure:', {
-            id: firstNews.id,
-            ndate: firstNews.ndate,
-            ntime: firstNews.ntime,
-            ntype: firstNews.ntype,
-            nheader: firstNews.nheader,
-            urlkey: firstNews.urlkey,
-            rubric: firstNews.rubric,
-            images: firstNews.images
-          });
-        }
-      }
-      console.log('========================');
-    }
-  }, [apiData, apiLoading, apiError, categoryId, category, useRealData, config]);
 
   const shouldShowHorizontal = isMobileResize && mobileLayout === 'horizontal';
 

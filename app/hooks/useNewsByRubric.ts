@@ -88,9 +88,6 @@ export function useNewsByRubric(options: UseNewsByRubricOptions): UseNewsByRubri
     setLoading(true);
     setError(null);
 
-    console.log('=== useNewsByRubric Debug ===');
-    console.log('Fetching news for rubric:', rubric);
-    console.log('Parameters:', { page, limit, type, lang, approved });
 
     try {
       const params = new URLSearchParams({
@@ -109,17 +106,13 @@ export function useNewsByRubric(options: UseNewsByRubricOptions): UseNewsByRubri
 
       const response = await fetch(url);
       
-      console.log('Response status:', response.status);
-      console.log('Response ok:', response.ok);
-      
+
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 
       const result = await response.json();
-      console.log('Response data:', result);
-      console.log('News count in response:', result.news?.length || 0);
-      
+
       setData(result);
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to fetch news';

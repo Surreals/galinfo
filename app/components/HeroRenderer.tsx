@@ -238,6 +238,17 @@ export default function HeroRenderer({
   );
 }
 
+function formatDate(dateString: string): string {
+  const date = new Date(dateString);
+  return date.toLocaleDateString('uk-UA', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit'
+  });
+}
+
 // Компонент для рендерингу NewsList з підтримкою API
 function NewsListRenderer({ block, isMobile }: { block: any, isMobile: boolean }) {
   const config = block.config;
@@ -272,11 +283,18 @@ function NewsListRenderer({ block, isMobile }: { block: any, isMobile: boolean }
   const apiLoading = isRegion ? regionHook.loading : rubricHook.loading;
   const apiError = isRegion ? regionHook.error : rubricHook.error;
 
+  console.log('apiData', apiData)
+
   // Трансформуємо дані для NewsList
   const newsData = apiData?.news?.map(item => ({
     id: item.id.toString(),
     title: item.nheader,
-    time: formatNewsDate(item.ndate, item.udate),
+    date: new Date(item.ndate).toLocaleDateString('uk-UA', {
+      day: '2-digit',
+      month: 'long',
+      year: 'numeric'
+    }),
+    time: item.ntime,
     imageUrl: getUniversalNewsImageIntxt(item) || `https://picsum.photos/seed/${item.id}/300/200`,
     url: generateArticleUrl(item),
   })) || [];
@@ -287,10 +305,12 @@ function NewsListRenderer({ block, isMobile }: { block: any, isMobile: boolean }
     title: `Додаткова новина ${index + 1}`,
     time: dayjs().subtract(index + 1, 'hour').format('HH:mm'),
     imageUrl: `https://picsum.photos/seed/additional-${index + 1}/300/200`,
-    url: `/article/additional-${index + 1}`,
+    url: `/news/additional-${index + 1}`,
   }));
 
   const finalNewsData = [...newsData, ...additionalNews];
+
+  console.log('finalNewsData', finalNewsData)
 
   if (apiLoading) {
     return (

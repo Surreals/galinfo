@@ -53,7 +53,7 @@ export function formatNewsDate(ndate: string, udate: number): string {
 export function generateArticleUrl(newsItem: NewsItem): string {
   // Use the urlkey if available, otherwise generate from date and id
   if (newsItem.urlkey) {
-    return `/article/${newsItem.urlkey}`;
+    return `/news/${newsItem.urlkey}_${newsItem.id}`;
   }
   
   // Generate URL from date and id (similar to PHP app's articleLink function)
@@ -224,7 +224,6 @@ export function getUniversalNewsImage(newsItem: any, size: keyof ApiImageUrls = 
   if (Array.isArray(newsItem.images) && newsItem.images.length > 0 || Array.isArray(newsItem.images_data) && newsItem.images_data.length > 0) {
     const firstImage = newsItem.images_data?.[0] || newsItem.images?.[0];
 
-    console.log('SSSSSSSSSSSS',firstImage )
     if (firstImage && firstImage.urls && firstImage.urls[size]) {
       // Якщо URL відносний, перевіряємо чи потрібно додати підпапки
       const url = firstImage.urls[size];

@@ -295,11 +295,22 @@ function RelatedNewsCard({ news }: { news: any }) {
         <p className={styles.relatedNewsTeaser}>{news.nteaser}</p>
       )}
       <span className={styles.relatedNewsDate}>
-        {formatDate(news.ndate)}
+        {formatDate(news.ndate, news.ntime)}
       </span>
     </article>
   );
 }
+
+const formatDate = (date: string, time: string): string => {
+  const dateObj = new Date(date + ' ' + time);
+  return dateObj.toLocaleDateString('uk-UA', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit'
+  });
+};
 
 // Утилітні функції
 function getNewsTypeLabel(type: number): string {
@@ -316,13 +327,4 @@ function getNewsTypeLabel(type: number): string {
   return typeLabels[type] || 'Новина';
 }
 
-function formatDate(dateString: string): string {
-  const date = new Date(dateString);
-  return date.toLocaleDateString('uk-UA', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit'
-  });
-}
+
