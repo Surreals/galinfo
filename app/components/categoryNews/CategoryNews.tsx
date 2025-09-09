@@ -21,6 +21,7 @@ export interface CategoryNewsItem {
   imageUrl: string;
   imageAlt: string;
   isImportant?: boolean;
+  nweight: number;
 }
 
 export interface CategoryNewsProps {
@@ -172,7 +173,7 @@ export default function CategoryNews({
         url: `/news/${item.urlkey}_${item.id}`,
         imageUrl: imageUrl,
         imageAlt: item.nheader,
-        isImportant: item.ntype === 1 // ntype === 1 означає важливу новину
+        nweight: item.nweight
       };
     });
     displayLoading = apiLoading;
@@ -243,7 +244,7 @@ export default function CategoryNews({
                       height={shouldShowHorizontal ? height : 300}
                       className={styles.newsImage}
                     />
-                    {item.isImportant && (
+                    {item.nweight > 0 && (
                       <div className={styles.importantTag}>
                         ВАЖЛИВО
                       </div>

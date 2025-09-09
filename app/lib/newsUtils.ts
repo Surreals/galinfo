@@ -18,6 +18,7 @@ interface NewsItem {
   steaser: string;
   qty: number;
   image_filenames: string;
+  nweight: number;
 }
 
 // Нова структура зображення з API

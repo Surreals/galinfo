@@ -7,6 +7,7 @@ import arrowRight from "@/assets/icons/arrowRight.svg";
 import adBannerIndfomo from '@/assets/images/Ad Banner white.png';
 import { useState, useEffect } from 'react';
 import { useNewsByRubric } from '@/app/hooks/useNewsByRubric';
+import { getUniversalNewsImageIntxt } from '@/app/lib/newsUtils';
 
 // Інтерфейси для типізації даних
 export interface ColumnNewsItem {
@@ -209,6 +210,7 @@ export default function ColumnNews({
   if (useRealData && apiData?.news) {
     // Використовуємо реальні дані з API
     displayNews = apiData.news.map(item => ({
+      
       id: item.id.toString(),
       title: item.nheader,
       summary: item.nteaser || item.nsubheader || '',
@@ -219,7 +221,7 @@ export default function ColumnNews({
       }),
       time: item.ntime,
       url: `/news/${item.urlkey}_${item.id}`,
-      imageUrl: item.images?.[0]?.url || 'https://picsum.photos/300/200?random=1',
+      imageUrl: getUniversalNewsImageIntxt(item) || 'https://picsum.photos/300/200?random=1',
       imageAlt: item.nheader
     }));
     displayLoading = apiLoading;
