@@ -125,7 +125,7 @@ export default function AdminPage() {
         <div className={styles.quickActions}>
           <h2>Швидкі дії</h2>
           <div className={styles.quickActionsGrid}>
-            <Link href="/admin/test-editor" className={styles.quickAction}>
+            <Link href="/admin/article-editor" className={styles.quickAction}>
               <span className={styles.quickActionIcon}>✏️</span>
               <span>Редактор новин</span>
             </Link>

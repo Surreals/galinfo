@@ -3,8 +3,7 @@
 
 import { useState } from "react";
 import { Tabs, Input } from "antd";
-import NewsEditor from "@/app/admin/test-editor/components/NewsEditor";
-import EditorJSClient from "@/app/admin/test-editor/components/EditorJSClient";
+import EditorJSClient from "@/app/admin/article-editor/components/EditorJSClient";
 
 import styles from "../NewsEditor.module.css";
 

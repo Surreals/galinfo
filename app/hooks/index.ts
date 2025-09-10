@@ -8,6 +8,11 @@ export { useNewsByRubric } from './useNewsByRubric';
 export { useNewsByRegion } from './useNewsByRegion';
 export { useSingleNews } from './useSingleNews';
 export { 
+  useLatestNews,
+  useLatestNewsFirstPage,
+  useLatestNewsWithLimit
+} from './useLatestNews';
+export { 
   useCompleteNewsData, 
   usePhotoNewsData, 
   useVideoNewsData, 
@@ -38,3 +43,10 @@ export type {
   UseNewsByRegionOptions,
   UseNewsByRegionReturn
 } from './useNewsByRegion';
+
+export type {
+  LatestNewsItem,
+  LatestNewsResponse,
+  UseLatestNewsOptions,
+  UseLatestNewsReturn
+} from './useLatestNews';

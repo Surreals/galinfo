@@ -41,7 +41,7 @@ export default function AdminNavigation({ onClose }: AdminNavigationProps) {
     { id: 'news', label: 'Система новин', href: '/admin/test-news' },
     { id: 'db', label: 'База даних', href: '/admin/test-db' },
     { id: 'homepage-api', label: 'API головної сторінки', href: '/admin/test-homepage-api' },
-    { id: 'editor', label: 'Редактор', href: '/admin/test-editor' },
+    { id: 'editor', label: 'Редактор', href: '/admin/article-editor' },
     { id: 'menu', label: 'Меню', href: '/admin/test-menu' },
   ];
 

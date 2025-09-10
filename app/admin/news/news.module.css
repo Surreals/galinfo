@@ -1,42 +1,423 @@
 .newsPage {
   min-height: 100vh;
-  background: #f8f9fa;
+  background-color: #f5f5f5;
 }
 
 .mainContent {
   padding: 2rem;
-  max-width: 1200px;
+  max-width: 1400px;
   margin: 0 auto;
 }
 
 .header {
-  text-align: center;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   margin-bottom: 2rem;
+  background: white;
+  padding: 1.5rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .header h1 {
-  font-size: 2rem;
-  font-weight: 700;
-  color: #2c3e50;
-  margin: 0 0 1rem 0;
-}
-
-.header p {
-  font-size: 1.1rem;
-  color: #6c757d;
+  color: #333;
   margin: 0;
+  font-size: 1.8rem;
 }
 
-.content {
+.headerActions {
+  display: flex;
+  gap: 1rem;
+}
+
+.addButton {
+  background: #007bff;
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 500;
+  transition: background-color 0.2s;
+}
+
+.addButton:hover {
+  background: #0056b3;
+}
+
+/* Фільтри */
+.filters {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  margin-bottom: 1.5rem;
+}
+
+.filterRow {
+  display: flex;
+  gap: 1.5rem;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+}
+
+.filterRow:last-child {
+  margin-bottom: 0;
+}
+
+.filterGroup {
+  display: flex;
+  flex-direction: column;
+  min-width: 150px;
+}
+
+.filterGroup label {
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+  color: #333;
+  font-size: 0.9rem;
+}
+
+.filterGroup select,
+.filterGroup input {
+  padding: 0.5rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 0.9rem;
+}
+
+.filterGroup input[type="text"],
+.filterGroup input[type="date"] {
+  min-width: 200px;
+}
+
+.clearButton {
+  background: #6c757d;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  margin-top: 1.5rem;
+}
+
+.clearButton:hover {
+  background: #545b62;
+}
+
+/* Статистика */
+.stats {
+  background: #e9ecef;
+  padding: 1rem;
+  border-radius: 6px;
+  margin-bottom: 1rem;
+  display: flex;
+  gap: 2rem;
+  font-size: 0.9rem;
+  color: #495057;
+}
+
+/* Список новин */
+.newsList {
   background: white;
   border-radius: 8px;
-  padding: 2rem;
-  text-align: center;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
 }
 
-.content p {
+.newsTable {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.newsTable thead {
+  background: #f8f9fa;
+}
+
+.newsTable th {
+  padding: 1rem;
+  text-align: left;
+  font-weight: 600;
+  color: #495057;
+  border-bottom: 2px solid #dee2e6;
+  font-size: 0.9rem;
+}
+
+.newsTable td {
+  padding: 1rem;
+  border-bottom: 1px solid #dee2e6;
+  vertical-align: top;
+}
+
+.newsRow {
+  transition: background-color 0.2s;
+}
+
+.newsRow:hover {
+  background-color: #f8f9fa;
+}
+
+.newsRow.importantNews {
+  background-color: #fff3cd;
+  border-left: 4px solid #ffc107;
+}
+
+.newsRow.topNews {
+  background-color: #d1ecf1;
+  border-left: 4px solid #17a2b8;
+}
+
+.newsRow.delayedNews {
+  opacity: 0.7;
+}
+
+.newsRow.delayedNews .title {
   color: #6c757d;
-  margin: 0.5rem 0;
+}
+
+/* Клітинки таблиці */
+.dateCell {
+  width: 120px;
+  white-space: nowrap;
+}
+
+.date {
+  font-weight: 600;
+  color: #495057;
+  font-size: 0.9rem;
+}
+
+.time {
+  color: #6c757d;
+  font-size: 0.8rem;
+}
+
+.titleCell {
+  min-width: 300px;
+}
+
+.title {
+  font-weight: 500;
+  color: #333;
+  margin-bottom: 0.5rem;
+  line-height: 1.4;
+}
+
+.newsId {
+  color: #6c757d;
+  font-size: 0.8rem;
+  margin-right: 0.5rem;
+}
+
+.teaser {
+  color: #6c757d;
+  font-size: 0.85rem;
+  line-height: 1.3;
+  max-width: 400px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.imageIcon {
+  margin-left: 0.5rem;
+  font-size: 0.9rem;
+}
+
+.typeCell {
+  width: 120px;
+}
+
+.type {
+  display: inline-block;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  background: #e9ecef;
+  color: #495057;
+}
+
+.type-1 { background: #d4edda; color: #155724; }
+.type-2 { background: #cce5ff; color: #004085; }
+.type-3 { background: #fff3cd; color: #856404; }
+.type-4 { background: #f8d7da; color: #721c24; }
+.type-20 { background: #e2e3e5; color: #383d41; }
+
+.authorCell {
+  width: 150px;
+  font-size: 0.9rem;
+  color: #495057;
+}
+
+.statusCell {
+  width: 120px;
+}
+
+.status {
+  display: inline-block;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+.status.published {
+  background: #d4edda;
+  color: #155724;
+}
+
+.status.unpublished {
+  background: #f8d7da;
+  color: #721c24;
+}
+
+.statsCell {
+  width: 100px;
+}
+
+.stats {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  font-size: 0.8rem;
+  color: #6c757d;
+}
+
+.actionsCell {
+  width: 120px;
+}
+
+.editButton {
+  background: #28a745;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.8rem;
+  transition: background-color 0.2s;
+}
+
+.editButton:hover {
+  background: #218838;
+}
+
+/* Пагінація */
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  padding: 2rem;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  margin-top: 1.5rem;
+}
+
+.paginationButton {
+  background: #007bff;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background-color 0.2s;
+}
+
+.paginationButton:hover:not(:disabled) {
+  background: #0056b3;
+}
+
+.paginationButton:disabled {
+  background: #6c757d;
+  cursor: not-allowed;
+}
+
+.pageNumbers {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.pageButton {
+  background: white;
+  color: #007bff;
+  border: 1px solid #007bff;
+  padding: 0.5rem 0.75rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: all 0.2s;
+}
+
+.pageButton:hover {
+  background: #007bff;
+  color: white;
+}
+
+.pageButton.activePage {
+  background: #007bff;
+  color: white;
+}
+
+/* Стани завантаження та помилок */
+.loading,
+.error,
+.noNews {
+  text-align: center;
+  padding: 3rem;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   font-size: 1.1rem;
+  color: #6c757d;
+}
+
+.error {
+  color: #dc3545;
+}
+
+/* Адаптивність */
+@media (max-width: 768px) {
+  .mainContent {
+    padding: 1rem;
+  }
+  
+  .header {
+    flex-direction: column;
+    gap: 1rem;
+    align-items: stretch;
+  }
+  
+  .filterRow {
+    flex-direction: column;
+    gap: 1rem;
+  }
+  
+  .filterGroup {
+    min-width: auto;
+  }
+  
+  .newsTable {
+    font-size: 0.8rem;
+  }
+  
+  .newsTable th,
+  .newsTable td {
+    padding: 0.5rem;
+  }
+  
+  .titleCell {
+    min-width: 200px;
+  }
+  
+  .pagination {
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
 }
