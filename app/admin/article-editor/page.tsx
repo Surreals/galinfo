@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import dynamic from 'next/dynamic';
 import { Spin, Alert } from 'antd';
@@ -17,7 +17,7 @@ const RichTextEditor = dynamic(() => import('../components/RichTextEditor'), {
   loading: () => <p>Loading editor...</p>,
 });
 
-export default function ArticleEditor() {
+function ArticleEditorContent() {
   const searchParams = useSearchParams();
   const newsId = searchParams.get('id');
   const [isEditing, setIsEditing] = useState(false);
@@ -66,5 +66,17 @@ export default function ArticleEditor() {
       />
       {/*<NewsFullEditor/>*/}
     </div>
+  );
+}
+
+export default function ArticleEditor() {
+  return (
+    <Suspense fallback={
+      <div style={{ padding: '2rem', maxWidth: '1400px', margin: '0 auto', display: 'flex', justifyContent: 'center' }}>
+        <Spin size="large" />
+      </div>
+    }>
+      <ArticleEditorContent />
+    </Suspense>
   );
 }
