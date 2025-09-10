@@ -4,21 +4,28 @@
 import { useState } from "react";
 import { Tabs, Input } from "antd";
 import EditorJSClient from "@/app/admin/article-editor/components/EditorJSClient";
+import { ArticleData } from "@/app/hooks/useArticleData";
 
 import styles from "../NewsEditor.module.css";
 
 const { TextArea } = Input;
 
-export default function NewsEditorHeader() {
+interface NewsEditorHeaderProps {
+  isEditing: boolean;
+  newsId: string | null;
+  articleData?: ArticleData | null;
+}
+
+export default function NewsEditorHeader({ isEditing, newsId, articleData }: NewsEditorHeaderProps) {
   // --- стейти для всіх текстерій ---
-  const [mainTitle, setMainTitle] = useState("");
-  const [mainLead, setMainLead] = useState("");
+  const [mainTitle, setMainTitle] = useState(articleData?.nheader || "");
+  const [mainLead, setMainLead] = useState(articleData?.nteaser || "");
 
-  const [topBlockTitle, setTopBlockTitle] = useState("");
+  const [topBlockTitle, setTopBlockTitle] = useState(articleData?.sheader || "");
 
-  const [metaTitle, setMetaTitle] = useState("");
-  const [metaDescription, setMetaDescription] = useState("");
-  const [metaKeywords, setMetaKeywords] = useState("");
+  const [metaTitle, setMetaTitle] = useState(articleData?.ntitle || "");
+  const [metaDescription, setMetaDescription] = useState(articleData?.ndescription || "");
+  const [metaKeywords, setMetaKeywords] = useState(articleData?.nkeywords || "");
 
   const items = [
     {

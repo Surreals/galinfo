@@ -12,6 +12,7 @@ import {
   Typography,
   Divider,
   message,
+  Spin,
 } from "antd";
 import type { UploadFile } from "antd";
 import {
@@ -21,110 +22,184 @@ import {
 } from "@ant-design/icons";
 import dayjs, { Dayjs } from "dayjs";
 import styles from "../NewsEditor.module.css";
+import { 
+  useArticleEditorData, 
+  getRubrics, 
+  getThemes, 
+  getRegions, 
+  getEditors, 
+  getJournalists, 
+  getBloggers,
+  ARTICLE_TYPE_OPTIONS,
+  PRIORITY_OPTIONS,
+  LAYOUT_OPTIONS,
+  ID_TO_TOP_OPTIONS
+} from "@/app/hooks/useArticleEditorData";
+import { ArticleData } from "@/app/hooks/useArticleData";
 
 const { TextArea } = Input;
 const { Title } = Typography;
 
-const RUBRICS = [
-  "Суспільство",
-  "Політика",
-  "Економіка",
-  "Статті",
-  "Культура",
-  "Інтервʼю",
-  "Здоров'я",
-  "Війна з Росією",
-];
+interface NewsEditorSidebarProps {
+  isEditing: boolean;
+  newsId: string | null;
+  articleData?: ArticleData | null;
+}
 
-const REGIONS = ["Україна", "Львів", "Європа", "Світ", "Волинь"];
+export default function NewsEditorSidebar({ isEditing, newsId, articleData }: NewsEditorSidebarProps) {
+  // Завантажуємо дані через хук
+  const { 
+    articleTypes, 
+    categories, 
+    users, 
+    languages, 
+    tags: availableTags, 
+    loading, 
+    error 
+  } = useArticleEditorData({ lang: 'ua' });
 
-const ARTICLE_TYPES = ["Новина", "Новина1", "Новина2"];
+  // Фільтруємо дані
+  const rubrics = getRubrics(categories);
+  const themes = getThemes(categories);
+  const regions = getRegions(categories);
+  const editors = getEditors(users);
+  const journalists = getJournalists(users);
+  const bloggers = getBloggers(users);
 
-const PRIORITIES = ["Звичайний", "Високий", "Низький"];
-const TEMPLATES = ["По замовчуванню", "Фото ліворуч", "Фото праворуч"];
-
-// утил для Select options
-const toOptions = (arr: string[]) => arr.map((v) => ({ label: v, value: v }));
-
-export default function NewsEditorSidebar() {
   // Фото
   const [fileList, setFileList] = useState<UploadFile[]>([]);
 
   // Тип статті
-  const [articleType, setArticleType] = useState<string>(ARTICLE_TYPES[0]);
+  const [articleType, setArticleType] = useState<number>(
+    articleData?.ntype || ARTICLE_TYPE_OPTIONS[0].value
+  );
 
-  // Рубрика / Регіон (обрати лише один)
-  const [rubric, setRubric] = useState<string | null>(null);
-  const [region, setRegion] = useState<string | null>(null);
+  // Рубрика / Регіон (можна обрати кілька)
+  const [selectedRubrics, setSelectedRubrics] = useState<number[]>(
+    articleData?.rubric || []
+  );
+  const [selectedRegions, setSelectedRegions] = useState<number[]>(
+    articleData?.region || []
+  );
 
   // Тема
-  const [topic, setTopic] = useState<string>("...");
+  const [selectedTheme, setSelectedTheme] = useState<number | null>(
+    articleData?.theme || null
+  );
 
   // Теги
-  const [tags, setTags] = useState<string>("");
+  const [tags, setTags] = useState<string>(
+    articleData?.tags.join(', ') || ""
+  );
 
   // Автори
-  const [editor, setEditor] = useState<string>("—");
-  const [author, setAuthor] = useState<string>("—");
-  const [showAuthorInfo, setShowAuthorInfo] = useState<boolean>(false);
+  const [editor, setEditor] = useState<number | null>(
+    articleData?.nauthor || null
+  );
+  const [author, setAuthor] = useState<number | null>(
+    articleData?.userid || null
+  );
+  const [showAuthorInfo, setShowAuthorInfo] = useState<boolean>(
+    articleData?.showauthor || false
+  );
 
   // Пріоритет / Шаблон
-  const [priority, setPriority] = useState<string>(PRIORITIES[0]);
-  const [template, setTemplate] = useState<string>(TEMPLATES[0]);
+  const [priority, setPriority] = useState<number>(
+    articleData?.nweight || PRIORITY_OPTIONS[0].value
+  );
+  const [template, setTemplate] = useState<number>(
+    articleData?.layout || LAYOUT_OPTIONS[0].value
+  );
 
   // Додаткові параметри
-  const [mainFeed, setMainFeed] = useState(true);
-  const [blockInMain, setBlockInMain] = useState(false);
-  const [noRss, setNoRss] = useState(false);
-  const [banComments, setBanComments] = useState(false);
-  const [mainInRubric, setMainInRubric] = useState(false);
-  const [idToTop, setIdToTop] = useState<string | number>("");
-  const [favBlock, setFavBlock] = useState(false);
-  const [markPhoto, setMarkPhoto] = useState(false);
-  const [markVideo, setMarkVideo] = useState(false);
+  const [mainFeed, setMainFeed] = useState(articleData?.rated || true);
+  const [blockInMain, setBlockInMain] = useState(articleData?.headlineblock || false);
+  const [noRss, setNoRss] = useState(articleData?.hiderss || false);
+  const [banComments, setBanComments] = useState(articleData?.nocomment || false);
+  const [mainInRubric, setMainInRubric] = useState(articleData?.maininblock || false);
+  const [idToTop, setIdToTop] = useState<number>(articleData?.idtotop || 0);
+  const [favBlock, setFavBlock] = useState(articleData?.suggest || false);
+  const [markPhoto, setMarkPhoto] = useState(articleData?.photo || false);
+  const [markVideo, setMarkVideo] = useState(articleData?.video || false);
 
   // Час публікації
-  const [publishAt, setPublishAt] = useState<Dayjs | null>(dayjs());
+  const [publishAt, setPublishAt] = useState<Dayjs | null>(
+    articleData ? dayjs(`${articleData.ndate} ${articleData.ntime}`) : dayjs()
+  );
 
   // Прапори публікації
-  const [publishOnSite, setPublishOnSite] = useState(true);
-  const [publishOnTwitter, setPublishOnTwitter] = useState(true);
+  const [publishOnSite, setPublishOnSite] = useState(articleData?.approved || true);
+  const [publishOnTwitter, setPublishOnTwitter] = useState(articleData?.to_twitter || true);
 
   // handlers
   const onSave = () => {
     const payload = {
-      fileList: fileList.map((f) => f.name),
-      articleType,
-      rubric,
-      region,
-      topic,
-      tags,
-      editor,
-      author,
-      showAuthorInfo,
-      priority,
-      template,
-      mainFeed,
-      blockInMain,
-      noRss,
-      banComments,
-      mainInRubric,
-      idToTop,
-      favBlock,
-      markPhoto,
-      markVideo,
-      publishAt: publishAt?.toISOString(),
-      publishOnSite,
-      publishOnTwitter,
+      // Основні поля
+      ntype: articleType,
+      rubric: selectedRubrics,
+      region: selectedRegions,
+      theme: selectedTheme,
+      tags: tags.split(',').map(tag => tag.trim()).filter(tag => tag),
+      
+      // Автори
+      nauthor: editor,
+      userid: author,
+      showauthor: showAuthorInfo,
+      
+      // Налаштування
+      nweight: priority,
+      layout: template,
+      
+      // Додаткові параметри
+      rated: mainFeed,
+      headlineblock: blockInMain,
+      hiderss: noRss,
+      nocomment: banComments,
+      maininblock: mainInRubric,
+      idtotop: idToTop,
+      suggest: favBlock,
+      photo: markPhoto,
+      video: markVideo,
+      
+      // Час публікації
+      ndate: publishAt?.format('YYYY-MM-DD'),
+      ntime: publishAt?.format('HH:mm:ss'),
+      
+      // Публікація
+      approved: publishOnSite,
+      to_twitter: publishOnTwitter,
+      
+      // Зображення
+      images: fileList.map((f) => f.name).join(','),
     };
-    // тут можна відправити payload на бекенд
-    // console.log(payload);
+    
+    console.log('Article editor payload:', payload);
     message.success("Чернетку збережено (демо).");
   };
 
   const onDelete = () => {
     message.warning("Новину видалено (демо).");
   };
+
+  if (loading) {
+    return (
+      <aside className={styles.sidebar}>
+        <div style={{ display: 'flex', justifyContent: 'center', padding: '2rem' }}>
+          <Spin size="large" />
+        </div>
+      </aside>
+    );
+  }
+
+  if (error) {
+    return (
+      <aside className={styles.sidebar}>
+        <div style={{ padding: '2rem', color: 'red' }}>
+          Помилка завантаження даних: {error}
+        </div>
+      </aside>
+    );
+  }
 
   return (
     <aside className={styles.sidebar}>
@@ -158,7 +233,7 @@ export default function NewsEditorSidebar() {
         <div className={styles.sectionTitle}>Тип статті</div>
         <Select
           size="large"
-          options={toOptions(ARTICLE_TYPES)}
+          options={ARTICLE_TYPE_OPTIONS}
           value={articleType}
           onChange={setArticleType}
           className={styles.fullWidth}
@@ -170,44 +245,46 @@ export default function NewsEditorSidebar() {
         <div className={styles.section}>
           <div className={styles.sectionTitle}>Рубрики</div>
           <div className={styles.scrollBox}>
-            <Radio.Group
-              className={styles.radioCol}
-              value={rubric ?? undefined}
-              onChange={(e) => setRubric(e.target.value)}
-            >
-              {RUBRICS.map((r) => (
-                <Radio key={r} value={r} className={styles.radioItem}>
-                  {r}
-                </Radio>
-              ))}
-            </Radio.Group>
+            <Select
+              mode="multiple"
+              placeholder="Оберіть рубрики"
+              value={selectedRubrics}
+              onChange={setSelectedRubrics}
+              options={rubrics.map(r => ({ label: r.title, value: r.id }))}
+              className={styles.fullWidth}
+              size="middle"
+            />
           </div>
         </div>
 
         <div className={styles.section}>
           <div className={styles.sectionTitle}>Регіон</div>
           <div className={styles.scrollBox}>
-            <Radio.Group
-              className={styles.radioCol}
-              value={region ?? undefined}
-              onChange={(e) => setRegion(e.target.value)}
-            >
-              {REGIONS.map((r) => (
-                <Radio key={r} value={r} className={styles.radioItem}>
-                  {r}
-                </Radio>
-              ))}
-            </Radio.Group>
+            <Select
+              mode="multiple"
+              placeholder="Оберіть регіони"
+              value={selectedRegions}
+              onChange={setSelectedRegions}
+              options={regions.map(r => ({ 
+                label: r.title, 
+                value: r.id,
+                description: r.description 
+              }))}
+              className={styles.fullWidth}
+              size="middle"
+            />
           </div>
 
           <div className={styles.subField}>
             <div className={styles.subLabel}>Тема</div>
             <Select
-              options={toOptions(["...", "Тема 1", "Тема 2"])}
-              value={topic}
-              onChange={setTopic}
+              placeholder="Оберіть тему"
+              value={selectedTheme}
+              onChange={setSelectedTheme}
+              options={themes.map(t => ({ label: t.title, value: t.id }))}
               className={styles.fullWidth}
               size="middle"
+              allowClear
             />
           </div>
         </div>
@@ -232,24 +309,26 @@ export default function NewsEditorSidebar() {
             <div>
               <div className={styles.subLabel}>Редактор:</div>
               <Select
-                options={toOptions([
-                  "Христина Коновал",
-                  "Редактор 2",
-                  "Редактор 3",
-                  "—",
-                ])}
+                placeholder="Оберіть редактора"
                 value={editor}
                 onChange={setEditor}
+                options={editors.map(e => ({ label: e.name, value: e.id }))}
                 className={styles.fullWidth}
+                allowClear
               />
             </div>
             <div>
               <div className={styles.subLabel}>Автор / журналіст:</div>
               <Select
-                options={toOptions(["******* блогери", "Автор 1", "Автор 2", "—"])}
+                placeholder="Оберіть автора"
                 value={author}
                 onChange={setAuthor}
+                options={[
+                  ...journalists.map(j => ({ label: j.name, value: j.id })),
+                  ...bloggers.map(b => ({ label: `******* ${b.name}`, value: b.id }))
+                ]}
                 className={styles.fullWidth}
+                allowClear
               />
             </div>
           </div>
@@ -267,7 +346,7 @@ export default function NewsEditorSidebar() {
             <div>
               <div className={styles.sectionTitle}>Пріоритет статті</div>
               <Select
-                options={toOptions(PRIORITIES)}
+                options={PRIORITY_OPTIONS}
                 value={priority}
                 onChange={setPriority}
                 className={styles.fullWidth}
@@ -276,7 +355,7 @@ export default function NewsEditorSidebar() {
             <div>
               <div className={styles.sectionTitle}>Шаблон</div>
               <Select
-                options={toOptions(TEMPLATES)}
+                options={LAYOUT_OPTIONS}
                 value={template}
                 onChange={setTemplate}
                 className={styles.fullWidth}
@@ -343,6 +422,7 @@ export default function NewsEditorSidebar() {
               style={{ minWidth: 120 }}
               value={idToTop}
               onChange={setIdToTop}
+              options={ID_TO_TOP_OPTIONS}
             />
           </div>
         </div>
