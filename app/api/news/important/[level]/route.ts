@@ -4,13 +4,14 @@ import { formatNewsImages } from '@/app/lib/imageUtils';
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { level: string } }
+  { params }: { params: Promise<{ level: string }> }
 ) {
   try {
     const { searchParams } = new URL(request.url);
     const limit = parseInt(searchParams.get('limit') || '5');
     const lang = searchParams.get('lang') || '1';
-    const level = parseInt(params.level);
+    const { level: levelParam } = await params;
+    const level = parseInt(levelParam);
     
     // Валідація рівня важливості
     if (isNaN(level) || level < 0 || level > 4) {

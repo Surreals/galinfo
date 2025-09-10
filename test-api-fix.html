@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test API Fix</title>
+</head>
+<body>
+    <h1>Test API Endpoints</h1>
+    <div id="results"></div>
+    
+    <script>
+        async function testEndpoints() {
+            const results = document.getElementById('results');
+            
+            // Test 1: Important news by level
+            try {
+                const response1 = await fetch('/api/news/important/2?limit=1');
+                const data1 = await response1.json();
+                results.innerHTML += '<h2>Test 1: Important news by level (2)</h2>';
+                results.innerHTML += '<p>Status: ' + response1.status + '</p>';
+                results.innerHTML += '<p>Data: ' + JSON.stringify(data1, null, 2) + '</p>';
+            } catch (error) {
+                results.innerHTML += '<h2>Test 1: Error</h2>';
+                results.innerHTML += '<p>Error: ' + error.message + '</p>';
+            }
+            
+            // Test 2: Important news by category
+            try {
+                const response2 = await fetch('/api/news/important/by-category/politics?limit=1');
+                const data2 = await response2.json();
+                results.innerHTML += '<h2>Test 2: Important news by category (politics)</h2>';
+                results.innerHTML += '<p>Status: ' + response2.status + '</p>';
+                results.innerHTML += '<p>Data: ' + JSON.stringify(data2, null, 2) + '</p>';
+            } catch (error) {
+                results.innerHTML += '<h2>Test 2: Error</h2>';
+                results.innerHTML += '<p>Error: ' + error.message + '</p>';
+            }
+        }
+        
+        // Run tests when page loads
+        window.onload = testEndpoints;
+    </script>
+</body>
+</html>

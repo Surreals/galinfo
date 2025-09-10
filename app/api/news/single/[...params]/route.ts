@@ -15,14 +15,14 @@ const ARTICLE_TYPES = {
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { params: string[] } }
+  { params }: { params: Promise<{ params: string[] }> }
 ) {
   try {
     const { searchParams } = new URL(request.url);
     const lang = searchParams.get('lang') || '1';
     
     // Парсинг параметрів з URL
-    const urlParts = params.params;
+    const { params: urlParts } = await params;
     if (urlParts.length < 2) {
       return NextResponse.json(
         { error: 'Invalid URL format' },

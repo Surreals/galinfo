@@ -16,7 +16,7 @@ const ARTICLE_TYPES = {
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { rubric: string } }
+  { params }: { params: Promise<{ rubric: string }> }
 ) {
   try {
     const { searchParams } = new URL(request.url);
@@ -27,7 +27,7 @@ export async function GET(
     const approved = searchParams.get('approved') !== 'false';
     
     const offset = (page - 1) * limit;
-    const rubric = params.rubric;
+    const { rubric } = await params;
 
     // Базовий WHERE для фільтрації
     let whereConditions = [

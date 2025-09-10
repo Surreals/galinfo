@@ -2,53 +2,41 @@ import { NextRequest, NextResponse } from 'next/server';
 import { executeQuery } from '@/app/lib/db';
 import { formatNewsImages } from '@/app/lib/imageUtils';
 
-// Типи новин
-const ARTICLE_TYPES = {
-  news: 1,        // Новина
-  articles: 2,    // Стаття
-  photo: 3,       // Фоторепортаж
-  video: 4,       // Відео
-  audio: 5,       // Аудіо
-  announces: 6,   // Анонс
-  blogs: 20,      // Блог
-  mainmedia: 21   // Основні медіа
-};
-
 export async function GET(
   request: NextRequest,
-  { params }: { params: Promise<{ region: string }> }
+  { params }: { params: Promise<{ rubric: string }> }
 ) {
   try {
     const { searchParams } = new URL(request.url);
-    const page = parseInt(searchParams.get('page') || '1');
-    const limit = parseInt(searchParams.get('limit') || '20');
-    const type = searchParams.get('type');
+    const limit = parseInt(searchParams.get('limit') || '1');
     const lang = searchParams.get('lang') || '1';
-    const approved = searchParams.get('approved') !== 'false'; // За замовчуванням тільки схвалені
+    const level = searchParams.get('level'); // Рівень важливості (1, 2, 3, 4)
+    const { rubric } = await params;
     
-    const offset = (page - 1) * limit;
-    const { region } = await params;
-    
-    // Базовий WHERE для фільтрації
+    // Базові умови для важливих новин
     let whereConditions = [
       'a_news.udate < UNIX_TIMESTAMP()', // Тільки опубліковані
       'a_news.approved = 1',             // Тільки схвалені
       'a_news.lang = ?',                 // Мова
-      'a_news.region = ?'                // Регіон
+      'a_news.nweight > 0',              // Важливі новини
+      'FIND_IN_SET(?, a_news.rubric) > 0' // Рубрика
     ];
     
-    const queryParams: any[] = [lang, region];
+    const queryParams: any[] = [lang, rubric];
     
-    // Фільтрація по типу новини
-    if (type && ARTICLE_TYPES[type as keyof typeof ARTICLE_TYPES]) {
-      whereConditions.push('a_news.ntype = ?');
-      queryParams.push(ARTICLE_TYPES[type as keyof typeof ARTICLE_TYPES]);
+    // Фільтрація по рівню важливості
+    if (level) {
+      whereConditions.push('a_news.nweight = ?');
+      queryParams.push(parseInt(level));
     }
     
     const whereClause = whereConditions.join(' AND ');
     
-    // Запит для отримання новин
-    const newsQuery = `
+    console.log('Important news by category WHERE clause:', whereClause);
+    console.log('Query params:', queryParams);
+    
+    // Запит для отримання важливих новин в категорії
+    const importantNewsQuery = `
       SELECT 
         a_news.id,
         a_news.ndate,
@@ -61,41 +49,35 @@ export async function GET(
         a_news.comments,
         a_news.printsubheader,
         a_news.rubric,
-        a_news.region,
         a_news.nweight,
         a_news_headers.nheader,
         a_news_headers.nsubheader,
         a_news_headers.nteaser,
         a_statcomm.qty as comments_count,
-        a_statview.qty as views_count,
-        a_cats.title as region_name,
-        a_cats.description as region_description
+        a_statview.qty as views_count
       FROM a_news
       LEFT JOIN a_news_headers ON a_news.id = a_news_headers.id
       LEFT JOIN a_statcomm ON a_news.id = a_statcomm.id
       LEFT JOIN a_statview ON a_news.id = a_statview.id
-      LEFT JOIN a_cats ON a_news.region = a_cats.id
       WHERE ${whereClause}
       ORDER BY a_news.udate DESC
-      LIMIT ? OFFSET ?
+      LIMIT ?
     `;
     
-    // Запит для підрахунку загальної кількості
+    // Запит для підрахунку загальної кількості важливих новин в категорії
     const countQuery = `
       SELECT COUNT(*) as total
       FROM a_news
-      LEFT JOIN a_cats ON a_news.region = a_cats.id
       WHERE ${whereClause}
     `;
     
     // Виконання запитів
     const [newsData, countData] = await Promise.all([
-      executeQuery(newsQuery, [...queryParams, limit, offset]),
+      executeQuery(importantNewsQuery, [...queryParams, limit]),
       executeQuery(countQuery, queryParams)
     ]);
     
     const total = countData[0]?.total || 0;
-    const totalPages = Math.ceil(total / limit);
     
     // Отримання зображень для новин
     const imageIds = newsData
@@ -116,37 +98,25 @@ export async function GET(
     
     // Формування відповіді
     const response = {
-      news: newsData.map(news => ({
+      importantNews: newsData.map(news => ({
         ...news,
         images: news.images ? formatNewsImages(imagesData, news.images.split(',').map((id: string) => parseInt(id.trim())).filter((id: number) => !isNaN(id)), lang) : []
       })),
-      pagination: {
-        page,
-        limit,
-        total,
-        totalPages,
-        hasNext: page < totalPages,
-        hasPrev: page > 1
-      },
+      total,
       filters: {
-        region,
-        type,
+        rubric,
         lang,
-        approved
-      },
-      regionInfo: newsData.length > 0 ? {
-        id: newsData[0].region,
-        name: newsData[0].region_name,
-        description: newsData[0].region_description
-      } : null
+        level: level ? parseInt(level) : null,
+        limit
+      }
     };
     
     return NextResponse.json(response);
     
   } catch (error) {
-    console.error('Error fetching news by region:', error);
+    console.error('Error fetching important news by category:', error);
     return NextResponse.json(
-      { error: 'Failed to fetch news by region' },
+      { error: 'Failed to fetch important news by category' },
       { status: 500 }
     );
   }

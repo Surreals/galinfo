@@ -13,6 +13,14 @@ export {
   useLatestNewsWithLimit
 } from './useLatestNews';
 export { 
+  useImportantNewsByCategory,
+  useLatestImportantNewsByCategory,
+  useTopImportantNewsByCategory,
+  usePhotoNewsByCategory,
+  useIllustratedNewsByCategory,
+  useAllImportantNewsByCategory
+} from './useImportantNewsByCategory';
+export { 
   useCompleteNewsData, 
   usePhotoNewsData, 
   useVideoNewsData, 
@@ -50,3 +58,10 @@ export type {
   UseLatestNewsOptions,
   UseLatestNewsReturn
 } from './useLatestNews';
+
+export type {
+  ImportantNewsByCategoryItem,
+  ImportantNewsByCategoryResponse,
+  UseImportantNewsByCategoryOptions,
+  UseImportantNewsByCategoryReturn
+} from './useImportantNewsByCategory';
