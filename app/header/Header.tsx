@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import {useState, useEffect, useMemo} from "react";
 import { Input } from 'antd';
 import Link from "next/link";
 
@@ -14,9 +14,11 @@ import dotIcon from "@/assets/icons/dotIcon.svg"
 import burgerMenu from "@/assets/icons/burgerMenu.svg"
 import { useMenuContext } from "@/app/contexts/MenuContext";
 import SearchBox from "@/app/header/components/SearchBox";
+import {useImportantNewsByLevel} from "@/app/hooks/useImportantNews";
+import {RateRow, useCurrencyRates} from "@/app/hooks/UseCurrencyRatesResult";
+import {useWeather} from "@/app/hooks/useWeather";
 
 import styles from "@/app/header/Header.module.scss";
-import {useImportantNewsByLevel} from "@/app/hooks/useImportantNews";
 
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -24,10 +26,12 @@ export default function Header() {
   const [isClosing, setIsClosing] = useState(false);
 
   const { menuData } = useMenuContext();
-
+  const { weather } = useWeather("Lviv");
   const { importantNews } = useImportantNewsByLevel(1)
+  const currencies = useMemo(() => ['USD', 'EUR'], []);
+  const { rates } = useCurrencyRates(currencies);
 
-  console.log(importantNews)
+  console.log('weather',weather)
 
   useEffect(() => {
     if (isMenuOpen) {
@@ -333,7 +337,7 @@ export default function Header() {
               <div className={styles.marqueeContent}>
                 {
                   importantNews && importantNews.map((item, index) => (
-                    <Link key={index} href={''} className={styles.newInfoLink}>
+                    <Link key={index} href={`/news/${item.urlkey}_${item.id}`} className={styles.newInfoLink}>
                       <p className={styles.gradientTextStart}>{item.nheader}</p>
                       <Image src={dotIcon} alt="Dot Logo" width={8} height={8}/>
                     </Link>
@@ -342,7 +346,7 @@ export default function Header() {
 
                 {
                   importantNews && importantNews.map((item, index) => (
-                    <Link key={index} href={''} className={styles.newInfoLink}>
+                    <Link key={index} href={`/news/${item.urlkey}_${item.id}`} className={styles.newInfoLink}>
                       <p className={styles.gradientTextStart}>{item.nheader}</p>
                       <Image src={dotIcon} alt="Dot Logo" width={8} height={8}/>
                     </Link>
@@ -355,20 +359,24 @@ export default function Header() {
       </div>
       <div className={styles.infoSection}>
         <div className={styles.weatherBox}>
-          <div className={styles.sityText}>+13°C</div>
+          <div className={styles.sityText}>{weather?.temp}°C</div>
           <Image src={locationIcon} alt={'location'}/>
           <div className={styles.sityText}>ЛЬВІВ</div>
         </div>
+
         <div className={styles.exchangeBox}>
-          <div className={styles.exchangeItem}>
-            <div className={styles.exchangeType}>USD:</div>
-            <div className={styles.exchangeValue}>39.10</div>
-          </div>
-          <div className={styles.verticalBorder}></div>
-          <div className={styles.exchangeItem}>
-            <div className={styles.exchangeType}>EUR:</div>
-            <div className={styles.exchangeValue}>42.20</div>
-          </div>
+          {rates?.map((rate: RateRow, index) => (
+            <div key={rate.currency} className={styles.exchangeItemWrapper}>
+              <div className={styles.exchangeItem}>
+                <div className={styles.exchangeType}>{rate.currency}</div>
+                <div className={styles.exchangeValue}>{rate.interbank.toFixed(2)}</div>
+              </div>
+              {/* Додаємо вертикальний роздільник після першого елемента */}
+              {index < rates.length - 1 && (
+                <div className={styles.verticalBorder}></div>
+              )}
+            </div>
+          ))}
         </div>
       </div>
       {isMenuOpen && (
@@ -377,7 +385,7 @@ export default function Header() {
 
             <Input
               placeholder=""
-                suffix={<Image
+              suffix={<Image
                 src={searchIcon}
                 alt="Search"
                 width={20}
@@ -388,7 +396,7 @@ export default function Header() {
             />
 
             <h3 className={styles.sectionTitle}>
-              ТОП ТЕМИ
+            ТОП ТЕМИ
             </h3>
             <hr className={styles.divider}/>
             <ul className={styles.topicsList}>

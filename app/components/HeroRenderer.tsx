@@ -1,8 +1,8 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
-import { Carousel } from 'antd';
+import {Carousel, Skeleton} from 'antd';
 import Image from 'next/image';
 import NewsList from '@/app/components/listNews';
 import CurrencyRates from './hero/CurrencyRates';
@@ -11,7 +11,13 @@ import { useHeroNews } from '@/app/hooks/useHeroNews';
 import { useNewsByRubric } from '@/app/hooks/useNewsByRubric';
 import { useNewsByRegion } from '@/app/hooks/useNewsByRegion';
 import { isRegionCategory } from '@/app/lib/categoryUtils';
-import { formatNewsDate, generateArticleUrl, getUniversalNewsImageIntxt, getNewsTitle } from '@/app/lib/newsUtils';
+import {
+  formatNewsDate,
+  generateArticleUrl,
+  getUniversalNewsImageIntxt,
+  getNewsTitle,
+  getUniversalNewsImageFull
+} from '@/app/lib/newsUtils';
 import { heroSchema, heroInfoSchema, heroInfoMobileSchema } from '@/app/lib/heroSchema';
 import dayjs from 'dayjs';
 import 'dayjs/locale/uk';
@@ -100,69 +106,77 @@ export default function HeroRenderer({
 
   const finalCarouselItems = carouselItems.length > 0 ? carouselItems : fallbackCarouselItems;
 
+
   // Рендер компонентів на основі схеми
   const renderBlock = (block: any, index: number) => {
     switch (block.type) {
       case 'Carousel':
         return (
           <div key={index} className={styles.carouselBox}>
-            <Carousel
-              afterChange={onChange}
-              autoplay={block.config?.autoplay}
-              ref={carouselRef}
-            >
-              {finalCarouselItems.map((item, carouselIndex) => (
-                <div key={carouselIndex} className={styles.carouselItem}>
-                  <div 
-                    onClick={() => handleCarouselClick(item.url)}
-                    style={{ cursor: 'pointer' }}
-                  >
-                    <img alt={'img'} src={item.src} className={styles.heroImg}/>
-                  </div>
-                  <div 
-                    className={styles.carouselContent}
-                    onClick={() => handleCarouselClick(item.url)}
-                    style={{ cursor: 'pointer' }}
-                  >
-                    <p className={styles.carouselTime}>
-                      {heroNews?.[carouselIndex] ? formatNewsDate(heroNews[carouselIndex].ndate, heroNews[carouselIndex].udate) : '15 хвилин тому'}
-                    </p>
-                    <h3 className={styles.carouselTitle}>{item.title}</h3>
-                  </div>
-                  {block.config?.showArrows && (
-                    <>
-                      <button
-                        onClick={() => carouselRef.current?.next()}
-                        className={styles.rightArrowButton}
+            {
+              heroLoading  ?
+                <div style={{ width: '100%', height:'533px' }}>
+                  <Skeleton.Input active style={{ width: '100%', height:'533px', marginBottom: 24 }} />
+                </div> :
+                <Carousel
+                  afterChange={onChange}
+                  autoplay={block.config?.autoplay}
+                  ref={carouselRef}
+                >
+                  {finalCarouselItems.map((item, carouselIndex) => (
+                    <div key={carouselIndex} className={styles.carouselItem}>
+                      <div
+                        onClick={() => handleCarouselClick(item.url)}
+                        style={{ cursor: 'pointer' }}
                       >
-                        <Image
-                          src={roundArrowRight}
-                          alt="Right arrow"
-                          width={44}
-                          height={44}
-                        />
-                      </button>
-                      <button
-                        onClick={() => carouselRef.current?.prev()}
-                        className={styles.leftArrowButton}
+                        <img alt={'img'} src={item.src} className={styles.heroImg}/>
+                      </div>
+                      <div
+                        className={styles.carouselContent}
+                        onClick={() => handleCarouselClick(item.url)}
+                        style={{ cursor: 'pointer' }}
                       >
-                        <Image
-                          src={roundArrowLeft}
-                          alt="Left arrow"
-                          width={44}
-                          height={44}
-                        />
-                      </button>
-                    </>
-                  )}
-                </div>
-              ))}
-            </Carousel>
+                        <p className={styles.carouselTime}>
+                          {heroNews?.[carouselIndex] ? formatNewsDate(heroNews[carouselIndex].ndate, heroNews[carouselIndex].udate) : '15 хвилин тому'}
+                        </p>
+                        <h3 className={styles.carouselTitle}>{item.title}</h3>
+                      </div>
+                      {block.config?.showArrows && (
+                        <>
+                          <button
+                            onClick={() => carouselRef.current?.next()}
+                            className={styles.rightArrowButton}
+                          >
+                            <Image
+                              src={roundArrowRight}
+                              alt="Right arrow"
+                              width={44}
+                              height={44}
+                            />
+                          </button>
+                          <button
+                            onClick={() => carouselRef.current?.prev()}
+                            className={styles.leftArrowButton}
+                          >
+                            <Image
+                              src={roundArrowLeft}
+                              alt="Left arrow"
+                              width={44}
+                              height={44}
+                            />
+                          </button>
+                        </>
+                      )}
+                    </div>
+                  ))}
+                </Carousel>
+            }
+
           </div>
         );
 
       case 'CurrencyRates':
-        return block.config?.show ? <CurrencyRates key={index} /> : null;
+        return block.config?.show ? <CurrencyRates loading={heroLoading} key={index} /> : null;
 
       case 'WeatherWidget':
         return block.config?.show ? <WeatherWidget key={index} /> : null;
@@ -202,22 +216,6 @@ export default function HeroRenderer({
     }
   };
 
-  // Show loading state
-  if (heroLoading) {
-    return (
-      <section className={styles.heroSection}>
-        <div className={styles.container}>
-          <div className={styles.heroBox}>
-            <div className={styles.carouselBox}>
-              <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '400px' }}>
-                <p>Завантаження новин...</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-    );
-  }
 
   // Show error state
   if (heroError) {
@@ -295,9 +293,11 @@ function NewsListRenderer({ block, isMobile }: { block: any, isMobile: boolean }
       year: 'numeric'
     }),
     time: item.ntime,
-    imageUrl: getUniversalNewsImageIntxt(item) || `https://picsum.photos/seed/${item.id}/300/200`,
+    imageUrl: getUniversalNewsImageFull(item) || `https://picsum.photos/seed/${item.id}/300/200`,
     url: generateArticleUrl(item),
   })) || [];
+
+  console.log('newsDatanewsData', newsData)
 
   // Генеруємо додаткові новини якщо потрібно
   const additionalNews = Array.from({ length: Math.max(0, (config.apiParams?.limit || 8) - newsData.length) }, (_, index) => ({
@@ -310,7 +310,6 @@ function NewsListRenderer({ block, isMobile }: { block: any, isMobile: boolean }
 
   const finalNewsData = [...newsData, ...additionalNews];
 
-  console.log('finalNewsData', finalNewsData)
 
   if (apiLoading) {
     return (

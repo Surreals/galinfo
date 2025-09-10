@@ -3,6 +3,13 @@
   position: relative;
   font-family: var(--font-rubik), sans-serif;
 
+
+  .exchangeItemWrapper {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+  }
+
   .flexContainer {
     display: flex;
     gap: 60px;

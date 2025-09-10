@@ -1,30 +1,39 @@
-import Image from "next/image";
-import arrowRight from "@/assets/icons/arrowRight.svg";
+import { useMemo } from 'react';
+import { Skeleton } from 'antd';
+import {useCurrencyRates, RateRow} from "@/app/hooks/UseCurrencyRatesResult";
+
 import styles from './CurrencyRates.module.css';
 
-interface ExchangeRate {
-  currency: string;
-  buy: number;
-  sell: number;
-  interbank: number;
-}
+export default function CurrencyRates({ loading }) {
+  // ✅ фіксуємо масив, щоб не створювати новий на кожному рендері
+  const currencies = useMemo(() => ['USD', 'EUR'], []);
+  const { rates, error } = useCurrencyRates(currencies);
 
-export default function CurrencyRates() {
-  // Дані для курсів валют
-  const exchangeRates: ExchangeRate[] = [
-    {
-      currency: 'USD',
-      buy: 41.50,
-      sell: 41.68,
-      interbank: 41.76,
-    },
-    {
-      currency: 'EUR',
-      buy: 49.30,
-      sell: 49.49,
-      interbank: 49.10,
-    },
-  ];
+  if (loading) {
+    return (
+      <div className={styles.currencySection}>
+        <div className={styles.titleBox}>
+          <h4 className={styles.sectionTitle}>КУРСИ ВАЛЮТ</h4>
+        </div>
+        <div className={styles.exchangeTable}>
+          <div className={styles.exchangeTableHeader}>
+            <div></div>
+            <div className={styles.exchangeCurrency}>КУПІВЛЯ</div>
+            <div className={styles.exchangeCurrency}>ПРОДАЖ</div>
+            <div className={styles.exchangeCurrency}>МІЖБАНК</div>
+          </div>
+            <div className={styles.skeletonBox} >
+                <Skeleton.Input active style={{ height: '40px', width: '100%' }} />
+                <Skeleton.Input active style={{ height: '40px', width: '100%' }} />
+            </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) return <div>Помилка: {error}</div>;
+  if (!rates) return null;
+
   return (
     <div className={styles.currencySection}>
       <div className={styles.titleBox}>
@@ -38,7 +47,7 @@ export default function CurrencyRates() {
           <div className={styles.exchangeCurrency}>МІЖБАНК</div>
         </div>
 
-        {exchangeRates.map((rate) => (
+        {rates.map((rate: RateRow) => (
           <div key={rate.currency} className={styles.exchangeTableRow}>
             <div className={styles.exchangeCurrency}>{rate.currency}</div>
             <div className={styles.exchangeValue}>{rate.buy.toFixed(2)}</div>
