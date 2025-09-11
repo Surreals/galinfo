@@ -72,6 +72,9 @@ export interface NewsData {
   // Імена користувачів
   editor_name: string;
   author_name: string;
+  
+  // Назви файлів зображень
+  image_filenames: string;
 }
 
 export async function getNewsById(id: number): Promise<NewsData | null> {
@@ -89,7 +92,8 @@ export async function getNewsById(id: number): Promise<NewsData | null> {
         nm.ndescription,
         nm.nkeywords,
         u.uname_ua as editor_name,
-        fu.name as author_name
+        fu.name as author_name,
+        GROUP_CONCAT(a_pics.filename) as image_filenames
       FROM ${TABLES.NEWS} n
       LEFT JOIN ${TABLES.NEWS_BODY} nb ON n.id = nb.id
       LEFT JOIN ${TABLES.NEWS_HEADERS} nh ON n.id = nh.id
@@ -97,7 +101,9 @@ export async function getNewsById(id: number): Promise<NewsData | null> {
       LEFT JOIN ${TABLES.NEWS_META} nm ON n.id = nm.id
       LEFT JOIN ${TABLES.USERS} u ON n.nauthor = u.id
       LEFT JOIN ${TABLES.FUSERS} fu ON n.userid = fu.id
+      LEFT JOIN a_pics ON FIND_IN_SET(a_pics.id, n.images)
       WHERE n.id = ?
+      GROUP BY n.id
     `;
     
     const results = await executeQuery<NewsData>(query, [id]);

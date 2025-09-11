@@ -22,12 +22,12 @@ export interface ArticleData {
   ntype: number;
   rubric: number[];
   region: number[];
-  theme?: number;
+  theme?: number | null;
   tags: string[];
   
   // Автори
-  nauthor?: number;
-  userid?: number;
+  nauthor?: number | null;
+  userid?: number | null;
   showauthor: boolean;
   
   // Пріоритет та шаблон
@@ -55,6 +55,9 @@ export interface ArticleData {
   
   // Зображення
   images: string;
+  
+  // Назви файлів зображень
+  image_filenames: string;
   
   // Мова
   lang: string;
@@ -97,6 +100,7 @@ const defaultArticleData: ArticleData = {
   approved: false,
   to_twitter: false,
   images: '',
+  image_filenames: '',
   lang: 'ua',
 };
 

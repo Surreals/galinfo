@@ -37,6 +37,7 @@ import {
 } from "@/app/hooks/useArticleEditorData";
 import { ArticleData } from "@/app/hooks/useArticleData";
 import { useArticleSave } from "@/app/hooks/useArticleSave";
+import { getImageUrl, ensureFullImageUrl } from "@/app/lib/imageUtils";
 
 const { TextArea } = Input;
 const { Title } = Typography;
@@ -114,15 +115,15 @@ export default function NewsEditorSidebar({ isEditing, newsId, articleData, onNb
   );
 
   // Додаткові параметри
-  const [mainFeed, setMainFeed] = useState(articleData?.rated || true);
-  const [blockInMain, setBlockInMain] = useState(articleData?.headlineblock || false);
-  const [noRss, setNoRss] = useState(articleData?.hiderss || false);
-  const [banComments, setBanComments] = useState(articleData?.nocomment || false);
-  const [mainInRubric, setMainInRubric] = useState(articleData?.maininblock || false);
+  const [mainFeed, setMainFeed] = useState<boolean>(articleData?.rated || true);
+  const [blockInMain, setBlockInMain] = useState<boolean>(articleData?.headlineblock || false);
+  const [noRss, setNoRss] = useState<boolean>(articleData?.hiderss || false);
+  const [banComments, setBanComments] = useState<boolean>(articleData?.nocomment || false);
+  const [mainInRubric, setMainInRubric] = useState<boolean>(articleData?.maininblock || false);
   const [idToTop, setIdToTop] = useState<number>(articleData?.idtotop || 0);
-  const [favBlock, setFavBlock] = useState(articleData?.suggest || false);
-  const [markPhoto, setMarkPhoto] = useState(articleData?.photo || false);
-  const [markVideo, setMarkVideo] = useState(articleData?.video || false);
+  const [favBlock, setFavBlock] = useState<boolean>(articleData?.suggest || false);
+  const [markPhoto, setMarkPhoto] = useState<boolean>(articleData?.photo || false);
+  const [markVideo, setMarkVideo] = useState<boolean>(articleData?.video || false);
 
   // Час публікації
   const [publishAt, setPublishAt] = useState<Dayjs | null>(
@@ -130,8 +131,8 @@ export default function NewsEditorSidebar({ isEditing, newsId, articleData, onNb
   );
 
   // Прапори публікації
-  const [publishOnSite, setPublishOnSite] = useState(articleData?.approved || true);
-  const [publishOnTwitter, setPublishOnTwitter] = useState(articleData?.to_twitter || true);
+  const [publishOnSite, setPublishOnSite] = useState<boolean>(articleData?.approved || true);
+  const [publishOnTwitter, setPublishOnTwitter] = useState<boolean>(articleData?.to_twitter || true);
 
   // Хук для збереження
   const { saving, saveArticle, deleteArticle } = useArticleSave({ 
@@ -166,12 +167,12 @@ export default function NewsEditorSidebar({ isEditing, newsId, articleData, onNb
       setPublishOnTwitter(articleData.to_twitter);
       
       // Оновлюємо файли зображень
-      if (articleData.images) {
-        const imageFiles = articleData.images.split(',').map((filename, index) => ({
+      if (articleData.image_filenames) {
+        const imageFiles = articleData.image_filenames.split(',').map((filename: string, index: number) => ({
           uid: `image-${index}`,
           name: filename.trim(),
           status: 'done' as const,
-          url: `/media/gallery/tmb/${filename.trim()}`,
+          url: getImageUrl(filename.trim(), 'tmb'),
         }));
         setFileList(imageFiles);
       }
