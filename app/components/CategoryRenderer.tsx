@@ -6,6 +6,7 @@ import { getCategoryIdFromUrl } from '@/app/lib/categoryMapper';
 import { isRegionCategory } from '@/app/lib/categoryUtils';
 import { useNewsByRubric } from '@/app/hooks/useNewsByRubric';
 import { useNewsByRegion } from '@/app/hooks/useNewsByRegion';
+import { useImportantNewsByCategory } from '@/app/hooks/useImportantNewsByCategory';
 import { getCategoryTitle } from '@/assets/utils/getTranslateCategory';
 import { formatNewsDate, generateArticleUrl, getNewsImage } from '@/app/lib/newsUtils';
 import { categoryDesktopSchema, categoryMobileSchema } from '@/app/lib/categorySchema';
@@ -41,6 +42,15 @@ const CategoryRenderer: React.FC<CategoryRendererProps> = ({ category }) => {
   // Визначаємо, чи це регіональна категорія
   const isRegion = categoryId ? isRegionCategory(categoryId) : false;
   
+  // Хук для важливих новин (для головної новини)
+  const importantNewsHook = useImportantNewsByCategory({
+    rubric: categoryId?.toString() || '',
+    limit: 1,
+    lang: '1',
+    level: 1, // Найважливіші новини
+    autoFetch: !!categoryId && !isRegion
+  });
+
   // Використовуємо відповідний хук для поточної категорії (єдиний запит на 36 новин)
   const rubricHook = useNewsByRubric({
     rubric: categoryId?.toString() || '',
@@ -119,9 +129,25 @@ const CategoryRenderer: React.FC<CategoryRendererProps> = ({ category }) => {
         );
 
       case 'MAIN_NEWS':
-        // Отримуємо новину за індексом з єдиного набору
-        const mainNewsIndex = config.newsIndex || 0;
-        const mainNewsItem = transformedCurrentCategoryData[mainNewsIndex];
+        // Використовуємо важливі новини для головної новини
+        let mainNewsItem = null;
+        
+        if (!isRegion && importantNewsHook.data?.importantNews && importantNewsHook.data.importantNews.length > 0) {
+          // Використовуємо важливу новину якщо є
+          const importantNews = importantNewsHook.data.importantNews[0];
+          mainNewsItem = {
+            title: importantNews.nheader,
+            date: formatNewsDate(importantNews.ndate, Date.now() / 1000),
+            time: importantNews.ntime,
+            url: generateArticleUrl(importantNews as any),
+            imageUrl: getNewsImage(importantNews as any) || 'https://picsum.photos/300/200?random=1',
+            imageAlt: importantNews.nheader
+          };
+        } else {
+          // Fallback до звичайних новин
+          const mainNewsIndex = config.newsIndex || 0;
+          mainNewsItem = transformedCurrentCategoryData[mainNewsIndex];
+        }
         
         if (!mainNewsItem) {
           return null; // Якщо немає новин, не показуємо MainNews
