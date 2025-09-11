@@ -4,12 +4,14 @@ export function getCategoryTitle(category: string): string {
       return "Суспільство";
     case "politics":
       return "Політика";
-    case "economy":
+    case "economics":
       return "Економіка";
     case "culture":
       return "Культура";
     case "health":
       return "Здоров'я";
+    case "ato":
+        return "Війна з Росією";
     case "sport":
       return "Спорт";
     case "crime":
@@ -20,6 +22,18 @@ export function getCategoryTitle(category: string): string {
       return "Історія";
     case "technologies":
       return "Технології";
+    case "lviv":
+      return "Львів";
+    case "ternopil":
+      return "Тернопіль";
+    case "volyn":
+      return "Волинь";
+    case "ukraine":
+      return "Україна";
+    case "evropa":
+      return "Європа";
+    case "svit":
+      return "Світ";
     default:
       return "Невідома категорія";
   }
@@ -32,11 +46,13 @@ export function getBreadCrumbsNav(category: string): string {
     case  "політика":
       return "politics";
     case "економіка":
-      return  "economy";
+      return  "economics";
     case "культура":
       return "culture";
     case "здоров'я":
       return "health";
+    case "війна з Росією" :
+      return "ato";
     case "спорт" :
       return "sport";
     case "кримінал" :
@@ -47,6 +63,18 @@ export function getBreadCrumbsNav(category: string): string {
       return "history";
     case "технології" :
       return "technologies";
+    case "Львів" :
+      return "lviv";
+    case "тернопіль" :
+      return "ternopil";
+    case "Волин" :
+      return "volyn";
+    case "Україна" :
+      return "ukraine";
+    case "Європа" :
+      return "evropa";
+    case "Світ" :
+      return "svit";
     default:
       return "Невідома категорія";
   }
