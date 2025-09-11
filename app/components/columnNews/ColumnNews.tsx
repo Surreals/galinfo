@@ -8,6 +8,7 @@ import adBannerIndfomo from '@/assets/images/Ad Banner white.png';
 import { useState, useEffect } from 'react';
 import { useNewsByRubric } from '@/app/hooks/useNewsByRubric';
 import { getUniversalNewsImageIntxt } from '@/app/lib/newsUtils';
+import { getUrlFromCategoryId } from '@/app/lib/categoryMapper';
 
 // Інтерфейси для типізації даних
 export interface ColumnNewsItem {
@@ -250,14 +251,26 @@ export default function ColumnNews({
             {!hideHeader && isMobile && (
             <div className={styles.header}>
               <AccentSquare className={styles.titleAccent}/>
-              <h2 className={styles.title}>{category}</h2>
+              {categoryId && getUrlFromCategoryId(categoryId) ? (
+                <Link href={`/${getUrlFromCategoryId(categoryId)}`} className={styles.titleLink}>
+                  <h2 className={styles.title}>{category}</h2>
+                </Link>
+              ) : (
+                <h2 className={styles.title}>{category}</h2>
+              )}
             </div>
             )}
         <div className={`${styles.newsList} ${shouldShowHorizontal ? styles.newsListHorizontal : ''}`}>
         {!hideHeader && !isMobile && (
             <div className={styles.header}>
               <AccentSquare className={styles.titleAccent}/>
-              <h2 className={styles.title}>{category}</h2>
+              {categoryId && getUrlFromCategoryId(categoryId) ? (
+                <Link href={`/${getUrlFromCategoryId(categoryId)}`} className={styles.titleLink}>
+                  <h2 className={styles.title}>{category}</h2>
+                </Link>
+              ) : (
+                <h2 className={styles.title}>{category}</h2>
+              )}
             </div>
             )}
             {displayLoading ? (
@@ -338,7 +351,7 @@ export default function ColumnNews({
         {/* Кнопка "Всі новини з рубрики" */}
         {!hideHeader && (
           <>
-            <ViewAllButton href={`/${category.toLowerCase()}`} />
+            <ViewAllButton href={categoryId && getUrlFromCategoryId(categoryId) ? `/${getUrlFromCategoryId(categoryId)}` : '/all-news'} />
             
           </>
         )}

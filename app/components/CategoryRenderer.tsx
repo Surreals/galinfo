@@ -276,17 +276,26 @@ const CategoryRenderer: React.FC<CategoryRendererProps> = ({ category }) => {
       const newsRange = config.newsRange;
       const newsData = transformedCurrentCategoryData.slice(newsRange.start - 1, newsRange.end);
       
+      // Обробляємо спеціальні значення для поточної категорії
+      const title = config.title === 'CURRENT_CATEGORY_TITLE' 
+        ? getCategoryTitle(category).toUpperCase() 
+        : config.title;
+      const moreButtonUrl = config.moreButtonUrl === 'CURRENT_CATEGORY_URL'
+        ? `/${category}`
+        : config.moreButtonUrl;
+      
       return (
         <div className={styles.newsColumn}>
           <NewsList
             mobileLayout={config.mobileLayout}
             arrowRightIcon={config.arrowRightIcon}
-            title={config.title}
+            title={title}
             data={newsData}
             showImagesAt={config.showImagesAt}
             showMoreButton={config.showMoreButton}
-            moreButtonUrl={config.moreButtonUrl}
+            moreButtonUrl={moreButtonUrl}
             widthPercent={config.widthPercent}
+            categoryId={categoryId || undefined} // Передаємо реальний categoryId замість 'CURRENT_CATEGORY'
           />
         </div>
       );
@@ -346,6 +355,7 @@ const CategoryRenderer: React.FC<CategoryRendererProps> = ({ category }) => {
           showMoreButton={config.showMoreButton}
           moreButtonUrl={config.moreButtonUrl}
           widthPercent={config.widthPercent}
+          categoryId={blockCategoryId}
         />
       </div>
     );

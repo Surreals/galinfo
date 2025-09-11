@@ -2,12 +2,14 @@
 
 import { useEffect, useState } from "react"
 import Image from "next/image";
+import Link from "next/link";
 
 import {AccentSquare, ViewAllButton} from "@/app/shared";
 import arrowRight from "@/assets/icons/arrowRight.svg";
 import { useNewsByRubric } from '@/app/hooks/useNewsByRubric';
 import { getImageUrlFromApi, getMainImageFromApi, type ApiNewsImage } from '@/app/lib/imageUtils';
 import { getUniversalNewsImageThumbnail } from '@/app/lib/newsUtils';
+import { getUrlFromCategoryId } from '@/app/lib/categoryMapper';
 
 import styles from "./listNews.module.scss";
 
@@ -122,15 +124,23 @@ export default function NewsList({
         <div className={styles.header}>
           <div className={styles.titleContainer}>
             {isMobile ? <AccentSquare className={styles.titleAccent} /> : null}
-            <h2 className={isMobile ? styles.titleMobile : styles.title}>{title}</h2>
+            {categoryId  ? (
+              <Link href={`/${getUrlFromCategoryId(categoryId)}`} className={styles.titleLink}>
+                <h2 className={isMobile ? styles.titleMobile : styles.title}>{title}</h2>
+              </Link>
+            ) : (
+              <h2 className={isMobile ? styles.titleMobile : styles.title}>{title}</h2>
+            )}
           </div>
-          {arrowRightIcon && <span className={styles.titleIcon}>
+          {arrowRightIcon && categoryId && <span className={styles.titleIcon}>
+          <Link href={`/${getUrlFromCategoryId(categoryId)}`} className={styles.titleLink}>
               <Image
               src={arrowRight}
               alt={'Arrow right'}
               width={10}
               height={8}
             />
+             </Link>
           </span>}
         </div>
       )}
@@ -150,7 +160,7 @@ export default function NewsList({
                 )}
                 <div className={styles.textBlock}>
                   <p className={styles.itemTitle}>{item.title}</p>
-                  <p className={styles.itemTime}> {item.date}, {item.time}</p>
+                  <p className={styles.itemTime}>{item.time}</p>
                 </div>
               </a>
             ) : (
@@ -175,7 +185,7 @@ export default function NewsList({
 
       {showMoreButton && (
         <div className={styles.moreBtnWrapper}>
-          <ViewAllButton href="/all-news" />
+          <ViewAllButton href={categoryId && getUrlFromCategoryId(categoryId) ? `/${getUrlFromCategoryId(categoryId)}` : (moreButtonUrl || '/all-news')} />
         </div>
       )}
       {isMobile && showSeparator && (

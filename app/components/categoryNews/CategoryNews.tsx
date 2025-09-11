@@ -10,6 +10,7 @@ import { useNewsByRegion } from '@/app/hooks/useNewsByRegion';
 import { isRegionCategory } from '@/app/lib/categoryUtils';
 import { getImageUrlFromApi, getMainImageFromApi, hasApiImages, type ApiNewsImage } from '@/app/lib/imageUtils';
 import { getUniversalNewsImageIntxt } from '@/app/lib/newsUtils';
+import { getUrlFromCategoryId } from '@/app/lib/categoryMapper';
 
 // Інтерфейси для типізації даних
 export interface CategoryNewsItem {
@@ -135,7 +136,7 @@ export default function CategoryNews({
         url: `/news/${item.urlkey}_${item.id}`,
         imageUrl: imageUrl,
         imageAlt: item.nheader,
-        nweight: item.nweight
+        nweight: (item as any).nweight || 0
       };
     });
     displayLoading = apiLoading;
@@ -169,7 +170,13 @@ export default function CategoryNews({
         {!hideHeader && (
           <div className={styles.header}>
             <AccentSquare className={styles.titleAccent} />
-            <h2 className={styles.title}>{category}</h2>
+            {categoryId && getUrlFromCategoryId(categoryId) ? (
+              <Link href={`/${getUrlFromCategoryId(categoryId)}`} className={styles.titleLink}>
+                <h2 className={styles.title}>{category}</h2>
+              </Link>
+            ) : (
+              <h2 className={styles.title}>{category}</h2>
+            )}
           </div>
         )}
 
@@ -225,7 +232,7 @@ export default function CategoryNews({
         {/* Кнопка "Всі новини з рубрики" */}
         {!hideHeader && (
           <>
-            <ViewAllButton href={`/${category.toLowerCase()}`} />
+            <ViewAllButton href={categoryId && getUrlFromCategoryId(categoryId) ? `/${getUrlFromCategoryId(categoryId)}` : '/all-news'} />
             
             {/* Розділювальна лінія */}
             

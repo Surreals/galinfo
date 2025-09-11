@@ -452,10 +452,10 @@ export const categoryMobileSchema = {
         mobileOnly: true,
         mobileLayout: "horizontal",
         arrowRightIcon: true,
-        title: "ПОЛІТИКА",
+        title: "CURRENT_CATEGORY_TITLE", // Буде замінено на реальну назву категорії
         showImagesAt: [0, 1],
         showMoreButton: true,
-        moreButtonUrl: "/politics",
+        moreButtonUrl: "CURRENT_CATEGORY_URL", // Буде замінено на реальний URL категорії
         widthPercent: 100,
         newsRange: { start: 21, end: 28 } // Діапазон новин з єдиного набору
       }
