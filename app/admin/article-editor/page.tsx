@@ -64,7 +64,7 @@ function ArticleEditorContent() {
         newsId={newsId} 
         articleData={articleData}
       />
-      {/*<NewsFullEditor/>*/}
+      {/* <NewsFullEditor/> */}
     </div>
   );
 }

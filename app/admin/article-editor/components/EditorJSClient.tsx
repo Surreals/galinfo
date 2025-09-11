@@ -1,7 +1,7 @@
 /// <reference path="../types/editorjs.d.ts" />
 "use client";
 
-import { useEffect, useRef, useCallback } from "react";
+import { useEffect, useRef, useCallback, useState } from "react";
 import type EditorJS from "@editorjs/editorjs";
 import type { OutputData } from "@editorjs/editorjs";
 import throttle from "lodash.throttle";
@@ -29,10 +29,13 @@ export default function EditorJSClient({
                                        }: EditorJSClientProps) {
   const holderRef = useRef<HTMLDivElement | null>(null);
   const editorRef = useRef<EditorJS | null>(null);
+  const [isInitialized, setIsInitialized] = useState(false);
+  const [initError, setInitError] = useState<string | null>(null);
 
   const initEditor = useCallback(async () => {
     if (editorRef.current) return;
     if (typeof window === "undefined") return;
+    if (!holderRef.current) return;
 
     const [
       { default: Editor },
@@ -92,14 +95,15 @@ export default function EditorJSClient({
       import("editorjs-mermaid"),
     ]);
 
-    const editor = new Editor({
-      holder: holderRef.current!,
-      readOnly,
-      placeholder,
-      minHeight: 50,
-      inlineToolbar: ['bold', 'italic', 'underline', 'marker', 'inlineCode', 'link', 'textColor', 'textAlignment'],
-      autofocus: true,
-      logLevel: 'ERROR' as any,
+    try {
+      const editor = new Editor({
+        holder: holderRef.current,
+        readOnly,
+        placeholder,
+        minHeight: 50,
+        inlineToolbar: ['bold', 'italic', 'underline', 'marker', 'inlineCode', 'link', 'textColor', 'textAlignment'],
+        autofocus: true,
+        logLevel: 'ERROR' as any,
       i18n: {
         messages: {
           toolNames: {
@@ -283,6 +287,8 @@ export default function EditorJSClient({
       // Additional configuration
       onReady: () => {
         console.log('Editor.js is ready to work!');
+        setIsInitialized(true);
+        setInitError(null);
       },
       data,
       onChange: throttle(async () => {
@@ -293,11 +299,20 @@ export default function EditorJSClient({
     });
 
     editorRef.current = editor;
+    } catch (error) {
+      console.error('Failed to initialize Editor.js:', error);
+      setInitError(error instanceof Error ? error.message : 'Failed to initialize editor');
+    }
   }, [data, onChange, placeholder, readOnly]);
 
   useEffect(() => {
-    initEditor();
+    // Add a small delay to ensure the DOM element is mounted
+    const timer = setTimeout(() => {
+      initEditor();
+    }, 100);
+
     return () => {
+      clearTimeout(timer);
       if (editorRef.current && (editorRef.current as any).destroy) {
         (editorRef.current as any).destroy();
       }
@@ -305,5 +320,40 @@ export default function EditorJSClient({
     };
   }, [initEditor]);
 
-  return <div ref={holderRef} id={id} className={styles.editorJSClient} />;
+  if (initError) {
+    return (
+      <div className={styles.editorJSClient}>
+        <div style={{ padding: '20px', textAlign: 'center', color: '#ff4d4f' }}>
+          <p>Помилка ініціалізації редактора: {initError}</p>
+          <button 
+            onClick={() => {
+              setInitError(null);
+              setIsInitialized(false);
+              initEditor();
+            }}
+            style={{ 
+              padding: '8px 16px', 
+              background: '#1890ff', 
+              color: 'white', 
+              border: 'none', 
+              borderRadius: '4px',
+              cursor: 'pointer'
+            }}
+          >
+            Спробувати знову
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div ref={holderRef} id={id} className={styles.editorJSClient}>
+      {!isInitialized && (
+        <div style={{ padding: '20px', textAlign: 'center', color: '#666' }}>
+          Завантаження редактора...
+        </div>
+      )}
+    </div>
+  );
 }
