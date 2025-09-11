@@ -1,5 +1,7 @@
 import Link from 'next/link';
 import { AccentSquare, ViewAllButton } from '@/app/shared';
+import { useLatestNews } from '@/app/hooks/useLatestNews';
+import { formatNewsDate, generateArticleUrl } from '@/app/lib/newsUtils';
 import styles from './AllNews.module.css';
 
 // Інтерфейси для типізації даних
@@ -20,7 +22,28 @@ export interface AllNewsProps {
 }
 
 export default function AllNews({ news = [], isLoading = false, hideHeader = false, className = "", customTitle }: AllNewsProps) {
-  // Мокові дані для прикладу (будуть замінені на реальні дані)
+  // Використовуємо хук для отримання останніх новин
+  const {
+    data: apiData,
+    loading: apiLoading,
+    error: apiError
+  } = useLatestNews({
+    page: 1,
+    limit: 20, // Така сама кількість як в мокових даних
+    lang: '1',
+    autoFetch: true
+  });
+
+  // Трансформуємо дані з API
+  const transformedNews: NewsItem[] = apiData?.news?.map(item => ({
+    id: item.id.toString(),
+    title: item.nheader,
+    date: formatNewsDate(item.ndate, Date.now() / 1000),
+    time: item.ntime,
+    url: generateArticleUrl(item as any)
+  })) || [];
+
+  // Мокові дані для fallback (будуть замінені на реальні дані)
   const mockNews: NewsItem[] = [
     {
       id: '1',
@@ -165,7 +188,8 @@ export default function AllNews({ news = [], isLoading = false, hideHeader = fal
   ];
 
   // Використовуємо реальні дані або мокові
-  const displayNews = news.length > 0 ? news : mockNews;
+  const displayNews = news.length > 0 ? news : (transformedNews.length > 0 ? transformedNews : mockNews);
+  const displayLoading = isLoading || apiLoading;
 
   return (
     <section className={`${styles.allNewsSection} ${className}`}>
@@ -180,7 +204,7 @@ export default function AllNews({ news = [], isLoading = false, hideHeader = fal
 
         {/* Сітка новин */}
         <div className={styles.newsGrid}>
-          {isLoading ? (
+          {displayLoading ? (
             // Скелетон для завантаження
             Array.from({ length: 20 }).map((_, index) => (
               <div key={index} className={styles.newsItem}>

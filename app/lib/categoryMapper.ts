@@ -16,8 +16,8 @@ export const CATEGORY_URL_MAPPER: Record<string, number> = {
   // Регіональні категорії
   'ukraine': CATEGORY_IDS.UKRAINE,        // 7 - Україна
   'lviv': CATEGORY_IDS.LVIV,              // 99 - Львів
-  'europe': CATEGORY_IDS.EVROPA,          // 110 - Європа
-  'world': CATEGORY_IDS.SVIT,             // 111 - Світ
+  'evropa': CATEGORY_IDS.EVROPA,          // 110 - Європа
+  'svit': CATEGORY_IDS.SVIT,             // 111 - Світ
   'volyn': CATEGORY_IDS.VOLYN,            // 118 - Волинь
 
   // Спеціальні теми
