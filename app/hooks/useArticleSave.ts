@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { message } from 'antd';
+import { notification } from 'antd';
 import { ArticleData } from './useArticleData';
 
 export interface UseArticleSaveOptions {
@@ -38,14 +38,22 @@ export function useArticleSave({ articleData, newsId }: UseArticleSaveOptions = 
       const result = await response.json();
       
       if (result.success) {
-        message.success(newsId ? 'Новину оновлено' : 'Новину створено');
+        notification.success({
+          message: 'Успіх',
+          description: newsId ? 'Новину оновлено' : 'Новину створено',
+          placement: 'topRight',
+        });
         return true;
       } else {
         throw new Error(result.error || 'Unknown error');
       }
     } catch (error) {
       console.error('Error saving article:', error);
-      message.error(error instanceof Error ? error.message : 'Помилка збереження');
+      notification.error({
+        message: 'Помилка',
+        description: error instanceof Error ? error.message : 'Помилка збереження',
+        placement: 'topRight',
+      });
       return false;
     } finally {
       setSaving(false);
@@ -54,7 +62,11 @@ export function useArticleSave({ articleData, newsId }: UseArticleSaveOptions = 
 
   const deleteArticle = async (): Promise<boolean> => {
     if (!newsId) {
-      message.warning('Немає ID новини для видалення');
+      notification.warning({
+        message: 'Попередження',
+        description: 'Немає ID новини для видалення',
+        placement: 'topRight',
+      });
       return false;
     }
 
@@ -72,14 +84,22 @@ export function useArticleSave({ articleData, newsId }: UseArticleSaveOptions = 
       const result = await response.json();
       
       if (result.success) {
-        message.success('Новину видалено');
+        notification.success({
+          message: 'Успіх',
+          description: 'Новину видалено',
+          placement: 'topRight',
+        });
         return true;
       } else {
         throw new Error(result.error || 'Unknown error');
       }
     } catch (error) {
       console.error('Error deleting article:', error);
-      message.error(error instanceof Error ? error.message : 'Помилка видалення');
+      notification.error({
+        message: 'Помилка',
+        description: error instanceof Error ? error.message : 'Помилка видалення',
+        placement: 'topRight',
+      });
       return false;
     } finally {
       setSaving(false);

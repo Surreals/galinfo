@@ -27,7 +27,7 @@ export interface NewsData {
   youcode: string;
   rubric: number[] | string;
   region: number[] | string;
-  theme: string;
+  theme: number;
   nauthor: number;
   userid: number;
   nweight: number;
@@ -176,7 +176,7 @@ export async function createNews(data: Partial<NewsData>): Promise<number> {
       youcode: data.youcode || '',
       rubric: Array.isArray(data.rubric) ? data.rubric.join(',') : '',
       region: Array.isArray(data.region) ? data.region.join(',') : '',
-      theme: data.theme || '',
+      theme: data.theme || 0,
       nauthor: data.nauthor || 0,
       userid: data.userid || 0,
       nweight: data.nweight || 0,
@@ -268,7 +268,6 @@ export async function createNews(data: Partial<NewsData>): Promise<number> {
 
 export async function updateNews(id: number, data: Partial<NewsData>): Promise<boolean> {
   try {
-    
     // Оновлюємо тільки ті поля, які передані
     const updateFields: string[] = [];
     const updateValues: any[] = [];
@@ -309,7 +308,7 @@ export async function updateNews(id: number, data: Partial<NewsData>): Promise<b
     }
     if (data.ntype !== undefined) {
       updateFields.push('ntype = ?');
-      updateValues.push(data.ntype);
+      updateValues.push(data.ntype || 1);
     }
     if (data.lang !== undefined) {
       updateFields.push('lang = ?');
@@ -317,31 +316,31 @@ export async function updateNews(id: number, data: Partial<NewsData>): Promise<b
     }
     if (data.layout !== undefined) {
       updateFields.push('layout = ?');
-      updateValues.push(data.layout);
+      updateValues.push(data.layout || 0);
     }
     if (data.nweight !== undefined) {
       updateFields.push('nweight = ?');
-      updateValues.push(data.nweight);
+      updateValues.push(data.nweight || 0);
     }
     if (data.rubric !== undefined) {
       updateFields.push('rubric = ?');
-      updateValues.push(Array.isArray(data.rubric) ? data.rubric.join(',') : data.rubric);
+      updateValues.push(Array.isArray(data.rubric) ? data.rubric.join(',') : (data.rubric || ''));
     }
     if (data.region !== undefined) {
       updateFields.push('region = ?');
-      updateValues.push(Array.isArray(data.region) ? data.region.join(',') : data.region);
+      updateValues.push(Array.isArray(data.region) ? data.region.join(',') : (data.region || ''));
     }
     if (data.theme !== undefined) {
       updateFields.push('theme = ?');
-      updateValues.push(data.theme);
+      updateValues.push(data.theme || 0);
     }
     if (data.nauthor !== undefined) {
       updateFields.push('nauthor = ?');
-      updateValues.push(data.nauthor);
+      updateValues.push(data.nauthor || 0);
     }
     if (data.userid !== undefined) {
       updateFields.push('userid = ?');
-      updateValues.push(data.userid);
+      updateValues.push(data.userid || 0);
     }
     
     // Завжди оновлюємо udate

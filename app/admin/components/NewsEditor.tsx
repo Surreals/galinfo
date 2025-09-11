@@ -25,7 +25,7 @@ interface NewsData {
   nocomment: number;
   hiderss: number;
   approved: number;
-  lang: number;
+  lang: string;
   rated: number;
   urlkey: string;
   userid: number;
@@ -95,7 +95,7 @@ export default function NewsEditor({ newsId, onSave, onCancel, initialData }: Ne
     nocomment: 0,
     hiderss: 0,
     approved: 0,
-    lang: 1,
+    lang: 'ua',
     rated: 0,
     urlkey: '',
     userid: 0,
@@ -370,10 +370,10 @@ export default function NewsEditor({ newsId, onSave, onCancel, initialData }: Ne
             <select
               className="sidebarSelect"
               value={newsData.lang}
-              onChange={(e) => handleNewsDataChange('lang', parseInt(e.target.value))}
+              onChange={(e) => handleNewsDataChange('lang', e.target.value)}
             >
-              <option value={1}>УКР</option>
-              <option value={2}>ENG</option>
+              <option value="ua">УКР</option>
+              <option value="en">ENG</option>
             </select>
           </div>
 
@@ -430,8 +430,15 @@ export default function NewsEditor({ newsId, onSave, onCancel, initialData }: Ne
           {/* Topic */}
           <div className="sidebarSection">
             <label className="sidebarLabel">Тема</label>
-            <select className="sidebarSelect">
-              <option value="">Виберіть тему</option>
+            <select 
+              className="sidebarSelect"
+              value={newsData.theme}
+              onChange={(e) => handleNewsDataChange('theme', parseInt(e.target.value) || 0)}
+            >
+              <option value="0">Виберіть тему</option>
+              <option value="1">Тема 1</option>
+              <option value="2">Тема 2</option>
+              <option value="3">Тема 3</option>
             </select>
           </div>
 

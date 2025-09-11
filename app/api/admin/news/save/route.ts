@@ -48,7 +48,7 @@ export async function POST(request: NextRequest) {
         WHERE id = ?`,
         [
           newsData.ndate, newsData.ntime, newsData.images, newsData.ntype, newsData.nauthor,
-          newsData.nauthorplus, newsData.showauthor, newsData.rubric, newsData.region, newsData.theme,
+          newsData.nauthorplus, newsData.showauthor, newsData.rubric, newsData.region, newsData.theme || 0,
           newsData.nweight, newsData.nocomment, newsData.hiderss, newsData.approved, newsData.lang,
           newsData.rated, newsData.urlkey, newsData.userid, newsData.layout, newsData.comments,
           newsData.bytheme, newsData.ispopular, newsData.supervideo, newsData.printsubheader,
@@ -94,7 +94,7 @@ export async function POST(request: NextRequest) {
         ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
         [
           newsData.ndate, newsData.ntime, newsData.images, newsData.ntype, newsData.nauthor,
-          newsData.nauthorplus, newsData.showauthor, newsData.rubric, newsData.region, newsData.theme,
+          newsData.nauthorplus, newsData.showauthor, newsData.rubric, newsData.region, newsData.theme || 0,
           newsData.nweight, newsData.nocomment, newsData.hiderss, newsData.approved, newsData.lang,
           newsData.rated, newsData.urlkey, newsData.userid, newsData.layout, newsData.comments,
           newsData.bytheme, newsData.ispopular, newsData.supervideo, newsData.printsubheader,
