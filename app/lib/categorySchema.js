@@ -40,33 +40,28 @@ export const categoryDesktopSchema = {
       }
     },
     
-    // Основна новина (перша новина з поточної категорії)
+    // Основна новина (перша новина з єдиного набору)
     {
       type: MAIN_NEWS,
       config: {
         show: true,
         className: 'mainNewsStandard',
-        showSeparator: true
+        showSeparator: true,
+        newsIndex: 0 // Індекс новини в єдиному наборі
       }
     },
     
-    // Основна категорія новин (без заголовка, використовує categoryId з URL)
+    // Основна категорія новин (новини 1-8 з єдиного набору)
     {
       type: CATEGORY_NEWS,
-      categoryId: 'CURRENT_CATEGORY', // Спеціальне значення для поточної категорії
+      categoryId: 'CURRENT_CATEGORY',
       config: {
         show: true,
         height: 133,
         hideHeader: true,
         className: 'categoryNewsStandard',
         showSeparator: true,
-        apiParams: {
-          page: 1,
-          limit: 8,
-          lang: '1',
-          approved: true,
-          type: null
-        }
+        newsRange: { start: 1, end: 8 } // Діапазон новин з єдиного набору
       }
     },
     
@@ -79,7 +74,7 @@ export const categoryDesktopSchema = {
       }
     },
 
-    // Колонка новин - Політика
+    // Колонка новин (новини 9-13 з єдиного набору)
     {
       type: COLUMN_NEWS,
       categoryId: 'CURRENT_CATEGORY',
@@ -93,13 +88,7 @@ export const categoryDesktopSchema = {
         hideHeader: true,
         className: 'columnNewsStandard',
         showSeparator: true,
-        apiParams: {
-          page: 2,
-          limit: 5,
-          lang: '1',
-          approved: true,
-          type: null
-        }
+        newsRange: { start: 9, end: 13 } // Діапазон новин з єдиного набору
       }
     },
     
@@ -112,7 +101,7 @@ export const categoryDesktopSchema = {
       }
     },
     
-    // Колонка новин - Європа
+    // Колонка новин (новини 14-18 з єдиного набору)
     {
       type: COLUMN_NEWS,
       categoryId: 'CURRENT_CATEGORY',
@@ -125,17 +114,11 @@ export const categoryDesktopSchema = {
         hideHeader: true,
         className: 'columnNewsStandard',
         showSeparator: true,
-        apiParams: {
-          page: 3,
-          limit: 5,
-          lang: '1',
-          approved: true,
-          type: null
-        }
+        newsRange: { start: 14, end: 18 } // Діапазон новин з єдиного набору
       }
     },
     
-    // Рекламний банер (тільки для мобільної версії)
+    // Рекламний банер
     {
         type: AD_BANNER,
         config: {
@@ -143,7 +126,8 @@ export const categoryDesktopSchema = {
           className: 'adBannerStandard'
         }
     },
-    // Категорія новин - Здоров'я
+    
+    // Категорія новин (новини 19-26 з єдиного набору)
     {
       type: CATEGORY_NEWS,
       categoryId: 'CURRENT_CATEGORY',
@@ -153,17 +137,11 @@ export const categoryDesktopSchema = {
         hideHeader: true,
         className: 'categoryNewsStandard',
         showSeparator: true,
-        apiParams: {
-          page: 4,
-          limit: 8,
-          lang: '1',
-          approved: true,
-          type: null
-        }
+        newsRange: { start: 19, end: 26 } // Діапазон новин з єдиного набору
       }
     },
     
-    // Колонка новин - Культура (тільки для десктопу)
+    // Колонка новин - Культура (новини 27-31 з єдиного набору, тільки для десктопу)
     {
       type: COLUMN_NEWS,
       categoryId: 'CURRENT_CATEGORY',
@@ -177,17 +155,11 @@ export const categoryDesktopSchema = {
         hideHeader: true,
         className: 'columnNewsStandard',
         showSeparator: true,
-        apiParams: {
-          page: 5,
-          limit: 5,
-          lang: '1',
-          approved: true,
-          type: null
-        }
+        newsRange: { start: 27, end: 31 } // Діапазон новин з єдиного набору
       }
     },
     
-    // Колонка новин - Кримінал (тільки для десктопу)
+    // Колонка новин - Кримінал (новини 32-36 з єдиного набору, тільки для десктопу)
     {
       type: COLUMN_NEWS,
       categoryId: 'CURRENT_CATEGORY',
@@ -200,13 +172,7 @@ export const categoryDesktopSchema = {
         hideHeader: true,
         className: 'columnNewsStandard',
         showSeparator: true,
-        apiParams: {
-          page: 6,
-          limit: 5,
-          lang: '1',
-          approved: true,
-          type: null
-        }
+        newsRange: { start: 32, end: 36 } // Діапазон новин з єдиного набору
       }
     }
   ],
@@ -386,33 +352,28 @@ export const categoryMobileSchema = {
       }
     },
     
-    // Основна новина (перша новина з поточної категорії)
+    // Основна новина (перша новина з єдиного набору)
     {
       type: MAIN_NEWS,
       config: {
         show: true,
         className: 'mainNewsStandard',
-        showSeparator: true
+        showSeparator: true,
+        newsIndex: 0 // Індекс новини в єдиному наборі
       }
     },
     
-    // Основна категорія новин (без заголовка, використовує categoryId з URL)
+    // Основна категорія новин (новини 1-8 з єдиного набору)
     {
       type: CATEGORY_NEWS,
-      categoryId: 'CURRENT_CATEGORY', // Спеціальне значення для поточної категорії
+      categoryId: 'CURRENT_CATEGORY',
       config: {
         show: true,
         height: 133,
         hideHeader: true,
         className: 'categoryNewsStandard',
         showSeparator: true,
-        apiParams: {
-          page: 1,
-          limit: 8,
-          lang: '1',
-          approved: true,
-          type: null
-        }
+        newsRange: { start: 1, end: 8 } // Діапазон новин з єдиного набору
       }
     },
     
@@ -425,7 +386,7 @@ export const categoryMobileSchema = {
       }
     },
     
-    // Колонка новин - Політика
+    // Колонка новин (новини 9-12 з єдиного набору)
     {
       type: COLUMN_NEWS,
       categoryId: 'CURRENT_CATEGORY',
@@ -439,13 +400,7 @@ export const categoryMobileSchema = {
         hideHeader: true,
         className: 'columnNewsStandard',
         showSeparator: true,
-        apiParams: {
-          page: 1,
-          limit: 4,
-          lang: '1',
-          approved: true,
-          type: null
-        }
+        newsRange: { start: 9, end: 12 } // Діапазон новин з єдиного набору
       }
     },
     
@@ -458,7 +413,7 @@ export const categoryMobileSchema = {
       }
     },
     
-    // Колонка новин - Європа
+    // Колонка новин (новини 13-20 з єдиного набору)
     {
       type: COLUMN_NEWS,
       categoryId: 'CURRENT_CATEGORY',
@@ -471,13 +426,7 @@ export const categoryMobileSchema = {
         hideHeader: true,
         className: 'columnNewsStandard',
         showSeparator: true,
-        apiParams: {
-          page: 1,
-          limit: 8,
-          lang: '1',
-          approved: true,
-          type: null
-        }
+        newsRange: { start: 13, end: 20 } // Діапазон новин з єдиного набору
       }
     },
     
@@ -494,7 +443,7 @@ export const categoryMobileSchema = {
       }
     },
     
-    // NewsList - Політика (тільки для мобільної версії)
+    // NewsList (новини 21-28 з єдиного набору, тільки для мобільної версії)
     {
       type: NEWS_LIST,
       categoryId: 'CURRENT_CATEGORY',
@@ -508,13 +457,7 @@ export const categoryMobileSchema = {
         showMoreButton: true,
         moreButtonUrl: "/politics",
         widthPercent: 100,
-        apiParams: {
-          page: 1,
-          limit: 8,
-          lang: '1',
-          approved: true,
-          type: null
-        }
+        newsRange: { start: 21, end: 28 } // Діапазон новин з єдиного набору
       }
     },
     
@@ -532,7 +475,7 @@ export const categoryMobileSchema = {
       }
     },
     
-    // Категорія новин - Здоров'я
+    // Категорія новин (новини 29-36 з єдиного набору)
     {
       type: CATEGORY_NEWS,
       categoryId: 'CURRENT_CATEGORY',
@@ -542,13 +485,7 @@ export const categoryMobileSchema = {
         hideHeader: true,
         className: 'categoryNewsStandard',
         showSeparator: true,
-        apiParams: {
-          page: 1,
-          limit: 8,
-          lang: '1',
-          approved: true,
-          type: null
-        }
+        newsRange: { start: 29, end: 36 } // Діапазон новин з єдиного набору
       }
     }
   ]

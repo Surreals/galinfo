@@ -41,11 +41,11 @@ const CategoryRenderer: React.FC<CategoryRendererProps> = ({ category }) => {
   // Визначаємо, чи це регіональна категорія
   const isRegion = categoryId ? isRegionCategory(categoryId) : false;
   
-  // Використовуємо відповідний хук для поточної категорії (тільки для MAIN_NEWS)
+  // Використовуємо відповідний хук для поточної категорії (єдиний запит на 36 новин)
   const rubricHook = useNewsByRubric({
     rubric: categoryId?.toString() || '',
     page: 1,
-    limit: 8,
+    limit: 36, // Запитуємо 36 новин одразу
     lang: '1',
     approved: true,
     type: undefined,
@@ -55,7 +55,7 @@ const CategoryRenderer: React.FC<CategoryRendererProps> = ({ category }) => {
   const regionHook = useNewsByRegion({
     region: categoryId?.toString() || '',
     page: 1,
-    limit: 8,
+    limit: 36, // Запитуємо 36 новин одразу
     lang: '1',
     approved: true,
     type: undefined,
@@ -67,7 +67,7 @@ const CategoryRenderer: React.FC<CategoryRendererProps> = ({ category }) => {
   const currentCategoryLoading = isRegion ? regionHook.loading : rubricHook.loading;
   const currentCategoryError = isRegion ? regionHook.error : rubricHook.error;
 
-  // Трансформуємо дані для поточної категорії
+  // Трансформуємо дані для поточної категорії (єдиний набір з 36 новин)
   const transformedCurrentCategoryData = currentCategoryData?.news?.map(item => ({
     id: item.id.toString(),
     title: item.nheader,
@@ -77,8 +77,11 @@ const CategoryRenderer: React.FC<CategoryRendererProps> = ({ category }) => {
       minute: '2-digit' 
     }) : '',
     url: generateArticleUrl(item as any),
-    imageUrl: getNewsImage(item as any) || undefined,
-    isImportant: item.ntype === 1 || (item as any).nweight > 0
+    imageUrl: getNewsImage(item as any) || 'https://picsum.photos/300/200?random=1',
+    imageAlt: item.nheader,
+    isImportant: item.ntype === 1 || (item as any).nweight > 0,
+    nweight: (item as any).nweight || 0,
+    summary: (item as any).nteaser || (item as any).nsubheader || ''
   })) || [];
 
   // Функція для рендерингу блоку
@@ -116,8 +119,9 @@ const CategoryRenderer: React.FC<CategoryRendererProps> = ({ category }) => {
         );
 
       case 'MAIN_NEWS':
-        // Отримуємо першу новину з поточної категорії
-        const mainNewsItem = transformedCurrentCategoryData[0];
+        // Отримуємо новину за індексом з єдиного набору
+        const mainNewsIndex = config.newsIndex || 0;
+        const mainNewsItem = transformedCurrentCategoryData[mainNewsIndex];
         
         if (!mainNewsItem) {
           return null; // Якщо немає новин, не показуємо MainNews
@@ -137,6 +141,12 @@ const CategoryRenderer: React.FC<CategoryRendererProps> = ({ category }) => {
         );
 
       case 'CATEGORY_NEWS':
+        // Отримуємо новини за діапазоном з єдиного набору
+        const categoryNewsRange = config.newsRange;
+        const categoryNewsData = categoryNewsRange 
+          ? transformedCurrentCategoryData.slice(categoryNewsRange.start - 1, categoryNewsRange.end)
+          : transformedCurrentCategoryData.slice(0, 8); // fallback до перших 8 новин
+        
         return (
           <CategoryNews 
             key={index}
@@ -145,18 +155,25 @@ const CategoryRenderer: React.FC<CategoryRendererProps> = ({ category }) => {
             hideHeader={config.hideHeader}
             className={styles[config.className]}
             categoryId={blockCategoryId}
-            useRealData={true}
-            limit={config.apiParams?.limit}
+            useRealData={false} // Вимикаємо API запит, оскільки передаємо готові дані
+            limit={categoryNewsData.length}
             config={config}
+            news={categoryNewsData} // Передаємо готові дані через проп news
           />
         );
 
       case 'COLUMN_NEWS':
+        // Отримуємо новини за діапазоном з єдиного набору
+        const columnNewsRange = config.newsRange;
+        const columnNewsData = columnNewsRange 
+          ? transformedCurrentCategoryData.slice(columnNewsRange.start - 1, columnNewsRange.end)
+          : transformedCurrentCategoryData.slice(0, config.newsQuantity || 5); // fallback
+        
         return (
           <ColumnNews 
             key={index}
             mobileLayout={config.mobileLayout}
-            newsQuantity={config.newsQuantity}
+            newsQuantity={columnNewsData.length}
             smallImg={config.smallImg}
             category={getCategoryTitle(blockCategoryId?.toString() || '').toUpperCase()}
             secondCategory={config.secondCategory}
@@ -164,12 +181,14 @@ const CategoryRenderer: React.FC<CategoryRendererProps> = ({ category }) => {
             hideHeader={config.hideHeader}
             className={styles[config.className]}
             categoryId={blockCategoryId}
-            useRealData={true}
+            useRealData={false} // Вимикаємо API запит, оскільки передаємо готові дані
             config={config}
+            news={columnNewsData} // Передаємо готові дані через проп news
           />
         );
 
       case 'NEWS_LIST':
+        // NewsList залишається без змін, оскільки відноситься до sidebar
         return (
           <NewsListRenderer 
             key={index}
@@ -219,7 +238,7 @@ const CategoryRenderer: React.FC<CategoryRendererProps> = ({ category }) => {
         );
 
       case 'CURRENCY_RATES':
-        return <CurrencyRates key={index} />;
+        return <CurrencyRates key={index} loading={false} />;
 
       case 'WEATHER_WIDGET':
         return <WeatherWidget key={index} />;
@@ -252,7 +271,28 @@ const CategoryRenderer: React.FC<CategoryRendererProps> = ({ category }) => {
     const config = block.config;
     const blockCategoryId = block.categoryId;
     
-    // Визначаємо, чи це регіональна категорія
+    // Якщо це поточна категорія і є newsRange, використовуємо єдиний набір новин
+    if (blockCategoryId === 'CURRENT_CATEGORY' && config.newsRange) {
+      const newsRange = config.newsRange;
+      const newsData = transformedCurrentCategoryData.slice(newsRange.start - 1, newsRange.end);
+      
+      return (
+        <div className={styles.newsColumn}>
+          <NewsList
+            mobileLayout={config.mobileLayout}
+            arrowRightIcon={config.arrowRightIcon}
+            title={config.title}
+            data={newsData}
+            showImagesAt={config.showImagesAt}
+            showMoreButton={config.showMoreButton}
+            moreButtonUrl={config.moreButtonUrl}
+            widthPercent={config.widthPercent}
+          />
+        </div>
+      );
+    }
+    
+    // Для sidebar та інших категорій використовуємо стару логіку з окремими запитами
     const isBlockRegion = blockCategoryId && blockCategoryId !== 'all' ? isRegionCategory(Number(blockCategoryId)) : false;
     
     // Використовуємо відповідний хук залежно від типу категорії
@@ -291,7 +331,7 @@ const CategoryRenderer: React.FC<CategoryRendererProps> = ({ category }) => {
         minute: '2-digit' 
       }),
       url: generateArticleUrl(item as any),
-      imageUrl: getNewsImage(item as any) || undefined,
+      imageUrl: getNewsImage(item as any) || 'https://picsum.photos/300/200?random=1',
       isImportant: item.ntype === 1 || (item as any).nweight > 0
     })) || [];
 
