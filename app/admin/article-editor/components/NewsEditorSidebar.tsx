@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Upload,
   Select,
@@ -36,6 +36,7 @@ import {
   ID_TO_TOP_OPTIONS
 } from "@/app/hooks/useArticleEditorData";
 import { ArticleData } from "@/app/hooks/useArticleData";
+import { useArticleSave } from "@/app/hooks/useArticleSave";
 
 const { TextArea } = Input;
 const { Title } = Typography;
@@ -44,9 +45,10 @@ interface NewsEditorSidebarProps {
   isEditing: boolean;
   newsId: string | null;
   articleData?: ArticleData | null;
+  onNbodyChange?: (nbody: string) => void;
 }
 
-export default function NewsEditorSidebar({ isEditing, newsId, articleData }: NewsEditorSidebarProps) {
+export default function NewsEditorSidebar({ isEditing, newsId, articleData, onNbodyChange }: NewsEditorSidebarProps) {
   // Завантажуємо дані через хук
   const { 
     articleTypes, 
@@ -131,10 +133,91 @@ export default function NewsEditorSidebar({ isEditing, newsId, articleData }: Ne
   const [publishOnSite, setPublishOnSite] = useState(articleData?.approved || true);
   const [publishOnTwitter, setPublishOnTwitter] = useState(articleData?.to_twitter || true);
 
+  // Хук для збереження
+  const { saving, saveArticle, deleteArticle } = useArticleSave({ 
+    articleData, 
+    newsId 
+  });
+
+  // Оновлюємо стан при зміні даних новини
+  useEffect(() => {
+    if (articleData) {
+      setArticleType(articleData.ntype);
+      setSelectedRubrics(articleData.rubric);
+      setSelectedRegions(articleData.region);
+      setSelectedTheme(articleData.theme || null);
+      setTags(articleData.tags.join(', '));
+      setEditor(articleData.nauthor || null);
+      setAuthor(articleData.userid || null);
+      setShowAuthorInfo(articleData.showauthor);
+      setPriority(articleData.nweight);
+      setTemplate(articleData.layout);
+      setMainFeed(articleData.rated);
+      setBlockInMain(articleData.headlineblock);
+      setNoRss(articleData.hiderss);
+      setBanComments(articleData.nocomment);
+      setMainInRubric(articleData.maininblock);
+      setIdToTop(articleData.idtotop || 0);
+      setFavBlock(articleData.suggest);
+      setMarkPhoto(articleData.photo);
+      setMarkVideo(articleData.video);
+      setPublishAt(dayjs(`${articleData.ndate} ${articleData.ntime}`));
+      setPublishOnSite(articleData.approved);
+      setPublishOnTwitter(articleData.to_twitter);
+      
+      // Оновлюємо файли зображень
+      if (articleData.images) {
+        const imageFiles = articleData.images.split(',').map((filename, index) => ({
+          uid: `image-${index}`,
+          name: filename.trim(),
+          status: 'done' as const,
+          url: `/media/gallery/tmb/${filename.trim()}`,
+        }));
+        setFileList(imageFiles);
+      }
+    } else {
+      // Скидаємо до значень за замовчуванням при створенні нової новини
+      setArticleType(ARTICLE_TYPE_OPTIONS[0].value);
+      setSelectedRubrics([]);
+      setSelectedRegions([]);
+      setSelectedTheme(null);
+      setTags("");
+      setEditor(null);
+      setAuthor(null);
+      setShowAuthorInfo(false);
+      setPriority(PRIORITY_OPTIONS[0].value);
+      setTemplate(LAYOUT_OPTIONS[0].value);
+      setMainFeed(true);
+      setBlockInMain(false);
+      setNoRss(false);
+      setBanComments(false);
+      setMainInRubric(false);
+      setIdToTop(0);
+      setFavBlock(false);
+      setMarkPhoto(false);
+      setMarkVideo(false);
+      setPublishAt(dayjs());
+      setPublishOnSite(false);
+      setPublishOnTwitter(false);
+      setFileList([]);
+    }
+  }, [articleData]);
+
   // handlers
-  const onSave = () => {
+  const onSave = async () => {
     const payload = {
       // Основні поля
+      nheader: articleData?.nheader || '',
+      nsubheader: articleData?.nsubheader || '',
+      nteaser: articleData?.nteaser || '',
+      nbody: articleData?.nbody || '',
+      ntitle: articleData?.ntitle || '',
+      ndescription: articleData?.ndescription || '',
+      nkeywords: articleData?.nkeywords || '',
+      sheader: articleData?.sheader || '',
+      steaser: articleData?.steaser || '',
+      
+      // Тип та категорії
       ntype: articleType,
       rubric: selectedRubrics,
       region: selectedRegions,
@@ -171,14 +254,17 @@ export default function NewsEditorSidebar({ isEditing, newsId, articleData }: Ne
       
       // Зображення
       images: fileList.map((f) => f.name).join(','),
+      
+      // Мова
+      lang: articleData?.lang || 'ua',
     };
     
     console.log('Article editor payload:', payload);
-    message.success("Чернетку збережено (демо).");
+    await saveArticle(payload);
   };
 
-  const onDelete = () => {
-    message.warning("Новину видалено (демо).");
+  const onDelete = async () => {
+    await deleteArticle();
   };
 
   if (loading) {
@@ -480,20 +566,26 @@ export default function NewsEditorSidebar({ isEditing, newsId, articleData }: Ne
           size="large"
           icon={<SaveOutlined />}
           onClick={onSave}
+          loading={saving}
+          disabled={saving}
           className={styles.greenBtn}
         >
           ЗБЕРЕГТИ
         </Button>
 
-        <Button
-          danger
-          size="large"
-          icon={<DeleteOutlined />}
-          onClick={onDelete}
-          className={styles.blueBtn}
-        >
-          ВИДАЛИТИ
-        </Button>
+        {newsId && (
+          <Button
+            danger
+            size="large"
+            icon={<DeleteOutlined />}
+            onClick={onDelete}
+            loading={saving}
+            disabled={saving}
+            className={styles.blueBtn}
+          >
+            ВИДАЛИТИ
+          </Button>
+        )}
       </div>
     </aside>
   );

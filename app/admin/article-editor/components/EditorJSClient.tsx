@@ -10,8 +10,12 @@ import styles from "../NewsEditor.module.css";
 export type EditorJSClientProps = {
   /** Initial content */
   data?: OutputData;
+  /** HTML content to convert to EditorJS format */
+  htmlContent?: string;
   /** Fired on every (throttled) content change */
   onChange?: (data: OutputData) => void;
+  /** Fired when HTML content changes (for nbody field) */
+  onHtmlChange?: (html: string) => void;
   /** Readonly mode */
   readOnly?: boolean;
   /** Placeholder shown in empty paragraph */
@@ -22,7 +26,9 @@ export type EditorJSClientProps = {
 
 export default function EditorJSClient({
                                          data,
+                                         htmlContent,
                                          onChange,
+                                         onHtmlChange,
                                          readOnly,
                                          placeholder = "Введіть текст…",
                                          id = "editorjs-holder",
@@ -31,6 +37,181 @@ export default function EditorJSClient({
   const editorRef = useRef<EditorJS | null>(null);
   const [isInitialized, setIsInitialized] = useState(false);
   const [initError, setInitError] = useState<string | null>(null);
+
+  // Helper function to convert HTML to EditorJS format
+  const htmlToEditorJS = (html: string): OutputData => {
+    if (!html || html.trim() === '') {
+      return {
+        time: Date.now(),
+        blocks: [
+          {
+            type: 'paragraph',
+            data: {
+              text: ''
+            }
+          }
+        ]
+      };
+    }
+
+    // Try to parse HTML and convert to EditorJS blocks
+    try {
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(html, 'text/html');
+      const blocks: any[] = [];
+
+      // Process each element
+      const processElement = (element: Element) => {
+        const tagName = element.tagName.toLowerCase();
+        
+        switch (tagName) {
+          case 'h1':
+          case 'h2':
+          case 'h3':
+          case 'h4':
+          case 'h5':
+          case 'h6':
+            blocks.push({
+              type: 'header',
+              data: {
+                text: element.textContent || '',
+                level: parseInt(tagName.charAt(1))
+              }
+            });
+            break;
+          case 'p':
+            if (element.textContent?.trim()) {
+              blocks.push({
+                type: 'paragraph',
+                data: {
+                  text: element.textContent
+                }
+              });
+            }
+            break;
+          case 'ul':
+          case 'ol':
+            const items = Array.from(element.querySelectorAll('li')).map(li => li.textContent || '');
+            blocks.push({
+              type: 'list',
+              data: {
+                style: tagName === 'ol' ? 'ordered' : 'unordered',
+                items: items
+              }
+            });
+            break;
+          case 'blockquote':
+            blocks.push({
+              type: 'quote',
+              data: {
+                text: element.textContent || '',
+                caption: ''
+              }
+            });
+            break;
+          default:
+            // For other elements, wrap in raw HTML
+            blocks.push({
+              type: 'raw',
+              data: {
+                html: element.outerHTML
+              }
+            });
+        }
+      };
+
+      // Process all direct children
+      Array.from(doc.body.children).forEach(processElement);
+
+      // If no blocks were created, create a paragraph with the HTML
+      if (blocks.length === 0) {
+        blocks.push({
+          type: 'raw',
+          data: {
+            html: html
+          }
+        });
+      }
+
+      return {
+        time: Date.now(),
+        blocks: blocks
+      };
+    } catch (error) {
+      console.warn('Failed to parse HTML, using raw block:', error);
+      // Fallback: wrap HTML in a raw block
+      return {
+        time: Date.now(),
+        blocks: [
+          {
+            type: 'raw',
+            data: {
+              html: html
+            }
+          }
+        ]
+      };
+    }
+  };
+
+  // Helper function to convert EditorJS data to HTML
+  const editorJSToHtml = (data: OutputData): string => {
+    if (!data || !data.blocks || data.blocks.length === 0) {
+      return '';
+    }
+
+    // If we have a raw block with HTML, return that
+    const rawBlock = data.blocks.find(block => block.type === 'raw');
+    if (rawBlock && rawBlock.data?.html) {
+      return rawBlock.data.html;
+    }
+
+    // Otherwise, convert blocks to HTML
+    return data.blocks.map(block => {
+      switch (block.type) {
+        case 'paragraph':
+          return `<p>${block.data?.text || ''}</p>`;
+        case 'header':
+          const level = block.data?.level || 2;
+          return `<h${level}>${block.data?.text || ''}</h${level}>`;
+        case 'list':
+          const listType = block.data?.style === 'ordered' ? 'ol' : 'ul';
+          const items = block.data?.items?.map((item: any) => `<li>${item}</li>`).join('') || '';
+          return `<${listType}>${items}</${listType}>`;
+        case 'quote':
+          return `<blockquote>${block.data?.text || ''}</blockquote>`;
+        case 'code':
+          return `<pre><code>${block.data?.code || ''}</code></pre>`;
+        case 'checklist':
+          const checklistItems = block.data?.items?.map((item: any) => 
+            `<li><input type="checkbox" ${item.checked ? 'checked' : ''} disabled> ${item.text}</li>`
+          ).join('') || '';
+          return `<ul class="checklist">${checklistItems}</ul>`;
+        case 'table':
+          const tableData = block.data?.content || [];
+          const tableRows = tableData.map((row: any[]) => 
+            `<tr>${row.map(cell => `<td>${cell}</td>`).join('')}</tr>`
+          ).join('');
+          return `<table><tbody>${tableRows}</tbody></table>`;
+        case 'image':
+          return `<img src="${block.data?.file?.url || block.data?.url || ''}" alt="${block.data?.caption || ''}" />`;
+        case 'embed':
+          return `<div class="embed">${block.data?.html || ''}</div>`;
+        case 'delimiter':
+          return '<hr>';
+        case 'warning':
+          return `<div class="warning"><strong>${block.data?.title || 'Warning'}:</strong> ${block.data?.message || ''}</div>`;
+        case 'alert':
+          return `<div class="alert alert-${block.data?.type || 'info'}">${block.data?.message || ''}</div>`;
+        default:
+          // For unknown block types, try to render as HTML or fallback to text
+          if (block.data?.html) {
+            return block.data.html;
+          }
+          return `<p>${JSON.stringify(block.data)}</p>`;
+      }
+    }).join('');
+  };
 
   const initEditor = useCallback(async () => {
     if (editorRef.current) return;
@@ -290,11 +471,17 @@ export default function EditorJSClient({
         setIsInitialized(true);
         setInitError(null);
       },
-      data,
+      data: data || (htmlContent ? htmlToEditorJS(htmlContent) : undefined),
       onChange: throttle(async () => {
         if (!editorRef.current) return;
         const saved = await editorRef.current.save();
         onChange?.(saved);
+        
+        // Also call onHtmlChange if provided
+        if (onHtmlChange) {
+          const html = editorJSToHtml(saved);
+          onHtmlChange(html);
+        }
       }, 500),
     });
 
@@ -303,7 +490,7 @@ export default function EditorJSClient({
       console.error('Failed to initialize Editor.js:', error);
       setInitError(error instanceof Error ? error.message : 'Failed to initialize editor');
     }
-  }, [data, onChange, placeholder, readOnly]);
+  }, [data, htmlContent, onChange, onHtmlChange, placeholder, readOnly]);
 
   useEffect(() => {
     // Add a small delay to ensure the DOM element is mounted

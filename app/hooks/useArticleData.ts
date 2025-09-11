@@ -108,6 +108,7 @@ export function useArticleData(options: UseArticleDataOptions = {}): UseArticleD
   const fetchArticle = async () => {
     if (!options.id) {
       setData(defaultArticleData);
+      setLoading(false);
       return;
     }
 

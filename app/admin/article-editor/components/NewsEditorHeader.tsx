@@ -1,7 +1,7 @@
 // components/NewsEditor.tsx
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Tabs, Input } from "antd";
 import EditorJSClient from "@/app/admin/article-editor/components/EditorJSClient";
 import { ArticleData } from "@/app/hooks/useArticleData";
@@ -14,9 +14,10 @@ interface NewsEditorHeaderProps {
   isEditing: boolean;
   newsId: string | null;
   articleData?: ArticleData | null;
+  onNbodyChange?: (nbody: string) => void;
 }
 
-export default function NewsEditorHeader({ isEditing, newsId, articleData }: NewsEditorHeaderProps) {
+export default function NewsEditorHeader({ isEditing, newsId, articleData, onNbodyChange }: NewsEditorHeaderProps) {
   // --- стейти для всіх текстерій ---
   const [mainTitle, setMainTitle] = useState(articleData?.nheader || "");
   const [mainLead, setMainLead] = useState(articleData?.nteaser || "");
@@ -26,6 +27,26 @@ export default function NewsEditorHeader({ isEditing, newsId, articleData }: New
   const [metaTitle, setMetaTitle] = useState(articleData?.ntitle || "");
   const [metaDescription, setMetaDescription] = useState(articleData?.ndescription || "");
   const [metaKeywords, setMetaKeywords] = useState(articleData?.nkeywords || "");
+
+  // Оновлюємо поля при зміні даних новини
+  useEffect(() => {
+    if (articleData) {
+      setMainTitle(articleData.nheader);
+      setMainLead(articleData.nteaser);
+      setTopBlockTitle(articleData.sheader || "");
+      setMetaTitle(articleData.ntitle || "");
+      setMetaDescription(articleData.ndescription || "");
+      setMetaKeywords(articleData.nkeywords || "");
+    } else {
+      // Скидаємо до значень за замовчуванням при створенні нової новини
+      setMainTitle("");
+      setMainLead("");
+      setTopBlockTitle("");
+      setMetaTitle("");
+      setMetaDescription("");
+      setMetaKeywords("");
+    }
+  }, [articleData]);
 
   const items = [
     {
@@ -119,7 +140,11 @@ export default function NewsEditorHeader({ isEditing, newsId, articleData }: New
       />
 
       <h2 className={styles.header}>Повний текст новини</h2>
-      <EditorJSClient/>
+      <EditorJSClient
+        htmlContent={articleData?.nbody}
+        onHtmlChange={onNbodyChange}
+        placeholder="Введіть повний текст новини..."
+      />
     </div>
   );
 }

@@ -1,0 +1,94 @@
+import { useState } from 'react';
+import { message } from 'antd';
+import { ArticleData } from './useArticleData';
+
+export interface UseArticleSaveOptions {
+  articleData?: ArticleData | null;
+  newsId?: string | null;
+}
+
+export interface UseArticleSaveReturn {
+  saving: boolean;
+  saveArticle: (data: Partial<ArticleData>) => Promise<boolean>;
+  deleteArticle: () => Promise<boolean>;
+}
+
+export function useArticleSave({ articleData, newsId }: UseArticleSaveOptions = {}): UseArticleSaveReturn {
+  const [saving, setSaving] = useState(false);
+
+  const saveArticle = async (data: Partial<ArticleData>): Promise<boolean> => {
+    try {
+      setSaving(true);
+
+      const url = newsId ? `/api/admin/articles/${newsId}` : '/api/admin/articles';
+      const method = newsId ? 'PUT' : 'POST';
+
+      const response = await fetch(url, {
+        method,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to save article');
+      }
+
+      const result = await response.json();
+      
+      if (result.success) {
+        message.success(newsId ? 'Новину оновлено' : 'Новину створено');
+        return true;
+      } else {
+        throw new Error(result.error || 'Unknown error');
+      }
+    } catch (error) {
+      console.error('Error saving article:', error);
+      message.error(error instanceof Error ? error.message : 'Помилка збереження');
+      return false;
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const deleteArticle = async (): Promise<boolean> => {
+    if (!newsId) {
+      message.warning('Немає ID новини для видалення');
+      return false;
+    }
+
+    try {
+      setSaving(true);
+
+      const response = await fetch(`/api/admin/articles/${newsId}`, {
+        method: 'DELETE',
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to delete article');
+      }
+
+      const result = await response.json();
+      
+      if (result.success) {
+        message.success('Новину видалено');
+        return true;
+      } else {
+        throw new Error(result.error || 'Unknown error');
+      }
+    } catch (error) {
+      console.error('Error deleting article:', error);
+      message.error(error instanceof Error ? error.message : 'Помилка видалення');
+      return false;
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  return {
+    saving,
+    saveArticle,
+    deleteArticle,
+  };
+}
