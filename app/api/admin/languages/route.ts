@@ -1,18 +1,25 @@
 import { NextResponse } from 'next/server';
+import { executeQuery } from '@/app/lib/db';
 
-// Мокові дані мов (в реальному проекті це буде з БД)
-const LANGUAGES = [
-  { id: 'ua', title: 'Українська', code: 'uk' },
-  { id: 'en', title: 'English', code: 'en' },
-  { id: 'ru', title: 'Русский', code: 'ru' },
-  { id: 'pl', title: 'Polski', code: 'pl' },
-];
+export interface Language {
+  id: string;
+  title: string;
+  code: string;
+}
 
 export async function GET() {
   try {
+    // Завантажуємо мови з бази даних
+    const languages = await executeQuery<Language>(`
+      SELECT id, langtitle as title, lang as code
+      FROM a_lang 
+      WHERE isactive = 1
+      ORDER BY langtitle
+    `);
+
     return NextResponse.json({
       success: true,
-      data: LANGUAGES,
+      data: languages,
     });
   } catch (error) {
     console.error('Error fetching languages:', error);

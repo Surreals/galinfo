@@ -25,8 +25,8 @@ export interface NewsData {
   layout: number;
   udate: number;
   youcode: string;
-  rubric: string;
-  region: string;
+  rubric: number[] | string;
+  region: number[] | string;
   theme: string;
   nauthor: number;
   userid: number;
@@ -139,15 +139,15 @@ export async function getNewsById(id: number): Promise<NewsData | null> {
     });
     
     // Конвертуємо рядки з комами в масиви
-    if (news.rubric) {
-      news.rubric = news.rubric.split(',').map(id => parseInt(id.trim())).filter(id => !isNaN(id));
-    } else {
+    if (news.rubric && typeof news.rubric === 'string') {
+      news.rubric = news.rubric.split(',').map((id: string) => parseInt(id.trim())).filter((id: number) => !isNaN(id));
+    } else if (!news.rubric) {
       news.rubric = [];
     }
     
-    if (news.region) {
-      news.region = news.region.split(',').map(id => parseInt(id.trim())).filter(id => !isNaN(id));
-    } else {
+    if (news.region && typeof news.region === 'string') {
+      news.region = news.region.split(',').map((id: string) => parseInt(id.trim())).filter((id: number) => !isNaN(id));
+    } else if (!news.region) {
       news.region = [];
     }
     
@@ -268,45 +268,94 @@ export async function createNews(data: Partial<NewsData>): Promise<number> {
 
 export async function updateNews(id: number, data: Partial<NewsData>): Promise<boolean> {
   try {
-    // Оновлюємо основну таблицю
-    const newsQuery = `
-      UPDATE ${TABLES.NEWS} SET ? WHERE id = ?
-    `;
     
-    const newsData = {
-      images: data.images,
-      ndate: data.ndate,
-      ntime: data.ntime,
-      ntype: data.ntype,
-      lang: data.lang,
-      layout: data.layout,
-      udate: Math.floor(Date.now() / 1000),
-      youcode: data.youcode,
-      rubric: Array.isArray(data.rubric) ? data.rubric.join(',') : data.rubric,
-      region: Array.isArray(data.region) ? data.region.join(',') : data.region,
-      theme: data.theme,
-      nauthor: data.nauthor,
-      userid: data.userid,
-      nweight: data.nweight,
-      ispopular: data.ispopular,
-      showauthor: data.showauthor ? 1 : 0,
-      hiderss: data.hiderss ? 1 : 0,
-      rated: data.rated ? 1 : 0,
-      photo: data.photo ? 1 : 0,
-      video: data.video ? 1 : 0,
-      approved: data.approved ? 1 : 0,
-      nocomment: data.nocomment ? 1 : 0,
-      printsubheader: data.printsubheader ? 1 : 0,
-      topnews: data.topnews ? 1 : 0,
-      suggest: data.suggest ? 1 : 0,
-      headlineblock: data.headlineblock ? 1 : 0,
-      maininblock: data.maininblock ? 1 : 0,
-      idtotop: data.idtotop,
-      twitter_status: data.twitter_status,
-      twittered: data.twittered ? 1 : 0,
-    };
+    // Оновлюємо тільки ті поля, які передані
+    const updateFields: string[] = [];
+    const updateValues: any[] = [];
     
-    await executeQuery(newsQuery, [newsData, id]);
+    if (data.images !== undefined) {
+      updateFields.push('images = ?');
+      updateValues.push(data.images);
+    }
+    if (data.ndate !== undefined) {
+      updateFields.push('ndate = ?');
+      // Валідуємо та форматуємо дату
+      
+      // Якщо дата вже в правильному форматі YYYY-MM-DD, використовуємо її
+      if (typeof data.ndate === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(data.ndate)) {
+        updateValues.push(data.ndate);
+      } else if (typeof data.ndate === 'string' && data.ndate === 'Invalid Date') {
+        // Не оновлюємо ndate, якщо передано "Invalid Date"
+        updateFields.pop(); // Видаляємо останній доданий field
+      } else {
+        const date = new Date(data.ndate);
+        if (isNaN(date.getTime())) {
+          // Не оновлюємо ndate, якщо дата невалідна
+          updateFields.pop(); // Видаляємо останній доданий field
+        } else {
+          const formattedDate = date.toISOString().split('T')[0]; // YYYY-MM-DD формат
+          updateValues.push(formattedDate);
+        }
+      }
+    }
+    if (data.ntime !== undefined) {
+      updateFields.push('ntime = ?');
+      // Валідуємо час (має бути в форматі HH:MM:SS)
+      if (typeof data.ntime === 'string' && /^\d{2}:\d{2}:\d{2}$/.test(data.ntime)) {
+        updateValues.push(data.ntime);
+      } else {
+        throw new Error('Invalid time format for ntime. Expected HH:MM:SS');
+      }
+    }
+    if (data.ntype !== undefined) {
+      updateFields.push('ntype = ?');
+      updateValues.push(data.ntype);
+    }
+    if (data.lang !== undefined) {
+      updateFields.push('lang = ?');
+      updateValues.push(data.lang);
+    }
+    if (data.layout !== undefined) {
+      updateFields.push('layout = ?');
+      updateValues.push(data.layout);
+    }
+    if (data.nweight !== undefined) {
+      updateFields.push('nweight = ?');
+      updateValues.push(data.nweight);
+    }
+    if (data.rubric !== undefined) {
+      updateFields.push('rubric = ?');
+      updateValues.push(Array.isArray(data.rubric) ? data.rubric.join(',') : data.rubric);
+    }
+    if (data.region !== undefined) {
+      updateFields.push('region = ?');
+      updateValues.push(Array.isArray(data.region) ? data.region.join(',') : data.region);
+    }
+    if (data.theme !== undefined) {
+      updateFields.push('theme = ?');
+      updateValues.push(data.theme);
+    }
+    if (data.nauthor !== undefined) {
+      updateFields.push('nauthor = ?');
+      updateValues.push(data.nauthor);
+    }
+    if (data.userid !== undefined) {
+      updateFields.push('userid = ?');
+      updateValues.push(data.userid);
+    }
+    
+    // Завжди оновлюємо udate
+    updateFields.push('udate = ?');
+    updateValues.push(Math.floor(Date.now() / 1000));
+    
+    if (updateFields.length === 1) { // тільки udate
+      return true;
+    }
+    
+    const newsQuery = `UPDATE ${TABLES.NEWS} SET ${updateFields.join(', ')} WHERE id = ?`;
+    updateValues.push(id);
+    
+    await executeQuery(newsQuery, updateValues);
     
     // Оновлюємо тіло новини
     if (data.nbody !== undefined) {

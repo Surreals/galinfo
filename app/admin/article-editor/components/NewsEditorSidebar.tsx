@@ -142,7 +142,7 @@ export default function NewsEditorSidebar({ isEditing, newsId, articleData, onNb
 
   // Оновлюємо стан при зміні даних новини
   useEffect(() => {
-    if (articleData) {
+    if (articleData && !loading) {
       setArticleType(articleData.ntype);
       setSelectedRubrics(articleData.rubric);
       setSelectedRegions(articleData.region);
@@ -176,7 +176,7 @@ export default function NewsEditorSidebar({ isEditing, newsId, articleData, onNb
         }));
         setFileList(imageFiles);
       }
-    } else {
+    } else if (!articleData && !loading) {
       // Скидаємо до значень за замовчуванням при створенні нової новини
       setArticleType(ARTICLE_TYPE_OPTIONS[0].value);
       setSelectedRubrics([]);
@@ -202,7 +202,7 @@ export default function NewsEditorSidebar({ isEditing, newsId, articleData, onNb
       setPublishOnTwitter(false);
       setFileList([]);
     }
-  }, [articleData]);
+  }, [articleData, loading]);
 
   // handlers
   const onSave = async () => {
@@ -246,8 +246,18 @@ export default function NewsEditorSidebar({ isEditing, newsId, articleData, onNb
       video: markVideo,
       
       // Час публікації
-      ndate: publishAt?.format('YYYY-MM-DD'),
-      ntime: publishAt?.format('HH:mm:ss'),
+      ndate: (() => {
+        if (!publishAt || !publishAt.isValid()) {
+          return new Date().toISOString().split('T')[0];
+        }
+        return publishAt.format('YYYY-MM-DD');
+      })(),
+      ntime: (() => {
+        if (!publishAt || !publishAt.isValid()) {
+          return new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+        }
+        return publishAt.format('HH:mm:ss');
+      })(),
       
       // Публікація
       approved: publishOnSite,
@@ -340,6 +350,12 @@ export default function NewsEditorSidebar({ isEditing, newsId, articleData, onNb
               options={rubrics.map(r => ({ label: r.title, value: r.id }))}
               className={styles.fullWidth}
               size="middle"
+              showSearch
+              filterOption={(input, option) =>
+                (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
+              }
+              notFoundContent="Рубрики не знайдені"
+              loading={loading}
             />
           </div>
         </div>
@@ -359,6 +375,12 @@ export default function NewsEditorSidebar({ isEditing, newsId, articleData, onNb
               }))}
               className={styles.fullWidth}
               size="middle"
+              showSearch
+              filterOption={(input, option) =>
+                (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
+              }
+              notFoundContent="Регіони не знайдені"
+              loading={loading}
             />
           </div>
 
@@ -372,6 +394,12 @@ export default function NewsEditorSidebar({ isEditing, newsId, articleData, onNb
               className={styles.fullWidth}
               size="middle"
               allowClear
+              showSearch
+              filterOption={(input, option) =>
+                (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
+              }
+              notFoundContent="Теми не знайдені"
+              loading={loading}
             />
           </div>
         </div>
@@ -402,6 +430,12 @@ export default function NewsEditorSidebar({ isEditing, newsId, articleData, onNb
                 options={editors.map(e => ({ label: e.name, value: e.id }))}
                 className={styles.fullWidth}
                 allowClear
+                showSearch
+                filterOption={(input, option) =>
+                  (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
+                }
+                notFoundContent="Редактори не знайдені"
+                loading={loading}
               />
             </div>
             <div>
@@ -416,6 +450,12 @@ export default function NewsEditorSidebar({ isEditing, newsId, articleData, onNb
                 ]}
                 className={styles.fullWidth}
                 allowClear
+                showSearch
+                filterOption={(input, option) =>
+                  (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
+                }
+                notFoundContent="Автори не знайдені"
+                loading={loading}
               />
             </div>
           </div>
