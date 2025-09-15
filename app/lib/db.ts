@@ -22,6 +22,10 @@ const dbConfig = {
   queueLimit: 0,
   // Add connection timeout for remote connections
   connectTimeout: process.env.DB_HOST !== '127.0.0.1' && process.env.DB_HOST !== 'localhost' ? 60000 : 10000,
+  // Add acquire timeout
+  acquireTimeout: 60000,
+  // Add timeout for operations
+  timeout: 60000,
   // Add charset to ensure proper encoding
   charset: 'utf8mb4',
   // Add support for multiple statements (disabled for security)
@@ -29,18 +33,51 @@ const dbConfig = {
   // Add connection retry options
   enableKeepAlive: true,
   keepAliveInitialDelay: 0,
+  // Add reconnect options
+  reconnect: true,
+  // Add SSL configuration if needed
+  ssl: process.env.DB_SSL === 'true' ? {} : false,
+  // Add connection validation
+  supportBigNumbers: true,
+  bigNumberStrings: true,
+  // Add idle timeout
+  idleTimeout: 300000, // 5 minutes
+  // Add maximum idle connections
+  maxIdle: 5,
 };
 
 // Create connection pool
 const pool = mysql.createPool(dbConfig);
 
+// Add pool event handlers for better debugging
+pool.on('connection', (connection) => {
+  console.log('New connection established as id ' + connection.threadId);
+});
+
+// Connection health check function
+export async function checkConnectionHealth(): Promise<boolean> {
+  try {
+    const connection = await pool.getConnection();
+    await connection.ping();
+    connection.release();
+    return true;
+  } catch (error) {
+    console.error('Connection health check failed:', error);
+    return false;
+  }
+}
+
 // Test connection function
 export async function testConnection() {
   try {
-    const connection = await pool.getConnection();
-    console.log('✅ Database connected successfully!');
-    connection.release();
-    return true;
+    const isHealthy = await checkConnectionHealth();
+    if (isHealthy) {
+      console.log('✅ Database connected successfully!');
+      return true;
+    } else {
+      console.error('❌ Database connection health check failed');
+      return false;
+    }
   } catch (error) {
     console.error('❌ Database connection failed:', error);
     
@@ -50,11 +87,12 @@ export async function testConnection() {
       
       // Try to create a new connection without SSL
       try {
-        const nonSslConfig = { ...dbConfig };
+        const nonSslConfig = { ...dbConfig, ssl: false };
         
         const mysql = require('mysql2/promise');
         const tempPool = mysql.createPool(nonSslConfig);
         const connection = await tempPool.getConnection();
+        await connection.ping();
         console.log('✅ Database connected successfully without SSL!');
         connection.release();
         await tempPool.end();
@@ -83,21 +121,38 @@ export async function executeQuery<T = any>(query: string, params?: any[]): Prom
       lastError = error;
       console.error(`Query execution failed (attempt ${attempt}/${maxRetries}):`, error);
       
-      // If it's a malformed packet error, try to reconnect
-      if (error instanceof Error && 
-          (error.message.includes('Malformed communication packet') || 
-           error.message.includes('Lost connection') ||
-           error.message.includes('Connection lost'))) {
+      // Check if this is a retryable error
+      const isRetryableError = error instanceof Error && (
+        error.message.includes('Malformed communication packet') || 
+        error.message.includes('Lost connection') ||
+        error.message.includes('Connection lost') ||
+        error.message.includes('ECONNRESET') ||
+        error.message.includes('ETIMEDOUT') ||
+        error.message.includes('ENOTFOUND') ||
+        (error as any).code === 'ECONNRESET' ||
+        (error as any).code === 'ETIMEDOUT' ||
+        (error as any).code === 'ENOTFOUND' ||
+        (error as any).errno === -54 // ECONNRESET errno
+      );
+      
+      if (isRetryableError && attempt < maxRetries) {
+        console.log(`Retryable error detected, attempting to reconnect and retry query (attempt ${attempt + 1}/${maxRetries})...`);
+        // Wait progressively longer between retries
+        const waitTime = Math.min(1000 * Math.pow(2, attempt - 1), 5000); // Exponential backoff, max 5s
+        await new Promise(resolve => setTimeout(resolve, waitTime));
         
-        if (attempt < maxRetries) {
-          console.log(`Attempting to reconnect and retry query (attempt ${attempt + 1}/${maxRetries})...`);
-          // Wait a bit before retrying
-          await new Promise(resolve => setTimeout(resolve, 1000 * attempt));
-          continue;
+        // Try to get a fresh connection
+        try {
+          const connection = await pool.getConnection();
+          connection.release();
+        } catch (connError) {
+          console.warn('Failed to get fresh connection during retry:', connError);
         }
+        
+        continue;
       }
       
-      // For other errors, don't retry
+      // For non-retryable errors or max retries reached, break
       break;
     }
   }
