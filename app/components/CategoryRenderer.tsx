@@ -225,6 +225,7 @@ const CategoryRenderer: React.FC<CategoryRendererProps> = ({ category }) => {
             limit={categoryNewsData.length}
             config={config}
             news={categoryNewsData} // Передаємо готові дані через проп news
+            isCategoryPage={true} // Встановлюємо висоту фото 133px для сторінок категорій
           />
         );
 

@@ -38,6 +38,7 @@ export interface CategoryNewsProps {
   limit?: number; // Кількість новин для відображення
   useRealData?: boolean; // Чи використовувати реальні дані з API
   viewAllButtonHref?: string; // Новий пропс для ViewAllButton href
+  isCategoryPage?: boolean; // Чи це сторінка категорії (для встановлення висоти фото 133px)
   config?: {
     mobileLayout?: 'column' | 'horizontal';
     limit?: number;
@@ -68,6 +69,7 @@ export default function CategoryNews({
   limit = 8,
   useRealData = false,
   viewAllButtonHref,
+  isCategoryPage = false,
   config
 }: CategoryNewsProps) {
   // Визначаємо, чи потрібно показувати горизонтальне відображення
@@ -205,12 +207,12 @@ export default function CategoryNews({
               <article key={item.id} className={`${styles.newsItem} ${shouldShowHorizontal ? styles.newsItemHorizontal : ''}`}>
                 <Link href={item.url} className={styles.newsLink}>
                   <div 
-                  className={styles.imageContainer}>
+                  className={isCategoryPage ? styles.imageContainerCategoryPage : styles.imageContainer}>
                     <Image 
                       src={item.imageUrl} 
                       alt={item.imageAlt}
                       width={300}
-                      height={shouldShowHorizontal ? height : 200}
+                      height={shouldShowHorizontal ? height : (isCategoryPage ? 133 : 200)}
                       className={styles.newsImage}
                     />
                     {item.nweight > 0 && (
