@@ -110,7 +110,7 @@ const CategoryRenderer: React.FC<CategoryRendererProps> = ({ category }) => {
   const transformedCurrentCategoryData = currentCategoryData?.news?.filter(item => item && item.id)?.map(item => ({
     id: item.id.toString(),
     title: item.nheader,
-    date: formatFullNewsDate(item.ndate),
+    date: formatFullNewsDate(item.ndate, item.ntime),
     url: generateArticleUrl(item as any),
     imageUrl: getNewsImage(item as any) || 'https://picsum.photos/300/200?random=1',
     imageAlt: item.nheader,
@@ -162,7 +162,7 @@ const CategoryRenderer: React.FC<CategoryRendererProps> = ({ category }) => {
           const importantNews = importantNewsCategoryHook.importantNews[0];
           mainNewsItem = {
             title: importantNews.nheader,
-            date: formatFullNewsDate(importantNews.ndate),
+            date: formatFullNewsDate(importantNews.ndate, importantNews.ntime),
             time: importantNews.ntime,
             url: generateArticleUrl(importantNews as any),
             imageUrl: getNewsImage(importantNews as any, 'full') || 'https://picsum.photos/300/200?random=1',
@@ -173,7 +173,7 @@ const CategoryRenderer: React.FC<CategoryRendererProps> = ({ category }) => {
           const importantNews = importantNewsHook.data.importantNews[0];
           mainNewsItem = {
             title: importantNews.nheader,
-            date: formatFullNewsDate(importantNews.ndate),
+            date: formatFullNewsDate(importantNews.ndate, importantNews.ntime),
             time: importantNews.ntime,
             url: generateArticleUrl(importantNews as any),
             imageUrl: getNewsImage(importantNews as any, 'full') || 'https://picsum.photos/300/200?random=1',

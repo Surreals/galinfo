@@ -8,7 +8,7 @@ import {AccentSquare, ViewAllButton} from "@/app/shared";
 import arrowRight from "@/assets/icons/arrowRight.svg";
 import { useNewsByRubric } from '@/app/hooks/useNewsByRubric';
 import { getImageUrlFromApi, getMainImageFromApi, type ApiNewsImage } from '@/app/lib/imageUtils';
-import { getUniversalNewsImageThumbnail } from '@/app/lib/newsUtils';
+import { getUniversalNewsImageThumbnail, formatFullNewsDate } from '@/app/lib/newsUtils';
 import { getUrlFromCategoryId } from '@/app/lib/categoryMapper';
 
 import styles from "./listNews.module.scss";
@@ -17,7 +17,8 @@ import {Skeleton} from "antd";
 type NewsItem = {
   id?: string;
   title: string;
-  time: string;
+  data: string; // Форматована дата з часом
+  time?: string; // Залишаємо для сумісності
   imageUrl?: string;
   url?: string;
 };
@@ -108,8 +109,8 @@ export default function NewsList({
       return {
         id: item.id.toString(),
         title: item.nheader,
-        data: item.ndate,
-        time: item.ntime,
+        data: formatFullNewsDate(item.ndate, item.ntime),
+        time: item.ntime, // Залишаємо для сумісності, але використовуємо data
         imageUrl: imageUrl,
         url: `/news/${item.urlkey}_${item.id}`,
       };
@@ -181,7 +182,7 @@ export default function NewsList({
                       )}
                       <div className={styles.textBlock}>
                         <p className={styles.itemTitle}>{item.title}</p>
-                        <p className={styles.itemTime}>{item.time}</p>
+                        <p className={styles.itemTime}>{item.data}</p>
                       </div>
                     </a>
                   ) : (
@@ -196,7 +197,7 @@ export default function NewsList({
                       )}
                       <div className={styles.textBlock}>
                         <p className={styles.itemTitle}>{item.title}</p>
-                        <p className={styles.itemTime}>{item.time}</p>
+                        <p className={styles.itemTime}>{item.data}</p>
                       </div>
                     </>
                   )}

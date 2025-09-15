@@ -3,6 +3,7 @@
 import React from 'react';
 import { useNewsByRubric, NewsItem } from '@/app/hooks/useNewsByRubric';
 import { getMainImage, hasImages } from '@/app/lib/imageUtils';
+import { formatFullNewsDate } from '@/app/lib/newsUtils';
 import styles from './NewsList.module.css';
 
 interface NewsListProps {
@@ -226,14 +227,7 @@ function NewsCard({ news }: { news: NewsItem }) {
   const mainImage = getMainImage(news.images);
   const hasImage = hasImages(news.images);
   
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString('uk-UA', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
-    });
-  };
+  // Використовуємо formatFullNewsDate для консистентного форматування дати
 
   const getNewsTypeLabel = (type: number) => {
     const typeLabels: { [key: number]: string } = {
@@ -264,7 +258,7 @@ function NewsCard({ news }: { news: NewsItem }) {
       <div className={styles.newsContent}>
         <div className={styles.newsMeta}>
           <span className={styles.newsType}>{getNewsTypeLabel(news.ntype)}</span>
-          <span className={styles.newsDate}>{formatDate(news.ndate)}</span>
+          <span className={styles.newsDate}>{formatFullNewsDate(news.ndate, news.ntime)}</span>
         </div>
         
         <h3 className={styles.newsTitle}>

@@ -217,7 +217,7 @@ export default function ColumnNews({
       id: item.id.toString(),
       title: item.nheader,
       summary: item.nteaser || item.nsubheader || '',
-      date: formatFullNewsDate(item.ndate),
+      date: formatFullNewsDate(item.ndate, item.ntime),
       url: `/news/${item.urlkey}_${item.id}`,
       imageUrl: getUniversalNewsImageIntxt(item) || 'https://picsum.photos/300/200?random=1',
       imageAlt: item.nheader
@@ -300,7 +300,7 @@ export default function ColumnNews({
                       <h3 className={smallImg ? styles.newsTitleSmall : styles.newsTitle}>{item.title}</h3>
                       <p className={smallImg ? styles.newsSummarySmall : styles.newsSummary}>{item.summary}</p>
                       <time className={smallImg ? styles.newsDateSmall : styles.newsDate}>
-                        {item.date}, {item.time}
+                        {item.date}
                       </time>
                     </div>
                   </Link>

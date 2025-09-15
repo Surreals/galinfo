@@ -8,7 +8,7 @@ import NewsList from "@/app/components/listNews";
 import CurrencyRates from "./CurrencyRates";
 import WeatherWidget from "./WeatherWidget";
 import { useHeroNews } from "@/app/hooks/useHeroNews";
-import { formatNewsDate, generateArticleUrl, getUniversalNewsImageIntxt, getNewsTitle, getNewsTeaser, getUniversalNewsImageFull } from "@/app/lib/newsUtils";
+import { formatNewsDate, formatFullNewsDate, generateArticleUrl, getUniversalNewsImageIntxt, getNewsTitle, getNewsTeaser, getUniversalNewsImageFull } from "@/app/lib/newsUtils";
 import dayjs from 'dayjs';
 import 'dayjs/locale/uk';
 
@@ -52,7 +52,7 @@ export default function Hero() {
         return {
           id: item.id,
           title: getNewsTitle(item),
-          time: formatNewsDate(item.ndate, item.udate),
+          time: formatFullNewsDate(item.ndate, item.ntime),
           imageUrl: imageUrl || `https://picsum.photos/seed/${item.id}/300/200`,
           url: generateArticleUrl(item),
         };

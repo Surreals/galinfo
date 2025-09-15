@@ -51,7 +51,7 @@ const ArticlePageRenderer: React.FC<ArticlePageRendererProps> = ({ article, load
   const transformedLatestNews = latestNewsHook.data?.news?.filter(item => item && item.id)?.map(item => ({
     id: item.id.toString(),
     title: item.nheader,
-    date: formatFullNewsDate(item.ndate),
+    date: formatFullNewsDate(item.ndate, item.ntime),
     url: generateArticleUrl(item as any),
     imageUrl: getNewsImage(item as any) || 'https://picsum.photos/300/200?random=1',
     imageAlt: item.nheader,
@@ -64,7 +64,7 @@ const ArticlePageRenderer: React.FC<ArticlePageRendererProps> = ({ article, load
   const transformedImportantNews = importantNewsHook.importantNews?.filter(item => item && item.id)?.map(item => ({
     id: item.id.toString(),
     title: item.nheader,
-    date: formatFullNewsDate(item.ndate),
+    date: formatFullNewsDate(item.ndate, item.ntime),
     url: generateArticleUrl(item as any),
     imageUrl: getNewsImage(item as any) || 'https://picsum.photos/300/200?random=1',
     imageAlt: item.nheader,
@@ -151,7 +151,8 @@ const ArticlePageRenderer: React.FC<ArticlePageRendererProps> = ({ article, load
 
         if (!article?.images_data?.length) return null;
 
-        const imageUrl = getUniversalNewsImage(article, 'full') || getUniversalNewsImage(article);
+        const imageUrl = getUniversalNewsImage(article, 'full') || getUniversalNewsImage(article) || 'https://picsum.photos/300/200?random=1';
+        console.log(imageUrl, 'imageUrl');
         
         return (
           <div key={index} className={styles.articleImage}>

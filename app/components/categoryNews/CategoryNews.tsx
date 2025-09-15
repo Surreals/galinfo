@@ -131,7 +131,7 @@ export default function CategoryNews({
       return {
         id: item.id.toString(),
         title: item.nheader,
-        date: formatFullNewsDate(item.ndate),
+        date: formatFullNewsDate(item.ndate, item.ntime),
         url: `/news/${item.urlkey}_${item.id}`,
         imageUrl: imageUrl,
         imageAlt: item.nheader,
@@ -216,7 +216,7 @@ export default function CategoryNews({
                   </div>
                   <h3 className={styles.newsTitle}>{item.title}</h3>
                   <time className={styles.newsDate}>
-                    {item.date}, {item.time}
+                    {item.date}
                   </time>
                 </Link>
               </article>

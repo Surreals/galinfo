@@ -13,6 +13,7 @@ import { useNewsByRegion } from '@/app/hooks/useNewsByRegion';
 import { isRegionCategory } from '@/app/lib/categoryUtils';
 import {
   formatNewsDate,
+  formatFullNewsDate,
   generateArticleUrl,
   getUniversalNewsImageIntxt,
   getNewsTitle,
@@ -300,12 +301,8 @@ function NewsListRenderer({ block, isMobile }: { block: any; isMobile: boolean }
   const newsData = apiData?.news?.filter(i => i && i.id)?.map(item => ({
     id: item.id.toString(),
     title: item.nheader,
-    date: new Date(item.ndate).toLocaleDateString('uk-UA', {
-      day: '2-digit',
-      month: 'long',
-      year: 'numeric'
-    }),
-    time: item.ntime,
+    data: formatFullNewsDate(item.ndate, item.ntime),
+    time: item.ntime, // Залишаємо для сумісності
     imageUrl: getUniversalNewsImageFull(item) || `https://picsum.photos/seed/${item.id || 'default'}/300/200`,
     url: generateArticleUrl(item),
   })) || [];

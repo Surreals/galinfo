@@ -38,7 +38,7 @@ export default function AllNews({ news = [], isLoading = false, hideHeader = fal
   const transformedNews: NewsItem[] = apiData?.news?.filter(item => item && item.id)?.map(item => ({
     id: item.id.toString(),
     title: item.nheader,
-    date: formatFullNewsDate(item.ndate),
+    date: formatFullNewsDate(item.ndate, item.ntime),
     url: generateArticleUrl(item as any)
   })) || [];
 
@@ -218,7 +218,7 @@ export default function AllNews({ news = [], isLoading = false, hideHeader = fal
                 <Link href={item.url} className={styles.newsLink}>
                   <h3 className={styles.newsTitle}>{item.title}</h3>
                   <time className={styles.newsDate}>
-                    {item.date}, {item.time}
+                    {item.date}
                   </time>
                 </Link>
               </article>

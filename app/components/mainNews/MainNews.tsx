@@ -38,7 +38,7 @@ export default function MainNews({
             <div className={styles.contentContainer}>
               <h1 className={styles.newsTitle}>{title}</h1>
               <time className={styles.newsDate}>
-                {date}, {time}
+                {date}
               </time>
             </div>
           </Link>
