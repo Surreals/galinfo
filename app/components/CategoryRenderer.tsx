@@ -214,12 +214,22 @@ const CategoryRenderer: React.FC<CategoryRendererProps> = ({ category }) => {
         );
 
       case 'NEWS_LIST':
-        // NewsList залишається без змін, оскільки відноситься до sidebar
+        const newsListConfig = block.config;
+        const newsListBlockCategoryId = block.categoryId;
+        
         return (
-          <NewsListRenderer 
+          <NewsList
             key={index}
-            block={block}
-            isMobile={isMobile}
+            mobileLayout={newsListConfig.mobileLayout}
+            arrowRightIcon={newsListConfig.arrowRightIcon}
+            title={newsListConfig.title}
+            showImagesAt={newsListConfig.showImagesAt}
+            showMoreButton={newsListConfig.showMoreButton}
+            moreButtonUrl={newsListConfig.moreButtonUrl}
+            widthPercent={newsListConfig.widthPercent}
+            categoryId={newsListBlockCategoryId}
+            useRealData={true}
+            config={newsListConfig}
           />
         );
 
@@ -292,100 +302,6 @@ const CategoryRenderer: React.FC<CategoryRendererProps> = ({ category }) => {
     }
   };
 
-  // Компонент для рендерингу NewsList з підтримкою API
-  function NewsListRenderer({ block, isMobile }: { block: any, isMobile: boolean }) {
-    const config = block.config;
-    const blockCategoryId = block.categoryId;
-    
-    // Якщо це поточна категорія і є newsRange, використовуємо єдиний набір новин
-    if (blockCategoryId === 'CURRENT_CATEGORY' && config.newsRange) {
-      const newsRange = config.newsRange;
-      const newsData = transformedCurrentCategoryData.slice(newsRange.start - 1, newsRange.end);
-      
-      // Обробляємо спеціальні значення для поточної категорії
-      const title = config.title === 'CURRENT_CATEGORY_TITLE' 
-        ? getCategoryTitle(category).toUpperCase() 
-        : config.title;
-      const moreButtonUrl = config.moreButtonUrl === 'CURRENT_CATEGORY_URL'
-        ? `/${category}`
-        : config.moreButtonUrl;
-      
-      return (
-        <div className={styles.newsColumn}>
-          <NewsList
-            mobileLayout={config.mobileLayout}
-            arrowRightIcon={config.arrowRightIcon}
-            title={title}
-            data={newsData}
-            showImagesAt={config.showImagesAt}
-            showMoreButton={config.showMoreButton}
-            moreButtonUrl={moreButtonUrl}
-            widthPercent={config.widthPercent}
-            categoryId={categoryId || undefined} // Передаємо реальний categoryId замість 'CURRENT_CATEGORY'
-          />
-        </div>
-      );
-    }
-    
-    // Для sidebar та інших категорій використовуємо стару логіку з окремими запитами
-    const isBlockRegion = blockCategoryId && blockCategoryId !== 'all' ? isRegionCategory(Number(blockCategoryId)) : false;
-    
-    // Використовуємо відповідний хук залежно від типу категорії
-    const rubricHook = useNewsByRubric({
-      rubric: blockCategoryId?.toString() || '',
-      page: config.apiParams?.page || 1,
-      limit: config.apiParams?.limit || 8,
-      lang: config.apiParams?.lang || '1',
-      approved: config.apiParams?.approved !== undefined ? config.apiParams.approved : true,
-      type: config.apiParams?.type,
-      autoFetch: !!blockCategoryId && !isBlockRegion
-    });
-
-    const regionHook = useNewsByRegion({
-      region: blockCategoryId?.toString() || '',
-      page: config.apiParams?.page || 1,
-      limit: config.apiParams?.limit || 8,
-      lang: config.apiParams?.lang || '1',
-      approved: config.apiParams?.approved !== undefined ? config.apiParams.approved : true,
-      type: config.apiParams?.type,
-      autoFetch: !!blockCategoryId && isBlockRegion
-    });
-
-    // Вибираємо дані з відповідного хука
-    const apiData = isBlockRegion ? regionHook.data : rubricHook.data;
-    const apiLoading = isBlockRegion ? regionHook.loading : rubricHook.loading;
-    const apiError = isBlockRegion ? regionHook.error : rubricHook.error;
-
-    // Трансформуємо дані для NewsList
-    const newsData = apiData?.news?.map(item => ({
-      id: item.id.toString(),
-      title: item.nheader,
-      date: formatNewsDate(item.ndate, (item as any).udate || Date.now() / 1000),
-      time: new Date(item.ndate).toLocaleTimeString('uk-UA', { 
-        hour: '2-digit', 
-        minute: '2-digit' 
-      }),
-      url: generateArticleUrl(item as any),
-      imageUrl: getNewsImage(item as any) || 'https://picsum.photos/300/200?random=1',
-      isImportant: item.ntype === 1 || (item as any).nweight > 0
-    })) || [];
-
-    return (
-      <div className={styles.newsColumn}>
-        <NewsList
-          mobileLayout={config.mobileLayout}
-          arrowRightIcon={config.arrowRightIcon}
-          title={config.title}
-          data={newsData}
-          showImagesAt={config.showImagesAt}
-          showMoreButton={config.showMoreButton}
-          moreButtonUrl={config.moreButtonUrl}
-          widthPercent={config.widthPercent}
-          categoryId={blockCategoryId}
-        />
-      </div>
-    );
-  }
 
   // Вибираємо схему залежно від пристрою
   const schema = isMobile ? categoryMobileSchema : categoryDesktopSchema;
