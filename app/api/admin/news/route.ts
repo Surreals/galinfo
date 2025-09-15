@@ -245,6 +245,66 @@ export async function GET(request: NextRequest) {
   }
 }
 
+// DELETE method for deleting news
+export async function DELETE(request: NextRequest) {
+  try {
+    const { searchParams } = new URL(request.url);
+    const newsId = searchParams.get('id');
+    
+    if (!newsId) {
+      return NextResponse.json(
+        { error: 'News ID is required' },
+        { status: 400 }
+      );
+    }
+    
+    // Перевіряємо, чи існує новина та отримуємо заголовок
+    const checkQuery = `
+      SELECT a_news.id, a_news_headers.nheader 
+      FROM a_news 
+      LEFT JOIN a_news_headers ON a_news.id = a_news_headers.id 
+      WHERE a_news.id = ?
+    `;
+    const [checkResult] = await executeQuery(checkQuery, [newsId]);
+    
+    if (!checkResult || checkResult.length === 0) {
+      return NextResponse.json(
+        { error: 'News not found' },
+        { status: 404 }
+      );
+    }
+    
+    // Видаляємо пов'язані дані
+    const deleteQueries = [
+      'DELETE FROM a_news_headers WHERE id = ?',
+      'DELETE FROM a_statcomm WHERE id = ?',
+      'DELETE FROM a_statview WHERE id = ?',
+      'DELETE FROM a_news WHERE id = ?'
+    ];
+    
+    // Виконуємо всі запити на видалення
+    for (const query of deleteQueries) {
+      await executeQuery(query, [newsId]);
+    }
+    
+    return NextResponse.json({
+      success: true,
+      message: 'News deleted successfully',
+      deletedNews: {
+        id: newsId,
+        title: checkResult[0].nheader
+      }
+    });
+    
+  } catch (error) {
+    console.error('Error deleting news:', error);
+    return NextResponse.json(
+      { error: 'Failed to delete news', details: error instanceof Error ? error.message : 'Unknown error' },
+      { status: 500 }
+    );
+  }
+}
+
 // Функція для отримання назви типу новини
 function getTypeName(ntype: number): string {
   const typeMap: { [key: number]: string } = {

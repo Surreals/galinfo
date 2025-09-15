@@ -288,7 +288,13 @@
 }
 
 .actionsCell {
-  width: 120px;
+  width: 150px;
+}
+
+.actionButtons {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
 }
 
 .editButton {
@@ -300,10 +306,29 @@
   cursor: pointer;
   font-size: 0.8rem;
   transition: background-color 0.2s;
+  flex: 1;
+  min-width: 80px;
 }
 
 .editButton:hover {
   background: #218838;
+}
+
+.deleteButton {
+  background: #dc3545;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.8rem;
+  transition: background-color 0.2s;
+  flex: 1;
+  min-width: 80px;
+}
+
+.deleteButton:hover {
+  background: #c82333;
 }
 
 /* Пагінація */
@@ -382,6 +407,100 @@
   color: #dc3545;
 }
 
+/* Модальне вікно підтвердження */
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modalContent {
+  background: white;
+  padding: 2rem;
+  border-radius: 8px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  max-width: 500px;
+  width: 90%;
+  text-align: center;
+}
+
+.modalContent h3 {
+  margin: 0 0 1rem 0;
+  color: #333;
+  font-size: 1.5rem;
+}
+
+.modalContent p {
+  margin: 0 0 1rem 0;
+  color: #666;
+  line-height: 1.5;
+}
+
+.warningText {
+  color: #dc3545 !important;
+  font-weight: 500;
+  background: #f8d7da;
+  padding: 0.75rem;
+  border-radius: 4px;
+  border: 1px solid #f5c6cb;
+}
+
+.modalActions {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  margin-top: 1.5rem;
+}
+
+.cancelButton {
+  background: #6c757d;
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background-color 0.2s;
+  min-width: 120px;
+}
+
+.cancelButton:hover:not(:disabled) {
+  background: #545b62;
+}
+
+.cancelButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.confirmDeleteButton {
+  background: #dc3545;
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background-color 0.2s;
+  min-width: 120px;
+}
+
+.confirmDeleteButton:hover:not(:disabled) {
+  background: #c82333;
+}
+
+.confirmDeleteButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
 /* Адаптивність */
 @media (max-width: 768px) {
   .mainContent {
@@ -419,5 +538,23 @@
   .pagination {
     flex-wrap: wrap;
     gap: 0.5rem;
+  }
+  
+  .actionButtons {
+    flex-direction: column;
+  }
+  
+  .modalContent {
+    padding: 1.5rem;
+    margin: 1rem;
+  }
+  
+  .modalActions {
+    flex-direction: column;
+  }
+  
+  .cancelButton,
+  .confirmDeleteButton {
+    min-width: auto;
   }
 }

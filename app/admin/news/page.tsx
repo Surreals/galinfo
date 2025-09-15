@@ -57,6 +57,16 @@ export default function NewsPage() {
   const [newsData, setNewsData] = useState<NewsListResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [deleteConfirm, setDeleteConfirm] = useState<{
+    isOpen: boolean;
+    newsId: number | null;
+    newsTitle: string;
+  }>({
+    isOpen: false,
+    newsId: null,
+    newsTitle: ''
+  });
+  const [deleting, setDeleting] = useState(false);
   
   // Фільтри
   const [filters, setFilters] = useState({
@@ -129,6 +139,57 @@ export default function NewsPage() {
   // Обробка додавання нової новини
   const handleAddNews = () => {
     router.push('/admin/article-editor');
+  };
+
+  // Обробка видалення новини
+  const handleDeleteNews = (newsId: number, newsTitle: string) => {
+    setDeleteConfirm({
+      isOpen: true,
+      newsId,
+      newsTitle
+    });
+  };
+
+  // Підтвердження видалення
+  const confirmDelete = async () => {
+    if (!deleteConfirm.newsId) return;
+    
+    try {
+      setDeleting(true);
+      
+      const response = await fetch(`/api/admin/news?id=${deleteConfirm.newsId}`, {
+        method: 'DELETE'
+      });
+      
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to delete news');
+      }
+      
+      // Оновлюємо список новин
+      await fetchNews();
+      
+      // Закриваємо діалог підтвердження
+      setDeleteConfirm({
+        isOpen: false,
+        newsId: null,
+        newsTitle: ''
+      });
+      
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Unknown error');
+    } finally {
+      setDeleting(false);
+    }
+  };
+
+  // Скасування видалення
+  const cancelDelete = () => {
+    setDeleteConfirm({
+      isOpen: false,
+      newsId: null,
+      newsTitle: ''
+    });
   };
 
   // Очищення фільтрів
@@ -374,12 +435,20 @@ export default function NewsPage() {
                       </div>
                     </td>
                     <td className={styles.actionsCell}>
-                      <button 
-                        className={styles.editButton}
-                        onClick={() => handleEditNews(news.id)}
-                      >
-                        Редагувати
-                      </button>
+                      <div className={styles.actionButtons}>
+                        <button 
+                          className={styles.editButton}
+                          onClick={() => handleEditNews(news.id)}
+                        >
+                          Редагувати
+                        </button>
+                        <button 
+                          className={styles.deleteButton}
+                          onClick={() => handleDeleteNews(news.id, news.nheader || 'Без заголовка')}
+                        >
+                          Видалити
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))}
@@ -425,6 +494,39 @@ export default function NewsPage() {
             >
               Наступна ›
             </button>
+          </div>
+        )}
+
+        {/* Діалог підтвердження видалення */}
+        {deleteConfirm.isOpen && (
+          <div className={styles.modalOverlay}>
+            <div className={styles.modalContent}>
+              <h3>Підтвердження видалення</h3>
+              <p>
+                Ви впевнені, що хочете видалити новину:
+                <br />
+                <strong>"{deleteConfirm.newsTitle}"</strong>
+              </p>
+              <p className={styles.warningText}>
+                ⚠️ Ця дія незворотна! Всі дані новини будуть видалені назавжди.
+              </p>
+              <div className={styles.modalActions}>
+                <button 
+                  className={styles.cancelButton}
+                  onClick={cancelDelete}
+                  disabled={deleting}
+                >
+                  Скасувати
+                </button>
+                <button 
+                  className={styles.confirmDeleteButton}
+                  onClick={confirmDelete}
+                  disabled={deleting}
+                >
+                  {deleting ? 'Видалення...' : 'Видалити'}
+                </button>
+              </div>
+            </div>
           </div>
         )}
       </div>

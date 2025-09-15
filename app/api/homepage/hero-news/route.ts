@@ -55,7 +55,7 @@ export async function GET() {
   try {
     // Fetch hero news based on the PHP app's newsoday function
     // This gets special news (section 1) and important news (nweight=2)
-    const heroNews = await executeQuery(`
+    const [heroNews] = await executeQuery(`
       SELECT 
         a_news.id,
         a_news.ndate,
@@ -89,7 +89,7 @@ export async function GET() {
 
     // If no special news, fall back to important news (nweight=2)
     if (!heroNews || heroNews.length === 0) {
-      const fallbackNews = await executeQuery(`
+      const [fallbackNews] = await executeQuery(`
         SELECT 
           a_news.id,
           a_news.ndate,
