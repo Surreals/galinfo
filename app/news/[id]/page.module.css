@@ -194,6 +194,35 @@
   object-fit: cover;
 }
 
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 3rem 1rem;
+  height: 50vh;
+}
+
+.icon {
+  font-size: 4rem; /* приблизно 64px */
+  color: var(--color-accent);
+  margin-bottom: 1.5rem;
+}
+
+.title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--color-title);
+  margin-bottom: 0.5rem;
+}
+
+.description {
+  font-size: 0.95rem;
+  color: var(--color-tertiary);
+  max-width: 400px;
+}
+
 .banner3 {
   display: block;
   width: 100% !important;

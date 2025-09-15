@@ -9,15 +9,21 @@ interface ArticleMetaProps {
   isMobile?: boolean;
 }
 
-export const ArticleMeta: React.FC<ArticleMetaProps> = ({ date: newsData, time, isMobile = false }) => {
-  const formatDate = (date: string): string => {
-    const dateObj = new Date(date);
-    return dateObj.toLocaleDateString('uk-UA', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
-    });
+export const ArticleMeta: React.FC<ArticleMetaProps> = ({ date: newsDate, time, isMobile = false }) => {
+  const capitalize = (str: string) => str.charAt(0).toUpperCase() + str.slice(1);
+
+  const formatDate = (date: string, time?: string): string => {
+    const dateTimeString = time ? `${date.slice(0, 10)}T${time}` : date;
+    const dateObj = new Date(dateTimeString);
+
+    const weekday = capitalize(dateObj.toLocaleDateString('uk-UA', { weekday: 'short' }));
+    const day = dateObj.getDate().toString().padStart(2, '0');
+    const month = dateObj.toLocaleDateString('uk-UA', { month: 'long' });
+    const year = dateObj.getFullYear();
+
+    return `${weekday}, ${day} ${month} ${year}` + (time ? ` ${time.slice(0, 5)}` : '');
   };
+
 
 
   const handleShare = (platform: string) => {
@@ -61,9 +67,9 @@ export const ArticleMeta: React.FC<ArticleMetaProps> = ({ date: newsData, time, 
     <>
       <div className={styles.articleMeta}>
         {
-          newsData ?
+          newsDate ?
             <div className={styles.dateTime}>
-              {formatDate(newsData)} {time}
+              {formatDate(newsDate, time)}
             </div> : <div></div>
         }
         {isMobile ? (

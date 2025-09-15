@@ -1,4 +1,7 @@
 import { ArticlePageClient } from "./ArticlePageClient";
+import { SearchOutlined } from "@ant-design/icons";
+
+import styles from "./page.module.css";
 
 interface ArticlePageProps {
   params: Promise<{
@@ -16,7 +19,13 @@ export default async function ArticlePage({ params, searchParams }: ArticlePageP
 
   // Перевіряємо, чи існує id
   if (!urlParams) {
-    return <div>Новина не знайдена</div>;
+    return <div className={styles.wrapper}>
+          <SearchOutlined className={styles.icon}/>
+          <h2 className={styles.title}>Новина не знайдена</h2>
+          <p className={styles.description}>
+            Схоже, що цієї новини більше немає або її видалили.
+          </p>
+        </div>
   }
 
 

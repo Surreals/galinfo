@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { NewsTag, useCompleteNewsData } from "@/app/hooks";
+import { useCompleteNewsData } from "@/app/hooks";
 import ArticlePageRenderer from "@/app/components/ArticlePageRenderer";
 
 interface ArticlePageClientProps {

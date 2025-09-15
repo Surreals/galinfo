@@ -66,7 +66,7 @@ export function formatFullNewsDate(ndate: string, ntime?: string): string {
     timeStr = `${timeParts[0]}:${timeParts[1]}`; // Беремо тільки години та хвилини
   }
   
-  return `${dateStr}, ${timeStr}`;
+  return `${dateStr} ${timeStr}`;
 }
 
 export function generateArticleUrl(newsItem: NewsItem): string {
