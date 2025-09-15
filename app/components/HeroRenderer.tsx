@@ -46,7 +46,7 @@ export default function HeroRenderer({
   const carouselRef = useRef<any>(null);
   const router = useRouter();
   const [isMobileResize, setIsMobile] = useState(false);
-  
+
   // Визначаємо яку схему використовувати для info секції
   const currentInfoSchema = infoSchema || (isMobileResize ? heroInfoMobileSchema : heroInfoSchema);
 
@@ -130,7 +130,7 @@ export default function HeroRenderer({
                         onClick={() => handleCarouselClick(item.url)}
                         style={{ cursor: 'pointer' }}
                       >
-                        <img alt={'img'} src={item.src} className={styles.heroImg}/>
+                        <img alt={'img'} src={item.src} loading="lazy" className={styles.heroImg}/>
                       </div>
                       <div
                         className={styles.carouselContent}

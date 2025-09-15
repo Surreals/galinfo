@@ -1,8 +1,8 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 
 export type WeatherData = {
-  temp: number; // Температура в градусах Цельсія
-  city: string; // Назва міста
+  temp: number;   // середня температура в градусах Цельсія
+  city: string;   // назва міста
 };
 
 export const useWeather = (city: string) => {
@@ -10,31 +10,41 @@ export const useWeather = (city: string) => {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
+  const fetchWeather = useCallback(async () => {
     if (!city) return;
 
-    const fetchWeather = async () => {
-      setLoading(true);
-      try {
-        const res = await fetch(`https://wttr.in/${city}?format=j1`);
-        if (!res.ok) throw new Error("Не вдалося отримати дані про погоду");
+    setLoading(true);
+    setError(null);
 
-        const data = await res.json();
-        const current = data.current_condition[0];
+    try {
+      const res = await fetch(`https://wttr.in/${encodeURIComponent(city)}?format=j1`);
+      if (!res.ok) throw new Error("Не вдалося отримати дані про погоду");
 
-        setWeather({
-          temp: Math.round(Number(current.temp_C)),
-          city,
-        });
-      } catch (err: any) {
-        setError(err.message || "Помилка при завантаженні даних про погоду");
-      } finally {
-        setLoading(false);
-      }
-    };
+      const data = await res.json();
 
-    fetchWeather();
+      const days = Array.isArray(data.weather) ? data.weather : [];
+      if (!days.length) throw new Error("Немає даних про погоду");
+
+      const lastDay = days.reduce((latest: any, day: any) => {
+        return !latest || new Date(day.date) > new Date(latest.date) ? day : latest;
+      }, null);
+
+      if (!lastDay) throw new Error("Неможливо визначити останній день");
+
+      setWeather({
+        temp: Math.round(Number(lastDay.avgtempC)),
+        city,
+      });
+    } catch (err: any) {
+      setError(err.message || "Помилка при завантаженні даних про погоду");
+    } finally {
+      setLoading(false);
+    }
   }, [city]);
 
-  return { weather, loading, error };
+  useEffect(() => {
+    fetchWeather();
+  }, [fetchWeather]);
+
+  return { weather, loading, error, refetch: fetchWeather };
 };

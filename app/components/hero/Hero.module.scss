@@ -7,6 +7,13 @@
     gap: 1rem;
   }
 
+  .hideSkeletonIcon{
+    svg {
+      display: none !important;
+    }
+  }
+
+
   background-color: var(--color-white);
 
   .containerHeroInfo {
@@ -77,6 +84,7 @@
         filter: brightness(0) invert(1);
       }
     }
+
 
     .carouselBox {
       width: 100%;

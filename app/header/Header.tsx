@@ -2,6 +2,7 @@
 
 import React, {useState, useEffect, useMemo} from "react";
 import {Input, Skeleton} from 'antd';
+import { usePathname } from "next/navigation";
 import Link from "next/link";
 
 import paths from "@/app/paths";
@@ -24,13 +25,19 @@ export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isMoreNewsOpen, setIsMoreNewsOpen] = useState(false);
   const [isClosing, setIsClosing] = useState(false);
+  const pathname = usePathname();
 
   const { menuData } = useMenuContext();
-  const { weather } = useWeather("Lviv");
-  const { importantNews, loading } = useImportantNewsByLevel(1)
+  const { weather, loading: weatherLoading, refetch: refetchWeather } = useWeather("Lviv");
+  const { importantNews, loading, refetch: refetchRates } = useImportantNewsByLevel(1)
   const currencies = useMemo(() => ['USD', 'EUR'], []);
   const { rates } = useCurrencyRates(currencies);
 
+  useEffect(() => {
+
+    refetchRates();
+    refetchWeather();
+  }, [pathname]);
 
   useEffect(() => {
     if (isMenuOpen) {
@@ -365,7 +372,17 @@ export default function Header() {
       </div>
       <div className={styles.infoSection}>
         <div className={styles.weatherBox}>
-          <div className={styles.sityText}>{weather?.temp}°C</div>
+          {
+            weatherLoading ?
+              <div style={{ width: '35px' }}>
+                <Skeleton.Avatar
+                  active
+                  style={{width: '100%', height: '18px'}}
+                />
+              </div>
+               : <div className={styles.sityText}>{weather?.temp}°C</div>
+          }
+
           <Image src={locationIcon} alt={'location'}/>
           <div className={styles.sityText}>ЛЬВІВ</div>
         </div>
