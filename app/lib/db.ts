@@ -77,6 +77,7 @@ export async function executeQuery<T = any>(query: string, params?: any[]): Prom
   for (let attempt = 1; attempt <= maxRetries; attempt++) {
     try {
       const result = await pool.execute(query, params);
+      // mysql2 execute returns [rows, fields] where rows is the actual data array
       return result as [T[], any];
     } catch (error) {
       lastError = error;

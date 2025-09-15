@@ -156,7 +156,7 @@ export async function GET(request: NextRequest) {
     const newsQueryParams = [...queryParams, limit, offset];
     
     // Виконання запитів
-    const [newsData, countData] = await Promise.all([
+    const [[newsData], [countData]] = await Promise.all([
       executeQuery(newsQuery, newsQueryParams),
       executeQuery(countQuery, queryParams)
     ]);
@@ -179,7 +179,8 @@ export async function GET(request: NextRequest) {
           FROM a_pics
           WHERE id IN (${imageIds.map(() => '?').join(',')})
         `;
-        imagesData = await executeQuery(imagesQuery, imageIds);
+        const [imagesResult] = await executeQuery(imagesQuery, imageIds);
+        imagesData = imagesResult;
       } catch (imageError) {
         console.error('Error fetching images:', imageError);
       }
@@ -190,7 +191,7 @@ export async function GET(request: NextRequest) {
       news: newsData.map(news => ({
         ...news,
         images: news.images ? imagesData.filter(img => 
-          news.images.split(',').map(id => id.trim()).includes(img.id.toString())
+          news.images.split(',').map((id: string) => id.trim()).includes(img.id.toString())
         ).map(img => ({
           id: img.id,
           filename: img.filename,

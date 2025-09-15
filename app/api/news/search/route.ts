@@ -88,7 +88,7 @@ export async function GET(request: NextRequest) {
     const searchQueryParams = [...queryParams, limit, offset];
     
     // Виконання запитів
-    const [searchData, countData] = await Promise.all([
+    const [[searchData], [countData]] = await Promise.all([
       executeQuery(searchQuery, searchQueryParams),
       executeQuery(countQuery, queryParams)
     ]);
@@ -111,7 +111,8 @@ export async function GET(request: NextRequest) {
           FROM a_pics
           WHERE id IN (${imageIds.map(() => '?').join(',')})
         `;
-        imagesData = await executeQuery(imagesQuery, imageIds);
+        const [imagesResult] = await executeQuery(imagesQuery, imageIds);
+        imagesData = imagesResult;
       } catch (imageError) {
         console.error('Error fetching images:', imageError);
         // Continue without images if there's an error

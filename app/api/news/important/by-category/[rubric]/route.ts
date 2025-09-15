@@ -72,7 +72,7 @@ export async function GET(
     `;
     
     // Виконання запитів
-    const [newsData, countData] = await Promise.all([
+    const [[newsData], [countData]] = await Promise.all([
       executeQuery(importantNewsQuery, [...queryParams, limit]),
       executeQuery(countQuery, queryParams)
     ]);
@@ -93,7 +93,8 @@ export async function GET(
         FROM a_pics
         WHERE id IN (${imageIds.map(() => '?').join(',')})
       `;
-      imagesData = await executeQuery(imagesQuery, imageIds);
+      const [imagesResult] = await executeQuery(imagesQuery, imageIds);
+      imagesData = imagesResult;
     }
     
     // Формування відповіді

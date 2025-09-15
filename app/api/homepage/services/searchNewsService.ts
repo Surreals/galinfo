@@ -119,7 +119,7 @@ export async function searchNews(params: SearchNewsParams): Promise<SearchNewsRe
     `;
     
     // Виконання запитів
-    const [searchData, countData] = await Promise.all([
+    const [[searchData], [countData]] = await Promise.all([
       executeQuery(searchQuery, [...queryParams, limit, offset]),
       executeQuery(countQuery, queryParams)
     ]);
