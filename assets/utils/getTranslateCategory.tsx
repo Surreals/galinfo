@@ -1,5 +1,7 @@
 export function getCategoryTitle(category: string): string {
   switch (category) {
+    case "all":
+      return "Всі новини";
     case "society":
       return "Суспільство";
     case "politics":

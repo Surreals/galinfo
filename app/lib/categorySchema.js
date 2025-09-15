@@ -174,6 +174,16 @@ export const categoryDesktopSchema = {
         showSeparator: true,
         newsRange: { start: 32, end: 36 } // Діапазон новин з єдиного набору
       }
+    },
+    
+    // Компонент AllNews з останніми 20 новинами (тільки для категорії "all")
+    {
+      type: ALL_NEWS,
+      config: {
+        show: true,
+        customTitle: "Більше новин",
+        onlyForAllCategory: true // Спеціальний флаг для категорії "all"
+      }
     }
   ],
   
@@ -486,6 +496,16 @@ export const categoryMobileSchema = {
         className: 'categoryNewsStandard',
         showSeparator: true,
         newsRange: { start: 29, end: 36 } // Діапазон новин з єдиного набору
+      }
+    },
+    
+    // Компонент AllNews з останніми 20 новинами (тільки для категорії "all")
+    {
+      type: ALL_NEWS,
+      config: {
+        show: true,
+        customTitle: "Більше новин",
+        onlyForAllCategory: true // Спеціальний флаг для категорії "all"
       }
     }
   ]

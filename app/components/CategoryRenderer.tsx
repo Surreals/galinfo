@@ -7,6 +7,7 @@ import { isRegionCategory } from '@/app/lib/categoryUtils';
 import { useNewsByRubric } from '@/app/hooks/useNewsByRubric';
 import { useNewsByRegion } from '@/app/hooks/useNewsByRegion';
 import { useImportantNewsByCategory } from '@/app/hooks/useImportantNewsByCategory';
+import { useLatestNews } from '@/app/hooks/useLatestNews';
 import { getCategoryTitle } from '@/assets/utils/getTranslateCategory';
 import { formatNewsDate, generateArticleUrl, getNewsImage } from '@/app/lib/newsUtils';
 import { categoryDesktopSchema, categoryMobileSchema } from '@/app/lib/categorySchema';
@@ -40,7 +41,10 @@ const CategoryRenderer: React.FC<CategoryRendererProps> = ({ category }) => {
   const categoryId = getCategoryIdFromUrl(category);
   
   // Визначаємо, чи це регіональна категорія
-  const isRegion = categoryId ? isRegionCategory(categoryId) : false;
+  const isRegion = categoryId !== null ? isRegionCategory(categoryId) : false;
+  
+  // Визначаємо, чи це категорія "all" (всі новини)
+  const isAllCategory = categoryId === 0;
   
   // Хук для важливих новин (для головної новини)
   const importantNewsHook = useImportantNewsByCategory({
@@ -48,7 +52,7 @@ const CategoryRenderer: React.FC<CategoryRendererProps> = ({ category }) => {
     limit: 1,
     lang: '1',
     level: 1, // Найважливіші новини
-    autoFetch: !!categoryId && !isRegion
+    autoFetch: categoryId !== null && !isRegion && !isAllCategory
   });
 
   // Використовуємо відповідний хук для поточної категорії (єдиний запит на 36 новин)
@@ -59,7 +63,7 @@ const CategoryRenderer: React.FC<CategoryRendererProps> = ({ category }) => {
     lang: '1',
     approved: true,
     type: undefined,
-    autoFetch: !!categoryId && !isRegion
+    autoFetch: categoryId !== null && !isRegion && !isAllCategory
   });
 
   const regionHook = useNewsByRegion({
@@ -69,15 +73,23 @@ const CategoryRenderer: React.FC<CategoryRendererProps> = ({ category }) => {
     lang: '1',
     approved: true,
     type: undefined,
-    autoFetch: !!categoryId && isRegion
+    autoFetch: categoryId !== null && isRegion
+  });
+
+  // Хук для всіх новин (коли categoryId = 0) - завантажуємо 56 новин
+  const allNewsHook = useLatestNews({
+    page: 1,
+    limit: 56, // Запитуємо 56 новин одразу для категорії "all"
+    lang: '1',
+    autoFetch: isAllCategory
   });
 
   // Вибираємо дані з відповідного хука
-  const currentCategoryData = isRegion ? regionHook.data : rubricHook.data;
-  const currentCategoryLoading = isRegion ? regionHook.loading : rubricHook.loading;
-  const currentCategoryError = isRegion ? regionHook.error : rubricHook.error;
+  const currentCategoryData = isAllCategory ? allNewsHook.data : (isRegion ? regionHook.data : rubricHook.data);
+  const currentCategoryLoading = isAllCategory ? allNewsHook.loading : (isRegion ? regionHook.loading : rubricHook.loading);
+  const currentCategoryError = isAllCategory ? allNewsHook.error : (isRegion ? regionHook.error : rubricHook.error);
 
-  // Трансформуємо дані для поточної категорії (єдиний набір з 36 новин)
+  // Трансформуємо дані для поточної категорії (36 новин для звичайних категорій, 56 для "all")
   const transformedCurrentCategoryData = currentCategoryData?.news?.filter(item => item && item.id)?.map(item => ({
     id: item.id.toString(),
     title: item.nheader,
@@ -280,6 +292,24 @@ const CategoryRenderer: React.FC<CategoryRendererProps> = ({ category }) => {
         return <WeatherWidget key={index} />;
 
       case 'ALL_NEWS':
+        // Перевіряємо, чи цей блок призначений тільки для категорії "all"
+        if (config.onlyForAllCategory && !isAllCategory) {
+          return null; // Не показуємо блок для інших категорій
+        }
+        
+        // Для категорії "all" передаємо останні 20 новин
+        if (isAllCategory) {
+          const allNewsData = transformedCurrentCategoryData.slice(36, 56); // Останні 20 новин з 56
+          return (
+            <AllNews
+              key={index}
+              customTitle={config.customTitle || "Більше новин"}
+              news={allNewsData}
+              hideHeader={false}
+            />
+          );
+        }
+        // Для інших категорій використовуємо стандартну логіку
         return (
           <AllNews
             key={index}

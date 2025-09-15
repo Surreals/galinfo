@@ -9,7 +9,7 @@ interface NewsItem {
   ntype: number;
   images: string | any[]; // Може бути рядок або масив об'єктів з новою структурою
   urlkey: string;
-  photo: string;
+  photo: string | number | null; // Може бути рядком, числом або null
   video: string;
   udate: number;
   nheader: string;
@@ -85,17 +85,18 @@ export function getNewsImage(newsItem: NewsItem, size: keyof ApiImageUrls = 'int
   }
   
   // Check if there's a photo field first
-  if (newsItem.photo && newsItem.photo.trim() !== '') {
+  if (newsItem.photo && newsItem.photo.toString().trim() !== '') {
+    const photoStr = newsItem.photo.toString();
     // If photo is a full URL, return it as is
-    if (newsItem.photo.startsWith('http://') || newsItem.photo.startsWith('https://')) {
-      return newsItem.photo;
+    if (photoStr.startsWith('http://') || photoStr.startsWith('https://')) {
+      return photoStr;
     }
     // If photo is a relative path, ensure it has full URL
-    if (newsItem.photo.startsWith('/')) {
-      return ensureFullImageUrl(newsItem.photo);
+    if (photoStr.startsWith('/')) {
+      return ensureFullImageUrl(photoStr);
     }
     // Otherwise, assume it's a filename and construct the path with subdirectories
-    const imagePath = generateImagePath(newsItem.photo);
+    const imagePath = generateImagePath(photoStr);
     return ensureFullImageUrl(config.images.getNewsImagePath(imagePath));
   }
   

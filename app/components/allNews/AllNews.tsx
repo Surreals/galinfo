@@ -229,7 +229,7 @@ export default function AllNews({ news = [], isLoading = false, hideHeader = fal
 
         {/* Кнопка "Всі новини з рубрики" */}
         {!hideHeader && (
-          <ViewAllButton href="/all-news" />
+          <ViewAllButton href="/all" />
         )}
       </div>
     </section>

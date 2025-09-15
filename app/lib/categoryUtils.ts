@@ -2,6 +2,9 @@ import { MenuItem } from '@/app/api/homepage/services/menuService';
 
 // Category IDs based on the provided data
 export const CATEGORY_IDS = {
+  // Special category for all news
+  ALL: 0,            // Всі новини
+
   // Main categories (cattype = 1)
   SOCIETY: 4,        // Сусільство
   POLITICS: 2,       // Політика
