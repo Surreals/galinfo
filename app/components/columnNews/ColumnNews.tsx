@@ -7,7 +7,7 @@ import arrowRight from "@/assets/icons/arrowRight.svg";
 import adBannerIndfomo from '@/assets/images/Ad Banner white.png';
 import { useState, useEffect } from 'react';
 import { useNewsByRubric } from '@/app/hooks/useNewsByRubric';
-import { getUniversalNewsImageIntxt } from '@/app/lib/newsUtils';
+import { getUniversalNewsImageIntxt, formatFullNewsDate } from '@/app/lib/newsUtils';
 import { getUrlFromCategoryId } from '@/app/lib/categoryMapper';
 
 // Інтерфейси для типізації даних
@@ -16,7 +16,7 @@ export interface ColumnNewsItem {
   title: string;
   summary: string;
   date: string;
-  time: string;
+  time?: string; // Опціональне поле, оскільки час тепер включений в date
   url: string;
   imageUrl: string;
   imageAlt: string;
@@ -217,12 +217,7 @@ export default function ColumnNews({
       id: item.id.toString(),
       title: item.nheader,
       summary: item.nteaser || item.nsubheader || '',
-      date: new Date(item.ndate).toLocaleDateString('uk-UA', {
-        day: '2-digit',
-        month: 'long',
-        year: 'numeric'
-      }),
-      time: item.ntime,
+      date: formatFullNewsDate(item.ndate),
       url: `/news/${item.urlkey}_${item.id}`,
       imageUrl: getUniversalNewsImageIntxt(item) || 'https://picsum.photos/300/200?random=1',
       imageAlt: item.nheader

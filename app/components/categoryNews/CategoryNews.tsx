@@ -9,7 +9,7 @@ import { useNewsByRubric } from '@/app/hooks/useNewsByRubric';
 import { useNewsByRegion } from '@/app/hooks/useNewsByRegion';
 import { isRegionCategory } from '@/app/lib/categoryUtils';
 import { getImageUrlFromApi, getMainImageFromApi, hasApiImages, type ApiNewsImage } from '@/app/lib/imageUtils';
-import { getUniversalNewsImageIntxt } from '@/app/lib/newsUtils';
+import { getUniversalNewsImageIntxt, formatFullNewsDate } from '@/app/lib/newsUtils';
 import { getUrlFromCategoryId } from '@/app/lib/categoryMapper';
 
 // Інтерфейси для типізації даних
@@ -17,7 +17,7 @@ export interface CategoryNewsItem {
   id: string;
   title: string;
   date: string;
-  time: string;
+  time?: string; // Опціональне поле, оскільки час тепер включений в date
   url: string;
   imageUrl: string;
   imageAlt: string;
@@ -131,12 +131,7 @@ export default function CategoryNews({
       return {
         id: item.id.toString(),
         title: item.nheader,
-        date: new Date(item.ndate).toLocaleDateString('uk-UA', {
-          day: '2-digit',
-          month: 'long',
-          year: 'numeric'
-        }),
-        time: item.ntime,
+        date: formatFullNewsDate(item.ndate),
         url: `/news/${item.urlkey}_${item.id}`,
         imageUrl: imageUrl,
         imageAlt: item.nheader,

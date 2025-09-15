@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { AccentSquare, ViewAllButton } from '@/app/shared';
 import { useLatestNews } from '@/app/hooks/useLatestNews';
-import { formatNewsDate, generateArticleUrl } from '@/app/lib/newsUtils';
+import { formatNewsDate, formatFullNewsDate, generateArticleUrl } from '@/app/lib/newsUtils';
 import styles from './AllNews.module.css';
 
 // Інтерфейси для типізації даних
@@ -9,7 +9,7 @@ export interface NewsItem {
   id: string;
   title: string;
   date: string;
-  time: string;
+  time?: string; // Опціональне поле, оскільки час тепер включений в date
   url: string;
 }
 
@@ -38,8 +38,7 @@ export default function AllNews({ news = [], isLoading = false, hideHeader = fal
   const transformedNews: NewsItem[] = apiData?.news?.filter(item => item && item.id)?.map(item => ({
     id: item.id.toString(),
     title: item.nheader,
-    date: formatNewsDate(item.ndate, Date.now() / 1000),
-    time: item.ntime,
+    date: formatFullNewsDate(item.ndate),
     url: generateArticleUrl(item as any)
   })) || [];
 

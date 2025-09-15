@@ -5,7 +5,7 @@ import { Skeleton } from "antd";
 import { useMobileContext } from '@/app/contexts/MobileContext';
 import { useLatestNews } from '@/app/hooks/useLatestNews';
 import { useImportantNews } from '@/app/hooks/useImportantNews';
-import { formatNewsDate, generateArticleUrl, getNewsImage, getUniversalNewsImage } from '@/app/lib/newsUtils';
+import { formatNewsDate, formatFullNewsDate, generateArticleUrl, getNewsImage, getUniversalNewsImage } from '@/app/lib/newsUtils';
 import { articlePageDesktopSchema, articlePageMobileSchema } from '@/app/lib/articlePageSchema';
 
 // Імпорт компонентів
@@ -51,11 +51,7 @@ const ArticlePageRenderer: React.FC<ArticlePageRendererProps> = ({ article, load
   const transformedLatestNews = latestNewsHook.data?.news?.filter(item => item && item.id)?.map(item => ({
     id: item.id.toString(),
     title: item.nheader,
-    date: formatNewsDate(item.ndate, Date.now() / 1000),
-    time: item.ndate ? new Date(item.ndate).toLocaleTimeString('uk-UA', { 
-      hour: '2-digit', 
-      minute: '2-digit' 
-    }) : '',
+    date: formatFullNewsDate(item.ndate),
     url: generateArticleUrl(item as any),
     imageUrl: getNewsImage(item as any) || 'https://picsum.photos/300/200?random=1',
     imageAlt: item.nheader,
@@ -68,11 +64,7 @@ const ArticlePageRenderer: React.FC<ArticlePageRendererProps> = ({ article, load
   const transformedImportantNews = importantNewsHook.importantNews?.filter(item => item && item.id)?.map(item => ({
     id: item.id.toString(),
     title: item.nheader,
-    date: formatNewsDate(item.ndate, Date.now() / 1000),
-    time: item.ndate ? new Date(item.ndate).toLocaleTimeString('uk-UA', { 
-      hour: '2-digit', 
-      minute: '2-digit' 
-    }) : '',
+    date: formatFullNewsDate(item.ndate),
     url: generateArticleUrl(item as any),
     imageUrl: getNewsImage(item as any) || 'https://picsum.photos/300/200?random=1',
     imageAlt: item.nheader,

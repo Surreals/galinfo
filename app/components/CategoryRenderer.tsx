@@ -10,7 +10,7 @@ import { useImportantNewsByCategory } from '@/app/hooks/useImportantNewsByCatego
 import { useImportantNews } from '@/app/hooks/useImportantNews';
 import { useLatestNews } from '@/app/hooks/useLatestNews';
 import { getCategoryTitle } from '@/assets/utils/getTranslateCategory';
-import { formatNewsDate, generateArticleUrl, getNewsImage } from '@/app/lib/newsUtils';
+import { formatNewsDate, formatFullNewsDate, generateArticleUrl, getNewsImage } from '@/app/lib/newsUtils';
 import { categoryDesktopSchema, categoryMobileSchema } from '@/app/lib/categorySchema';
 
 // Імпорт компонентів
@@ -110,11 +110,7 @@ const CategoryRenderer: React.FC<CategoryRendererProps> = ({ category }) => {
   const transformedCurrentCategoryData = currentCategoryData?.news?.filter(item => item && item.id)?.map(item => ({
     id: item.id.toString(),
     title: item.nheader,
-    date: formatNewsDate(item.ndate, (item as any).udate || Date.now() / 1000),
-    time: item.ndate ? new Date(item.ndate).toLocaleTimeString('uk-UA', { 
-      hour: '2-digit', 
-      minute: '2-digit' 
-    }) : '',
+    date: formatFullNewsDate(item.ndate),
     url: generateArticleUrl(item as any),
     imageUrl: getNewsImage(item as any) || 'https://picsum.photos/300/200?random=1',
     imageAlt: item.nheader,
@@ -166,7 +162,7 @@ const CategoryRenderer: React.FC<CategoryRendererProps> = ({ category }) => {
           const importantNews = importantNewsCategoryHook.importantNews[0];
           mainNewsItem = {
             title: importantNews.nheader,
-            date: formatNewsDate(importantNews.ndate, Date.now() / 1000),
+            date: formatFullNewsDate(importantNews.ndate),
             time: importantNews.ntime,
             url: generateArticleUrl(importantNews as any),
             imageUrl: getNewsImage(importantNews as any) || 'https://picsum.photos/300/200?random=1',
@@ -177,7 +173,7 @@ const CategoryRenderer: React.FC<CategoryRendererProps> = ({ category }) => {
           const importantNews = importantNewsHook.data.importantNews[0];
           mainNewsItem = {
             title: importantNews.nheader,
-            date: formatNewsDate(importantNews.ndate, Date.now() / 1000),
+            date: formatFullNewsDate(importantNews.ndate),
             time: importantNews.ntime,
             url: generateArticleUrl(importantNews as any),
             imageUrl: getNewsImage(importantNews as any) || 'https://picsum.photos/300/200?random=1',
@@ -198,7 +194,6 @@ const CategoryRenderer: React.FC<CategoryRendererProps> = ({ category }) => {
             key={index}
             title={mainNewsItem.title}
             date={mainNewsItem.date}
-            time={mainNewsItem.time}
             url={mainNewsItem.url}
             imageUrl={mainNewsItem.imageUrl || config.imageUrl}
             imageAlt={mainNewsItem.title}

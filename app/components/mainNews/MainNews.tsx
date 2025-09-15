@@ -5,7 +5,7 @@ import styles from './MainNews.module.css';
 export interface MainNewsProps {
   title: string;
   date: string;
-  time: string;
+  time?: string; // Опціональне поле, оскільки час тепер включений в date
   url: string;
   imageUrl: string;
   imageAlt: string;
