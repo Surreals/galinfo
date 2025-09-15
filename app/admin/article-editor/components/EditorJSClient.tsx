@@ -467,7 +467,6 @@ export default function EditorJSClient({
       },
       // Additional configuration
       onReady: () => {
-        console.log('Editor.js is ready to work!');
         setIsInitialized(true);
         setInitError(null);
       },

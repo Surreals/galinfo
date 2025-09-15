@@ -30,9 +30,7 @@ export default function Header() {
   const { importantNews } = useImportantNewsByLevel(1)
   const currencies = useMemo(() => ['USD', 'EUR'], []);
   const { rates } = useCurrencyRates(currencies);
-
-  console.log('weather',weather)
-
+  
   useEffect(() => {
     if (isMenuOpen) {
       document.body.style.overflow = "hidden";

@@ -281,7 +281,6 @@ function NewsListRenderer({ block, isMobile }: { block: any, isMobile: boolean }
   const apiLoading = isRegion ? regionHook.loading : rubricHook.loading;
   const apiError = isRegion ? regionHook.error : rubricHook.error;
 
-  console.log('apiData', apiData)
 
   // Трансформуємо дані для NewsList
   const newsData = apiData?.news?.filter(item => item && item.id)?.map(item => ({
@@ -296,8 +295,6 @@ function NewsListRenderer({ block, isMobile }: { block: any, isMobile: boolean }
     imageUrl: getUniversalNewsImageFull(item) || `https://picsum.photos/seed/${item.id || 'default'}/300/200`,
     url: generateArticleUrl(item),
   })) || [];
-
-  console.log('newsDatanewsData', newsData)
 
   // Генеруємо додаткові новини якщо потрібно
   const additionalNews = Array.from({ length: Math.max(0, (config.apiParams?.limit || 8) - newsData.length) }, (_, index) => ({

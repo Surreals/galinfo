@@ -102,7 +102,6 @@ export function useNewsByRubric(options: UseNewsByRubricOptions): UseNewsByRubri
       }
 
       const url = `/api/news/${rubric}?${params}`;
-      console.log('Request URL:', url);
 
       const response = await fetch(url);
       
@@ -121,7 +120,6 @@ export function useNewsByRubric(options: UseNewsByRubricOptions): UseNewsByRubri
       console.error('Error fetching news:', err);
     } finally {
       setLoading(false);
-      console.log('=== End useNewsByRubric Debug ===');
     }
   }, [rubric, page, limit, type, lang, approved]);
 

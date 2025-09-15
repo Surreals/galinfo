@@ -31,7 +31,6 @@ export async function POST(request: NextRequest) {
 
     if (newsData.id) {
       // Update existing news
-      console.log('Updating existing news with ID:', newsData.id);
       
       // Update main news table
       await executeQuery(
@@ -79,7 +78,6 @@ export async function POST(request: NextRequest) {
       
     } else {
       // Create new news
-      console.log('Creating new news');
       
       // Insert into main news table
       const newsResult = await executeQuery(

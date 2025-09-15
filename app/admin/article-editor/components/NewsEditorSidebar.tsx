@@ -270,7 +270,6 @@ export default function NewsEditorSidebar({ isEditing, newsId, articleData, onNb
       lang: articleData?.lang || 'ua',
     };
     
-    console.log('Article editor payload:', payload);
     await saveArticle(payload);
   };
 

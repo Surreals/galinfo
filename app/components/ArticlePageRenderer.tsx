@@ -160,7 +160,6 @@ const ArticlePageRenderer: React.FC<ArticlePageRendererProps> = ({ article, load
         if (!article?.images_data?.length) return null;
 
         const imageUrl = getUniversalNewsImage(article, 'full') || getUniversalNewsImage(article);
-        console.log(imageUrl, 'imageUrl');
         
         return (
           <div key={index} className={styles.articleImage}>

@@ -165,8 +165,6 @@ export default function CategoryNews({
     );
   }
 
-  console.log(displayNews, 'displayNews')
-
   return (
     <section className={`${styles.categoryNewsSection} ${className}`}>
       <div className={styles.container}>

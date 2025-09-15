@@ -57,11 +57,24 @@ pool.on('connection', (connection) => {
 // Function to get pool statistics
 export function getPoolStats() {
   const poolInternal = pool.pool as any;
+  
+  // Handle both Denque objects and regular arrays
+  const getLength = (obj: any) => {
+    if (!obj) return 0;
+    if (typeof obj.length === 'number') return obj.length;
+    if (typeof obj.size === 'number') return obj.size;
+    return 0;
+  };
+  
+  const total = getLength(poolInternal._allConnections);
+  const free = getLength(poolInternal._freeConnections);
+  const acquiring = getLength(poolInternal._acquiringConnections);
+  
   return {
-    total: poolInternal._allConnections?.length || 0,
-    free: poolInternal._freeConnections?.length || 0,
-    acquiring: poolInternal._acquiringConnections?.length || 0,
-    used: (poolInternal._allConnections?.length || 0) - (poolInternal._freeConnections?.length || 0)
+    total,
+    free,
+    acquiring,
+    used: total - free
   };
 }
 
@@ -218,9 +231,22 @@ export async function executeQuery<T = any>(query: string, params?: any[]): Prom
               console.warn('Error accessing pool connections during retry:', cleanupError);
             }
             
-            // Clear the connection arrays
-            if (poolInternal._allConnections) poolInternal._allConnections.length = 0;
-            if (poolInternal._freeConnections) poolInternal._freeConnections.length = 0;
+            // Clear the connection arrays (they might be Denque objects, not regular arrays)
+            try {
+              if (poolInternal._allConnections && typeof poolInternal._allConnections.clear === 'function') {
+                poolInternal._allConnections.clear();
+              } else if (poolInternal._allConnections && Array.isArray(poolInternal._allConnections)) {
+                poolInternal._allConnections.length = 0;
+              }
+              
+              if (poolInternal._freeConnections && typeof poolInternal._freeConnections.clear === 'function') {
+                poolInternal._freeConnections.clear();
+              } else if (poolInternal._freeConnections && Array.isArray(poolInternal._freeConnections)) {
+                poolInternal._freeConnections.length = 0;
+              }
+            } catch (clearError) {
+              console.warn('Error clearing connection arrays:', clearError);
+            }
           } catch (cleanupError) {
             console.warn('Connection cleanup failed:', cleanupError);
           }
@@ -250,15 +276,29 @@ export async function cleanupConnections(): Promise<void> {
     // Close excess free connections - keep only 1 free connection
     if (stats.free > 1) {
       const poolInternal = pool.pool as any;
-      const excessConnections = poolInternal._freeConnections?.splice(1) || []; // Keep only 1 free connection
-      console.log(`Closing ${excessConnections.length} excess connections`);
+      let excessConnections: any[] = [];
       
-      for (const conn of excessConnections) {
-        try {
-          await conn.end();
-        } catch (e) {
-          console.warn('Failed to close excess connection:', e);
+      try {
+        if (poolInternal._freeConnections) {
+          if (Array.isArray(poolInternal._freeConnections)) {
+            excessConnections = poolInternal._freeConnections.splice(1); // Keep only 1 free connection
+          } else if (typeof poolInternal._freeConnections.splice === 'function') {
+            // Handle Denque objects
+            excessConnections = poolInternal._freeConnections.splice(1);
+          }
         }
+        
+        console.log(`Closing ${excessConnections.length} excess connections`);
+        
+        for (const conn of excessConnections) {
+          try {
+            await conn.end();
+          } catch (e) {
+            console.warn('Failed to close excess connection:', e);
+          }
+        }
+      } catch (error) {
+        console.warn('Error accessing free connections for cleanup:', error);
       }
     }
     

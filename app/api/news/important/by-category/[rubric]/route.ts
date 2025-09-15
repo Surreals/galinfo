@@ -32,9 +32,6 @@ export async function GET(
     
     const whereClause = whereConditions.join(' AND ');
     
-    console.log('Important news by category WHERE clause:', whereClause);
-    console.log('Query params:', queryParams);
-    
     // Запит для отримання важливих новин в категорії
     const importantNewsQuery = `
       SELECT 

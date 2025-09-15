@@ -51,9 +51,7 @@ export async function GET(
     }
     
     const whereClause = whereConditions.join(' AND ');
-    
-    console.log('WHERE clause:', whereClause);
-    console.log('Query params:', queryParams);
+  
     
     // Запит для отримання новин
     const newsQuery = `
@@ -111,8 +109,6 @@ export async function GET(
       .map(news => news.images.split(','))
       .flat()
       .filter(id => id.trim());
-    
-    console.log('Image IDs to fetch:', imageIds);
     
     let imagesData: any[] = [];
     if (imageIds.length > 0) {
