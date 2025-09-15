@@ -56,7 +56,7 @@ export function formatFullNewsDate(ndate: string, ntime?: string): string {
   const newsTime = dayjs(ndate);
   
   // Форматуємо дату: "13 серпня 2025 р."
-  const dateStr = newsTime.format('DD MMMM YYYY р.');
+  const dateStr = newsTime.format('DD MMMM YYYY');
   
   // Використовуємо ntime з бекенду для часу, якщо він є, інакше беремо з ndate
   // Прибираємо секунди з часу (формат HH:mm:ss -> HH:mm)
