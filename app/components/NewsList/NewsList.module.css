@@ -335,6 +335,11 @@
     gap: 20px;
   }
   
+  /* Адаптивна висота зображень для планшетів */
+  .newsImage {
+    height: 180px;
+  }
+  
   .paginationControls {
     flex-direction: column;
     gap: 15px;
@@ -348,6 +353,11 @@
 @media (max-width: 480px) {
   .newsContent {
     padding: 15px;
+  }
+  
+  /* Адаптивна висота зображень для малих мобільних */
+  .newsImage {
+    height: 160px;
   }
   
   .newsTitle {

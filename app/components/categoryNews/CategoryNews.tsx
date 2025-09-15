@@ -191,8 +191,8 @@ export default function CategoryNews({
                 <div 
                   className={styles.skeletonImage}
                   style={{
-                    height: shouldShowHorizontal ? height : 'auto',
-                    aspectRatio: shouldShowHorizontal ? 'auto' : '1'
+                    height: shouldShowHorizontal ? height : '200px',
+                    aspectRatio: shouldShowHorizontal ? 'auto' : 'auto'
                   }}
                 ></div>
                 <div className={styles.skeletonTitle}></div>
@@ -204,15 +204,13 @@ export default function CategoryNews({
             displayNews.map((item) => (
               <article key={item.id} className={`${styles.newsItem} ${shouldShowHorizontal ? styles.newsItemHorizontal : ''}`}>
                 <Link href={item.url} className={styles.newsLink}>
-                  <div style={{
-                    height: shouldShowHorizontal ? height : 'auto',
-                  }} 
+                  <div 
                   className={styles.imageContainer}>
                     <Image 
                       src={item.imageUrl} 
                       alt={item.imageAlt}
                       width={300}
-                      height={shouldShowHorizontal ? height : 300}
+                      height={shouldShowHorizontal ? height : 200}
                       className={styles.newsImage}
                     />
                     {item.nweight > 0 && (

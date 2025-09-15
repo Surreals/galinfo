@@ -124,6 +124,7 @@
 .imageContainer {
   position: relative;
   width: 100%;
+  height: 200px; /* Фіксована висота для однакових розмірів */
   margin-bottom: 12px;
   border-radius: 8px;
   overflow: hidden;
@@ -200,11 +201,16 @@
   margin-bottom: 12px;
 }
 
-/* Квадратний скелетон для мобільного column layout */
+/* Фіксована висота скелетона для мобільного column layout */
 @media (max-width: 1000px) {
   .newsGrid:not(.newsGridHorizontal) .skeletonImage {
-    aspect-ratio: 1;
-    height: auto;
+    height: 160px;
+  }
+}
+
+@media (max-width: 480px) {
+  .newsGrid:not(.newsGridHorizontal) .skeletonImage {
+    height: 140px;
   }
 }
 
@@ -283,15 +289,13 @@
     gap: 16px;
   }
   
-  /* Квадратні фото для column layout */
+  /* Фіксована висота для column layout */
   .newsGrid:not(.newsGridHorizontal) .imageContainer {
-    aspect-ratio: 1;
-    height: auto;
+    height: 160px;
   }
   
   .newsGrid:not(.newsGridHorizontal) .newsImage {
-    aspect-ratio: 1;
-    height: auto;
+    height: 100%;
   }
   
   /* Кращі стилі для заголовків на мобільних з column layout */
@@ -375,15 +379,13 @@
     gap: 12px;
   }
   
-  /* Квадратні фото для column layout на малих екранах */
+  /* Фіксована висота для column layout на малих екранах */
   .newsGrid:not(.newsGridHorizontal) .imageContainer {
-    aspect-ratio: 1;
-    height: auto;
+    height: 140px;
   }
   
   .newsGrid:not(.newsGridHorizontal) .newsImage {
-    aspect-ratio: 1;
-    height: auto;
+    height: 100%;
   }
   
   /* Кращі стилі для заголовків на малих мобільних з column layout */

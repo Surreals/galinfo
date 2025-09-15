@@ -78,6 +78,7 @@
 
 .image {
   width: 100%;
+  height: 200px; /* Фіксована висота для однакових розмірів */
   object-fit: cover;
   border-radius: 8px;
   margin-bottom: 16px;
@@ -194,6 +195,11 @@
 
 /* Медіа-запити для мобільних пристроїв */
 @media (max-width: 1000px) {
+  /* Фіксована висота для звичайного режиму на планшетах */
+  .image:not(.itemHorizontal .image) {
+    height: 180px;
+  }
+  
   .itemHorizontal {
     width: 260px !important;
   }
@@ -207,6 +213,11 @@
 @media (max-width: 480px) {
   .itemTitle {
     margin: 0 0 6px;
+  }
+
+  /* Фіксована висота для звичайного режиму на малих мобільних */
+  .image:not(.itemHorizontal .image) {
+    height: 160px;
   }
 
   .itemHorizontal {
