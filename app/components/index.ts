@@ -15,3 +15,4 @@ export { default as NewsSearch } from './NewsSearch';
 export { default as HomePageRenderer } from './HomePageRenderer';
 export { default as HeroRenderer } from './HeroRenderer';
 export { default as CategoryRenderer } from './CategoryRenderer';
+export { default as ArticlePageRenderer } from './ArticlePageRenderer';
