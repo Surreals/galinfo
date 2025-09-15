@@ -248,14 +248,14 @@ function formatDate(dateString: string): string {
 }
 
 // Компонент для рендерингу NewsList з підтримкою API
-function NewsListRenderer({ block, isMobile }: { block: any, isMobile: boolean }) {
+function NewsListRenderer({ block, isMobile }: { block: any; isMobile: boolean }) {
   const config = block.config;
-  const categoryId = block.categoryId; // Отримуємо categoryId з верхнього рівня
-  
-  // Визначаємо, чи це регіональна категорія
-  const isRegion = categoryId && categoryId !== 'all' ? isRegionCategory(Number(categoryId)) : false;
-  
-  // Використовуємо відповідний хук залежно від типу категорії
+  const categoryId = block.categoryId;
+
+  const isRegion = categoryId && categoryId !== 'all'
+    ? isRegionCategory(Number(categoryId))
+    : false;
+
   const rubricHook = useNewsByRubric({
     rubric: categoryId?.toString() || '',
     page: config.apiParams?.page || 1,
@@ -276,14 +276,28 @@ function NewsListRenderer({ block, isMobile }: { block: any, isMobile: boolean }
     autoFetch: config.useRealData && !!categoryId && isRegion
   });
 
-  // Вибираємо дані з відповідного хука
   const apiData = isRegion ? regionHook.data : rubricHook.data;
   const apiLoading = isRegion ? regionHook.loading : rubricHook.loading;
-  const apiError = isRegion ? regionHook.error : rubricHook.error;
 
+  // ⬇️ додаємо локальний прапор, який покаже скелетон тільки з першого рендера
+  const [initial, setInitial] = React.useState(true);
 
-  // Трансформуємо дані для NewsList
-  const newsData = apiData?.news?.filter(item => item && item.id)?.map(item => ({
+  React.useEffect(() => {
+    if (!apiLoading) {
+      setInitial(false);
+    }
+  }, [apiLoading]);
+
+  if (initial) {
+    // повністю біла сторінка або ваш скелетон
+    return (
+      <div style={{ height: '400px' }}>
+      </div>
+    );
+  }
+
+  // готуємо дані, як раніше
+  const newsData = apiData?.news?.filter(i => i && i.id)?.map(item => ({
     id: item.id.toString(),
     title: item.nheader,
     date: new Date(item.ndate).toLocaleDateString('uk-UA', {
@@ -296,17 +310,6 @@ function NewsListRenderer({ block, isMobile }: { block: any, isMobile: boolean }
     url: generateArticleUrl(item),
   })) || [];
 
-  // Генеруємо додаткові новини якщо потрібно
-  const additionalNews = Array.from({ length: Math.max(0, (config.apiParams?.limit || 8) - newsData.length) }, (_, index) => ({
-    id: `additional-${index + 1}`,
-    title: `Додаткова новина ${index + 1}`,
-    time: dayjs().subtract(index + 1, 'hour').format('HH:mm'),
-    imageUrl: `https://picsum.photos/seed/additional-${index + 1}/300/200`,
-    url: `/news/additional-${index + 1}`,
-  }));
-
-  const finalNewsData = [...newsData, ...additionalNews];
-
 
   if (apiLoading) {
     return (
@@ -318,9 +321,10 @@ function NewsListRenderer({ block, isMobile }: { block: any, isMobile: boolean }
 
   return (
     <NewsList
+      loading={apiLoading}
       title={config.title}
       moreButtonUrl={config.moreButtonUrl}
-      data={finalNewsData}
+      data={newsData}
       showSeparator={config.showSeparator}
       showImagesAt={isMobile ? (config.showImagesAt || []) : (config.showImagesAt || [])}
       widthPercent={isMobile ? 100 : (config.widthPercent || 45)}
@@ -330,3 +334,4 @@ function NewsListRenderer({ block, isMobile }: { block: any, isMobile: boolean }
     />
   );
 }
+

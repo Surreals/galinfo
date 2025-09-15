@@ -50,6 +50,20 @@ export function formatNewsDate(ndate: string, udate: number): string {
   return newsTime.format('DD.MM');
 }
 
+// Нова функція для повного формату дати: "13 серпня 2025 року 14:13"
+export function formatFullNewsDate(ndate: string): string {
+  // Використовуємо ndate з запиту для форматування дати (ISO формат: 2025-09-10T21:00:00.000Z)
+  const newsTime = dayjs(ndate);
+  
+  // Форматуємо дату: "13 серпня 2025 року"
+  const dateStr = newsTime.format('DD MMMM YYYY року');
+  
+  // Форматуємо час: "14:13" (без секунд)
+  const timeStr = newsTime.format('HH:mm');
+  
+  return `${dateStr} ${timeStr}`;
+}
+
 export function generateArticleUrl(newsItem: NewsItem): string {
   // Use the urlkey if available, otherwise generate from date and id
   if (newsItem.urlkey) {
