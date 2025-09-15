@@ -243,7 +243,7 @@ export function getUniversalNewsImage(newsItem: any, size: keyof ApiImageUrls = 
     }
     // Якщо немає потрібного розміру, спробуємо інші розміри
     if (firstImage && firstImage.urls) {
-      const fallbackUrl = firstImage.urls.intxt || firstImage.urls.full || firstImage.urls.tmb;
+      const fallbackUrl = firstImage.urls.full || firstImage.urls.intxt || firstImage.urls.tmb;
       if (fallbackUrl) {
         // Застосовуємо ту ж логіку для fallback URL
         if (!fallbackUrl.startsWith('http')) {
