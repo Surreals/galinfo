@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { executeQuery } from '@/app/lib/db';
+import { formatNewsImages } from '@/app/lib/imageUtils';
 
 export async function GET(request: Request) {
   try {
@@ -52,8 +53,32 @@ export async function GET(request: Request) {
     const total = totalCount[0]?.total || 0;
     const totalPages = Math.ceil(total / limit);
 
+    // Отримання зображень для новин
+    const imageIds = latestNews
+      .filter(news => news.images)
+      .map(news => news.images.split(','))
+      .flat()
+      .filter(id => id.trim());
+    
+    let imagesData: any[] = [];
+    if (imageIds.length > 0) {
+      const imagesQuery = `
+        SELECT id, filename, title_ua
+        FROM a_pics
+        WHERE id IN (${imageIds.map(() => '?').join(',')})
+      `;
+      const [imagesDataResult] = await executeQuery(imagesQuery, imageIds);
+      imagesData = imagesDataResult;
+    }
+
+    // Формування відповіді з обробленими зображеннями
+    const newsWithImages = latestNews.map(news => ({
+      ...news,
+      images: news.images ? formatNewsImages(imagesData, news.images.split(',').map((id: string) => parseInt(id.trim())).filter((id: number) => !isNaN(id)), lang) : []
+    }));
+
     return NextResponse.json({
-      news: latestNews,
+      news: newsWithImages,
       pagination: {
         page,
         limit,
