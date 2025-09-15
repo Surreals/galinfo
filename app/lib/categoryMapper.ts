@@ -2,8 +2,9 @@ import { CATEGORY_IDS } from './categoryUtils';
 
 // Маппер для конвертації URL параметрів в categoryId
 export const CATEGORY_URL_MAPPER: Record<string, number> = {
-  // Спеціальна категорія для всіх новин
+  // Спеціальні категорії
   'all': CATEGORY_IDS.ALL,                // 0 - Всі новини
+  'important': -1,                        // -1 - Важливі новини (спеціальний ID)
 
   // Основні категорії
   'society': CATEGORY_IDS.SOCIETY,        // 4 - Суспільство
@@ -36,8 +37,9 @@ export function getCategoryIdFromUrl(categoryParam: string): number | null {
 }
 
 // Функція для отримання URL параметра з categoryId
-export function getUrlFromCategoryId(categoryId: number): string | null {
-  const entry = Object.entries(CATEGORY_URL_MAPPER).find(([_, id]) => id === categoryId);
+export function getUrlFromCategoryId(categoryId: number | string): string | null {
+  const numericId = typeof categoryId === 'string' ? parseInt(categoryId, 10) : categoryId;
+  const entry = Object.entries(CATEGORY_URL_MAPPER).find(([_, id]) => id === numericId);
   return entry ? entry[0] : null;
 }
 

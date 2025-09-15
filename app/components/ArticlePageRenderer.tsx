@@ -228,10 +228,13 @@ const ArticlePageRenderer: React.FC<ArticlePageRendererProps> = ({ article, load
       case 'COLUMN_NEWS':
         // Визначаємо дані на основі типу хука
         let columnNewsData = [];
+        let viewAllButtonHref = '';
         if (block.categoryId === 'LATEST_NEWS') {
           columnNewsData = transformedLatestNews;
+          viewAllButtonHref = '/all'; // Для СВІЖІ НОВИНИ веде на /all
         } else {
           columnNewsData = transformedImportantNews;
+          viewAllButtonHref = '/important'; // Для ТОП НОВИНИ веде на /important
         }
         
         return (
@@ -249,16 +252,20 @@ const ArticlePageRenderer: React.FC<ArticlePageRendererProps> = ({ article, load
             useRealData={false} // Вимикаємо API запит, оскільки передаємо готові дані
             config={config}
             news={columnNewsData} // Передаємо готові дані через проп news
+            viewAllButtonHref={viewAllButtonHref} // Передаємо href для ViewAllButton
           />
         );
 
       case 'CATEGORY_NEWS':
         // Визначаємо дані на основі типу хука
         let categoryNewsData = [];
+        let categoryViewAllButtonHref = '';
         if (block.categoryId === 'IMPORTANT_NEWS') {
           categoryNewsData = transformedImportantNews;
+          categoryViewAllButtonHref = '/important'; // Для ТОП НОВИНИ веде на /important
         } else {
           categoryNewsData = transformedLatestNews;
+          categoryViewAllButtonHref = '/all'; // Для СВІЖІ НОВИНИ веде на /all
         }
         
         return (
@@ -273,6 +280,7 @@ const ArticlePageRenderer: React.FC<ArticlePageRendererProps> = ({ article, load
             limit={categoryNewsData.length}
             config={config}
             news={categoryNewsData} // Передаємо готові дані через проп news
+            viewAllButtonHref={categoryViewAllButtonHref} // Передаємо href для ViewAllButton
           />
         );
 

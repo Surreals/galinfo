@@ -7,6 +7,7 @@ import { isRegionCategory } from '@/app/lib/categoryUtils';
 import { useNewsByRubric } from '@/app/hooks/useNewsByRubric';
 import { useNewsByRegion } from '@/app/hooks/useNewsByRegion';
 import { useImportantNewsByCategory } from '@/app/hooks/useImportantNewsByCategory';
+import { useImportantNews } from '@/app/hooks/useImportantNews';
 import { useLatestNews } from '@/app/hooks/useLatestNews';
 import { getCategoryTitle } from '@/assets/utils/getTranslateCategory';
 import { formatNewsDate, generateArticleUrl, getNewsImage } from '@/app/lib/newsUtils';
@@ -46,6 +47,9 @@ const CategoryRenderer: React.FC<CategoryRendererProps> = ({ category }) => {
   // Визначаємо, чи це категорія "all" (всі новини)
   const isAllCategory = categoryId === 0;
   
+  // Визначаємо, чи це категорія "important" (важливі новини)
+  const isImportantCategory = categoryId === -1;
+  
   // Хук для важливих новин (для головної новини)
   const importantNewsHook = useImportantNewsByCategory({
     rubric: categoryId?.toString() || '',
@@ -84,12 +88,25 @@ const CategoryRenderer: React.FC<CategoryRendererProps> = ({ category }) => {
     autoFetch: isAllCategory
   });
 
-  // Вибираємо дані з відповідного хука
-  const currentCategoryData = isAllCategory ? allNewsHook.data : (isRegion ? regionHook.data : rubricHook.data);
-  const currentCategoryLoading = isAllCategory ? allNewsHook.loading : (isRegion ? regionHook.loading : rubricHook.loading);
-  const currentCategoryError = isAllCategory ? allNewsHook.error : (isRegion ? regionHook.error : rubricHook.error);
+  // Хук для важливих новин (коли categoryId = -1) - завантажуємо 56 новин
+  const importantNewsCategoryHook = useImportantNews({
+    limit: 56, // Запитуємо 56 новин одразу для категорії "important" (як і для "all")
+    lang: '1',
+    autoFetch: isImportantCategory
+  });
 
-  // Трансформуємо дані для поточної категорії (36 новин для звичайних категорій, 56 для "all")
+  // Вибираємо дані з відповідного хука
+  const currentCategoryData = isAllCategory ? allNewsHook.data : 
+                             isImportantCategory ? { news: importantNewsCategoryHook.importantNews } : 
+                             (isRegion ? regionHook.data : rubricHook.data);
+  const currentCategoryLoading = isAllCategory ? allNewsHook.loading : 
+                                isImportantCategory ? importantNewsCategoryHook.loading : 
+                                (isRegion ? regionHook.loading : rubricHook.loading);
+  const currentCategoryError = isAllCategory ? allNewsHook.error : 
+                              isImportantCategory ? importantNewsCategoryHook.error : 
+                              (isRegion ? regionHook.error : rubricHook.error);
+
+  // Трансформуємо дані для поточної категорії (36 новин для звичайних категорій, 56 для "all" та "important")
   const transformedCurrentCategoryData = currentCategoryData?.news?.filter(item => item && item.id)?.map(item => ({
     id: item.id.toString(),
     title: item.nheader,
@@ -144,8 +161,19 @@ const CategoryRenderer: React.FC<CategoryRendererProps> = ({ category }) => {
         // Використовуємо важливі новини для головної новини
         let mainNewsItem = null;
         
-        if (!isRegion && importantNewsHook.data?.importantNews && importantNewsHook.data.importantNews.length > 0) {
-          // Використовуємо важливу новину якщо є
+        if (isImportantCategory && importantNewsCategoryHook.importantNews && importantNewsCategoryHook.importantNews.length > 0) {
+          // Для категорії important використовуємо першу важливу новину
+          const importantNews = importantNewsCategoryHook.importantNews[0];
+          mainNewsItem = {
+            title: importantNews.nheader,
+            date: formatNewsDate(importantNews.ndate, Date.now() / 1000),
+            time: importantNews.ntime,
+            url: generateArticleUrl(importantNews as any),
+            imageUrl: getNewsImage(importantNews as any) || 'https://picsum.photos/300/200?random=1',
+            imageAlt: importantNews.nheader
+          };
+        } else if (!isRegion && !isImportantCategory && importantNewsHook.data?.importantNews && importantNewsHook.data.importantNews.length > 0) {
+          // Використовуємо важливу новину якщо є (для звичайних категорій)
           const importantNews = importantNewsHook.data.importantNews[0];
           mainNewsItem = {
             title: importantNews.nheader,
@@ -297,8 +325,8 @@ const CategoryRenderer: React.FC<CategoryRendererProps> = ({ category }) => {
           return null; // Не показуємо блок для інших категорій
         }
         
-        // Для категорії "all" передаємо останні 20 новин
-        if (isAllCategory) {
+        // Для категорії "all" та "important" передаємо останні 20 новин
+        if (isAllCategory || isImportantCategory) {
           const allNewsData = transformedCurrentCategoryData.slice(36, 56); // Останні 20 новин з 56
           return (
             <AllNews

@@ -27,7 +27,7 @@ export interface CategoryNewsItem {
 
 export interface CategoryNewsProps {
   category: string;
-  categoryId?: number;
+  categoryId?: number | string;
   news?: CategoryNewsItem[];
   isLoading?: boolean;
   hideHeader?: boolean;
@@ -37,6 +37,7 @@ export interface CategoryNewsProps {
   isMobile?: boolean;
   limit?: number; // Кількість новин для відображення
   useRealData?: boolean; // Чи використовувати реальні дані з API
+  viewAllButtonHref?: string; // Новий пропс для ViewAllButton href
   config?: {
     mobileLayout?: 'column' | 'horizontal';
     limit?: number;
@@ -66,6 +67,7 @@ export default function CategoryNews({
   categoryId,
   limit = 8,
   useRealData = false,
+  viewAllButtonHref,
   config
 }: CategoryNewsProps) {
   // Визначаємо, чи потрібно показувати горизонтальне відображення
@@ -232,7 +234,7 @@ export default function CategoryNews({
         {/* Кнопка "Всі новини з рубрики" */}
         {!hideHeader && (
           <>
-            <ViewAllButton href={categoryId && getUrlFromCategoryId(categoryId) ? `/${getUrlFromCategoryId(categoryId)}` : '/all-news'} />
+            <ViewAllButton href={viewAllButtonHref || (categoryId && getUrlFromCategoryId(categoryId) ? `/${getUrlFromCategoryId(categoryId)}` : '/all-news')} />
             
             {/* Розділювальна лінія */}
             

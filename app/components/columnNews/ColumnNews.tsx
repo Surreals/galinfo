@@ -25,7 +25,7 @@ export interface ColumnNewsItem {
 export interface ColumnNewsProps {
   category: string;
   secondCategory: string;
-  categoryId?: number;
+  categoryId?: number | string;
   secondCategoryId?: number;
   news?: ColumnNewsItem[];
   isLoading?: boolean;
@@ -41,6 +41,7 @@ export interface ColumnNewsProps {
   showSeparator?: boolean;
   // Нові пропси для роботи з API
   useRealData?: boolean;
+  viewAllButtonHref?: string; // Новий пропс для ViewAllButton href
   config?: {
     apiParams?: {
       page?: number;
@@ -77,6 +78,7 @@ export default function ColumnNews({
   mobileLayout = 'column',
   showSeparator = false,
   useRealData = false,
+  viewAllButtonHref,
   config
 }: ColumnNewsProps) {
   // Визначаємо, чи потрібно показувати горизонтальне відображення
@@ -351,7 +353,7 @@ export default function ColumnNews({
         {/* Кнопка "Всі новини з рубрики" */}
         {!hideHeader && (
           <>
-            <ViewAllButton href={categoryId && getUrlFromCategoryId(categoryId) ? `/${getUrlFromCategoryId(categoryId)}` : '/all-news'} />
+            <ViewAllButton href={viewAllButtonHref || (categoryId && getUrlFromCategoryId(categoryId) ? `/${getUrlFromCategoryId(categoryId)}` : '/all-news')} />
             
           </>
         )}
