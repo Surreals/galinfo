@@ -119,25 +119,6 @@ export const articlePageDesktopSchema = {
         show: true,
         className: 'adBannerStandard'
       }
-    },
-    
-    // Категорія новин - ТОП НОВИНИ (використовуємо useImportantNews)
-    {
-      type: CATEGORY_NEWS,
-      categoryId: 'IMPORTANT_NEWS',
-      config: {
-        show: true,
-        height: 133,
-        category: "ТОП НОВИНИ",
-        hideHeader: false,
-        className: 'categoryNewsStandard',
-        useHook: 'useImportantNews', // Вказуємо, що використовуємо хук useImportantNews
-        hookParams: {
-          limit: 8,
-          lang: '1',
-          autoFetch: true
-        }
-      }
     }
   ],
   
@@ -223,6 +204,29 @@ export const articlePageDesktopSchema = {
           width: 600,
           height: 240,
           className: 'fomoLogo'
+        }
+      }
+    ]
+  },
+  
+  // Футер для десктопу (ТОП НОВИНИ на всю ширину)
+  footer: {
+    blocks: [
+      {
+        type: CATEGORY_NEWS,
+        categoryId: 'IMPORTANT_NEWS',
+        config: {
+          show: true,
+          height: 133,
+          category: "ТОП НОВИНИ",
+          hideHeader: false,
+          className: 'categoryNewsStandard',
+          useHook: 'useImportantNews', // Вказуємо, що використовуємо хук useImportantNews
+          hookParams: {
+            limit: 8,
+            lang: '1',
+            autoFetch: true
+          }
         }
       }
     ]
@@ -352,25 +356,6 @@ export const articlePageMobileSchema = {
       }
     },
     
-    // Категорія новин - ТОП НОВИНИ (використовуємо useImportantNews)
-    {
-      type: CATEGORY_NEWS,
-      categoryId: 'IMPORTANT_NEWS',
-      config: {
-        show: true,
-        height: 133,
-        category: "ТОП НОВИНИ",
-        hideHeader: false,
-        className: 'categoryNewsStandard',
-        useHook: 'useImportantNews', // Вказуємо, що використовуємо хук useImportantNews
-        hookParams: {
-          limit: 8,
-          lang: '1',
-          autoFetch: true
-        }
-      }
-    },
-    
     // Банер IN-FOMO (тільки для мобільної версії)
     {
       type: BANNER_IMAGE,
@@ -384,5 +369,28 @@ export const articlePageMobileSchema = {
         className: 'fomoLogo'
       }
     }
-  ]
+  ],
+  
+  // Футер для мобільної версії (ТОП НОВИНИ на всю ширину)
+  footer: {
+    blocks: [
+      {
+        type: CATEGORY_NEWS,
+        categoryId: 'IMPORTANT_NEWS',
+        config: {
+          show: true,
+          height: 133,
+          category: "ТОП НОВИНИ",
+          hideHeader: false,
+          className: 'categoryNewsStandard',
+          useHook: 'useImportantNews', // Вказуємо, що використовуємо хук useImportantNews
+          hookParams: {
+            limit: 8,
+            lang: '1',
+            autoFetch: true
+          }
+        }
+      }
+    ]
+  }
 };

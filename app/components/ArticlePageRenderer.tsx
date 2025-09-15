@@ -159,14 +159,14 @@ const ArticlePageRenderer: React.FC<ArticlePageRendererProps> = ({ article, load
 
         if (!article?.images_data?.length) return null;
 
-        const imageUrl = getUniversalNewsImage(article, 'full') || getUniversalNewsImage(article);
+        const imageUrl = getUniversalNewsImage(article, 'full') || getUniversalNewsImage(article) || 'https://picsum.photos/300/200?random=1';
         console.log(imageUrl, 'imageUrl');
         
         return (
           <div key={index} className={styles.articleImage}>
             <Image
               src={imageUrl}
-              alt={imageUrl}
+              alt={imageUrl || 'Article image'}
               width={800}
               height={500}
               className={styles.mainImage}
@@ -384,6 +384,13 @@ const ArticlePageRenderer: React.FC<ArticlePageRendererProps> = ({ article, load
           </div>
         )}
       </div>
+
+      {/* Футер (ТОП НОВИНИ на всю ширину екрана) */}
+      {(schema as any).footer && (
+        <div className={styles.containerAllNews}>
+          {(schema as any).footer.blocks.map((block: any, index: number) => renderBlock(block, index))}
+        </div>
+      )}
     </>
   );
 };
