@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from 'react';
+import { NewsImage, getMainImage, hasImages, getImagesCount } from '@/app/lib/imageUtils';
 
 // Типи для новин
 export interface LatestNewsItem {
@@ -8,7 +9,7 @@ export interface LatestNewsItem {
   ndate: string;
   ntime: string;
   ntype: number;
-  images: any[];
+  images: NewsImage[];
   urlkey: string;
   photo: number;
   video: number;
@@ -59,6 +60,10 @@ export interface UseLatestNewsReturn {
   goToPrevPage: () => void;
   goToFirstPage: () => void;
   goToLastPage: () => void;
+  // Методи для роботи з зображеннями
+  getMainImage: (newsItem: LatestNewsItem) => NewsImage | null;
+  hasImages: (newsItem: LatestNewsItem) => boolean;
+  getImagesCount: (newsItem: LatestNewsItem) => number;
 }
 
 export function useLatestNews(options: UseLatestNewsOptions = {}): UseLatestNewsReturn {
@@ -158,6 +163,19 @@ export function useLatestNews(options: UseLatestNewsOptions = {}): UseLatestNews
     }
   }, [data?.pagination.totalPages]);
 
+  // Методи для роботи з зображеннями
+  const getMainImageForNews = useCallback((newsItem: LatestNewsItem) => {
+    return getMainImage(newsItem.images);
+  }, []);
+
+  const hasImagesForNews = useCallback((newsItem: LatestNewsItem) => {
+    return hasImages(newsItem.images);
+  }, []);
+
+  const getImagesCountForNews = useCallback((newsItem: LatestNewsItem) => {
+    return getImagesCount(newsItem.images);
+  }, []);
+
   return {
     data,
     loading,
@@ -169,7 +187,10 @@ export function useLatestNews(options: UseLatestNewsOptions = {}): UseLatestNews
     goToNextPage,
     goToPrevPage,
     goToFirstPage,
-    goToLastPage
+    goToLastPage,
+    getMainImage: getMainImageForNews,
+    hasImages: hasImagesForNews,
+    getImagesCount: getImagesCountForNews
   };
 }
 

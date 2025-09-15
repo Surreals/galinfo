@@ -17,7 +17,10 @@ export default function TestLatestNewsPage() {
     goToNextPage,
     goToPrevPage,
     goToFirstPage,
-    goToLastPage
+    goToLastPage,
+    getMainImage,
+    hasImages,
+    getImagesCount
   } = useLatestNews({
     page: currentPage,
     limit,
@@ -169,23 +172,49 @@ export default function TestLatestNewsPage() {
           </div>
         )}
         <div className="space-y-4">
-          {data?.news.map((news) => (
-            <div key={news.id} className="border p-4 rounded shadow-sm">
-              <h3 className="font-semibold text-lg mb-2">{news.nheader}</h3>
-              {news.nsubheader && (
-                <p className="text-gray-600 mb-2">{news.nsubheader}</p>
-              )}
-              <p className="text-sm text-gray-500 mb-2">{news.nteaser}</p>
-              <div className="flex justify-between items-center text-xs text-gray-400">
-                <span>ID: {news.id}</span>
-                <span>Тип: {news.ntype}</span>
-                <span>Рубрика: {news.rubric}</span>
-                <span>Важливість: {news.nweight}</span>
-                <span>Коментарі: {news.comments_count}</span>
-                <span>Перегляди: {news.views_count}</span>
+          {data?.news.map((news) => {
+            const mainImage = getMainImage(news);
+            const hasNewsImages = hasImages(news);
+            const imagesCount = getImagesCount(news);
+            
+            return (
+              <div key={news.id} className="border p-4 rounded shadow-sm">
+                <div className="flex gap-4">
+                  {hasNewsImages && mainImage && (
+                    <div className="flex-shrink-0">
+                      <img
+                        src={mainImage.urls.intxt}
+                        alt={mainImage.title}
+                        className="w-32 h-24 object-cover rounded"
+                        onError={(e) => {
+                          const target = e.target as HTMLImageElement;
+                          target.style.display = 'none';
+                        }}
+                      />
+                    </div>
+                  )}
+                  <div className="flex-1">
+                    <h3 className="font-semibold text-lg mb-2">{news.nheader}</h3>
+                    {news.nsubheader && (
+                      <p className="text-gray-600 mb-2">{news.nsubheader}</p>
+                    )}
+                    <p className="text-sm text-gray-500 mb-2">{news.nteaser}</p>
+                    <div className="flex justify-between items-center text-xs text-gray-400">
+                      <span>ID: {news.id}</span>
+                      <span>Тип: {news.ntype}</span>
+                      <span>Рубрика: {news.rubric}</span>
+                      <span>Важливість: {news.nweight}</span>
+                      <span>Коментарі: {news.comments_count}</span>
+                      <span>Перегляди: {news.views_count}</span>
+                      {hasNewsImages && (
+                        <span className="text-blue-600">Зображень: {imagesCount}</span>
+                      )}
+                    </div>
+                  </div>
+                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
 

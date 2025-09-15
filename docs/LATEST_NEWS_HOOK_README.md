@@ -34,7 +34,18 @@ GET /api/news/latest?limit=10&lang=1&page=1
       "ndate": "2024-01-15",
       "ntime": "14:30:00",
       "ntype": 1,
-      "images": [],
+      "images": [
+        {
+          "id": 123,
+          "filename": "example-image.jpg",
+          "title": "Опис зображення",
+          "urls": {
+            "full": "https://galinfo.com.ua/media/gallery/full/example-image.jpg",
+            "intxt": "https://galinfo.com.ua/media/gallery/intxt/example-image.jpg",
+            "tmb": "https://galinfo.com.ua/media/gallery/tmb/example-image.jpg"
+          }
+        }
+      ],
       "urlkey": "example-news",
       "photo": 0,
       "video": 0,
@@ -83,7 +94,10 @@ function MyComponent() {
     goToNextPage,
     goToPrevPage,
     goToFirstPage,
-    goToLastPage
+    goToLastPage,
+    getMainImage,
+    hasImages,
+    getImagesCount
   } = useLatestNews({
     page: 1,
     limit: 20,
@@ -96,12 +110,24 @@ function MyComponent() {
 
   return (
     <div>
-      {data?.news.map(news => (
-        <div key={news.id}>
-          <h3>{news.nheader}</h3>
-          <p>{news.nteaser}</p>
-        </div>
-      ))}
+      {data?.news.map(news => {
+        const mainImage = getMainImage(news);
+        const hasNewsImages = hasImages(news);
+        
+        return (
+          <div key={news.id}>
+            {hasNewsImages && mainImage && (
+              <img 
+                src={mainImage.urls.intxt} 
+                alt={mainImage.title}
+                className="w-32 h-24 object-cover"
+              />
+            )}
+            <h3>{news.nheader}</h3>
+            <p>{news.nteaser}</p>
+          </div>
+        );
+      })}
     </div>
   );
 }
@@ -166,6 +192,9 @@ interface UseLatestNewsReturn {
   goToPrevPage: () => void;         // Перейти на попередню сторінку
   goToFirstPage: () => void;        // Перейти на першу сторінку
   goToLastPage: () => void;         // Перейти на останню сторінку
+  getMainImage: (newsItem: LatestNewsItem) => NewsImage | null; // Отримати основне зображення
+  hasImages: (newsItem: LatestNewsItem) => boolean; // Перевірити наявність зображень
+  getImagesCount: (newsItem: LatestNewsItem) => number; // Отримати кількість зображень
 }
 ```
 
@@ -179,7 +208,7 @@ interface LatestNewsItem {
   ndate: string;           // Дата новини
   ntime: string;           // Час новини
   ntype: number;           // Тип новини
-  images: any[];           // Зображення
+  images: NewsImage[];     // Зображення (масив об'єктів NewsImage)
   urlkey: string;          // URL ключ
   photo: number;           // Фото
   video: number;           // Відео
@@ -202,6 +231,64 @@ interface LatestNewsItem {
 3. **Фільтрація:** Можливість фільтрувати за мовою
 4. **Обробка помилок:** Вбудована обробка помилок з можливістю повторного запиту
 5. **Оптимізація:** Використання useCallback для оптимізації ре-рендерів
+6. **Підтримка зображень:** Автоматичне завантаження та обробка зображень з різними розмірами
+
+## Робота з зображеннями
+
+Хук `useLatestNews` надає зручні методи для роботи з зображеннями новин:
+
+### Методи для роботи з зображеннями
+
+```typescript
+// Отримати основне зображення новини
+const mainImage = getMainImage(newsItem);
+
+// Перевірити чи є зображення у новини
+const hasNewsImages = hasImages(newsItem);
+
+// Отримати кількість зображень
+const imagesCount = getImagesCount(newsItem);
+```
+
+### Структура зображення
+
+```typescript
+interface NewsImage {
+  id: number;           // ID зображення
+  filename: string;     // Ім'я файлу
+  title: string;        // Опис зображення
+  urls: {
+    full: string;       // Повнорозмірне зображення
+    intxt: string;      // Зображення для тексту
+    tmb: string;        // Мініатюра
+  };
+}
+```
+
+### Приклад використання зображень
+
+```typescript
+function NewsItem({ news }) {
+  const { getMainImage, hasImages } = useLatestNews();
+  
+  const mainImage = getMainImage(news);
+  const hasNewsImages = hasImages(news);
+  
+  return (
+    <div>
+      {hasNewsImages && mainImage && (
+        <img 
+          src={mainImage.urls.intxt} 
+          alt={mainImage.title}
+          className="news-image"
+        />
+      )}
+      <h3>{news.nheader}</h3>
+      <p>{news.nteaser}</p>
+    </div>
+  );
+}
+```
 
 ## Тестування
 
