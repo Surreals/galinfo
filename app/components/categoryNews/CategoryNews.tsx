@@ -186,8 +186,7 @@ export default function CategoryNews({
             Array.from({ length: 8 }).map((_, index) => (
               <div key={index} className={`${styles.newsItem} ${shouldShowHorizontal ? styles.newsItemHorizontal : ''}`}>
                 <Skeleton 
-                  active 
-                  avatar={{ shape: 'square', size: 'large' }}
+                  active
                   paragraph={{ rows: 1 }}
                   title={{ width: '90%' }}
                 />

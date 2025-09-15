@@ -282,8 +282,7 @@ export default function ColumnNews({
               Array.from({length: 5}).map((_, index) => (
                 <div key={index} className={`${styles.newsItem} ${shouldShowHorizontal ? styles.newsItemHorizontal : ''}`}>
                   <Skeleton 
-                    active 
-                    avatar={{ shape: 'square', size: smallImg ? 'default' : 'large' }}
+                    active
                     paragraph={{ rows: 3 }}
                     title={{ width: '85%' }}
                   />
@@ -320,6 +319,7 @@ export default function ColumnNews({
           {showNewsList && (
             <div className={styles.listNewsContainer}>
               <NewsList
+                // loading={}
                 showSeparator={showSeparator}
                 mobileLayout={mobileLayout}
                 arrowRightIcon={arrowRightIcon}
