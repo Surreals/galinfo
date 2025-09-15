@@ -165,7 +165,7 @@ const CategoryRenderer: React.FC<CategoryRendererProps> = ({ category }) => {
             date: formatFullNewsDate(importantNews.ndate),
             time: importantNews.ntime,
             url: generateArticleUrl(importantNews as any),
-            imageUrl: getNewsImage(importantNews as any) || 'https://picsum.photos/300/200?random=1',
+            imageUrl: getNewsImage(importantNews as any, 'full') || 'https://picsum.photos/300/200?random=1',
             imageAlt: importantNews.nheader
           };
         } else if (!isRegion && !isImportantCategory && importantNewsHook.data?.importantNews && importantNewsHook.data.importantNews.length > 0) {
@@ -176,7 +176,7 @@ const CategoryRenderer: React.FC<CategoryRendererProps> = ({ category }) => {
             date: formatFullNewsDate(importantNews.ndate),
             time: importantNews.ntime,
             url: generateArticleUrl(importantNews as any),
-            imageUrl: getNewsImage(importantNews as any) || 'https://picsum.photos/300/200?random=1',
+            imageUrl: getNewsImage(importantNews as any, 'full') || 'https://picsum.photos/300/200?random=1',
             imageAlt: importantNews.nheader
           };
         } else {

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react"
+import React, { useEffect, useState } from "react"
 import Image from "next/image";
 import Link from "next/link";
 
@@ -12,6 +12,7 @@ import { getUniversalNewsImageThumbnail } from '@/app/lib/newsUtils';
 import { getUrlFromCategoryId } from '@/app/lib/categoryMapper';
 
 import styles from "./listNews.module.scss";
+import {Skeleton} from "antd";
 
 type NewsItem = {
   id?: string;
@@ -22,6 +23,7 @@ type NewsItem = {
 };
 
 type NewsListProps = {
+  loading?: boolean;
   data?: NewsItem[];
   showImagesAt?: number[];
   widthPercent?: number;
@@ -47,6 +49,7 @@ type NewsListProps = {
 
 export default function NewsList({
    data,
+   loading,
    showImagesAt = [],
    widthPercent = 100,
    title,
@@ -77,6 +80,7 @@ export default function NewsList({
     };
   }, []);
 
+
   // Використовуємо хук для отримання реальних даних
   const {
     data: apiData,
@@ -100,7 +104,7 @@ export default function NewsList({
     displayData = apiData.news.map(item => {
       // Використовуємо універсальну функцію getUniversalNewsImageThumbnail з newsUtils
       const imageUrl = getUniversalNewsImageThumbnail(item) || `https://picsum.photos/seed/${item.id || 'default'}/200/150`;
-      
+
       return {
         id: item.id.toString(),
         title: item.nheader,
@@ -118,79 +122,100 @@ export default function NewsList({
   // Визначаємо, чи потрібно показувати горизонтальне відображення
   const shouldShowHorizontal = isMobile && mobileLayout === 'horizontal';
 
+
+
   return (
     <div style={{ width: `${widthPercent}%` }} className={styles.container}>
-      {title && (
-        <div className={styles.header}>
-          <div className={styles.titleContainer}>
-            {isMobile ? <AccentSquare className={styles.titleAccent} /> : null}
-            {categoryId  ? (
-              <Link href={`/${getUrlFromCategoryId(categoryId)}`} className={styles.titleLink}>
-                <h2 className={isMobile ? styles.titleMobile : styles.title}>{title}</h2>
-              </Link>
-            ) : (
-              <h2 className={isMobile ? styles.titleMobile : styles.title}>{title}</h2>
-            )}
-          </div>
-          {arrowRightIcon && categoryId && <span className={styles.titleIcon}>
+      {
+        loading ?
+            <div className={styles.skeletonBox}>
+              {Array.from({ length: 9 }).map((_, index) => (
+                <Skeleton.Input
+                  key={index}
+                  active
+                  style={{width: '100%', height: 30}}
+                />
+              ))}
+            </div>
+          :
+          <>
+            {title && (
+              <div className={styles.header}>
+                <div className={styles.titleContainer}>
+                  {isMobile ? <AccentSquare className={styles.titleAccent}/> : null}
+                  {categoryId ? (
+                    <Link href={`/${getUrlFromCategoryId(categoryId)}`} className={styles.titleLink}>
+                      <h2 className={isMobile ? styles.titleMobile : styles.title}>{title}</h2>
+                    </Link>
+                  ) : (
+                    <h2 className={isMobile ? styles.titleMobile : styles.title}>{title}</h2>
+                  )}
+                </div>
+                {arrowRightIcon && categoryId && <span className={styles.titleIcon}>
           <Link href={`/${getUrlFromCategoryId(categoryId)}`} className={styles.titleLink}>
               <Image
-              src={arrowRight}
-              alt={'Arrow right'}
-              width={10}
-              height={8}
-            />
+                  src={arrowRight}
+                  alt={'Arrow right'}
+                  width={10}
+                  height={8}
+              />
              </Link>
           </span>}
-        </div>
-      )}
-
-      <ul className={`${styles.list} ${shouldShowHorizontal ? styles.listHorizontal : ''}`}>
-        {displayData.map((item, index) => (
-          <li key={item.id || index} className={`${styles.item} ${shouldShowHorizontal ? styles.itemHorizontal : ''}`}>
-            {item.url ? (
-              <a href={item.url} className={`${styles.itemLink} ${shouldShowHorizontal ? styles.itemLinkHorizontal : ''}`}>
-                {/* Показуємо зображення на мобільних для кожної новини при горизонтальному відображенні, або за параметром showImagesAt */}
-                {(shouldShowHorizontal || showImagesAt.includes(index)) && item.imageUrl && (
-                  <img
-                    src={item.imageUrl}
-                    alt={item.title}
-                    className={styles.image}
-                  />
-                )}
-                <div className={styles.textBlock}>
-                  <p className={styles.itemTitle}>{item.title}</p>
-                  <p className={styles.itemTime}>{item.time}</p>
-                </div>
-              </a>
-            ) : (
-              <>
-                {/* Показуємо зображення на мобільних для кожної новини при горизонтальному відображенні, або за параметром showImagesAt */}
-                {(shouldShowHorizontal || showImagesAt.includes(index)) && item.imageUrl && (
-                  <img
-                    src={item.imageUrl}
-                    alt={item.title}
-                    className={styles.image}
-                  />
-                )}
-                <div className={styles.textBlock}>
-                  <p className={styles.itemTitle}>{item.title}</p>
-                  <p className={styles.itemTime}>{item.time}</p>
-                </div>
-              </>
+              </div>
             )}
-          </li>
-        ))}
-      </ul>
 
-      {showMoreButton && (
-        <div className={styles.moreBtnWrapper}>
-          <ViewAllButton href={categoryId && getUrlFromCategoryId(categoryId) ? `/${getUrlFromCategoryId(categoryId)}` : (moreButtonUrl || '/all-news')} />
-        </div>
-      )}
-      {isMobile && showSeparator && (
-        <div className={styles.separator}></div>
-      )}
+            <ul className={`${styles.list} ${shouldShowHorizontal ? styles.listHorizontal : ''}`}>
+              {displayData.map((item, index) => (
+                <li key={item.id || index}
+                    className={`${styles.item} ${shouldShowHorizontal ? styles.itemHorizontal : ''}`}>
+                  {item.url ? (
+                    <a href={item.url}
+                       className={`${styles.itemLink} ${shouldShowHorizontal ? styles.itemLinkHorizontal : ''}`}>
+                      {/* Показуємо зображення на мобільних для кожної новини при горизонтальному відображенні, або за параметром showImagesAt */}
+                      {(shouldShowHorizontal || showImagesAt.includes(index)) && item.imageUrl && (
+                        <img
+                          src={item.imageUrl}
+                          alt={item.title}
+                          className={styles.image}
+                        />
+                      )}
+                      <div className={styles.textBlock}>
+                        <p className={styles.itemTitle}>{item.title}</p>
+                        <p className={styles.itemTime}>{item.time}</p>
+                      </div>
+                    </a>
+                  ) : (
+                    <>
+                      {/* Показуємо зображення на мобільних для кожної новини при горизонтальному відображенні, або за параметром showImagesAt */}
+                      {(shouldShowHorizontal || showImagesAt.includes(index)) && item.imageUrl && (
+                        <img
+                          src={item.imageUrl}
+                          alt={item.title}
+                          className={styles.image}
+                        />
+                      )}
+                      <div className={styles.textBlock}>
+                        <p className={styles.itemTitle}>{item.title}</p>
+                        <p className={styles.itemTime}>{item.time}</p>
+                      </div>
+                    </>
+                  )}
+                </li>
+              ))}
+            </ul>
+
+            {showMoreButton && (
+              <div className={styles.moreBtnWrapper}>
+                <ViewAllButton
+                  href={categoryId && getUrlFromCategoryId(categoryId) ? `/${getUrlFromCategoryId(categoryId)}` : (moreButtonUrl || '/all-news')}/>
+              </div>
+            )}
+            {isMobile && showSeparator && (
+              <div className={styles.separator}></div>
+            )}
+          </>
+      }
+
     </div>
   );
 }
