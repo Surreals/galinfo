@@ -41,7 +41,7 @@ export async function GET(request: NextRequest) {
     `;
     
     // Виконання запиту
-    const newsData = await executeQuery(importantNewsQuery, [lang, limit]);
+    const [newsData] = await executeQuery(importantNewsQuery, [lang, limit]);
     
     // Отримання зображень для новин
     const imageIds = newsData
@@ -57,7 +57,8 @@ export async function GET(request: NextRequest) {
         FROM a_pics
         WHERE id IN (${imageIds.map(() => '?').join(',')})
       `;
-      imagesData = await executeQuery(imagesQuery, imageIds);
+      const [imagesDataResult] = await executeQuery(imagesQuery, imageIds);
+      imagesData = imagesDataResult;
     }
     
     // Формування відповіді

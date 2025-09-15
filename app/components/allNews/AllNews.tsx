@@ -35,7 +35,7 @@ export default function AllNews({ news = [], isLoading = false, hideHeader = fal
   });
 
   // Трансформуємо дані з API
-  const transformedNews: NewsItem[] = apiData?.news?.map(item => ({
+  const transformedNews: NewsItem[] = apiData?.news?.filter(item => item && item.id)?.map(item => ({
     id: item.id.toString(),
     title: item.nheader,
     date: formatNewsDate(item.ndate, Date.now() / 1000),

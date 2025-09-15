@@ -35,7 +35,7 @@ export async function getImportantNewsData(limit: number = 5, lang: string = '1'
     `;
     
     // Виконання запиту
-    const importantNews = await executeQuery(importantNewsQuery, [lang, limit]);
+    const [importantNews] = await executeQuery(importantNewsQuery, [lang, limit]);
     
     return {
       importantNews,
@@ -87,7 +87,7 @@ export async function getImportantNewsByLevel(level: number, limit: number = 5, 
     `;
     
     // Виконання запиту
-    const importantNews = await executeQuery(importantNewsQuery, [lang, level, limit]);
+    const [importantNews] = await executeQuery(importantNewsQuery, [lang, level, limit]);
     
     return {
       importantNews,
@@ -135,7 +135,7 @@ export async function getTopImportantNews(limit: number = 5, lang: string = '1')
     `;
     
     // Виконання запиту
-    const topImportantNews = await executeQuery(topImportantNewsQuery, [lang, limit]);
+    const [topImportantNews] = await executeQuery(topImportantNewsQuery, [lang, limit]);
     
     return {
       topImportantNews,

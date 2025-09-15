@@ -15,9 +15,10 @@ interface NewsEditorHeaderProps {
   newsId: string | null;
   articleData?: ArticleData | null;
   onNbodyChange?: (nbody: string) => void;
+  onDataChange?: (updates: Partial<ArticleData>) => void;
 }
 
-export default function NewsEditorHeader({ isEditing, newsId, articleData, onNbodyChange }: NewsEditorHeaderProps) {
+export default function NewsEditorHeader({ isEditing, newsId, articleData, onNbodyChange, onDataChange }: NewsEditorHeaderProps) {
   // --- стейти для всіх текстерій ---
   const [mainTitle, setMainTitle] = useState(articleData?.nheader || "");
   const [mainLead, setMainLead] = useState(articleData?.nteaser || "");
@@ -48,6 +49,37 @@ export default function NewsEditorHeader({ isEditing, newsId, articleData, onNbo
     }
   }, [articleData]);
 
+  // Handlers для оновлення даних
+  const handleMainTitleChange = (value: string) => {
+    setMainTitle(value);
+    onDataChange?.({ nheader: value });
+  };
+
+  const handleMainLeadChange = (value: string) => {
+    setMainLead(value);
+    onDataChange?.({ nteaser: value });
+  };
+
+  const handleTopBlockTitleChange = (value: string) => {
+    setTopBlockTitle(value);
+    onDataChange?.({ sheader: value });
+  };
+
+  const handleMetaTitleChange = (value: string) => {
+    setMetaTitle(value);
+    onDataChange?.({ ntitle: value });
+  };
+
+  const handleMetaDescriptionChange = (value: string) => {
+    setMetaDescription(value);
+    onDataChange?.({ ndescription: value });
+  };
+
+  const handleMetaKeywordsChange = (value: string) => {
+    setMetaKeywords(value);
+    onDataChange?.({ nkeywords: value });
+  };
+
   const items = [
     {
       key: "1",
@@ -60,7 +92,7 @@ export default function NewsEditorHeader({ isEditing, newsId, articleData, onNbo
               <TextArea
                 rows={2}
                 value={mainTitle}
-                onChange={(e) => setMainTitle(e.target.value)}
+                onChange={(e) => handleMainTitleChange(e.target.value)}
               />
             </div>
             <div className={styles.field}>
@@ -68,7 +100,7 @@ export default function NewsEditorHeader({ isEditing, newsId, articleData, onNbo
               <TextArea
                 rows={4}
                 value={mainLead}
-                onChange={(e) => setMainLead(e.target.value)}
+                onChange={(e) => handleMainLeadChange(e.target.value)}
               />
             </div>
           </div>
@@ -86,7 +118,7 @@ export default function NewsEditorHeader({ isEditing, newsId, articleData, onNbo
               <TextArea
                 rows={2}
                 value={topBlockTitle}
-                onChange={(e) => setTopBlockTitle(e.target.value)}
+                onChange={(e) => handleTopBlockTitleChange(e.target.value)}
               />
             </div>
           </div>
@@ -106,7 +138,7 @@ export default function NewsEditorHeader({ isEditing, newsId, articleData, onNbo
                 <TextArea
                   rows={2}
                   value={metaTitle}
-                  onChange={(e) => setMetaTitle(e.target.value)}
+                  onChange={(e) => handleMetaTitleChange(e.target.value)}
                 />
               </div>
               <div className={styles.field}>
@@ -114,7 +146,7 @@ export default function NewsEditorHeader({ isEditing, newsId, articleData, onNbo
                 <TextArea
                   rows={3}
                   value={metaDescription}
-                  onChange={(e) => setMetaDescription(e.target.value)}
+                  onChange={(e) => handleMetaDescriptionChange(e.target.value)}
                 />
               </div>
               <div className={styles.field}>
@@ -122,7 +154,7 @@ export default function NewsEditorHeader({ isEditing, newsId, articleData, onNbo
                 <TextArea
                   rows={2}
                   value={metaKeywords}
-                  onChange={(e) => setMetaKeywords(e.target.value)}
+                  onChange={(e) => handleMetaKeywordsChange(e.target.value)}
                 />
               </div>
             </div>
@@ -133,7 +165,7 @@ export default function NewsEditorHeader({ isEditing, newsId, articleData, onNbo
 
   return (
     <div className={styles.editorWrapper}>
-      <h2 className={styles.header}>Редагувати новину</h2>
+      <h2 className={styles.header}>{isEditing ? 'Редагувати новину' : 'Створити новину'}</h2>
       <Tabs
         defaultActiveKey="1"
         items={items}

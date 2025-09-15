@@ -78,7 +78,7 @@ const CategoryRenderer: React.FC<CategoryRendererProps> = ({ category }) => {
   const currentCategoryError = isRegion ? regionHook.error : rubricHook.error;
 
   // Трансформуємо дані для поточної категорії (єдиний набір з 36 новин)
-  const transformedCurrentCategoryData = currentCategoryData?.news?.map(item => ({
+  const transformedCurrentCategoryData = currentCategoryData?.news?.filter(item => item && item.id)?.map(item => ({
     id: item.id.toString(),
     title: item.nheader,
     date: formatNewsDate(item.ndate, (item as any).udate || Date.now() / 1000),

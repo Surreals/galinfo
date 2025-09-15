@@ -106,7 +106,7 @@ export async function getNewsById(id: number): Promise<NewsData | null> {
       GROUP BY n.id
     `;
     
-    const results = await executeQuery<NewsData>(query, [id]);
+    const [results] = await executeQuery<NewsData>(query, [id]);
     
     if (results.length === 0) {
       return null;
@@ -122,7 +122,7 @@ export async function getNewsById(id: number): Promise<NewsData | null> {
       WHERE tm.newsid = ?
     `;
     
-    const tagsResults = await executeQuery<{ tag: string }>(tagsQuery, [id]);
+    const [tagsResults] = await executeQuery<{ tag: string }>(tagsQuery, [id]);
     news.tags = tagsResults.map(t => t.tag);
     
     // Конвертуємо числові поля в boolean
@@ -208,7 +208,7 @@ export async function createNews(data: Partial<NewsData>): Promise<number> {
     ];
     
     const [result] = await executeQuery<{ insertId: number }>(newsQuery, newsValues);
-    const newsId = result.insertId;
+    const newsId = result[0].insertId;
     
     // Створюємо запис в таблиці тіла новини
     if (data.nbody) {
@@ -417,7 +417,7 @@ export async function updateNews(id: number, data: Partial<NewsData>): Promise<b
           const tagIdQuery = `
             SELECT id FROM ${TABLES.TAGS} WHERE tag = ?
           `;
-          const tagResults = await executeQuery<{ id: number }>(tagIdQuery, [tag]);
+          const [tagResults] = await executeQuery<{ id: number }>(tagIdQuery, [tag]);
           
           if (tagResults.length > 0) {
             // Додаємо зв'язок

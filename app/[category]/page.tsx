@@ -45,9 +45,9 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
 
     return Array.from({ length: count }, (_, index) => ({
       id: `category-${index + 1}`,
-      title: titles[Math.floor(Math.random() * titles.length)],
+      title: titles[index % titles.length],
       time: new Date(
-        Date.now() - Math.floor(Math.random() * 1e8)
+        Date.now() - (index * 3600000) // 1 hour intervals
       ).toLocaleString("uk-UA", {
         day: "2-digit",
         month: "long",
@@ -55,8 +55,8 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
         hour: "2-digit",
         minute: "2-digit",
       }),
-      imageUrl: `https://picsum.photos/seed/${Math.random()}/300/200`,
-      url: `/article/${articleIds[Math.floor(Math.random() * articleIds.length)]}-${index + 1}`,
+      imageUrl: `https://picsum.photos/seed/category-${index + 1}/300/200`,
+      url: `/article/${articleIds[index % articleIds.length]}-${index + 1}`,
     }));
   };
 

@@ -91,7 +91,7 @@ export async function GET(
         AND a_news.udate < UNIX_TIMESTAMP()
     `;
     
-    const newsData = await executeQuery(newsQuery, [id, urlkey, newsType, lang]);
+    const [newsData] = await executeQuery(newsQuery, [id, urlkey, newsType, lang]);
     
     if (!newsData || newsData.length === 0) {
       return NextResponse.json(
@@ -112,7 +112,8 @@ export async function GET(
           FROM a_cats
           WHERE id IN (${rubricIds.map(() => '?').join(',')}) AND lng = ?
         `;
-        rubrics = await executeQuery(rubricsQuery, [...rubricIds, lang]);
+        const [rubricsData] = await executeQuery(rubricsQuery, [...rubricIds, lang]);
+        rubrics = rubricsData;
       }
     }
     
@@ -124,7 +125,8 @@ export async function GET(
       INNER JOIN a_tags_map ON a_tags.id = a_tags_map.tagid
       WHERE a_tags_map.newsid = ?
     `;
-    tags = await executeQuery(tagsQuery, [id]);
+    const [tagsData] = await executeQuery(tagsQuery, [id]);
+    tags = tagsData;
     
     // Отримання зображень
     let images: any[] = [];
@@ -136,7 +138,8 @@ export async function GET(
           FROM a_pics
           WHERE id IN (${imageIds.map(() => '?').join(',')})
         `;
-        images = await executeQuery(imagesQuery, imageIds);
+        const [imagesDataResult] = await executeQuery(imagesQuery, imageIds);
+        images = imagesDataResult;
       }
     }
     
@@ -163,7 +166,8 @@ export async function GET(
         ORDER BY a_news.udate DESC
         LIMIT 5
       `;
-      relatedNews = await executeQuery(relatedQuery, [id, newsType, news.rubric.split(',')[0], lang]);
+      const [relatedNewsData] = await executeQuery(relatedQuery, [id, newsType, news.rubric.split(',')[0], lang]);
+      relatedNews = relatedNewsData;
     }
     
     // Оновлення статистики переглядів

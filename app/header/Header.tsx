@@ -89,7 +89,7 @@ export default function Header() {
               {mainCategories.map((category) => (
                 <li key={category.id}>
                   <Link href={category.link} className={styles.link}>
-                    {category.title.toUpperCase()}
+                    {category.title?.toUpperCase()}
                   </Link>
                 </li>
               ))}
@@ -184,7 +184,7 @@ export default function Header() {
             <ul className={styles.list}>
               {specialThemesItem.map((region) => (
                 <Link key={region.id} href={region.link} className={styles.linkSlider}>
-                  {region.title.toUpperCase()}
+                  {region.title?.toUpperCase()}
                 </Link>
               ))}
               {/* Fallback to static regions if no dynamic data */}
@@ -209,7 +209,7 @@ export default function Header() {
               <div className={styles.gridColumn}>
                 {regions.map((region) => (
                   <Link key={region.id} href={region.link} className={styles.linkSlider}>
-                    {region.title.toUpperCase()}
+                    {region.title?.toUpperCase()}
                   </Link>
                 ))}
                 {/* Fallback to static regions if no dynamic data */}
@@ -241,7 +241,7 @@ export default function Header() {
               <div className={styles.gridColumn}>
                 {mainCategories.slice(0, 5).map((category) => (
                   <Link key={category.id} href={category.link} className={styles.linkSlider}>
-                    {category.title.toUpperCase()}
+                    {category.title?.toUpperCase()}
                   </Link>
                 ))}
                 {/* Fallback to static categories if no dynamic data */}
@@ -270,7 +270,7 @@ export default function Header() {
               <div className={styles.gridColumn}>
                 {mainCategories.slice(5).map((category) => (
                   <Link key={category.id} href={category.link} className={styles.linkSlider}>
-                    {category.title.toUpperCase()}
+                    {category.title?.toUpperCase()}
                   </Link>
                 ))}
                 {/* Fallback to static categories if no dynamic data */}
@@ -412,12 +412,12 @@ export default function Header() {
               {/* Dynamic categories from database */}
               {regions.map((region) => (
                 <Link key={region.id} className={styles.textCategory} href={region.link}>
-                  {region.title.toUpperCase()}
+                  {region.title?.toUpperCase()}
                 </Link>
               ))}
               {mainCategories.map((category) => (
                 <Link key={category.id} className={styles.textCategory} href={category.link}>
-                  {category.title.toUpperCase()}
+                  {category.title?.toUpperCase()}
                 </Link>
               ))}
 

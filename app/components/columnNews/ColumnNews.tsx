@@ -186,9 +186,9 @@ export default function ColumnNews({
 
     return Array.from({ length: count }, (_, index) => ({
       id: `random-${index + 1}`,
-      title: titles[Math.floor(Math.random() * titles.length)],
+      title: titles[index % titles.length],
       time: new Date(
-        Date.now() - Math.floor(Math.random() * 1e8)
+        Date.now() - (index * 3600000) // 1 hour intervals
       ).toLocaleString("uk-UA", {
         day: "2-digit",
         month: "long",
@@ -196,8 +196,8 @@ export default function ColumnNews({
         hour: "2-digit",
         minute: "2-digit",
       }),
-      imageUrl: `https://picsum.photos/seed/${Math.random()}/300/200`,
-      url: `/article/${articleIds[Math.floor(Math.random() * articleIds.length)]}-${index + 1}`,
+      imageUrl: `https://picsum.photos/seed/column-${index + 1}/300/200`,
+      url: `/article/${articleIds[index % articleIds.length]}-${index + 1}`,
     }));
   };
 
@@ -210,7 +210,7 @@ export default function ColumnNews({
 
   if (useRealData && apiData?.news) {
     // Використовуємо реальні дані з API
-    displayNews = apiData.news.map(item => ({
+    displayNews = apiData.news.filter(item => item && item.id).map(item => ({
       
       id: item.id.toString(),
       title: item.nheader,

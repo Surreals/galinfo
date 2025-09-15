@@ -10,7 +10,7 @@ export async function GET(request: Request) {
     const offset = (page - 1) * limit;
 
     // Отримуємо останні новини з усіх категорій
-    const latestNews = await executeQuery(`
+    const [latestNews] = await executeQuery(`
       SELECT 
         a_news.id,
         a_news.ndate,
@@ -41,7 +41,7 @@ export async function GET(request: Request) {
     `, [lang, limit, offset]);
 
     // Отримуємо загальну кількість новин для пагінації
-    const totalCount = await executeQuery(`
+    const [totalCount] = await executeQuery(`
       SELECT COUNT(*) as total
       FROM a_news USE KEY(udate)
       WHERE a_news.lang = ?

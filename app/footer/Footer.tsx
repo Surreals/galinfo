@@ -115,7 +115,7 @@ export default function Footer() {
               <div className={styles.gridColumn}>
                 {regions.map((region) => (
                   <Link key={region.id} href={region.link} className={styles.link}>
-                    {region.title.toUpperCase()}
+                    {region.title?.toUpperCase()}
                   </Link>
                 ))}
                 {regions.length === 0 && (

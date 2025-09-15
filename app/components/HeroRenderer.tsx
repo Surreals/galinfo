@@ -284,7 +284,7 @@ function NewsListRenderer({ block, isMobile }: { block: any, isMobile: boolean }
   console.log('apiData', apiData)
 
   // Трансформуємо дані для NewsList
-  const newsData = apiData?.news?.map(item => ({
+  const newsData = apiData?.news?.filter(item => item && item.id)?.map(item => ({
     id: item.id.toString(),
     title: item.nheader,
     date: new Date(item.ndate).toLocaleDateString('uk-UA', {
@@ -293,7 +293,7 @@ function NewsListRenderer({ block, isMobile }: { block: any, isMobile: boolean }
       year: 'numeric'
     }),
     time: item.ntime,
-    imageUrl: getUniversalNewsImageFull(item) || `https://picsum.photos/seed/${item.id}/300/200`,
+    imageUrl: getUniversalNewsImageFull(item) || `https://picsum.photos/seed/${item.id || 'default'}/300/200`,
     url: generateArticleUrl(item),
   })) || [];
 

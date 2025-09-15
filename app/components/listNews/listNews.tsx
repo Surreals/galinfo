@@ -99,7 +99,7 @@ export default function NewsList({
     // Використовуємо реальні дані з API
     displayData = apiData.news.map(item => {
       // Використовуємо універсальну функцію getUniversalNewsImageThumbnail з newsUtils
-      const imageUrl = getUniversalNewsImageThumbnail(item) || 'https://picsum.photos/200/150?random=1';
+      const imageUrl = getUniversalNewsImageThumbnail(item) || `https://picsum.photos/seed/${item.id || 'default'}/200/150`;
       
       return {
         id: item.id.toString(),

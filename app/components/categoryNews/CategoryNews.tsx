@@ -120,7 +120,7 @@ export default function CategoryNews({
 
   if (useRealData && apiData?.news) {
     // Використовуємо реальні дані з API
-    displayNews = apiData.news.map(item => {
+    displayNews = apiData.news.filter(item => item && item.id).map(item => {
       // Використовуємо універсальну функцію getUniversalNewsImageIntxt з newsUtils
       const imageUrl = getUniversalNewsImageIntxt(item) || 'https://picsum.photos/300/200?random=1';
 

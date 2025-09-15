@@ -10,7 +10,7 @@ import NewsEditorSidebar from "@/app/admin/article-editor/components/NewsEditorS
 import NewsEditor from "@/app/admin/article-editor/components/NewsEditor";
 import NewsFullEditor from "@/app/admin/article-editor/components/NewsEditorTipTap";
 import ArticleEditorLoader from "@/app/admin/article-editor/components/ArticleEditorLoader";
-import { useArticleData } from "@/app/hooks/useArticleData";
+import { useArticleData, ArticleData } from "@/app/hooks/useArticleData";
 
 // Dynamically import the TipTap editor to avoid SSR issues
 const RichTextEditor = dynamic(() => import('../components/RichTextEditor'), {
@@ -37,6 +37,11 @@ function ArticleEditorContent() {
     updateData({ nbody });
   };
 
+  // Handler for general data changes
+  const handleDataChange = (updates: Partial<ArticleData>) => {
+    updateData(updates);
+  };
+
   return (
     <ArticleEditorLoader loading={loading} error={error}>
       <div style={{ padding: '2rem', maxWidth: '1400px', margin: '0 auto', display: 'flex', gap: '24px' }}>
@@ -45,6 +50,7 @@ function ArticleEditorContent() {
           newsId={newsId} 
           articleData={articleData}
           onNbodyChange={handleNbodyChange}
+          onDataChange={handleDataChange}
         />
         <NewsEditorSidebar 
           isEditing={isEditing} 
