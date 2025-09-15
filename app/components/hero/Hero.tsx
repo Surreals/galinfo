@@ -8,7 +8,7 @@ import NewsList from "@/app/components/listNews";
 import CurrencyRates from "./CurrencyRates";
 import WeatherWidget from "./WeatherWidget";
 import { useHeroNews } from "@/app/hooks/useHeroNews";
-import { formatNewsDate, generateArticleUrl, getUniversalNewsImageIntxt, getNewsTitle, getNewsTeaser } from "@/app/lib/newsUtils";
+import { formatNewsDate, generateArticleUrl, getUniversalNewsImageIntxt, getNewsTitle, getNewsTeaser, getUniversalNewsImageFull } from "@/app/lib/newsUtils";
 import dayjs from 'dayjs';
 import 'dayjs/locale/uk';
 
@@ -47,7 +47,7 @@ export default function Hero() {
   useEffect(() => {
     if (heroNews && heroNews.length > 0) {
       const transformedNews = heroNews.map((item) => {
-        const imageUrl = getUniversalNewsImageIntxt(item);
+        const imageUrl = getUniversalNewsImageFull(item);
         
         return {
           id: item.id,
@@ -81,7 +81,7 @@ export default function Hero() {
 
   // Transform hero news for carousel
   const carouselItems = heroNews.slice(0, 4).map((item) => ({
-    src: getUniversalNewsImageIntxt(item) || "https://images.pexels.com/photos/417074/pexels-photo-417074.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
+    src: getUniversalNewsImageFull(item) || "https://images.pexels.com/photos/417074/pexels-photo-417074.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
     title: getNewsTitle(item),
     url: generateArticleUrl(item),
   }));

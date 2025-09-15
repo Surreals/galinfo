@@ -18,12 +18,12 @@ const dbConfig = {
   database: process.env.DB_NAME || 'galinfodb_db',
   port: parseInt(process.env.DB_PORT || '3306'),
   waitForConnections: true,
-  connectionLimit: 5, // Reduced from 10 to prevent connection exhaustion
+  connectionLimit: 2, // Further reduced to match database server limits
   queueLimit: 0,
   // Add connection timeout for remote connections
   connectTimeout: process.env.DB_HOST !== '127.0.0.1' && process.env.DB_HOST !== 'localhost' ? 60000 : 10000,
   // Add acquire timeout
-  acquireTimeout: 30000, // Reduced to 30 seconds
+  acquireTimeout: 10000, // Reduced to 10 seconds to fail faster
   // Add timeout for operations
   timeout: 30000, // Reduced to 30 seconds
   // Add charset to ensure proper encoding
@@ -43,7 +43,7 @@ const dbConfig = {
   // Add idle timeout - reduced to prevent long-lived connections
   idleTimeout: 60000, // 1 minute instead of 5 minutes
   // Add maximum idle connections - reduced
-  maxIdle: 2, // Reduced from 5 to 2
+  maxIdle: 1, // Reduced to 1 to minimize idle connections
 };
 
 // Create connection pool
@@ -65,14 +65,33 @@ export function getPoolStats() {
   };
 }
 
+// Track connection usage for leak detection
+let connectionLeakCount = 0;
+let lastConnectionCount = 0;
+
 // Monitor pool status
 setInterval(() => {
   const stats = getPoolStats();
   console.log(`Pool status: ${stats.total} total, ${stats.free} free, ${stats.used} used, ${stats.acquiring} acquiring`);
   
-  // Warn if pool is getting full
-  if (stats.total >= 4) { // Warn when 80% of max connections are used
-    console.warn('⚠️ Connection pool is getting full!');
+  // Connection leak detection
+  if (stats.total === lastConnectionCount && stats.used > 0) {
+    connectionLeakCount++;
+    if (connectionLeakCount >= 3) { // If connections stay the same for 3 cycles (90 seconds)
+      console.error('🚨 Potential connection leak detected! Forcing pool reset...');
+      cleanupConnections().catch(err => console.error('Leak cleanup failed:', err));
+      connectionLeakCount = 0;
+    }
+  } else {
+    connectionLeakCount = 0;
+  }
+  lastConnectionCount = stats.total;
+  
+  // Warn if pool is getting full and trigger cleanup
+  if (stats.total >= 2) { // Warn when all connections are used (100% of max 2)
+    console.warn('⚠️ Connection pool is at maximum capacity!');
+    // Trigger cleanup when pool is full
+    cleanupConnections().catch(err => console.error('Auto-cleanup failed:', err));
   }
 }, 30000); // Log every 30 seconds
 
@@ -176,19 +195,23 @@ export async function executeQuery<T = any>(query: string, params?: any[]): Prom
             const stats = getPoolStats();
             console.log(`Pool status before cleanup:`, stats);
             
-            // Force close idle connections if there are too many
-            if (stats.free > 2) {
-              console.log('Forcing cleanup of excess idle connections...');
-              const poolInternal = pool.pool as any;
-              const excessConnections = poolInternal._freeConnections?.splice(2) || []; // Keep only 2 free connections
-              for (const conn of excessConnections) {
-                try {
-                  await conn.end();
-                } catch (e) {
-                  // Ignore cleanup errors
-                }
+            // Force close all connections to reset the pool
+            console.log('Forcing complete connection pool reset...');
+            const poolInternal = pool.pool as any;
+            
+            // Close all connections to force a complete reset
+            const allConnections = [...(poolInternal._allConnections || [])];
+            for (const conn of allConnections) {
+              try {
+                await conn.end();
+              } catch (e) {
+                // Ignore cleanup errors
               }
             }
+            
+            // Clear the connection arrays
+            if (poolInternal._allConnections) poolInternal._allConnections.length = 0;
+            if (poolInternal._freeConnections) poolInternal._freeConnections.length = 0;
           } catch (cleanupError) {
             console.warn('Connection cleanup failed:', cleanupError);
           }
@@ -215,10 +238,10 @@ export async function cleanupConnections(): Promise<void> {
     const stats = getPoolStats();
     console.log(`Cleaning up connections. Current stats:`, stats);
     
-    // Close excess free connections
-    if (stats.free > 2) {
+    // Close excess free connections - keep only 1 free connection
+    if (stats.free > 1) {
       const poolInternal = pool.pool as any;
-      const excessConnections = poolInternal._freeConnections?.splice(2) || []; // Keep only 2 free connections
+      const excessConnections = poolInternal._freeConnections?.splice(1) || []; // Keep only 1 free connection
       console.log(`Closing ${excessConnections.length} excess connections`);
       
       for (const conn of excessConnections) {
@@ -226,6 +249,22 @@ export async function cleanupConnections(): Promise<void> {
           await conn.end();
         } catch (e) {
           console.warn('Failed to close excess connection:', e);
+        }
+      }
+    }
+    
+    // Force close all connections if we're still at limit
+    if (stats.total >= 2) {
+      console.log('Pool still at limit, forcing connection reset...');
+      const poolInternal = pool.pool as any;
+      
+      // Close all connections and let pool recreate them
+      const allConnections = [...(poolInternal._allConnections || [])];
+      for (const conn of allConnections) {
+        try {
+          await conn.end();
+        } catch (e) {
+          // Ignore cleanup errors
         }
       }
     }
