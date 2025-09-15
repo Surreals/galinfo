@@ -5,7 +5,7 @@ import { Skeleton } from "antd";
 import { useMobileContext } from '@/app/contexts/MobileContext';
 import { useLatestNews } from '@/app/hooks/useLatestNews';
 import { useImportantNews } from '@/app/hooks/useImportantNews';
-import { formatNewsDate, generateArticleUrl, getNewsImage } from '@/app/lib/newsUtils';
+import { formatNewsDate, generateArticleUrl, getNewsImage, getUniversalNewsImage } from '@/app/lib/newsUtils';
 import { articlePageDesktopSchema, articlePageMobileSchema } from '@/app/lib/articlePageSchema';
 
 // Імпорт компонентів
@@ -159,7 +159,8 @@ const ArticlePageRenderer: React.FC<ArticlePageRendererProps> = ({ article, load
 
         if (!article?.images_data) return null;
 
-        const imageUrl = getNewsImage(article) || 'https://picsum.photos/300/200?random=1';
+        const imageUrl = getUniversalNewsImage(article, 'full') || getUniversalNewsImage(article);
+        console.log(imageUrl, 'imageUrl');
         
         return (
           <div key={index} className={styles.articleImage}>

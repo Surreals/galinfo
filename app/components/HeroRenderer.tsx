@@ -75,7 +75,7 @@ export default function HeroRenderer({
 
   // Transform hero news for carousel
   const carouselItems = heroNews?.slice(0, carouselConfig?.limit || 4).map((item) => ({
-    src: getUniversalNewsImageIntxt(item) || "https://images.pexels.com/photos/417074/pexels-photo-417074.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
+    src: getUniversalNewsImageFull(item) || "https://images.pexels.com/photos/417074/pexels-photo-417074.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
     title: getNewsTitle(item),
     url: generateArticleUrl(item),
   })) || [];

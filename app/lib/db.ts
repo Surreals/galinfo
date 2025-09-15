@@ -200,13 +200,22 @@ export async function executeQuery<T = any>(query: string, params?: any[]): Prom
             const poolInternal = pool.pool as any;
             
             // Close all connections to force a complete reset
-            const allConnections = [...(poolInternal._allConnections || [])];
-            for (const conn of allConnections) {
-              try {
-                await conn.end();
-              } catch (e) {
-                // Ignore cleanup errors
+            try {
+              const allConnections = poolInternal._allConnections;
+              if (allConnections && Array.isArray(allConnections)) {
+                const connectionsToClose = [...allConnections];
+                for (const conn of connectionsToClose) {
+                  try {
+                    await conn.end();
+                  } catch (e) {
+                    // Ignore cleanup errors
+                  }
+                }
+              } else {
+                console.warn('_allConnections is not available or not an array during retry cleanup');
               }
+            } catch (cleanupError) {
+              console.warn('Error accessing pool connections during retry:', cleanupError);
             }
             
             // Clear the connection arrays
@@ -259,13 +268,22 @@ export async function cleanupConnections(): Promise<void> {
       const poolInternal = pool.pool as any;
       
       // Close all connections and let pool recreate them
-      const allConnections = [...(poolInternal._allConnections || [])];
-      for (const conn of allConnections) {
-        try {
-          await conn.end();
-        } catch (e) {
-          // Ignore cleanup errors
+      try {
+        const allConnections = poolInternal._allConnections;
+        if (allConnections && Array.isArray(allConnections)) {
+          const connectionsToClose = [...allConnections];
+          for (const conn of connectionsToClose) {
+            try {
+              await conn.end();
+            } catch (e) {
+              // Ignore cleanup errors
+            }
+          }
+        } else {
+          console.warn('_allConnections is not available or not an array, skipping connection cleanup');
         }
+      } catch (error) {
+        console.error('Error accessing pool connections:', error);
       }
     }
     
