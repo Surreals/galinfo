@@ -18,14 +18,14 @@ const dbConfig = {
   database: process.env.DB_NAME || 'galinfodb_db',
   port: parseInt(process.env.DB_PORT || '3306'),
   waitForConnections: true,
-  connectionLimit: 10,
+  connectionLimit: 5, // Reduced from 10 to prevent connection exhaustion
   queueLimit: 0,
   // Add connection timeout for remote connections
   connectTimeout: process.env.DB_HOST !== '127.0.0.1' && process.env.DB_HOST !== 'localhost' ? 60000 : 10000,
   // Add acquire timeout
-  acquireTimeout: 60000,
+  acquireTimeout: 30000, // Reduced to 30 seconds
   // Add timeout for operations
-  timeout: 60000,
+  timeout: 30000, // Reduced to 30 seconds
   // Add charset to ensure proper encoding
   charset: 'utf8mb4',
   // Add support for multiple statements (disabled for security)
@@ -40,10 +40,10 @@ const dbConfig = {
   // Add connection validation
   supportBigNumbers: true,
   bigNumberStrings: true,
-  // Add idle timeout
-  idleTimeout: 300000, // 5 minutes
-  // Add maximum idle connections
-  maxIdle: 5,
+  // Add idle timeout - reduced to prevent long-lived connections
+  idleTimeout: 60000, // 1 minute instead of 5 minutes
+  // Add maximum idle connections - reduced
+  maxIdle: 2, // Reduced from 5 to 2
 };
 
 // Create connection pool
@@ -53,6 +53,28 @@ const pool = mysql.createPool(dbConfig);
 pool.on('connection', (connection) => {
   console.log('New connection established as id ' + connection.threadId);
 });
+
+// Function to get pool statistics
+export function getPoolStats() {
+  const poolInternal = pool.pool as any;
+  return {
+    total: poolInternal._allConnections?.length || 0,
+    free: poolInternal._freeConnections?.length || 0,
+    acquiring: poolInternal._acquiringConnections?.length || 0,
+    used: (poolInternal._allConnections?.length || 0) - (poolInternal._freeConnections?.length || 0)
+  };
+}
+
+// Monitor pool status
+setInterval(() => {
+  const stats = getPoolStats();
+  console.log(`Pool status: ${stats.total} total, ${stats.free} free, ${stats.used} used, ${stats.acquiring} acquiring`);
+  
+  // Warn if pool is getting full
+  if (stats.total >= 4) { // Warn when 80% of max connections are used
+    console.warn('⚠️ Connection pool is getting full!');
+  }
+}, 30000); // Log every 30 seconds
 
 // Connection health check function
 export async function checkConnectionHealth(): Promise<boolean> {
@@ -129,24 +151,51 @@ export async function executeQuery<T = any>(query: string, params?: any[]): Prom
         error.message.includes('ECONNRESET') ||
         error.message.includes('ETIMEDOUT') ||
         error.message.includes('ENOTFOUND') ||
+        error.message.includes('Too many connections') ||
         (error as any).code === 'ECONNRESET' ||
         (error as any).code === 'ETIMEDOUT' ||
         (error as any).code === 'ENOTFOUND' ||
-        (error as any).errno === -54 // ECONNRESET errno
+        (error as any).code === 'ER_CON_COUNT_ERROR' ||
+        (error as any).errno === -54 || // ECONNRESET errno
+        (error as any).errno === 1040 // ER_CON_COUNT_ERROR errno
       );
       
       if (isRetryableError && attempt < maxRetries) {
         console.log(`Retryable error detected, attempting to reconnect and retry query (attempt ${attempt + 1}/${maxRetries})...`);
-        // Wait progressively longer between retries
-        const waitTime = Math.min(1000 * Math.pow(2, attempt - 1), 5000); // Exponential backoff, max 5s
-        await new Promise(resolve => setTimeout(resolve, waitTime));
         
-        // Try to get a fresh connection
-        try {
-          const connection = await pool.getConnection();
-          connection.release();
-        } catch (connError) {
-          console.warn('Failed to get fresh connection during retry:', connError);
+        // Special handling for "Too many connections" error
+        if ((error as any).code === 'ER_CON_COUNT_ERROR' || (error as any).errno === 1040) {
+          console.log('Too many connections error detected, waiting longer before retry...');
+          // Wait longer for connection pool to clear
+          const waitTime = Math.min(2000 * Math.pow(2, attempt - 1), 10000); // Longer backoff for connection limit errors
+          await new Promise(resolve => setTimeout(resolve, waitTime));
+          
+          // Try to force cleanup of idle connections
+          try {
+            // Get pool statistics
+            const stats = getPoolStats();
+            console.log(`Pool status before cleanup:`, stats);
+            
+            // Force close idle connections if there are too many
+            if (stats.free > 2) {
+              console.log('Forcing cleanup of excess idle connections...');
+              const poolInternal = pool.pool as any;
+              const excessConnections = poolInternal._freeConnections?.splice(2) || []; // Keep only 2 free connections
+              for (const conn of excessConnections) {
+                try {
+                  await conn.end();
+                } catch (e) {
+                  // Ignore cleanup errors
+                }
+              }
+            }
+          } catch (cleanupError) {
+            console.warn('Connection cleanup failed:', cleanupError);
+          }
+        } else {
+          // Regular retry for other errors
+          const waitTime = Math.min(1000 * Math.pow(2, attempt - 1), 5000); // Exponential backoff, max 5s
+          await new Promise(resolve => setTimeout(resolve, waitTime));
         }
         
         continue;
@@ -158,6 +207,33 @@ export async function executeQuery<T = any>(query: string, params?: any[]): Prom
   }
   
   throw lastError;
+}
+
+// Force cleanup of excess connections
+export async function cleanupConnections(): Promise<void> {
+  try {
+    const stats = getPoolStats();
+    console.log(`Cleaning up connections. Current stats:`, stats);
+    
+    // Close excess free connections
+    if (stats.free > 2) {
+      const poolInternal = pool.pool as any;
+      const excessConnections = poolInternal._freeConnections?.splice(2) || []; // Keep only 2 free connections
+      console.log(`Closing ${excessConnections.length} excess connections`);
+      
+      for (const conn of excessConnections) {
+        try {
+          await conn.end();
+        } catch (e) {
+          console.warn('Failed to close excess connection:', e);
+        }
+      }
+    }
+    
+    console.log(`Cleanup complete. New stats:`, getPoolStats());
+  } catch (error) {
+    console.error('Connection cleanup failed:', error);
+  }
 }
 
 // Close pool function
