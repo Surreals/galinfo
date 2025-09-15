@@ -1,7 +1,7 @@
 "use client";
 
-import {useState, useEffect, useMemo} from "react";
-import { Input } from 'antd';
+import React, {useState, useEffect, useMemo} from "react";
+import {Input, Skeleton} from 'antd';
 import Link from "next/link";
 
 import paths from "@/app/paths";
@@ -27,10 +27,11 @@ export default function Header() {
 
   const { menuData } = useMenuContext();
   const { weather } = useWeather("Lviv");
-  const { importantNews } = useImportantNewsByLevel(1)
+  const { importantNews, loading } = useImportantNewsByLevel(1)
   const currencies = useMemo(() => ['USD', 'EUR'], []);
   const { rates } = useCurrencyRates(currencies);
-  
+
+
   useEffect(() => {
     if (isMenuOpen) {
       document.body.style.overflow = "hidden";
@@ -42,10 +43,6 @@ export default function Header() {
       document.body.style.overflow = "";
     };
   }, [isMenuOpen]);
-
-  const toggleMoreNews = () => {
-    setIsMoreNewsOpen(prev => !prev);
-  };
 
   const handleCloseMenu = () => {
     setIsClosing(true);
@@ -334,16 +331,27 @@ export default function Header() {
             <div className={styles.marqueeWrapper}>
               <div className={styles.marqueeContent}>
                 {
-                  importantNews && importantNews.map((item, index) => (
-                    <Link key={index} href={`/news/${item.urlkey}_${item.id}`} className={styles.newInfoLink}>
-                      <p className={styles.gradientTextStart}>{item.nheader}</p>
-                      <Image src={dotIcon} alt="Dot Logo" width={8} height={8}/>
-                    </Link>
-                  ))
+                  loading ? Array.from({ length: 5 }).map((_, index) => (
+                    <Skeleton.Input
+                      key={index}
+                      active
+                      style={{width: '100%', height: 16}}
+                    />
+                  )) : importantNews && importantNews.map((item, index) => (
+                      <Link key={index} href={`/news/${item.urlkey}_${item.id}`} className={styles.newInfoLink}>
+                        <p className={styles.gradientTextStart}>{item.nheader}</p>
+                        <Image src={dotIcon} alt="Dot Logo" width={8} height={8}/>
+                      </Link>
+                    ))
                 }
-
                 {
-                  importantNews && importantNews.map((item, index) => (
+                  loading ? Array.from({ length: 5 }).map((_, index) => (
+                    <Skeleton.Input
+                      key={index}
+                      active
+                      style={{width: '100%', height: 16}}
+                    />
+                  )) : importantNews && importantNews.map((item, index) => (
                     <Link key={index} href={`/news/${item.urlkey}_${item.id}`} className={styles.newInfoLink}>
                       <p className={styles.gradientTextStart}>{item.nheader}</p>
                       <Image src={dotIcon} alt="Dot Logo" width={8} height={8}/>

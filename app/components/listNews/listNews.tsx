@@ -85,7 +85,6 @@ export default function NewsList({
   const {
     data: apiData,
     loading: apiLoading,
-    error: apiError
   } = useNewsByRubric({
     rubric: categoryId?.toString() || '',
     page: config?.apiParams?.page || 1,
@@ -127,7 +126,7 @@ export default function NewsList({
   return (
     <div style={{ width: `${widthPercent}%` }} className={styles.container}>
       {
-        loading ?
+        loading || apiLoading ?
             <div className={styles.skeletonBox}>
               {Array.from({ length: 9 }).map((_, index) => (
                 <Skeleton.Input

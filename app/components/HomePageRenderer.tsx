@@ -26,14 +26,14 @@ export default function HomePageRenderer({
     switch (block.type) {
       case 'Hero':
         return (
-          <HeroRenderer 
+          <HeroRenderer
             key={`hero-${index}`}
             schema={heroSchema}
             infoSchema={isMobile ? heroInfoMobileSchema : heroInfoSchema}
             isMobile={isMobile}
           />
         );
-      
+
       case 'CategoryNews':
         const category = getCategoryById(block.categoryId);
         return (
@@ -47,7 +47,7 @@ export default function HomePageRenderer({
             isMobile={isMobile}
           />
         );
-      
+
       case 'ColumnNews':
         const mainCategory = getCategoryById(block.categoryId);
         const sideCategory = getCategoryById(block.sideCategoryId);
@@ -64,14 +64,14 @@ export default function HomePageRenderer({
             {...block.config}
           />
         );
-      
+
       case 'AllNews':
         return <AllNews key={`all-news-${index}`} />;
-      
+
       case 'AdBanner':
       case 'AD_BANNER':
         return (
-          <AdBanner 
+          <AdBanner
             key={`ad-banner-${index}`}
             className={block.config?.className}
           />
