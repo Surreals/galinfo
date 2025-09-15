@@ -70,14 +70,14 @@ export async function testConnection() {
 }
 
 // Execute query function with retry logic
-export async function executeQuery<T = any>(query: string, params?: any[]): Promise<T[]> {
+export async function executeQuery<T = any>(query: string, params?: any[]): Promise<[T[], any]> {
   const maxRetries = 3;
   let lastError: any;
   
   for (let attempt = 1; attempt <= maxRetries; attempt++) {
     try {
-      const [rows] = await pool.execute(query, params);
-      return rows as T[];
+      const result = await pool.execute(query, params);
+      return result as [T[], any];
     } catch (error) {
       lastError = error;
       console.error(`Query execution failed (attempt ${attempt}/${maxRetries}):`, error);

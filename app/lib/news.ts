@@ -162,44 +162,52 @@ export async function createNews(data: Partial<NewsData>): Promise<number> {
   try {
     // Створюємо запис в основній таблиці
     const newsQuery = `
-      INSERT INTO ${TABLES.NEWS} SET ?
+      INSERT INTO ${TABLES.NEWS} (
+        images, ndate, ntime, ntype, nauthor, nauthorplus, showauthor, rubric, region, theme,
+        nweight, nocomment, hiderss, approved, lang, rated, udate, urlkey, userid, layout,
+        bytheme, ispopular, supervideo, printsubheader, topnews, isexpert, photo, video,
+        subrubric, suggest, headlineblock, twitter_status, youcode, maininblock
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `;
     
-    const newsData = {
-      images: data.images || '',
-      ndate: data.ndate || new Date().toISOString().split('T')[0],
-      ntime: data.ntime || new Date().toTimeString().split(' ')[0].substring(0, 8),
-      ntype: data.ntype || 1,
-      lang: data.lang || 'ua',
-      layout: data.layout || 0,
-      udate: Math.floor(Date.now() / 1000),
-      youcode: data.youcode || '',
-      rubric: Array.isArray(data.rubric) ? data.rubric.join(',') : '',
-      region: Array.isArray(data.region) ? data.region.join(',') : '',
-      theme: data.theme || 0,
-      nauthor: data.nauthor || 0,
-      userid: data.userid || 0,
-      nweight: data.nweight || 0,
-      ispopular: data.ispopular || 0,
-      urlkey: data.urlkey || '',
-      showauthor: data.showauthor ? 1 : 0,
-      hiderss: data.hiderss ? 1 : 0,
-      rated: data.rated ? 1 : 0,
-      photo: data.photo ? 1 : 0,
-      video: data.video ? 1 : 0,
-      approved: data.approved ? 1 : 0,
-      nocomment: data.nocomment ? 1 : 0,
-      printsubheader: data.printsubheader ? 1 : 0,
-      topnews: data.topnews ? 1 : 0,
-      suggest: data.suggest ? 1 : 0,
-      headlineblock: data.headlineblock ? 1 : 0,
-      maininblock: data.maininblock ? 1 : 0,
-      idtotop: data.idtotop || 0,
-      twitter_status: data.twitter_status || 'not_published',
-      twittered: data.twittered ? 1 : 0,
-    };
+    const newsValues = [
+      data.images || '',
+      data.ndate || new Date().toISOString().split('T')[0],
+      data.ntime || new Date().toTimeString().split(' ')[0].substring(0, 8),
+      data.ntype || 1,
+      data.nauthor || 0,
+      '', // nauthorplus - required field
+      data.showauthor ? 1 : 0,
+      Array.isArray(data.rubric) ? data.rubric.join(',') : '0',
+      Array.isArray(data.region) ? data.region.join(',') : '',
+      data.theme || 0,
+      data.nweight || 0,
+      data.nocomment ? 1 : 0,
+      data.hiderss ? 1 : 0,
+      data.approved ? 1 : 0,
+      data.lang === 'ua' ? 1 : (data.lang === 'en' ? 2 : (data.lang === 'ru' ? 3 : 1)),
+      data.rated ? 1 : 0,
+      Math.floor(Date.now() / 1000),
+      data.urlkey || '',
+      data.userid || 0,
+      data.layout || 0,
+      '', // bytheme - required field
+      data.ispopular || 0,
+      0, // supervideo - required field
+      data.printsubheader ? 1 : 0,
+      data.topnews ? 1 : 0,
+      0, // isexpert - required field
+      data.photo ? 1 : 0,
+      data.video ? 1 : 0,
+      0, // subrubric - required field
+      data.suggest ? 1 : 0,
+      data.headlineblock ? 1 : 0,
+      data.twitter_status || 'not_published',
+      data.youcode || '',
+      data.maininblock ? 1 : 0,
+    ];
     
-    const [result] = await executeQuery<{ insertId: number }>(newsQuery, [newsData]);
+    const [result] = await executeQuery<{ insertId: number }>(newsQuery, newsValues);
     const newsId = result.insertId;
     
     // Створюємо запис в таблиці тіла новини
@@ -247,7 +255,7 @@ export async function createNews(data: Partial<NewsData>): Promise<number> {
         const tagIdQuery = `
           SELECT id FROM ${TABLES.TAGS} WHERE tag = ?
         `;
-        const tagResults = await executeQuery<{ id: number }>(tagIdQuery, [tag]);
+        const [tagResults] = await executeQuery<{ id: number }>(tagIdQuery, [tag]);
         
         if (tagResults.length > 0) {
           // Додаємо зв'язок
@@ -312,7 +320,7 @@ export async function updateNews(id: number, data: Partial<NewsData>): Promise<b
     }
     if (data.lang !== undefined) {
       updateFields.push('lang = ?');
-      updateValues.push(data.lang);
+      updateValues.push(data.lang === 'ua' ? 1 : (data.lang === 'en' ? 2 : (data.lang === 'ru' ? 3 : 1)));
     }
     if (data.layout !== undefined) {
       updateFields.push('layout = ?');
