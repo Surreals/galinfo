@@ -6,6 +6,7 @@ import styles from './ColumnNews.module.css';
 import arrowRight from "@/assets/icons/arrowRight.svg";
 import adBannerIndfomo from '@/assets/images/Ad Banner white.png';
 import { useState, useEffect } from 'react';
+import { Skeleton } from 'antd';
 import { useNewsByRubric } from '@/app/hooks/useNewsByRubric';
 import { getUniversalNewsImageIntxt, formatFullNewsDate } from '@/app/lib/newsUtils';
 import { getUrlFromCategoryId } from '@/app/lib/categoryMapper';
@@ -186,10 +187,8 @@ export default function ColumnNews({
       "kyiv-art-project"
     ];
 
-    return Array.from({ length: count }, (_, index) => ({
-      id: `random-${index + 1}`,
-      title: titles[index % titles.length],
-      time: new Date(
+    return Array.from({ length: count }, (_, index) => {
+      const formattedDate = new Date(
         Date.now() - (index * 3600000) // 1 hour intervals
       ).toLocaleString("uk-UA", {
         day: "2-digit",
@@ -197,14 +196,21 @@ export default function ColumnNews({
         year: "numeric",
         hour: "2-digit",
         minute: "2-digit",
-      }),
-      imageUrl: `https://picsum.photos/seed/column-${index + 1}/300/200`,
-      url: `/article/${articleIds[index % articleIds.length]}-${index + 1}`,
-    }));
+      });
+      
+      return {
+        id: `random-${index + 1}`,
+        title: titles[index % titles.length],
+        data: formattedDate,
+        time: formattedDate,
+        imageUrl: `https://picsum.photos/seed/column-${index + 1}/300/200`,
+        url: `/article/${articleIds[index % articleIds.length]}-${index + 1}`,
+      };
+    });
   };
 
-  // Мокові дані для listNews
-  const newsData = generateRandomNews(newsQuantity);
+  // Генеруємо дані для listNews тільки якщо не використовуємо реальні дані
+  const newsData = useRealData ? [] : generateRandomNews(newsQuantity);
 
   // Визначаємо, які дані використовувати
   let displayNews: ColumnNewsItem[] = [];
@@ -227,8 +233,9 @@ export default function ColumnNews({
     // Використовуємо передані дані
     displayNews = news;
   } else {
-    // Використовуємо мокові дані
-    displayNews = mockNews;
+    // Якщо немає даних та не використовуємо реальні дані, показуємо скелетон
+    displayLoading = true;
+    displayNews = [];
   }
 
   return (
@@ -274,12 +281,12 @@ export default function ColumnNews({
               // Скелетон для завантаження
               Array.from({length: 5}).map((_, index) => (
                 <div key={index} className={`${styles.newsItem} ${shouldShowHorizontal ? styles.newsItemHorizontal : ''}`}>
-                  <div className={smallImg ? styles.skeletonImageSmall : styles.skeletonImage}></div>
-                  <div className={smallImg ? styles.skeletonContentSmall : styles.skeletonContent}>
-                    <div className={smallImg ? styles.skeletonTitleSmall : styles.skeletonTitle}></div>
-                    <div className={smallImg ? styles.skeletonSummarySmall : styles.skeletonSummary}></div>
-                    <div className={styles.skeletonDate}></div>
-                  </div>
+                  <Skeleton 
+                    active 
+                    avatar={{ shape: 'square', size: smallImg ? 'default' : 'large' }}
+                    paragraph={{ rows: 3 }}
+                    title={{ width: '85%' }}
+                  />
                 </div>
               ))
             ) : (

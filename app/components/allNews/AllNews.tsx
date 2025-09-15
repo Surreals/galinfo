@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { AccentSquare, ViewAllButton } from '@/app/shared';
 import { useLatestNews } from '@/app/hooks/useLatestNews';
 import { formatNewsDate, formatFullNewsDate, generateArticleUrl } from '@/app/lib/newsUtils';
+import { Skeleton } from 'antd';
 import styles from './AllNews.module.css';
 
 // Інтерфейси для типізації даних
@@ -186,9 +187,9 @@ export default function AllNews({ news = [], isLoading = false, hideHeader = fal
     }
   ];
 
-  // Використовуємо реальні дані або мокові
-  const displayNews = news.length > 0 ? news : (transformedNews.length > 0 ? transformedNews : mockNews);
-  const displayLoading = isLoading || apiLoading;
+  // Використовуємо реальні дані або передані дані
+  const displayNews = news.length > 0 ? news : transformedNews;
+  const displayLoading = isLoading || apiLoading || (transformedNews.length === 0 && !isLoading);
 
   return (
     <section className={`${styles.allNewsSection} ${className}`}>
@@ -207,8 +208,11 @@ export default function AllNews({ news = [], isLoading = false, hideHeader = fal
             // Скелетон для завантаження
             Array.from({ length: 20 }).map((_, index) => (
               <div key={index} className={styles.newsItem}>
-                <div className={styles.skeletonTitle}></div>
-                <div className={styles.skeletonDate}></div>
+                <Skeleton 
+                  active 
+                  paragraph={{ rows: 2 }}
+                  title={{ width: '70%' }}
+                />
               </div>
             ))
           ) : (

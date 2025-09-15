@@ -62,6 +62,16 @@
   display: block;
 }
 
+
+/* Стилі для Ant Design Skeleton */
+.ant-skeleton-element {
+  width: 100% !important;
+}
+
+.ant-skeleton-image {
+  width: 100% !important;
+}
+
 /* Адаптивні стилі */
 @media (max-width: 1200px) {
   .newsTitle {
@@ -90,6 +100,7 @@
   .newsDate {
     font-size: 14px;
   }
+
 }
 
 @media (max-width: 768px) {
@@ -109,6 +120,7 @@
   .newsDate {
     font-size: 13px;
   }
+
 }
 
 @media (max-width: 480px) {
@@ -128,4 +140,5 @@
   .newsDate {
     font-size: 12px;
   }
+
 }

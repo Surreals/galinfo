@@ -5,6 +5,7 @@ import Image from 'next/image';
 import { AccentSquare, ViewAllButton } from '@/app/shared';
 import styles from './CategoryNews.module.css';
 import { useState, useEffect } from 'react';
+import { Skeleton } from 'antd';
 import { useNewsByRubric } from '@/app/hooks/useNewsByRubric';
 import { useNewsByRegion } from '@/app/hooks/useNewsByRegion';
 import { isRegionCategory } from '@/app/lib/categoryUtils';
@@ -87,7 +88,7 @@ export default function CategoryNews({
   }, []);
 
   // Визначаємо, чи це регіональна категорія
-  const isRegion = categoryId ? isRegionCategory(categoryId) : false;
+  const isRegion = categoryId ? isRegionCategory(Number(categoryId)) : false;
 
   // Використовуємо відповідний хук залежно від типу категорії
   const rubricHook = useNewsByRubric({
@@ -143,7 +144,8 @@ export default function CategoryNews({
     // Використовуємо передані дані
     displayNews = news;
   } else {
-    // Якщо немає даних, показуємо порожній стан
+    // Якщо немає даних та не використовуємо реальні дані, показуємо скелетон
+    displayLoading = true;
     displayNews = [];
   }
 
@@ -183,15 +185,12 @@ export default function CategoryNews({
             // Скелетон для завантаження
             Array.from({ length: 8 }).map((_, index) => (
               <div key={index} className={`${styles.newsItem} ${shouldShowHorizontal ? styles.newsItemHorizontal : ''}`}>
-                <div 
-                  className={styles.skeletonImage}
-                  style={{
-                    height: shouldShowHorizontal ? height : '200px',
-                    aspectRatio: shouldShowHorizontal ? 'auto' : 'auto'
-                  }}
-                ></div>
-                <div className={styles.skeletonTitle}></div>
-                <div className={styles.skeletonDate}></div>
+                <Skeleton 
+                  active 
+                  avatar={{ shape: 'square', size: 'large' }}
+                  paragraph={{ rows: 1 }}
+                  title={{ width: '90%' }}
+                />
               </div>
             ))
           ) : (

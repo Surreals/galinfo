@@ -185,8 +185,16 @@ const CategoryRenderer: React.FC<CategoryRendererProps> = ({ category }) => {
           mainNewsItem = transformedCurrentCategoryData[mainNewsIndex];
         }
         
-        if (!mainNewsItem) {
-          return null; // Якщо немає новин, не показуємо MainNews
+        // Показуємо скелетон лоадинг якщо дані завантажуються або немає новин
+        const isLoadingImportantNews = !isRegion && !isImportantCategory && importantNewsHook.loading;
+        if (currentCategoryLoading || isLoadingImportantNews || !mainNewsItem) {
+          return (
+            <MainNews 
+              key={index}
+              isLoading={true}
+              className={styles[config.className]}
+            />
+          );
         }
         
         return (

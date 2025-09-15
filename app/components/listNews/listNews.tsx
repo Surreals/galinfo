@@ -98,6 +98,7 @@ export default function NewsList({
 
   // Визначаємо, які дані використовувати
   let displayData: NewsItem[] = [];
+  let displayLoading = loading;
 
   if (useRealData && apiData?.news) {
     // Використовуємо реальні дані з API
@@ -114,9 +115,14 @@ export default function NewsList({
         url: `/news/${item.urlkey}_${item.id}`,
       };
     });
-  } else {
+    displayLoading = apiLoading;
+  } else if (data && data.length > 0) {
     // Використовуємо передані дані
-    displayData = data || [];
+    displayData = data;
+  } else {
+    // Якщо немає даних та не використовуємо реальні дані, показуємо скелетон
+    displayLoading = true;
+    displayData = [];
   }
 
   // Визначаємо, чи потрібно показувати горизонтальне відображення
@@ -127,7 +133,7 @@ export default function NewsList({
   return (
     <div style={{ width: `${widthPercent}%` }} className={styles.container}>
       {
-        loading || apiLoading ?
+        displayLoading ?
             <div className={styles.skeletonBox}>
               {Array.from({ length: 9 }).map((_, index) => (
                 <Skeleton.Input
