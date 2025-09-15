@@ -20,8 +20,9 @@ export function getCategoryTitle(category: string): string {
       return "Спорт";
     case "crime":
       return "Кримінал";
+    case "accident":
     case "emergency":
-      return "Надзвичайне";
+      return "Надзвичайні події";
     case "history":
       return "Історія";
     case "technologies":
@@ -61,8 +62,9 @@ export function getBreadCrumbsNav(category: string): string {
       return "sport";
     case "кримінал" :
       return "crime";
+    case "надзвичайні події" :
     case "надзвичайне" :
-      return "emergency";
+      return "accident";
     case "історія" :
       return "history";
     case "технології" :
