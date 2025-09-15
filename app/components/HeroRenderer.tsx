@@ -311,14 +311,6 @@ function NewsListRenderer({ block, isMobile }: { block: any; isMobile: boolean }
   })) || [];
 
 
-  if (apiLoading) {
-    return (
-      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '200px' }}>
-        <p>Завантаження новин...</p>
-      </div>
-    );
-  }
-
   return (
     <NewsList
       loading={apiLoading}
