@@ -39,8 +39,8 @@ const config = {
   // Add connection validation
   supportBigNumbers: true,
   bigNumberStrings: true,
-  // Close idle connections after 30 seconds
-  idleTimeout: 30000,
+  // Close idle connections after 15 seconds
+  idleTimeout: 15000,
 };
 
 // Ensure single pool instance across all requests
