@@ -24,7 +24,7 @@ const config = {
   port: Number(process.env.DB_PORT || 3306),
   waitForConnections: true,
   connectionLimit: 10,    // 5–15 зазвичай достатньо
-  queueLimit: 0,
+  queueLimit: 50,
   connectTimeout: 10000,
   acquireTimeout: 10000,
   // Add charset to ensure proper encoding
