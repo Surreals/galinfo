@@ -5,7 +5,7 @@ import { Metadata } from 'next';
 export async function getCategoryMetadata(categorySlug: string, lang: string = '1'): Promise<Metadata> {
   try {
     const [category] = await executeQuery(`
-      SELECT id, param, title, description, keywords
+      SELECT id, param, title, description
       FROM a_cats 
       WHERE param = ? AND lng = ? AND isvis = 1
     `, [categorySlug, lang]);
@@ -20,7 +20,7 @@ export async function getCategoryMetadata(categorySlug: string, lang: string = '
     const cat = category[0];
     const title = cat.title || 'Категорія';
     const description = cat.description || `Новини категорії "${title}" від агенції інформації та аналітики "Гал-інфо"`;
-    const keywords = cat.keywords || `${title.toLowerCase()}, новини, Львів, Гал-Інфо`;
+    const keywords = `${title.toLowerCase()}, новини, Львів, Гал-Інфо`;
 
     return {
       title: `${title} | Гал-Інфо`,
@@ -115,8 +115,30 @@ export async function getNewsMetadata(urlkey: string, id: number, lang: string =
       }
     }
 
-    const publishedAt = new Date(parseInt(article.ndate) * 1000).toISOString();
-    const modifiedAt = new Date(parseInt(article.ntime) * 1000).toISOString();
+    // Безпечне створення дат з валідацією
+    const publishedAt = (() => {
+      try {
+        if (!article.ndate || isNaN(parseInt(article.ndate))) {
+          return new Date().toISOString();
+        }
+        const date = new Date(parseInt(article.ndate) * 1000);
+        return isNaN(date.getTime()) ? new Date().toISOString() : date.toISOString();
+      } catch {
+        return new Date().toISOString();
+      }
+    })();
+    
+    const modifiedAt = (() => {
+      try {
+        if (!article.ntime || isNaN(parseInt(article.ntime))) {
+          return publishedAt; // Використовуємо publishedAt як fallback
+        }
+        const date = new Date(parseInt(article.ntime) * 1000);
+        return isNaN(date.getTime()) ? publishedAt : date.toISOString();
+      } catch {
+        return publishedAt;
+      }
+    })();
 
     return {
       title: `${title} | Гал-Інфо`,
