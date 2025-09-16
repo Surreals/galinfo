@@ -5,14 +5,21 @@ import { Skeleton } from "antd";
 import { useMobileContext } from '@/app/contexts/MobileContext';
 import { useLatestNews } from '@/app/hooks/useLatestNews';
 import { useImportantNews } from '@/app/hooks/useImportantNews';
-import { formatNewsDate, formatFullNewsDate, generateArticleUrl, getNewsImage, getUniversalNewsImage } from '@/app/lib/newsUtils';
+import {
+  formatNewsDate,
+  formatFullNewsDate,
+  generateArticleUrl,
+  getNewsImage,
+  getUniversalNewsImage,
+  getImageFromImagesData, getImageFromImageData
+} from '@/app/lib/newsUtils';
 import { articlePageDesktopSchema, articlePageMobileSchema } from '@/app/lib/articlePageSchema';
 
 // Імпорт компонентів
-import { 
-  CategoryNews, 
-  ColumnNews, 
-  AdBanner, 
+import {
+  CategoryNews,
+  ColumnNews,
+  AdBanner,
   Breadcrumbs,
   ArticleMeta
 } from "@/app/components";
@@ -29,9 +36,35 @@ interface ArticlePageRendererProps {
   loading: boolean;
 }
 
+const parseNbody = (nbody: string) => {
+  const regex = /\{\{([\d,]+)\}\}/g;
+  let lastIndex = 0;
+  const blocks: { type: 'text' | 'images'; content: string | number[] }[] = [];
+  let match;
+
+  while ((match = regex.exec(nbody)) !== null) {
+    const indexStart = match.index;
+
+    if (indexStart > lastIndex) {
+      blocks.push({ type: 'text', content: nbody.slice(lastIndex, indexStart) });
+    }
+
+    const indices = match[1].split(',').map(num => parseInt(num.trim(), 10) - 1); // -1 для 0-based
+    blocks.push({ type: 'images', content: indices });
+
+    lastIndex = regex.lastIndex;
+  }
+
+  if (lastIndex < nbody.length) {
+    blocks.push({ type: 'text', content: nbody.slice(lastIndex) });
+  }
+
+  return blocks;
+};
+
 const ArticlePageRenderer: React.FC<ArticlePageRendererProps> = ({ article, loading }) => {
   const { isMobile } = useMobileContext();
-  
+
   // Хук для свіжих новин (СВІЖІ НОВИНИ)
   const latestNewsHook = useLatestNews({
     page: 1,
@@ -76,7 +109,7 @@ const ArticlePageRenderer: React.FC<ArticlePageRendererProps> = ({ article, load
   // Функція для рендерингу блоку
   const renderBlock = (block: any, index: number) => {
     const config = block.config;
-    
+
     if (!config?.show) return null;
 
     // Перевірка на мобільну/десктопну версію
@@ -86,7 +119,7 @@ const ArticlePageRenderer: React.FC<ArticlePageRendererProps> = ({ article, load
     switch (block.type) {
       case 'BREADCRUMBS':
         return (
-          <Breadcrumbs 
+          <Breadcrumbs
             key={index}
             items={[
               { label: 'ГОЛОВНА', href: '/' },
@@ -98,17 +131,17 @@ const ArticlePageRenderer: React.FC<ArticlePageRendererProps> = ({ article, load
                   return { label: item.title, href: item.link };
                 }
               ) || []),
-            ]} 
+            ]}
           />
         );
 
       case 'ARTICLE_META':
         return (
-          <ArticleMeta 
+          <ArticleMeta
             key={index}
-            date={article?.ndate} 
-            time={article?.ntime} 
-            isMobile={isMobile} 
+            date={article?.ndate}
+            time={article?.ntime}
+            isMobile={isMobile}
           />
         );
 
@@ -127,7 +160,7 @@ const ArticlePageRenderer: React.FC<ArticlePageRendererProps> = ({ article, load
             </div>
           );
         }
-        
+
         return (
           <div key={index} className={styles.articleHeader}>
             <h1 className={styles.articleTitle}>{article?.nheader}</h1>
@@ -152,8 +185,7 @@ const ArticlePageRenderer: React.FC<ArticlePageRendererProps> = ({ article, load
         if (!article?.images_data?.length) return null;
 
         const imageUrl = getUniversalNewsImage(article, 'full') || getUniversalNewsImage(article);
-        console.log(imageUrl, 'imageUrl');
-        
+
         return imageUrl ? (
           <div key={index} className={styles.articleImage}>
             <Image
@@ -177,17 +209,66 @@ const ArticlePageRenderer: React.FC<ArticlePageRendererProps> = ({ article, load
       case 'ARTICLE_CONTENT':
         if (loading) {
           return (
-            <Skeleton key={index} active paragraph={{ rows: 6 }} />
+            <div key={index} className={styles.articleImage}>
+              <Skeleton.Input style={{ width: '100%', height: 400, marginBottom: 24 }} active />
+            </div>
           );
         }
 
-        return (
-          <div
-            key={index}
-            className={styles.paragraph}
-            dangerouslySetInnerHTML={{ __html: article?.nbody || '' }}
-          />
-        );
+        if(article?.images_data.length === 0) {
+          console.log(1)
+          return (
+            <div
+              key={index}
+              className={styles.paragraph}
+              dangerouslySetInnerHTML={{__html: article?.nbody || ''}}
+            />
+          )
+        } else if (article?.images_data.length === 1) {
+          return (
+              <div
+                key={index}
+                className={styles.paragraph}
+                dangerouslySetInnerHTML={{__html: article?.nbody || ''}}
+              />
+          );
+        } else {
+          const blocks = parseNbody(article?.nbody || '');
+          console.log(article?.nbody)
+          return (
+            <div key={index} className={styles.articleImage}>
+              {blocks.map((b, idx) => {
+                if (b.type === 'text') {
+                  return <p key={idx} className={styles.paragraph}
+                            dangerouslySetInnerHTML={{__html: b.content as string}}/>;
+                }
+
+                // Рендер картинок
+                const indices = (b.content as number[]).map(i => i + 1);
+
+                return (
+                  <div key={idx} style={{ display: 'flex', flexWrap: 'wrap', gap: '30px', marginBottom: '16px' }}>
+                    {indices.map(i => {
+                      const img = article.images_data[i];
+                      if (!img) return null;
+                      const imgUrl = getImageFromImageData(img,'full')
+                      return (
+                        <div key={i} style={{ display: 'flex', flexDirection: 'column', gap: '5px', width: '100%' }}>
+                          <Image src={imgUrl} alt={img.title || 'Image'}
+                                 width={800}
+                                 height={500}
+                                 className={styles.mainImage}
+                                 priority={true}/>
+                          {img.title && <div className={styles.imageCredits}>{img.title}</div>}
+                        </div>
+                      );
+                    })}
+                  </div>
+                );
+              })}
+            </div>
+          );
+        }
 
       case 'ARTICLE_TAGS':
         if (loading) {
@@ -229,9 +310,9 @@ const ArticlePageRenderer: React.FC<ArticlePageRendererProps> = ({ article, load
           columnNewsData = transformedImportantNews;
           viewAllButtonHref = '/important'; // Для ТОП НОВИНИ веде на /important
         }
-        
+
         return (
-          <ColumnNews 
+          <ColumnNews
             key={index}
             mobileLayout={config.mobileLayout}
             newsQuantity={columnNewsData.length}
@@ -260,9 +341,9 @@ const ArticlePageRenderer: React.FC<ArticlePageRendererProps> = ({ article, load
           categoryNewsData = transformedLatestNews;
           categoryViewAllButtonHref = '/all'; // Для СВІЖІ НОВИНИ веде на /all
         }
-        
+
         return (
-          <CategoryNews 
+          <CategoryNews
             key={index}
             height={config.height}
             category={config.category}
@@ -280,7 +361,7 @@ const ArticlePageRenderer: React.FC<ArticlePageRendererProps> = ({ article, load
       case 'NEWS_LIST':
         const newsListConfig = block.config;
         const newsListBlockCategoryId = block.categoryId;
-        
+
         return (
           <NewsList
             key={index}
@@ -299,7 +380,7 @@ const ArticlePageRenderer: React.FC<ArticlePageRendererProps> = ({ article, load
 
       case 'AD_BANNER':
         return (
-          <AdBanner 
+          <AdBanner
             key={index}
             className={styles[config.className]}
           />
@@ -315,10 +396,10 @@ const ArticlePageRenderer: React.FC<ArticlePageRendererProps> = ({ article, load
         } else {
           imageSrc = config.src;
         }
-        
+
         return (
           <div key={index} className={styles.newsColumn}>
-            <Image 
+            <Image
               src={imageSrc}
               alt={config.alt}
               width={config.width}
