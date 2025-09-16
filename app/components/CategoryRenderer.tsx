@@ -170,8 +170,8 @@ const CategoryRenderer: React.FC<CategoryRendererProps> = ({ category }) => {
               imageAlt: newsWithPhoto.nheader
             };
           }
-        } else if (!isRegion && !isImportantCategory && importantNewsHook.data?.importantNews && importantNewsHook.data.importantNews.length > 0) {
-          // Використовуємо важливу новину з фото якщо є (для звичайних категорій)
+        } else if (!isRegion && !isImportantCategory && !isAllCategory && importantNewsHook.data?.importantNews && importantNewsHook.data.importantNews.length > 0) {
+          // Використовуємо важливу новину з фото якщо є (для звичайних категорій, але не для "all")
           const newsWithPhoto = importantNewsHook.data.importantNews.find(news => hasNewsPhoto(news));
           if (newsWithPhoto) {
             mainNewsItem = {
@@ -187,13 +187,66 @@ const CategoryRenderer: React.FC<CategoryRendererProps> = ({ category }) => {
         
         // Якщо не знайшли важливу новину з фото, шукаємо в звичайних новинах
         if (!mainNewsItem) {
-          const newsWithPhoto = transformedCurrentCategoryData.find(news => hasNewsPhoto(news));
-          if (newsWithPhoto) {
-            mainNewsItem = newsWithPhoto;
+          // Для категорії "all" спочатку шукаємо важливі новини з фото (nweight > 1)
+          if (isAllCategory && allNewsHook.data?.news && allNewsHook.data.news.length > 0) {
+            const importantNewsWithPhoto = allNewsHook.data.news.find(news => 
+              hasNewsPhoto(news) && (news as any).nweight > 1
+            );
+            if (importantNewsWithPhoto) {
+              mainNewsItem = {
+                title: importantNewsWithPhoto.nheader,
+                date: formatFullNewsDate(importantNewsWithPhoto.ndate, importantNewsWithPhoto.ntime),
+                time: importantNewsWithPhoto.ntime,
+                url: generateArticleUrl(importantNewsWithPhoto as any),
+                imageUrl: getNewsImage(importantNewsWithPhoto as any, 'full') || 'https://picsum.photos/300/200?random=1',
+                imageAlt: importantNewsWithPhoto.nheader
+              };
+            } else {
+              // Якщо немає важливих новин з фото, шукаємо будь-яку новину з фото
+              const newsWithPhoto = allNewsHook.data.news.find(news => hasNewsPhoto(news));
+              if (newsWithPhoto) {
+                mainNewsItem = {
+                  title: newsWithPhoto.nheader,
+                  date: formatFullNewsDate(newsWithPhoto.ndate, newsWithPhoto.ntime),
+                  time: newsWithPhoto.ntime,
+                  url: generateArticleUrl(newsWithPhoto as any),
+                  imageUrl: getNewsImage(newsWithPhoto as any, 'full') || 'https://picsum.photos/300/200?random=1',
+                  imageAlt: newsWithPhoto.nheader
+                };
+              }
+            }
           } else {
-            // Fallback до звичайних новин (навіть без фото)
-            const mainNewsIndex = config.newsIndex || 0;
-            mainNewsItem = transformedCurrentCategoryData[mainNewsIndex];
+            // Для інших категорій спочатку шукаємо важливі новини з фото (nweight > 1)
+            const importantNewsWithPhoto = transformedCurrentCategoryData.find(news => 
+              hasNewsPhoto(news) && (news as any).nweight > 1
+            );
+            if (importantNewsWithPhoto) {
+              mainNewsItem = importantNewsWithPhoto;
+            } else {
+              // Якщо немає важливих новин з фото, шукаємо будь-яку новину з фото
+              const newsWithPhoto = transformedCurrentCategoryData.find(news => hasNewsPhoto(news));
+              if (newsWithPhoto) {
+                mainNewsItem = newsWithPhoto;
+              }
+            }
+          }
+          
+          // Fallback до звичайних новин (навіть без фото)
+          if (!mainNewsItem) {
+            if (isAllCategory && allNewsHook.data?.news && allNewsHook.data.news.length > 0) {
+              const firstNews = allNewsHook.data.news[0];
+              mainNewsItem = {
+                title: firstNews.nheader,
+                date: formatFullNewsDate(firstNews.ndate, firstNews.ntime),
+                time: firstNews.ntime,
+                url: generateArticleUrl(firstNews as any),
+                imageUrl: getNewsImage(firstNews as any, 'full') || 'https://picsum.photos/300/200?random=1',
+                imageAlt: firstNews.nheader
+              };
+            } else {
+              const mainNewsIndex = config.newsIndex || 0;
+              mainNewsItem = transformedCurrentCategoryData[mainNewsIndex];
+            }
           }
         }
         
