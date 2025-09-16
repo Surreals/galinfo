@@ -37,14 +37,12 @@ interface HeroRendererProps {
   schema?: any;
   infoSchema?: any;
   isMobile?: boolean;
-  noFallbackImages?: boolean;
 }
 
 export default function HeroRenderer({ 
   schema = heroSchema, 
   infoSchema,
-  isMobile = false,
-  noFallbackImages = false
+  isMobile = false
 }: HeroRendererProps) {
   const carouselRef = useRef<any>(null);
   const router = useRouter();
@@ -84,11 +82,6 @@ export default function HeroRenderer({
     url: generateArticleUrl(item),
   })) || [];
 
-  // Filter out items with empty src if noFallbackImages is true
-  const filteredCarouselItems = noFallbackImages 
-    ? carouselItems.filter(item => item.src && item.src.trim() !== '')
-    : carouselItems;
-
   // Fallback carousel items if no hero news
   const fallbackCarouselItems = [
     {
@@ -113,18 +106,13 @@ export default function HeroRenderer({
     },
   ];
 
-  const finalCarouselItems = filteredCarouselItems.length > 0 ? filteredCarouselItems : (noFallbackImages ? [] : fallbackCarouselItems);
+  const finalCarouselItems = carouselItems.length > 0 ? carouselItems : fallbackCarouselItems;
 
 
   // Рендер компонентів на основі схеми
   const renderBlock = (block: any, index: number) => {
     switch (block.type) {
       case 'Carousel':
-        // If noFallbackImages is true and there are no items with images, don't render the carousel
-        if (noFallbackImages && finalCarouselItems.length === 0) {
-          return null;
-        }
-
         return (
           <div key={index} className={styles.carouselBox}>
             {
@@ -208,7 +196,6 @@ export default function HeroRenderer({
             key={index}
             block={block}
             isMobile={isMobileResize}
-            noFallbackImages={noFallbackImages}
           />
         );
 
@@ -263,7 +250,7 @@ function formatDate(dateString: string): string {
 }
 
 // Компонент для рендерингу NewsList з підтримкою API
-function NewsListRenderer({ block, isMobile, noFallbackImages = false }: { block: any; isMobile: boolean; noFallbackImages?: boolean }) {
+function NewsListRenderer({ block, isMobile }: { block: any; isMobile: boolean }) {
   const config = block.config;
   const categoryId = block.categoryId;
 
@@ -341,7 +328,7 @@ function NewsListRenderer({ block, isMobile, noFallbackImages = false }: { block
       showMoreButton={config.showMoreButton}
       arrowRightIcon={config.arrowRightIcon}
       mobileLayout={config.mobileLayout}
-      noFallbackImages={true}
+      noFallbackImages={config.noFallbackImages || false}
       // showAllImages={true} // Показуємо всі доступні зображення в Hero секції
     />
   );
