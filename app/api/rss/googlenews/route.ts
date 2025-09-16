@@ -5,7 +5,7 @@ import { getNewsForGoogleNews } from '@/lib/rss-service'
 export async function GET(request: NextRequest) {
   try {
     const url = new URL(request.url)
-    const limit = parseInt(url.searchParams.get('limit') || '1000')
+    const limit = parseInt(url.searchParams.get('limit') || '100')
     const lang = url.searchParams.get('lang') || '1'
     
     const news = await getNewsForGoogleNews(limit, lang)

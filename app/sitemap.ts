@@ -58,7 +58,7 @@ async function getStaticPages(): Promise<Array<{url: string, lastModified: strin
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   try {
     const [news, categories, staticPages] = await Promise.all([
-      getNewsForSitemap('1', 1000), // lang=1, limit=1000
+      getNewsForSitemap('1', 500), // lang=1, limit=500 - достатньо для 30 днів
       getCategoriesForSitemap('1'), // lang=1
       getStaticPages()
     ])
