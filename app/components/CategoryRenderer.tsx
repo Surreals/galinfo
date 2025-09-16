@@ -10,7 +10,7 @@ import { useImportantNewsByCategory } from '@/app/hooks/useImportantNewsByCatego
 import { useImportantNews } from '@/app/hooks/useImportantNews';
 import { useLatestNews } from '@/app/hooks/useLatestNews';
 import { getCategoryTitle } from '@/assets/utils/getTranslateCategory';
-import { formatNewsDate, formatFullNewsDate, generateArticleUrl, getNewsImage } from '@/app/lib/newsUtils';
+import { formatNewsDate, formatFullNewsDate, generateArticleUrl, getNewsImage, hasNewsPhoto } from '@/app/lib/newsUtils';
 import { categoryDesktopSchema, categoryMobileSchema } from '@/app/lib/categorySchema';
 
 // Імпорт компонентів
@@ -154,35 +154,47 @@ const CategoryRenderer: React.FC<CategoryRendererProps> = ({ category }) => {
         );
 
       case 'MAIN_NEWS':
-        // Використовуємо важливі новини для головної новини
+        // Використовуємо важливі новини для головної новини, але тільки ті, що мають фото
         let mainNewsItem = null;
         
         if (isImportantCategory && importantNewsCategoryHook.importantNews && importantNewsCategoryHook.importantNews.length > 0) {
-          // Для категорії important використовуємо першу важливу новину
-          const importantNews = importantNewsCategoryHook.importantNews[0];
-          mainNewsItem = {
-            title: importantNews.nheader,
-            date: formatFullNewsDate(importantNews.ndate, importantNews.ntime),
-            time: importantNews.ntime,
-            url: generateArticleUrl(importantNews as any),
-            imageUrl: getNewsImage(importantNews as any, 'full') || 'https://picsum.photos/300/200?random=1',
-            imageAlt: importantNews.nheader
-          };
+          // Для категорії important використовуємо першу важливу новину з фото
+          const newsWithPhoto = importantNewsCategoryHook.importantNews.find(news => hasNewsPhoto(news));
+          if (newsWithPhoto) {
+            mainNewsItem = {
+              title: newsWithPhoto.nheader,
+              date: formatFullNewsDate(newsWithPhoto.ndate, newsWithPhoto.ntime),
+              time: newsWithPhoto.ntime,
+              url: generateArticleUrl(newsWithPhoto as any),
+              imageUrl: getNewsImage(newsWithPhoto as any, 'full') || 'https://picsum.photos/300/200?random=1',
+              imageAlt: newsWithPhoto.nheader
+            };
+          }
         } else if (!isRegion && !isImportantCategory && importantNewsHook.data?.importantNews && importantNewsHook.data.importantNews.length > 0) {
-          // Використовуємо важливу новину якщо є (для звичайних категорій)
-          const importantNews = importantNewsHook.data.importantNews[0];
-          mainNewsItem = {
-            title: importantNews.nheader,
-            date: formatFullNewsDate(importantNews.ndate, importantNews.ntime),
-            time: importantNews.ntime,
-            url: generateArticleUrl(importantNews as any),
-            imageUrl: getNewsImage(importantNews as any, 'full') || 'https://picsum.photos/300/200?random=1',
-            imageAlt: importantNews.nheader
-          };
-        } else {
-          // Fallback до звичайних новин
-          const mainNewsIndex = config.newsIndex || 0;
-          mainNewsItem = transformedCurrentCategoryData[mainNewsIndex];
+          // Використовуємо важливу новину з фото якщо є (для звичайних категорій)
+          const newsWithPhoto = importantNewsHook.data.importantNews.find(news => hasNewsPhoto(news));
+          if (newsWithPhoto) {
+            mainNewsItem = {
+              title: newsWithPhoto.nheader,
+              date: formatFullNewsDate(newsWithPhoto.ndate, newsWithPhoto.ntime),
+              time: newsWithPhoto.ntime,
+              url: generateArticleUrl(newsWithPhoto as any),
+              imageUrl: getNewsImage(newsWithPhoto as any, 'full') || 'https://picsum.photos/300/200?random=1',
+              imageAlt: newsWithPhoto.nheader
+            };
+          }
+        }
+        
+        // Якщо не знайшли важливу новину з фото, шукаємо в звичайних новинах
+        if (!mainNewsItem) {
+          const newsWithPhoto = transformedCurrentCategoryData.find(news => hasNewsPhoto(news));
+          if (newsWithPhoto) {
+            mainNewsItem = newsWithPhoto;
+          } else {
+            // Fallback до звичайних новин (навіть без фото)
+            const mainNewsIndex = config.newsIndex || 0;
+            mainNewsItem = transformedCurrentCategoryData[mainNewsIndex];
+          }
         }
         
         // Показуємо скелетон лоадинг якщо дані завантажуються або немає новин

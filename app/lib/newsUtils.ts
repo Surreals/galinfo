@@ -236,6 +236,32 @@ export function hasNewsImages(newsItem: NewsItem): boolean {
   return getAllNewsImages(newsItem).length > 0;
 }
 
+// Функція для перевірки наявності фото у новині (універсальна)
+export function hasNewsPhoto(newsItem: any): boolean {
+  // Перевіряємо різні поля, які можуть містити фото
+  if (newsItem.photo && newsItem.photo.toString().trim() !== '') {
+    return true;
+  }
+  
+  if (newsItem.image_filenames && newsItem.image_filenames.trim() !== '') {
+    return true;
+  }
+  
+  if (Array.isArray(newsItem.images) && newsItem.images.length > 0) {
+    return true;
+  }
+  
+  if (Array.isArray(newsItem.images_data) && newsItem.images_data.length > 0) {
+    return true;
+  }
+  
+  if (typeof newsItem.images === 'string' && newsItem.images.trim() !== '') {
+    return true;
+  }
+  
+  return false;
+}
+
 // Універсальні функції для роботи з зображеннями будь-яких новин
 export function getUniversalNewsImage(newsItem: any, size: keyof ApiImageUrls = 'intxt'): string | null {
 
