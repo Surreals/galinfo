@@ -168,6 +168,29 @@
   color: var(--color-accent);
 }
 
+/* RSS Link styles */
+.rssLink {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.rssLink:hover {
+  transform: translateY(-1px);
+}
+
+.rssIcon {
+  width: 18px;
+  height: 18px;
+  transition: filter 0.2s ease;
+  filter: brightness(0) invert(1); /* White color for footer */
+}
+
+.rssLink:hover .rssIcon {
+  filter: brightness(0) invert(1) sepia(1) saturate(5) hue-rotate(175deg); /* Orange color on hover */
+}
+
 .buttonGroup {
   display: flex;
   flex-direction: column; /* Змінено на column для вертикального розташування */
