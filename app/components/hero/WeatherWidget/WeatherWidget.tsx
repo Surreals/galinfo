@@ -1,8 +1,44 @@
-import React from 'react';
+import React, { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import Script from 'next/script';
 import styles from './WeatherWidget.module.css';
 
 export default function WeatherWidget() {
+  const router = useRouter();
+
+  useEffect(() => {
+    // Function to load and execute the Sinoptik script
+    const loadSinoptikScript = () => {
+      // Remove existing script if it exists
+      const existingScript = document.querySelector('script[src*="sinoptik.ua/api/informer"]');
+      if (existingScript) {
+        existingScript.remove();
+      }
+
+      // Create and load new script
+      const script = document.createElement('script');
+      script.src = 'https://sinoptik.ua/api/informer/content?loc=bwCOPQ6RZw3nbSVvbQPY2QFoCnFe2U3SPV&cem=cM=RGnJEbQjHPQ=V2nE5GMu4CndxPrNoBQhvbU3E2UDo';
+      script.async = true;
+      document.head.appendChild(script);
+    };
+
+    // Load script on mount and pathname changes
+    loadSinoptikScript();
+
+    // Listen for pathname changes
+    const handleRouteChange = () => {
+      loadSinoptikScript();
+    };
+
+    // Add event listener for route changes
+    window.addEventListener('popstate', handleRouteChange);
+    
+    // Cleanup
+    return () => {
+      window.removeEventListener('popstate', handleRouteChange);
+    };
+  }, [router]);
+
   return (
     <div className={styles.weatherSection}>
       <div className={styles.titleBox}>
@@ -80,12 +116,6 @@ export default function WeatherWidget() {
             Погода від <a className="sin-informer__domain-link" href="https://sinoptik.ua" target="_blank" rel="nofollow"> sinoptik.ua </a>
           </div>
         </div>
-        
-        {/* Sinoptik Script */}
-        <Script
-          src="https://sinoptik.ua/api/informer/content?loc=bwCOPQ6RZw3nbSVvbQPY2QFoCnFe2U3SPV&cem=cM=RGnJEbQjHPQ=V2nE5GMu4CndxPrNoBQhvbU3E2UDo"
-          strategy="lazyOnload"
-        />
       </div>
     </div>
   );
