@@ -39,6 +39,8 @@ export function getCategoryTitle(category: string): string {
       return "Європа";
     case "svit":
       return "Світ";
+    case "pressluzhba":
+      return "Пресслужба";
     default:
       return "Невідома категорія";
   }
@@ -81,6 +83,8 @@ export function getBreadCrumbsNav(category: string): string {
       return "evropa";
     case "Світ" :
       return "svit";
+    case "Пресслужба" :
+      return "pressluzhba";
     default:
       return "Невідома категорія";
   }
