@@ -170,42 +170,6 @@ const ArticlePageRenderer: React.FC<ArticlePageRendererProps> = ({ article, load
           </div>
         );
 
-      case 'ARTICLE_IMAGE':
-        if (loading) {
-          return (
-            <div key={index} className={styles.articleImage}>
-              <Skeleton.Input
-                style={{ width: '100%', height: 400, marginBottom: 24 }}
-                active
-              />
-            </div>
-          );
-        }
-
-        if (!article?.images_data?.length) return null;
-
-        const imageUrl = getUniversalNewsImage(article, 'full') || getUniversalNewsImage(article);
-
-        return imageUrl ? (
-          <div key={index} className={styles.articleImage}>
-            <Image
-              src={imageUrl}
-              alt={imageUrl || 'Article image'}
-              width={800}
-              height={500}
-              className={styles.mainImage}
-              priority={true}
-            />
-            <div className={styles.imageCredits}>
-              {article?.images_data?.[0]?.title && (
-                <span className={styles.photoCredit}>
-                  {article?.images_data?.[0]?.title}
-                </span>
-              )}
-            </div>
-          </div>
-        ) : null;
-
       case 'ARTICLE_CONTENT':
         if (loading) {
           return (
@@ -225,13 +189,35 @@ const ArticlePageRenderer: React.FC<ArticlePageRendererProps> = ({ article, load
             />
           )
         } else if (article?.images_data.length === 1) {
+          const imageUrl = getUniversalNewsImage(article, 'full') || getUniversalNewsImage(article);
           return (
+            <>
+              <div key={index} className={styles.articleImage}>
+                <Image
+                  src={imageUrl}
+                  alt={imageUrl || 'Article image'}
+                  width={800}
+                  height={500}
+                  className={styles.mainImage}
+                  priority={true}
+                />
+                <div className={styles.imageCredits}>
+                  {article?.images_data?.[0]?.title && (
+                    <span className={styles.photoCredit}>
+                  {article?.images_data?.[0]?.title}
+                </span>
+                  )}
+                </div>
+              </div>
               <div
                 key={index}
                 className={styles.paragraph}
                 dangerouslySetInnerHTML={{__html: article?.nbody || ''}}
               />
-          );
+            </>
+
+          )
+            ;
         } else {
           const blocks = parseNbody(article?.nbody || '');
           console.log(article?.nbody)
