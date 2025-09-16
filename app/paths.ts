@@ -41,8 +41,8 @@ const paths = {
   newsPage: '/news',
   
   // Соціальні мережі та зовнішні посилання
-  facebook: 'https://facebook.com/galinfo',
-  twitter: 'https://twitter.com/galinfo',
+  facebook: 'https://www.facebook.com/galinfo',
+  twitter: 'https://x.com/galinfo_lviv',
   instagram: 'https://instagram.com/galinfo',
   inFomo: 'https://in-fomo.com',
   bytcd: 'https://bytcd.com',

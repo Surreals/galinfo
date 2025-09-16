@@ -35,17 +35,17 @@ interface ApiImage {
 export function formatNewsDate(ndate: string, udate: number): string {
   const now = dayjs();
   const newsTime = dayjs.unix(udate);
-  
+
   // If news is from today, show time
   if (newsTime.isSame(now, 'day')) {
     return newsTime.format('HH:mm');
   }
-  
+
   // If news is from yesterday, show "вчора"
   if (newsTime.isSame(now.subtract(1, 'day'), 'day')) {
     return 'вчора';
   }
-  
+
   // Otherwise show date
   return newsTime.format('DD.MM');
 }
@@ -54,10 +54,10 @@ export function formatNewsDate(ndate: string, udate: number): string {
 export function formatFullNewsDate(ndate: string, ntime?: string): string {
   // Використовуємо ndate з запиту для форматування дати (ISO формат: 2025-09-10T21:00:00.000Z)
   const newsTime = dayjs(ndate);
-  
+
   // Форматуємо дату: "13 серпня 2025 р."
   const dateStr = newsTime.format('DD MMMM YYYY');
-  
+
   // Використовуємо ntime з бекенду для часу, якщо він є, інакше беремо з ndate
   // Прибираємо секунди з часу (формат HH:mm:ss -> HH:mm)
   let timeStr = ntime || newsTime.format('HH:mm');
@@ -65,7 +65,7 @@ export function formatFullNewsDate(ndate: string, ntime?: string): string {
     const timeParts = timeStr.split(':');
     timeStr = `${timeParts[0]}:${timeParts[1]}`; // Беремо тільки години та хвилини
   }
-  
+
   return `${dateStr} ${timeStr}`;
 }
 
@@ -74,7 +74,7 @@ export function generateArticleUrl(newsItem: NewsItem): string {
   if (newsItem.urlkey) {
     return `/news/${newsItem.urlkey}_${newsItem.id}`;
   }
-  
+
   // Generate URL from date and id (similar to PHP app's articleLink function)
   if (newsItem.ndate && typeof newsItem.ndate === 'string') {
     const dateParts = newsItem.ndate.split('-');
@@ -83,7 +83,7 @@ export function generateArticleUrl(newsItem: NewsItem): string {
       return `/article/${year}/${month}/${day}/${newsItem.id}`;
     }
   }
-  
+
   // Fallback to simple id-based URL
   return `/article/${newsItem.id}`;
 }
@@ -102,7 +102,7 @@ export function getNewsImage(newsItem: NewsItem, size: keyof ApiImageUrls = 'int
       return fallbackUrl ? ensureFullImageUrl(fallbackUrl) : null;
     }
   }
-  
+
   // Check if there's a photo field first
   if (newsItem.photo && newsItem.photo.toString().trim() !== '') {
     const photoStr = newsItem.photo.toString();
@@ -118,7 +118,7 @@ export function getNewsImage(newsItem: NewsItem, size: keyof ApiImageUrls = 'int
     const imagePath = generateImagePath(photoStr);
     return ensureFullImageUrl(config.images.getNewsImagePath(imagePath));
   }
-  
+
   // Check if we have image_filenames from the database join
   if (newsItem.image_filenames && newsItem.image_filenames.trim() !== '') {
     const filenames = newsItem.image_filenames.split(',').map((f: string) => f.trim());
@@ -127,7 +127,7 @@ export function getNewsImage(newsItem: NewsItem, size: keyof ApiImageUrls = 'int
       return ensureFullImageUrl(config.images.getNewsImagePath(imagePath));
     }
   }
-  
+
   // Check if there are images in the images field (стара структура - рядок)
   if (typeof newsItem.images === 'string' && newsItem.images.trim() !== '') {
     try {
@@ -146,7 +146,7 @@ export function getNewsImage(newsItem: NewsItem, size: keyof ApiImageUrls = 'int
       }
     } catch (e) {
       // If parsing fails, try different formats
-      
+
       // Check if it's a comma-separated list of filenames
       if (newsItem.images.includes(',')) {
         const filenames = newsItem.images.split(',').map((f: string) => f.trim());
@@ -155,7 +155,7 @@ export function getNewsImage(newsItem: NewsItem, size: keyof ApiImageUrls = 'int
           return ensureFullImageUrl(config.images.getNewsImagePath(imagePath));
         }
       }
-      
+
       // Check if it's a single filename
       if (newsItem.images.includes('filename')) {
         // Extract filename from the images string
@@ -165,7 +165,7 @@ export function getNewsImage(newsItem: NewsItem, size: keyof ApiImageUrls = 'int
           return ensureFullImageUrl(config.images.getNewsImagePath(imagePath));
         }
       }
-      
+
       // If it looks like a filename (no spaces, has extension)
       if (!newsItem.images.includes(' ') && (newsItem.images.includes('.jpg') || newsItem.images.includes('.jpeg') || newsItem.images.includes('.png') || newsItem.images.includes('.gif'))) {
         const imagePath = generateImagePath(newsItem.images);
@@ -173,7 +173,7 @@ export function getNewsImage(newsItem: NewsItem, size: keyof ApiImageUrls = 'int
       }
     }
   }
-  
+
   // Return null if no image is available
   return null;
 }
@@ -215,7 +215,7 @@ export function getAllNewsImages(newsItem: NewsItem): ApiImage[] {
   if (Array.isArray(newsItem.images)) {
     return newsItem.images.filter(img => img && img.urls) as ApiImage[];
   }
-  
+
   // Якщо це рядок, спробуємо парсити
   if (typeof newsItem.images === 'string' && newsItem.images.trim() !== '') {
     try {
@@ -227,7 +227,7 @@ export function getAllNewsImages(newsItem: NewsItem): ApiImage[] {
       // Ігноруємо помилки парсингу
     }
   }
-  
+
   return [];
 }
 
@@ -242,24 +242,64 @@ export function hasNewsPhoto(newsItem: any): boolean {
   if (newsItem.photo && newsItem.photo.toString().trim() !== '') {
     return true;
   }
-  
+
   if (newsItem.image_filenames && newsItem.image_filenames.trim() !== '') {
     return true;
   }
-  
+
   if (Array.isArray(newsItem.images) && newsItem.images.length > 0) {
     return true;
   }
-  
+
   if (Array.isArray(newsItem.images_data) && newsItem.images_data.length > 0) {
     return true;
   }
-  
+
   if (typeof newsItem.images === 'string' && newsItem.images.trim() !== '') {
     return true;
   }
-  
+
   return false;
+}
+
+
+export function getImageFromImageData(
+  image: any,
+  size: keyof ApiImageUrls = 'intxt'
+): string | null {
+  if (!image || !image.urls) {
+    return null;
+  }
+
+  // Якщо є потрібний розмір
+  if (image.urls[size]) {
+    const url = image.urls[size];
+    if (url && !url.startsWith('http')) {
+      const filename = url.split('/').pop();
+      if (filename && !url.includes('/' + filename.charAt(0) + '/')) {
+        const basePath = url.substring(0, url.lastIndexOf('/'));
+        const correctPath = `${basePath}/${generateImagePath(filename)}`;
+        return ensureFullImageUrl(correctPath);
+      }
+    }
+    return ensureFullImageUrl(url);
+  }
+
+  // fallback (якщо немає потрібного size)
+  const fallbackUrl = image.urls.full || image.urls.intxt || image.urls.tmb;
+  if (fallbackUrl) {
+    if (!fallbackUrl.startsWith('http')) {
+      const filename = fallbackUrl.split('/').pop();
+      if (filename && !fallbackUrl.includes('/' + filename.charAt(0) + '/')) {
+        const basePath = fallbackUrl.substring(0, fallbackUrl.lastIndexOf('/'));
+        const correctPath = `${basePath}/${generateImagePath(filename)}`;
+        return ensureFullImageUrl(correctPath);
+      }
+    }
+    return ensureFullImageUrl(fallbackUrl);
+  }
+
+  return null;
 }
 
 // Універсальні функції для роботи з зображеннями будь-яких новин
@@ -303,7 +343,7 @@ export function getUniversalNewsImage(newsItem: any, size: keyof ApiImageUrls = 
       }
     }
   }
-  
+
   // Check if there's a photo field first
   if (newsItem.photo && newsItem.photo.toString().trim() !== '') {
     const photoStr = newsItem.photo.toString();
@@ -319,7 +359,7 @@ export function getUniversalNewsImage(newsItem: any, size: keyof ApiImageUrls = 
     const imagePath = generateImagePath(photoStr);
     return ensureFullImageUrl(ensureFullImageUrl(config.images.getNewsImagePath(imagePath)));
   }
-  
+
   // Check if we have image_filenames from the database join
   if (newsItem.image_filenames && newsItem.image_filenames.trim() !== '') {
     const filenames = newsItem.image_filenames.split(',').map((f: string) => f.trim());
@@ -328,7 +368,7 @@ export function getUniversalNewsImage(newsItem: any, size: keyof ApiImageUrls = 
       return ensureFullImageUrl(config.images.getNewsImagePath(imagePath));
     }
   }
-  
+
   // Check if there are images in the images field (стара структура - рядок)
   if (typeof newsItem.images === 'string' && newsItem.images.trim() !== '') {
     try {
@@ -347,7 +387,7 @@ export function getUniversalNewsImage(newsItem: any, size: keyof ApiImageUrls = 
       }
     } catch (e) {
       // If parsing fails, try different formats
-      
+
       // Check if it's a comma-separated list of filenames
       if (newsItem.images.includes(',')) {
         const filenames = newsItem.images.split(',').map((f: string) => f.trim());
@@ -356,7 +396,7 @@ export function getUniversalNewsImage(newsItem: any, size: keyof ApiImageUrls = 
           return ensureFullImageUrl(config.images.getNewsImagePath(imagePath));
         }
       }
-      
+
       // Check if it's a single filename
       if (newsItem.images.includes('filename')) {
         // Extract filename from the images string
@@ -366,7 +406,7 @@ export function getUniversalNewsImage(newsItem: any, size: keyof ApiImageUrls = 
           return ensureFullImageUrl(config.images.getNewsImagePath(imagePath));
         }
       }
-      
+
       // If it looks like a filename (no spaces, has extension)
       if (!newsItem.images.includes(' ') && (newsItem.images.includes('.jpg') || newsItem.images.includes('.jpeg') || newsItem.images.includes('.png') || newsItem.images.includes('.gif'))) {
         const imagePath = generateImagePath(newsItem.images);
@@ -374,7 +414,7 @@ export function getUniversalNewsImage(newsItem: any, size: keyof ApiImageUrls = 
       }
     }
   }
-  
+
   // Return null if no image is available
   return null;
 }
