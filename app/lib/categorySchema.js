@@ -222,7 +222,7 @@ export const categoryDesktopSchema = {
       // NewsList - Політика
       {
         type: NEWS_LIST,
-        categoryId: CATEGORY_IDS.POLITICS,
+        categoryId: CATEGORY_IDS.SPORT,
         config: {
           show: true,
           mobileLayout: "horizontal",
@@ -386,21 +386,21 @@ export const categoryMobileSchema = {
       }
     },
     
-    // Колонка новин (новини 9-12 з єдиного набору)
+    // Колонка новин (новини 9-16 з єдиного набору)
     {
       type: COLUMN_NEWS,
       categoryId: 'CURRENT_CATEGORY',
       config: {
         show: true,
         mobileLayout: "horizontal",
-        newsQuantity: 4,
+        newsQuantity: 8,
         smallImg: true,
         secondCategory: "",
         showNewsList: false,
         hideHeader: true,
         className: 'columnNewsStandard',
         showSeparator: true,
-        newsRange: { start: 9, end: 12 } // Діапазон новин з єдиного набору
+        newsRange: { start: 9, end: 16 } // Діапазон новин з єдиного набору
       }
     },
     
@@ -413,7 +413,7 @@ export const categoryMobileSchema = {
       }
     },
     
-    // Колонка новин (новини 13-20 з єдиного набору)
+    // Колонка новин (новини 17-24 з єдиного набору)
     {
       type: COLUMN_NEWS,
       categoryId: 'CURRENT_CATEGORY',
@@ -426,7 +426,7 @@ export const categoryMobileSchema = {
         hideHeader: true,
         className: 'columnNewsStandard',
         showSeparator: true,
-        newsRange: { start: 13, end: 20 } // Діапазон новин з єдиного набору
+        newsRange: { start: 17, end: 24 } // Діапазон новин з єдиного набору
       }
     },
     
@@ -446,18 +446,24 @@ export const categoryMobileSchema = {
     // NewsList (новини 21-28 з єдиного набору, тільки для мобільної версії)
     {
       type: NEWS_LIST,
-      categoryId: 'CURRENT_CATEGORY',
+      categoryId: CATEGORY_IDS.SPORT,
       config: {
         show: true,
         mobileOnly: true,
         mobileLayout: "horizontal",
         arrowRightIcon: true,
-        title: "CURRENT_CATEGORY_TITLE", // Буде замінено на реальну назву категорії
+        title: "СПОРТ", // Буде замінено на реальну назву категорії
         showImagesAt: [0, 1],
         showMoreButton: true,
-        moreButtonUrl: "CURRENT_CATEGORY_URL", // Буде замінено на реальний URL категорії
+        moreButtonUrl: "/sport", // Буде замінено на реальний URL категорії
         widthPercent: 100,
-        newsRange: { start: 21, end: 28 } // Діапазон новин з єдиного набору
+        apiParams: {
+          page: 1,
+          limit: 8,
+          lang: '1',
+          approved: true,
+          type: null
+        }
       }
     },
     

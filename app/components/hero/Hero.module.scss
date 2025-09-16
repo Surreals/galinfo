@@ -225,7 +225,7 @@
   .heroSection {
     .containerHeroInfo {
       flex-direction: column;
-      //padding: 24px 20px 40px 20px;;
+      padding: 24px 0 32px;
     }
     .container {
       padding: 24px 20px 50px 20px;
@@ -236,6 +236,9 @@
 
 @media (max-width: 480px) {
   .heroSection {
+    .containerHeroInfo {
+      padding: 24px 0 32px;
+    }
     .container {
       padding: 24px 16px 50px 16px;
     }

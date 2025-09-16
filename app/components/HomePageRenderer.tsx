@@ -40,7 +40,7 @@ export default function HomePageRenderer({
           <CategoryNews
             key={`category-news-${block.categoryId || 'custom'}-${index}`}
             categoryId={block.categoryId}
-            category={block.config?.category || category?.title || 'Категорія'}
+            category={(block.config?.category || category?.title || 'Категорія').toUpperCase()}
             config={block.config}
             useRealData={block.config?.useRealData || false}
             limit={block.config?.limit || 8}
@@ -54,9 +54,9 @@ export default function HomePageRenderer({
         return (
           <ColumnNews
             key={`column-news-${block.categoryId}-${index}`}
-            category={mainCategory?.title || 'Категорія'}
+            category={(mainCategory?.title || 'Категорія').toUpperCase()}
             categoryId={block.categoryId}
-            secondCategory={sideCategory?.title || 'Друга категорія'}
+            secondCategory={(sideCategory?.title || 'Друга категорія').toUpperCase()}
             secondCategoryId={block.sideCategoryId}
             isMobile={isMobile}
             useRealData={block.config?.useRealData || false}
