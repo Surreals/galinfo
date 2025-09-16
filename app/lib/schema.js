@@ -219,10 +219,23 @@ export const mobileSchema = {
         showSeparator: true,
         isMobile: true,
         mobileLayout: "horizontal",
-        newsQuantity: 5,
+        newsQuantity: 8,
         arrowRightIcon: true,
         isHomePage: true,
-        showNewsList: true
+        showNewsList: true,
+        useRealData: true,
+        apiParams: {
+          page: 1,
+          limit: 8,
+          lang: '1',
+          approved: true
+        },
+        secondCategoryApiParams: {
+          page: 1,
+          limit: 8,
+          lang: '1',
+          approved: true
+        }
       }
     },
     {
@@ -249,9 +262,22 @@ export const mobileSchema = {
         showSeparator: true,
         isMobile: true,
         mobileLayout: "horizontal",
-        newsQuantity: 5,
+        newsQuantity: 8,
         arrowRightIcon: true,
-        isHomePage: true
+        isHomePage: true,
+        useRealData: true,
+        apiParams: {
+          page: 1,
+          limit: 8,
+          lang: '1',
+          approved: true
+        },
+        secondCategoryApiParams: {
+          page: 1,
+          limit: 8,
+          lang: '1',
+          approved: true
+        }
       }
     },
     {

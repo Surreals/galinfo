@@ -69,8 +69,32 @@ export async function getLatestNewsForRSS(limit: number = 20, lang: string = '1'
 
     // Формування RSS новин
     const rssNews: NewsItem[] = news.map((item: any) => {
-      const publishedAt = new Date(parseInt(item.ndate) * 1000).toISOString();
-      const updatedAt = new Date(parseInt(item.ntime) * 1000).toISOString();
+      // Безпечне парсинг дат з валідацією
+      const ndateTimestamp = parseInt(item.ndate);
+      const ntimeTimestamp = parseInt(item.ntime);
+      
+      let publishedAt: string;
+      let updatedAt: string;
+      
+      try {
+        if (ndateTimestamp && !isNaN(ndateTimestamp) && ndateTimestamp > 0) {
+          publishedAt = new Date(ndateTimestamp * 1000).toISOString();
+        } else {
+          publishedAt = new Date().toISOString(); // Fallback to current time
+        }
+      } catch (error) {
+        publishedAt = new Date().toISOString();
+      }
+      
+      try {
+        if (ntimeTimestamp && !isNaN(ntimeTimestamp) && ntimeTimestamp > 0) {
+          updatedAt = new Date(ntimeTimestamp * 1000).toISOString();
+        } else {
+          updatedAt = publishedAt; // Fallback to published time
+        }
+      } catch (error) {
+        updatedAt = publishedAt;
+      }
       const slug = item.urlkey || `news-${item.id}`;
       
       // Отримання зображення
@@ -192,8 +216,32 @@ export async function getNewsByCategoryForRSS(
 
     // Формування RSS новин
     const rssNews: NewsItem[] = news.map((item: any) => {
-      const publishedAt = new Date(parseInt(item.ndate) * 1000).toISOString();
-      const updatedAt = new Date(parseInt(item.ntime) * 1000).toISOString();
+      // Безпечне парсинг дат з валідацією
+      const ndateTimestamp = parseInt(item.ndate);
+      const ntimeTimestamp = parseInt(item.ntime);
+      
+      let publishedAt: string;
+      let updatedAt: string;
+      
+      try {
+        if (ndateTimestamp && !isNaN(ndateTimestamp) && ndateTimestamp > 0) {
+          publishedAt = new Date(ndateTimestamp * 1000).toISOString();
+        } else {
+          publishedAt = new Date().toISOString(); // Fallback to current time
+        }
+      } catch (error) {
+        publishedAt = new Date().toISOString();
+      }
+      
+      try {
+        if (ntimeTimestamp && !isNaN(ntimeTimestamp) && ntimeTimestamp > 0) {
+          updatedAt = new Date(ntimeTimestamp * 1000).toISOString();
+        } else {
+          updatedAt = publishedAt; // Fallback to published time
+        }
+      } catch (error) {
+        updatedAt = publishedAt;
+      }
       const slug = item.urlkey || `news-${item.id}`;
       
       // Отримання зображення
@@ -228,7 +276,7 @@ export async function getNewsByCategoryForRSS(
 }
 
 // Отримання новин для Google News (останні 2 дні)
-export async function getNewsForGoogleNews(limit: number = 1000, lang: string = '1'): Promise<NewsItem[]> {
+export async function getNewsForGoogleNews(limit: number = 100, lang: string = '1'): Promise<NewsItem[]> {
   try {
     const twoDaysAgo = Math.floor((Date.now() - 2 * 24 * 60 * 60 * 1000) / 1000);
     
@@ -258,8 +306,32 @@ export async function getNewsForGoogleNews(limit: number = 1000, lang: string = 
 
     // Формування Google News новин
     const googleNews: NewsItem[] = news.map((item: any) => {
-      const publishedAt = new Date(parseInt(item.ndate) * 1000).toISOString();
-      const updatedAt = new Date(parseInt(item.ntime) * 1000).toISOString();
+      // Безпечне парсинг дат з валідацією
+      const ndateTimestamp = parseInt(item.ndate);
+      const ntimeTimestamp = parseInt(item.ntime);
+      
+      let publishedAt: string;
+      let updatedAt: string;
+      
+      try {
+        if (ndateTimestamp && !isNaN(ndateTimestamp) && ndateTimestamp > 0) {
+          publishedAt = new Date(ndateTimestamp * 1000).toISOString();
+        } else {
+          publishedAt = new Date().toISOString(); // Fallback to current time
+        }
+      } catch (error) {
+        publishedAt = new Date().toISOString();
+      }
+      
+      try {
+        if (ntimeTimestamp && !isNaN(ntimeTimestamp) && ntimeTimestamp > 0) {
+          updatedAt = new Date(ntimeTimestamp * 1000).toISOString();
+        } else {
+          updatedAt = publishedAt; // Fallback to published time
+        }
+      } catch (error) {
+        updatedAt = publishedAt;
+      }
       const slug = item.urlkey || `news-${item.id}`;
 
       return {
@@ -329,8 +401,32 @@ export async function getNewsForSitemap(lang: string = '1', limit: number = 1000
     `, [lang, thirtyDaysAgo, limit]);
 
     return news.map((item: any) => {
-      const publishedAt = new Date(parseInt(item.ndate) * 1000).toISOString();
-      const updatedAt = new Date(parseInt(item.ntime) * 1000).toISOString();
+      // Безпечне парсинг дат з валідацією
+      const ndateTimestamp = parseInt(item.ndate);
+      const ntimeTimestamp = parseInt(item.ntime);
+      
+      let publishedAt: string;
+      let updatedAt: string;
+      
+      try {
+        if (ndateTimestamp && !isNaN(ndateTimestamp) && ndateTimestamp > 0) {
+          publishedAt = new Date(ndateTimestamp * 1000).toISOString();
+        } else {
+          publishedAt = new Date().toISOString(); // Fallback to current time
+        }
+      } catch (error) {
+        publishedAt = new Date().toISOString();
+      }
+      
+      try {
+        if (ntimeTimestamp && !isNaN(ntimeTimestamp) && ntimeTimestamp > 0) {
+          updatedAt = new Date(ntimeTimestamp * 1000).toISOString();
+        } else {
+          updatedAt = publishedAt; // Fallback to published time
+        }
+      } catch (error) {
+        updatedAt = publishedAt;
+      }
       const slug = item.urlkey || `news-${item.id}`;
 
       return {

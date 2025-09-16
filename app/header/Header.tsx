@@ -13,7 +13,6 @@ import radioLogo from "@/assets/logos/radioLogo.svg"
 import searchIcon from "@/assets/icons/searchIcon.svg"
 import dotIcon from "@/assets/icons/dotIcon.svg"
 import burgerMenu from "@/assets/icons/burgerMenu.svg"
-import rssIcon from "@/assets/icons/rssIcon.svg"
 import { useMenuContext } from "@/app/contexts/MenuContext";
 import SearchBox from "@/app/header/components/SearchBox";
 import {useImportantNewsByLevel} from "@/app/hooks/useImportantNews";
@@ -164,24 +163,6 @@ export default function Header() {
           </div>
           <div className={styles.svgBox}>
             <SearchBox/>
-            {/* RSS Links */}
-            <div className={styles.rssLinks}>
-              <a 
-                href="/api/rss/export" 
-                className={styles.rssLink}
-                title="RSS Feed - Останні новини"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <Image
-                  src={rssIcon}
-                  alt="RSS Feed"
-                  width={24}
-                  height={24}
-                  className={styles.rssIcon}
-                />
-              </a>
-            </div>
             <a className={styles.radioLogo} target={'_blank'} href={'https://lviv.fm/'}>
               <Image
                 src={radioLogo}
