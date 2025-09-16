@@ -123,10 +123,21 @@ export default function Header() {
     setSearchError(null);
   };
 
+  const handleSearchResultClick = () => {
+    clearSearch();
+  };
+
   useEffect(() => {
 
     refetchRates();
     refetchWeather();
+  }, [pathname]);
+
+  // Close mobile menu when pathname changes
+  useEffect(() => {
+    if (isMenuOpen) {
+      handleCloseMenu();
+    }
   }, [pathname]);
 
   useEffect(() => {
@@ -556,7 +567,7 @@ export default function Header() {
                         key={item.id}
                         href={`/news/${item.urlkey}_${item.id}`}
                         className={styles.searchResultItem}
-                        onClick={clearSearch}
+                        onClick={handleSearchResultClick}
                       >
                         <div className={styles.searchResultContent}>
                           {item.images && item.images.length > 0 && (

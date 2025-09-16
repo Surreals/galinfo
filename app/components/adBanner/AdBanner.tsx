@@ -10,7 +10,7 @@ const AdBanner: React.FC<AdBannerProps> = ({ className }) => {
     <div className={`${styles.adBanner} ${className || ''}`}>
       {/* Дати зверху банеру */}
       <div className={styles.adDates}>
-        <span className={styles.adDate}>03 липня 2025, 09:30</span>
+        <span className={styles.adDate}></span>
         <span className={styles.adDate}>23 липня 2025, 09:30</span>
       </div>
       
@@ -19,7 +19,6 @@ const AdBanner: React.FC<AdBannerProps> = ({ className }) => {
           <div className={styles.imagePlaceholder}>
             <div className={styles.scenicImage}>
               <div className={styles.goraLogo}>GORA</div>
-              <div className={styles.sensarLogo}>sensarR DEVELOPMENT</div>
               <button className={styles.mainButton}>Отримати пропозицію</button>
             </div>
           </div>
