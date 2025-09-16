@@ -99,6 +99,10 @@
   object-fit: cover !important;
 }
 
+.newsItemHorizontal .placeholderImage {
+  object-fit: contain !important;
+}
+
 .newsLink {
   text-decoration: none;
   color: inherit;

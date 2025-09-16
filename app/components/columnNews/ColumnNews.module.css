@@ -190,6 +190,10 @@
   object-fit: cover !important;
 }
 
+.newsItemHorizontal .placeholderImage {
+  object-fit: contain !important;
+}
+
 /* Стилі для контенту при горизонтальному відображенні */
 .newsItemHorizontal .content,
 .newsItemHorizontal .contentSmall {

@@ -201,6 +201,10 @@
   flex-shrink: 0 !important;
 }
 
+.itemHorizontal .placeholderImage {
+  object-fit: contain !important;
+}
+
 /* Медіа-запити для мобільних пристроїв */
 @media (max-width: 1000px) {
   /* Фіксована висота для звичайного режиму на планшетах */
