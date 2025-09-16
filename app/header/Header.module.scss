@@ -156,6 +156,26 @@
       margin-bottom: 24px;
     }
 
+    .mobileSearchWrapper {
+      position: relative;
+      margin-bottom: 24px;
+    }
+
+    .mobileSearchDropdown {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      background: white;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+      z-index: 99999;
+      max-height: 300px;
+      overflow-y: auto;
+      margin-top: 4px;
+    }
+
     .divider {
       color: var(--color-tertiary);
     }
