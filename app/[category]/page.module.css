@@ -206,6 +206,13 @@
   .allNewsStandard :global(.allNewsSection) {
     padding: 32px 0 32px 0 !important; /* Зменшуємо верхній відступ на мобільних */
   }
+
+  .fomoLogo {
+    margin: 16px 0;
+  }
+  .banner3 {
+    margin: 16px 0;
+  }
 }
 
 @media (max-width: 480px) {
@@ -231,6 +238,13 @@
   
   .allNewsStandard :global(.allNewsSection) {
     padding: 24px 0 24px 0 !important; /* Ще менший відступ на дуже малих екранах */
+  }
+
+  .fomoLogo {
+    margin: 12px 0;
+  }
+  .banner3 {
+    margin: 12px 0;
   }
 }
 
@@ -285,6 +299,7 @@
   height: auto !important;
   border-radius: 8px;
   object-fit: cover;
+  margin: 24px 0;
 }
 
 .banner3 {
@@ -293,7 +308,7 @@
   height: auto !important;
   border-radius: 8px;
   object-fit: cover;
-  margin-bottom: 24px;
+  margin: 24px 0;
 }
 
 
