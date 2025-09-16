@@ -1,5 +1,7 @@
 import { ArticlePageClient } from "./ArticlePageClient";
+import { getNewsMetadata } from "@/lib/seo-utils";
 import { SearchOutlined } from "@ant-design/icons";
+import { Metadata } from "next";
 
 import styles from "./page.module.css";
 
@@ -8,6 +10,24 @@ interface ArticlePageProps {
     id: string;
   }>;
   searchParams?: Promise<{ [key: string]: string | string[] | undefined }>;
+}
+
+// Генерація метаданих для новини
+export async function generateMetadata({ params }: ArticlePageProps): Promise<Metadata> {
+  const { id: urlParams } = await params;
+  const lastDashIndex = urlParams.lastIndexOf("_");
+
+  if (lastDashIndex === -1) {
+    return {
+      title: 'Новина не знайдена | Гал-Інфо',
+      description: 'Запитана новина не існує або була видалена',
+    };
+  }
+
+  const urlkey = urlParams.substring(0, lastDashIndex);
+  const id = +(urlParams.substring(lastDashIndex + 1));
+
+  return await getNewsMetadata(urlkey, id);
 }
 
 export default async function ArticlePage({ params, searchParams }: ArticlePageProps) {

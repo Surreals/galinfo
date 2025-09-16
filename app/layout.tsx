@@ -88,10 +88,89 @@ const customTheme = {
 };
 
 export const metadata: Metadata = {
-  title: "Гал-Інфо - Агенція інформації та аналітики. Львівські новини",
-  description: "Агенція інформації та аналітики 'Гал-інфо'",
+  title: {
+    default: 'Гал-Інфо - Агенція інформації та аналітики',
+    template: '%s | Гал-Інфо'
+  },
+  description: 'Агенція інформації та аналітики "Гал-інфо" - останні новини Львова та регіону. Політика, економіка, суспільство, культура, спорт.',
+  keywords: [
+    'новини',
+    'Львів', 
+    'Гал-Інфо',
+    'агенція',
+    'інформація',
+    'аналітика',
+    'політика',
+    'економіка',
+    'суспільство',
+    'культура',
+    'спорт',
+    'здоров\'я',
+    'кримінал',
+    'надзвичайні події'
+  ],
+  authors: [{ name: 'Гал-Інфо' }],
+  creator: 'Гал-Інфо',
+  publisher: 'Гал-Інфо',
+  formatDetection: {
+    email: false,
+    address: false,
+    telephone: false,
+  },
+  metadataBase: new URL('https://galinfo.com.ua'),
+  alternates: {
+    canonical: '/',
+    languages: {
+      'uk-UA': '/',
+      'ru-UA': '/ru',
+    },
+  },
+  openGraph: {
+    type: 'website',
+    locale: 'uk_UA',
+    url: 'https://galinfo.com.ua',
+    siteName: 'Гал-Інфо',
+    title: 'Гал-Інфо - Агенція інформації та аналітики',
+    description: 'Агенція інформації та аналітики "Гал-інфо" - останні новини Львова та регіону',
+    images: [
+      {
+        url: '/im/logo-rss-100.png',
+        width: 100,
+        height: 100,
+        alt: 'Гал-Інфо',
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    site: '@galinfo_lviv',
+    creator: '@galinfo_lviv',
+    title: 'Гал-Інфо - Агенція інформації та аналітики',
+    description: 'Агенція інформації та аналітики "Гал-інфо" - останні новини Львова та регіону',
+    images: ['/im/logo-rss-100.png'],
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
+  },
   icons: {
-    icon: '/favicon.ico',
+    icon: [
+      { url: '/favicon.ico', sizes: 'any' },
+      { url: '/galinfo-favicon.svg', type: 'image/svg+xml' },
+    ],
+    apple: '/galinfo-favicon.svg',
+  },
+  manifest: '/manifest.json',
+  other: {
+    'msapplication-TileColor': '#c7084f',
+    'theme-color': '#c7084f',
   },
 };
 
