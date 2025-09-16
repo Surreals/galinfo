@@ -284,7 +284,7 @@ export default function ColumnNews({
                 <div key={index} className={`${styles.newsItem} ${shouldShowHorizontal ? styles.newsItemHorizontal : ''}`}>
                   <Skeleton 
                     active
-                    paragraph={{ rows: 3 }}
+                    paragraph={{ rows: 5 }}
                     title={{ width: '85%' }}
                   />
                 </div>

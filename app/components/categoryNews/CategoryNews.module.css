@@ -117,6 +117,9 @@
   .imageContainer {
     opacity: 0.8;
   }
+  .imageContainerCategoryPage {
+    opacity: 0.8;
+  }
 
   .newsTitle {
     color: var(--color-accent);

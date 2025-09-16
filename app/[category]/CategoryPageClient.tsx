@@ -3,21 +3,14 @@
 import React from 'react';
 import { CategoryRenderer } from "@/app/components";
 import { isValidCategoryUrl } from '@/app/lib/categoryMapper';
-import { getCategoryTitle } from "@/assets/utils/getTranslateCategory";
 import styles from "./page.module.css";
 
 interface CategoryPageClientProps {
   category: string;
-  newsData1: any[];
-  newsData2: any[];
-  newsData3: any[];
 }
 
 export const CategoryPageClient: React.FC<CategoryPageClientProps> = ({ 
-  category, 
-  newsData1, 
-  newsData2, 
-  newsData3 
+  category
 }) => {
   // Перевіряємо, чи є валідна категорія
   if (!isValidCategoryUrl(category)) {

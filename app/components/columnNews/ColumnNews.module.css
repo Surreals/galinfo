@@ -139,6 +139,11 @@
   .imageContainerSmall {
     opacity: 0.8;
   }
+
+  .newsImage {
+    opacity: 0.8;
+  }
+
   .fomoLogo {
     opacity: 0.8;
   }

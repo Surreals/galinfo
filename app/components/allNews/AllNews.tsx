@@ -210,7 +210,7 @@ export default function AllNews({ news = [], isLoading = false, hideHeader = fal
               <div key={index} className={styles.newsItem}>
                 <Skeleton 
                   active 
-                  paragraph={{ rows: 2 }}
+                  paragraph={{ rows: 5 }}
                   title={{ width: '70%' }}
                 />
               </div>

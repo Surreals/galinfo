@@ -2,6 +2,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { Skeleton } from 'antd';
 import styles from './MainNews.module.css';
+import React from "react";
 
 export interface MainNewsProps {
   title?: string;
@@ -30,12 +31,9 @@ export default function MainNews({
         <article className={styles.newsItem}>
           {isLoading ? (
             // Скелетон лоадинг
-            <Skeleton 
-              active 
-              avatar={{ shape: 'square', size: 'large' }}
-              paragraph={{ rows: 2 }}
-              title={{ width: '80%' }}
-            />
+            <div style={{ width: '100%', height:'533px' }}>
+              <Skeleton.Input active style={{ width: '100%', height:'533px', marginBottom: 24 }} />
+            </div>
           ) : (
             // Звичайний контент
             url ? (

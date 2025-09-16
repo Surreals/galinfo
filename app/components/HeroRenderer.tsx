@@ -30,6 +30,7 @@ import roundArrowLeft from "@/assets/icons/roundArrowLeft.svg";
 import adBannerIndfomo from '@/assets/images/Ad Banner white.png';
 
 import styles from './hero/Hero.module.scss';
+import {log} from "next/dist/server/typescript/utils";
 
 dayjs.locale('uk');
 
@@ -42,7 +43,6 @@ interface HeroRendererProps {
 export default function HeroRenderer({ 
   schema = heroSchema, 
   infoSchema,
-  isMobile = false
 }: HeroRendererProps) {
   const carouselRef = useRef<any>(null);
   const router = useRouter();
@@ -74,6 +74,8 @@ export default function HeroRenderer({
   const handleCarouselClick = (url: string) => {
     router.push(url);
   };
+
+  console.log('heroNews', heroNews)
 
   // Transform hero news for carousel
   const carouselItems = heroNews?.slice(0, carouselConfig?.limit || 4).map((item) => ({
@@ -108,6 +110,7 @@ export default function HeroRenderer({
 
   const finalCarouselItems = carouselItems.length > 0 ? carouselItems : fallbackCarouselItems;
 
+  console.log('finalCarouselItems',finalCarouselItems)
 
   // Рендер компонентів на основі схеми
   const renderBlock = (block: any, index: number) => {
@@ -136,10 +139,12 @@ export default function HeroRenderer({
                       <div
                         className={styles.carouselContent}
                         onClick={() => handleCarouselClick(item.url)}
-                        style={{ cursor: 'pointer' }}
+                        style={{cursor: 'pointer'}}
                       >
                         <p className={styles.carouselTime}>
-                          {heroNews?.[carouselIndex] ? formatNewsDate(heroNews[carouselIndex].ndate, heroNews[carouselIndex].udate) : '15 хвилин тому'}
+                          {heroNews?.[carouselIndex]
+                            ? getTimeDifference(heroNews[carouselIndex].ndate)
+                            : '15 хвилин тому'}
                         </p>
                         <h3 className={styles.carouselTitle}>{item.title}</h3>
                       </div>
@@ -238,16 +243,25 @@ export default function HeroRenderer({
   );
 }
 
-function formatDate(dateString: string): string {
-  const date = new Date(dateString);
-  return date.toLocaleDateString('uk-UA', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit'
-  });
+// Допоміжна функція для обчислення різниці часу
+function getTimeDifference(publishDate) {
+  const now = new Date(); // Поточний час (12:56 AM EEST, 17 вересня 2025)
+  const pubDate = new Date(publishDate); // Час публікації з об’єкта
+
+  const diffMs = now - pubDate; // Різниця в мілісекундах
+  const diffMinutes = Math.floor(diffMs / (1000 * 60)); // Різниця в хвилинах
+  const diffHours = Math.floor(diffMs / (1000 * 60 * 60)); // Різниця в годинах
+  const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24)); // Різниця в днях
+
+  if (diffDays > 0) {
+    return `${diffDays} ${diffDays === 1 ? 'день' : 'дні'} тому`;
+  } else if (diffHours > 0) {
+    return `${diffHours} ${diffHours === 1 ? 'годину' : 'годин'} тому`;
+  } else {
+    return `${diffMinutes} ${diffMinutes === 1 ? 'хвилину' : 'хвилин'} тому`;
+  }
 }
+
 
 // Компонент для рендерингу NewsList з підтримкою API
 function NewsListRenderer({ block, isMobile }: { block: any; isMobile: boolean }) {

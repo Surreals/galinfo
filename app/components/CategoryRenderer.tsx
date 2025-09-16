@@ -154,9 +154,10 @@ const CategoryRenderer: React.FC<CategoryRendererProps> = ({ category }) => {
         );
 
       case 'MAIN_NEWS':
+        const isLoadingImportantNews = !isRegion && !isImportantCategory && importantNewsHook.loading;
         // Використовуємо важливі новини для головної новини, але тільки ті, що мають фото
         let mainNewsItem = null;
-        
+
         if (isImportantCategory && importantNewsCategoryHook.importantNews && importantNewsCategoryHook.importantNews.length > 0) {
           // Для категорії important використовуємо першу важливу новину з фото
           const newsWithPhoto = importantNewsCategoryHook.importantNews.find(news => hasNewsPhoto(news));
@@ -184,12 +185,12 @@ const CategoryRenderer: React.FC<CategoryRendererProps> = ({ category }) => {
             };
           }
         }
-        
+
         // Якщо не знайшли важливу новину з фото, шукаємо в звичайних новинах
         if (!mainNewsItem) {
           // Для категорії "all" спочатку шукаємо важливі новини з фото (nweight > 1)
           if (isAllCategory && allNewsHook.data?.news && allNewsHook.data.news.length > 0) {
-            const importantNewsWithPhoto = allNewsHook.data.news.find(news => 
+            const importantNewsWithPhoto = allNewsHook.data.news.find(news =>
               hasNewsPhoto(news) && (news as any).nweight > 1
             );
             if (importantNewsWithPhoto) {
@@ -217,7 +218,7 @@ const CategoryRenderer: React.FC<CategoryRendererProps> = ({ category }) => {
             }
           } else {
             // Для інших категорій спочатку шукаємо важливі новини з фото (nweight > 1)
-            const importantNewsWithPhoto = transformedCurrentCategoryData.find(news => 
+            const importantNewsWithPhoto = transformedCurrentCategoryData.find(news =>
               hasNewsPhoto(news) && (news as any).nweight > 1
             );
             if (importantNewsWithPhoto) {
@@ -230,7 +231,7 @@ const CategoryRenderer: React.FC<CategoryRendererProps> = ({ category }) => {
               }
             }
           }
-          
+
           // Fallback до звичайних новин (навіть без фото)
           if (!mainNewsItem) {
             if (isAllCategory && allNewsHook.data?.news && allNewsHook.data.news.length > 0) {
@@ -249,21 +250,21 @@ const CategoryRenderer: React.FC<CategoryRendererProps> = ({ category }) => {
             }
           }
         }
-        
+
         // Показуємо скелетон лоадинг якщо дані завантажуються або немає новин
-        const isLoadingImportantNews = !isRegion && !isImportantCategory && importantNewsHook.loading;
+
         if (currentCategoryLoading || isLoadingImportantNews || !mainNewsItem) {
           return (
-            <MainNews 
+            <MainNews
               key={index}
               isLoading={true}
               className={styles[config.className]}
             />
           );
         }
-        
+
         return (
-          <MainNews 
+          <MainNews
             key={index}
             title={mainNewsItem.title}
             date={mainNewsItem.date}
@@ -276,14 +277,18 @@ const CategoryRenderer: React.FC<CategoryRendererProps> = ({ category }) => {
 
       case 'CATEGORY_NEWS':
         // Отримуємо новини за діапазоном з єдиного набору
+        const isLoadingImportant = !isRegion && !isImportantCategory && importantNewsHook.loading;
         const categoryNewsRange = config.newsRange;
-        const categoryNewsData = categoryNewsRange 
+        const categoryNewsData = categoryNewsRange
           ? transformedCurrentCategoryData.slice(categoryNewsRange.start - 1, categoryNewsRange.end)
           : transformedCurrentCategoryData.slice(0, 8); // fallback до перших 8 новин
-        
+        const isCategoryNewsLoading =
+          currentCategoryLoading || isLoadingImportant;
+
         return (
-          <CategoryNews 
+          <CategoryNews
             key={index}
+            isLoading={isCategoryNewsLoading}
             height={config.height}
             category={getCategoryTitle(category).toUpperCase()}
             hideHeader={config.hideHeader}

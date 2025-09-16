@@ -184,13 +184,9 @@ export default function CategoryNews({
         <div className={`${styles.newsGrid} ${shouldShowHorizontal ? styles.newsGridHorizontal : ''}`}>
           {displayLoading ? (
             // Скелетон для завантаження
-            Array.from({ length: 8 }).map((_, index) => (
-              <div key={index} className={`${styles.newsItem} ${shouldShowHorizontal ? styles.newsItemHorizontal : ''}`}>
-                <Skeleton 
-                  active
-                  paragraph={{ rows: 1 }}
-                  title={{ width: '90%' }}
-                />
+            displayNews.map((_, index) => (
+              <div key={index} className={styles.newsItem}>
+                <Skeleton active paragraph={{ rows: 3, width: '100%'}} title={false} />
               </div>
             ))
           ) : (
@@ -227,9 +223,6 @@ export default function CategoryNews({
         {!hideHeader && (
           <>
             <ViewAllButton href={viewAllButtonHref || (categoryId && getUrlFromCategoryId(categoryId) ? `/${getUrlFromCategoryId(categoryId)}` : '/all-news')} />
-            
-            {/* Розділювальна лінія */}
-            
           </>
         )}
         <div className={styles.separator}></div>
