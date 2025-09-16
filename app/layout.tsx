@@ -161,11 +161,7 @@ export const metadata: Metadata = {
     },
   },
   icons: {
-    icon: [
-      { url: '/favicon.ico', sizes: 'any' },
-      { url: '/galinfo-favicon.svg', type: 'image/svg+xml' },
-    ],
-    apple: '/galinfo-favicon.svg',
+    icon: '/favicon.ico',
   },
   manifest: '/manifest.json',
   other: {
