@@ -28,6 +28,16 @@ export {
   useArticleData, 
   useNewsData 
 } from './useCompleteNewsData';
+export { 
+  useSpecialThemesNews,
+  useLatestSpecialThemesNews,
+  useSpecialThemesNewsWithImages,
+  useSpecialThemesVideoNews,
+  useAllSpecialThemesNews,
+  useSpecialThemesNewsById,
+  useLatestSpecialThemesNewsById,
+  useAllSpecialThemesNewsById
+} from './useSpecialThemesNews';
 
 // Типи для експорту
 export type { 
@@ -65,3 +75,10 @@ export type {
   UseImportantNewsByCategoryOptions,
   UseImportantNewsByCategoryReturn
 } from './useImportantNewsByCategory';
+
+export type {
+  SpecialThemesNewsItem,
+  SpecialThemesNewsResponse,
+  UseSpecialThemesNewsOptions,
+  UseSpecialThemesNewsReturn
+} from './useSpecialThemesNews';
