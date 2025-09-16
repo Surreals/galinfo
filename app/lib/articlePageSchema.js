@@ -279,16 +279,16 @@ export const articlePageMobileSchema = {
     // NewsList - НОВИНИ ЛЬВОВА (тільки для мобільної версії)
     {
       type: NEWS_LIST,
-      categoryId: CATEGORY_IDS.LVIV,
+      categoryId: CATEGORY_IDS.POLITICS,
       config: {
         show: true,
         mobileOnly: true,
         mobileLayout: "horizontal",
         arrowRightIcon: true,
-        title: "НОВИНИ ЛЬВОВА",
+        title: "ПОЛІТИКА",
         showImagesAt: [0, 1],
         showMoreButton: true,
-        moreButtonUrl: "/lviv",
+        moreButtonUrl: "/politics",
         widthPercent: 100,
         apiParams: {
           page: 1,
@@ -330,7 +330,7 @@ export const articlePageMobileSchema = {
       config: {
         show: true,
         mobileLayout: "horizontal",
-        newsQuantity: 4,
+        newsQuantity: 8,
         smallImg: true,
         category: "СВІЖІ НОВИНИ",
         secondCategory: "СВІЖІ НОВИНИ",
@@ -340,7 +340,7 @@ export const articlePageMobileSchema = {
         useHook: 'useLatestNews', // Вказуємо, що використовуємо хук useLatestNews
         hookParams: {
           page: 1,
-          limit: 4,
+          limit: 8,
           lang: '1',
           autoFetch: true
         }

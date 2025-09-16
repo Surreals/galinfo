@@ -233,6 +233,7 @@ const ArticlePageRenderer: React.FC<ArticlePageRendererProps> = ({ article, load
         return (
           <ColumnNews 
             key={index}
+            isMobile={isMobile}
             mobileLayout={config.mobileLayout}
             newsQuantity={columnNewsData.length}
             smallImg={config.smallImg}
