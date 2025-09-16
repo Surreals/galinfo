@@ -21,6 +21,7 @@ type NewsItem = {
   data: string; // Форматована дата з часом
   time?: string; // Залишаємо для сумісності
   imageUrl?: string | null;
+  imageUrls?: string[]; // Масив всіх доступних зображень
   url?: string;
 };
 
@@ -35,6 +36,8 @@ type NewsListProps = {
   moreButtonUrl?: string;
   mobileLayout?: 'column' | 'horizontal';
   showSeparator?: boolean;
+  noFallbackImages?: boolean;
+  showAllImages?: boolean; // Показувати всі доступні зображення
   // Нові пропси для роботи з API
   categoryId?: number;
   useRealData?: boolean;
@@ -60,6 +63,8 @@ export default function NewsList({
    moreButtonUrl = "#",
    mobileLayout = 'column', // За замовчуванням - колонка
    showSeparator = false,
+   noFallbackImages = false,
+   showAllImages = false, // За замовчуванням - показувати тільки перше зображення
    categoryId,
    useRealData = false,
    config
@@ -180,13 +185,38 @@ export default function NewsList({
                        className={`${styles.itemLink} ${shouldShowHorizontal ? styles.itemLinkHorizontal : ''}`}>
                       {/* Показуємо зображення на мобільних для кожної новини при горизонтальному відображенні, або за параметром showImagesAt */}
                       {(shouldShowHorizontal || showImagesAt.includes(index)) && (
-                        <Image
-                          src={item.imageUrl || galinfoLogo}
-                          alt={item.title || 'GalInfo Logo'}
-                          width={200}
-                          height={150}
-                          className={`${styles.image} ${!item.imageUrl ? styles.placeholderImage : ''}`}
-                        />
+                        <>
+                          {showAllImages && item.imageUrls && item.imageUrls.length > 0 ? (
+                            // Показуємо всі доступні зображення (без fallback)
+                            <div className={styles.imagesContainer}>
+                              {item.imageUrls.map((imageUrl, imgIndex) => (
+                                <Image
+                                  key={imgIndex}
+                                  src={imageUrl}
+                                  alt={`${item.title} - зображення ${imgIndex + 1}`}
+                                  width={200}
+                                  height={150}
+                                  className={styles.image}
+                                />
+                              ))}
+                            </div>
+                          ) : showAllImages ? (
+                            // Якщо showAllImages=true але немає зображень, не показуємо нічого
+                            null
+                          ) : noFallbackImages && !item.imageUrl ? (
+                            // Якщо noFallbackImages=true і немає зображення, не показуємо нічого
+                            null
+                          ) : (
+                            // Показуємо тільки перше зображення (як раніше)
+                            <Image
+                              src={item.imageUrl || galinfoLogo}
+                              alt={item.title || 'GalInfo Logo'}
+                              width={200}
+                              height={150}
+                              className={`${styles.image} ${!item.imageUrl ? styles.placeholderImage : ''}`}
+                            />
+                          )}
+                        </>
                       )}
                       <div className={styles.textBlock}>
                         <p className={styles.itemTitle}>{item.title}</p>
@@ -197,13 +227,38 @@ export default function NewsList({
                     <>
                       {/* Показуємо зображення на мобільних для кожної новини при горизонтальному відображенні, або за параметром showImagesAt */}
                       {(shouldShowHorizontal || showImagesAt.includes(index)) && (
-                        <Image
-                          src={item.imageUrl || galinfoLogo}
-                          alt={item.title || 'GalInfo Logo'}
-                          width={200}
-                          height={150}
-                          className={`${styles.image} ${!item.imageUrl ? styles.placeholderImage : ''}`}
-                        />
+                        <>
+                          {showAllImages && item.imageUrls && item.imageUrls.length > 0 ? (
+                            // Показуємо всі доступні зображення (без fallback)
+                            <div className={styles.imagesContainer}>
+                              {item.imageUrls.map((imageUrl, imgIndex) => (
+                                <Image
+                                  key={imgIndex}
+                                  src={imageUrl}
+                                  alt={`${item.title} - зображення ${imgIndex + 1}`}
+                                  width={200}
+                                  height={150}
+                                  className={styles.image}
+                                />
+                              ))}
+                            </div>
+                          ) : showAllImages ? (
+                            // Якщо showAllImages=true але немає зображень, не показуємо нічого
+                            null
+                          ) : noFallbackImages && !item.imageUrl ? (
+                            // Якщо noFallbackImages=true і немає зображення, не показуємо нічого
+                            null
+                          ) : (
+                            // Показуємо тільки перше зображення (як раніше)
+                            <Image
+                              src={item.imageUrl || galinfoLogo}
+                              alt={item.title || 'GalInfo Logo'}
+                              width={200}
+                              height={150}
+                              className={`${styles.image} ${!item.imageUrl ? styles.placeholderImage : ''}`}
+                            />
+                          )}
+                        </>
                       )}
                       <div className={styles.textBlock}>
                         <p className={styles.itemTitle}>{item.title}</p>

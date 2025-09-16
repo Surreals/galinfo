@@ -62,7 +62,7 @@ export const heroInfoSchema = {
         useRealData: true,
         apiParams: {
           page: 1,
-          limit: 8,
+          limit: 11,
           lang: '1',
           approved: true
         }
@@ -81,7 +81,7 @@ export const heroInfoSchema = {
         useRealData: true,
         apiParams: {
           page: 1,
-          limit: 6,
+          limit: 7,
           lang: '1',
           approved: true
         }
@@ -112,7 +112,7 @@ export const heroInfoSchema = {
         useRealData: true,
         apiParams: {
           page: 1,
-          limit: 6,
+          limit: 7,
           lang: '1',
           approved: true
         }

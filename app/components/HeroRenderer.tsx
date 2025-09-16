@@ -8,7 +8,7 @@ import NewsList from '@/app/components/listNews';
 import CurrencyRates from './hero/CurrencyRates';
 import WeatherWidget from './hero/WeatherWidget';
 import { useHeroNews } from '@/app/hooks/useHeroNews';
-import { useNewsByRubric } from '@/app/hooks/useNewsByRubric';
+import { useNewsByRubric, NewsItem as ApiNewsItem } from '@/app/hooks/useNewsByRubric';
 import { useNewsByRegion } from '@/app/hooks/useNewsByRegion';
 import { isRegionCategory } from '@/app/lib/categoryUtils';
 import {
@@ -17,7 +17,8 @@ import {
   generateArticleUrl,
   getUniversalNewsImageIntxt,
   getNewsTitle,
-  getUniversalNewsImageFull
+  getUniversalNewsImageFull,
+  getAllNewsImages
 } from '@/app/lib/newsUtils';
 import { heroSchema, heroInfoSchema, heroInfoMobileSchema } from '@/app/lib/heroSchema';
 import dayjs from 'dayjs';
@@ -36,12 +37,14 @@ interface HeroRendererProps {
   schema?: any;
   infoSchema?: any;
   isMobile?: boolean;
+  noFallbackImages?: boolean;
 }
 
 export default function HeroRenderer({ 
   schema = heroSchema, 
   infoSchema,
-  isMobile = false 
+  isMobile = false,
+  noFallbackImages = false
 }: HeroRendererProps) {
   const carouselRef = useRef<any>(null);
   const router = useRouter();
@@ -81,6 +84,11 @@ export default function HeroRenderer({
     url: generateArticleUrl(item),
   })) || [];
 
+  // Filter out items with empty src if noFallbackImages is true
+  const filteredCarouselItems = noFallbackImages 
+    ? carouselItems.filter(item => item.src && item.src.trim() !== '')
+    : carouselItems;
+
   // Fallback carousel items if no hero news
   const fallbackCarouselItems = [
     {
@@ -105,13 +113,18 @@ export default function HeroRenderer({
     },
   ];
 
-  const finalCarouselItems = carouselItems.length > 0 ? carouselItems : fallbackCarouselItems;
+  const finalCarouselItems = filteredCarouselItems.length > 0 ? filteredCarouselItems : (noFallbackImages ? [] : fallbackCarouselItems);
 
 
   // Рендер компонентів на основі схеми
   const renderBlock = (block: any, index: number) => {
     switch (block.type) {
       case 'Carousel':
+        // If noFallbackImages is true and there are no items with images, don't render the carousel
+        if (noFallbackImages && finalCarouselItems.length === 0) {
+          return null;
+        }
+
         return (
           <div key={index} className={styles.carouselBox}>
             {
@@ -195,6 +208,7 @@ export default function HeroRenderer({
             key={index}
             block={block}
             isMobile={isMobileResize}
+            noFallbackImages={noFallbackImages}
           />
         );
 
@@ -249,7 +263,7 @@ function formatDate(dateString: string): string {
 }
 
 // Компонент для рендерингу NewsList з підтримкою API
-function NewsListRenderer({ block, isMobile }: { block: any; isMobile: boolean }) {
+function NewsListRenderer({ block, isMobile, noFallbackImages = false }: { block: any; isMobile: boolean; noFallbackImages?: boolean }) {
   const config = block.config;
   const categoryId = block.categoryId;
 
@@ -298,14 +312,21 @@ function NewsListRenderer({ block, isMobile }: { block: any; isMobile: boolean }
   }
 
   // готуємо дані, як раніше
-  const newsData = apiData?.news?.filter(i => i && i.id)?.map(item => ({
-    id: item.id.toString(),
-    title: item.nheader,
-    data: formatFullNewsDate(item.ndate, item.ntime),
-    time: item.ntime, // Залишаємо для сумісності
-    imageUrl: getUniversalNewsImageFull(item),
-    url: generateArticleUrl(item),
-  })) || [];
+  const newsData = apiData?.news?.filter(i => i && i.id)?.map((item: ApiNewsItem) => {
+    // Отримуємо всі доступні зображення
+    const allImages = getAllNewsImages(item as any);
+    const imageUrls = allImages.map(img => img.urls.full).filter(Boolean);
+    
+    return {
+      id: item.id.toString(),
+      title: item.nheader,
+      data: formatFullNewsDate(item.ndate, item.ntime),
+      time: item.ntime, // Залишаємо для сумісності
+      imageUrl: getUniversalNewsImageFull(item as any),
+      imageUrls: imageUrls, // Всі доступні зображення
+      url: generateArticleUrl(item as any),
+    };
+  }) || [];
 
 
   return (
@@ -320,6 +341,8 @@ function NewsListRenderer({ block, isMobile }: { block: any; isMobile: boolean }
       showMoreButton={config.showMoreButton}
       arrowRightIcon={config.arrowRightIcon}
       mobileLayout={config.mobileLayout}
+      noFallbackImages={true}
+      // showAllImages={true} // Показуємо всі доступні зображення в Hero секції
     />
   );
 }
