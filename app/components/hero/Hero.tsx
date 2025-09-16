@@ -53,21 +53,14 @@ export default function Hero() {
           id: item.id,
           title: getNewsTitle(item),
           time: formatFullNewsDate(item.ndate, item.ntime),
-          imageUrl: imageUrl || `https://picsum.photos/seed/${item.id}/300/200`,
+          imageUrl: imageUrl,
           url: generateArticleUrl(item),
         };
       });
       
-      // Generate additional news items to fill the lists if needed
-      const additionalNews = Array.from({ length: Math.max(0, 8 - transformedNews.length) }, (_, index) => ({
-        id: `additional-${index + 1}`,
-        title: `Додаткова новина ${index + 1}`,
-        time: dayjs().subtract(index + 1, 'hour').format('HH:mm'),
-        imageUrl: `https://picsum.photos/seed/additional-${index + 1}/300/200`,
-        url: `/article/additional-${index + 1}`,
-      }));
+
       
-      setNewsData([...transformedNews, ...additionalNews]);
+      setNewsData([...transformedNews]);
     }
   }, [heroNews]);
 
@@ -81,7 +74,7 @@ export default function Hero() {
 
   // Transform hero news for carousel
   const carouselItems = heroNews.slice(0, 4).map((item) => ({
-    src: getUniversalNewsImageFull(item) || "https://images.pexels.com/photos/417074/pexels-photo-417074.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
+    src: getUniversalNewsImageFull(item),
     title: getNewsTitle(item),
     url: generateArticleUrl(item),
   }));
@@ -89,22 +82,22 @@ export default function Hero() {
   // Fallback carousel items if no hero news
   const fallbackCarouselItems = [
     {
-      src: "https://images.pexels.com/photos/417074/pexels-photo-417074.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
+      src: "",
       title: "У Львові запрацював сучасний центр реабілітації для онкопацієнтів",
       url: "/article/lviv-rehabilitation-center-hero",
     },
     {
-      src: "https://images.pexels.com/photos/1103970/pexels-photo-1103970.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
+      src: "",
       title: "Новий парк відкрили у центрі міста з унікальними зонами відпочинку",
       url: "/article/lviv-city-park-hero",
     },
     {
-      src: "https://images.pexels.com/photos/1679646/pexels-photo-1679646.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
+      src: "",
       title: "Архітектурний проект: реставрація історичних будівель Львова",
       url: "/article/lviv-architecture-restoration-hero",
     },
     {
-      src: "https://images.pexels.com/photos/2356040/pexels-photo-2356040.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
+      src: "",
       title: "Екологічна ініціатива: створення зелених зон у місті",
       url: "/article/lviv-eco-initiative-hero",
     },

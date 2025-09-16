@@ -12,6 +12,7 @@ import { isRegionCategory } from '@/app/lib/categoryUtils';
 import { getImageUrlFromApi, getMainImageFromApi, hasApiImages, type ApiNewsImage } from '@/app/lib/imageUtils';
 import { getUniversalNewsImageIntxt, formatFullNewsDate } from '@/app/lib/newsUtils';
 import { getUrlFromCategoryId } from '@/app/lib/categoryMapper';
+import galinfoLogo from '@/assets/logos/galInfoLogo.png';
 
 // Інтерфейси для типізації даних
 export interface CategoryNewsItem {
@@ -20,7 +21,7 @@ export interface CategoryNewsItem {
   date: string;
   time?: string; // Опціональне поле, оскільки час тепер включений в date
   url: string;
-  imageUrl: string;
+  imageUrl: string | null;
   imageAlt: string;
   isImportant?: boolean;
   nweight: number;
@@ -127,7 +128,7 @@ export default function CategoryNews({
     // Використовуємо реальні дані з API
     displayNews = apiData.news.filter(item => item && item.id).map(item => {
       // Використовуємо універсальну функцію getUniversalNewsImageIntxt з newsUtils
-      const imageUrl = getUniversalNewsImageIntxt(item) || 'https://picsum.photos/300/200?random=1';
+      const imageUrl = getUniversalNewsImageIntxt(item);
 
       return {
         id: item.id.toString(),
@@ -200,11 +201,11 @@ export default function CategoryNews({
                   <div 
                   className={isCategoryPage ? styles.imageContainerCategoryPage : styles.imageContainer}>
                     <Image 
-                      src={item.imageUrl} 
-                      alt={item.imageAlt}
+                      src={item.imageUrl || galinfoLogo} 
+                      alt={item.imageAlt || 'GalInfo Logo'}
                       width={300}
                       height={shouldShowHorizontal ? height : (isCategoryPage ? 133 : 200)}
-                      className={styles.newsImage}
+                      className={`${styles.newsImage} ${!item.imageUrl ? styles.placeholderImage : ''}`}
                     />
                     {item.nweight > 0 && (
                       <div className={styles.importantTag}>

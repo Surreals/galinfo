@@ -10,6 +10,7 @@ import { Skeleton } from 'antd';
 import { useNewsByRubric } from '@/app/hooks/useNewsByRubric';
 import { getUniversalNewsImageIntxt, formatFullNewsDate } from '@/app/lib/newsUtils';
 import { getUrlFromCategoryId } from '@/app/lib/categoryMapper';
+import galinfoLogo from '@/assets/logos/galInfoLogo.png';
 
 // Інтерфейси для типізації даних
 export interface ColumnNewsItem {
@@ -19,7 +20,7 @@ export interface ColumnNewsItem {
   date: string;
   time?: string; // Опціональне поле, оскільки час тепер включений в date
   url: string;
-  imageUrl: string;
+  imageUrl: string | null;
   imageAlt: string;
 }
 
@@ -123,7 +124,7 @@ export default function ColumnNews({
       date: '02 липня 2025',
       time: '14:54',
       url: '/article/mamography-lviv-july',
-      imageUrl: 'https://picsum.photos/280/350?random=11',
+      imageUrl: '',
       imageAlt: 'Мамографічний апарат з рожевими елементами'
     },
     {
@@ -133,7 +134,7 @@ export default function ColumnNews({
       date: '15 липня 2025',
       time: '10:00',
       url: '/article/ukraine-health-campaign-august',
-      imageUrl: 'https://picsum.photos/200/150?random=12',
+      imageUrl: '',
       imageAlt: 'Жінка робить самообстеження грудей'
     },
     {
@@ -143,7 +144,7 @@ export default function ColumnNews({
       date: '10 липня 2025',
       time: '18:30',
       url: '/article/charity-concert-lviv-cancer',
-      imageUrl: 'https://picsum.photos/200/150?random=13',
+      imageUrl: '',
       imageAlt: 'Лікар у білому халаті дивиться в камеру'
     },
     {
@@ -153,7 +154,7 @@ export default function ColumnNews({
       date: '05 серпня 2025',
       time: '10:00',
       url: '/article/seminar-breast-cancer-prevention',
-      imageUrl: 'https://picsum.photos/200/150?random=14',
+      imageUrl: '',
       imageAlt: 'Лікар в окулярах у синьому халаті посміхається'
     },
     {
@@ -163,7 +164,7 @@ export default function ColumnNews({
       date: '20 серпня 2025',
       time: '09:45',
       url: '/article/doctors-preventive-exams',
-      imageUrl: 'https://picsum.photos/200/150?random=15',
+      imageUrl: '',
       imageAlt: 'Лікар в окулярах у темному піджаку задумливо дивиться вбік'
     }
   ];
@@ -203,7 +204,7 @@ export default function ColumnNews({
         title: titles[index % titles.length],
         data: formattedDate,
         time: formattedDate,
-        imageUrl: `https://picsum.photos/seed/column-${index + 1}/300/200`,
+        imageUrl: '',
         url: `/article/${articleIds[index % articleIds.length]}-${index + 1}`,
       };
     });
@@ -225,7 +226,7 @@ export default function ColumnNews({
       summary: item.nteaser || item.nsubheader || '',
       date: formatFullNewsDate(item.ndate, item.ntime),
       url: `/news/${item.urlkey}_${item.id}`,
-      imageUrl: getUniversalNewsImageIntxt(item) || 'https://picsum.photos/300/200?random=1',
+      imageUrl: getUniversalNewsImageIntxt(item),
       imageAlt: item.nheader
     }));
     displayLoading = apiLoading;
@@ -295,11 +296,11 @@ export default function ColumnNews({
                   <Link href={item.url} className={styles.newsLink}>
                     <div className={smallImg ? styles.imageContainerSmall : styles.imageContainer}>
                       <Image
-                        src={item.imageUrl}
-                        alt={item.imageAlt}
+                        src={item.imageUrl || galinfoLogo}
+                        alt={item.imageAlt || 'GalInfo Logo'}
                         width={280}
                         height={350}
-                        className={styles.newsImage}
+                        className={`${styles.newsImage} ${!item.imageUrl ? styles.placeholderImage : ''}`}
                       />
                     </div>
                     <div className={smallImg ? styles.contentSmall : styles.content}>

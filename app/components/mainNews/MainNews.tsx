@@ -40,15 +40,17 @@ export default function MainNews({
             // Звичайний контент
             url ? (
               <Link href={url} className={styles.newsLink}>
-                <div className={styles.imageContainer}>
-                  <Image 
-                    src={imageUrl || ''} 
-                    alt={imageAlt || ''}
-                    width={800}
-                    height={500}
-                    className={styles.newsImage}
-                  />
-                </div>
+                {imageUrl && (
+                  <div className={styles.imageContainer}>
+                    <Image 
+                      src={imageUrl} 
+                      alt={imageAlt || ''}
+                      width={800}
+                      height={500}
+                      className={styles.newsImage}
+                    />
+                  </div>
+                )}
                 <div className={styles.contentContainer}>
                   <h1 className={styles.newsTitle}>{title}</h1>
                   <time className={styles.newsDate}>
@@ -59,15 +61,17 @@ export default function MainNews({
             ) : (
               // Відображення без посилання
               <>
-                <div className={styles.imageContainer}>
-                  <Image 
-                    src={imageUrl || ''} 
-                    alt={imageAlt || ''}
-                    width={800}
-                    height={500}
-                    className={styles.newsImage}
-                  />
-                </div>
+                {imageUrl && (
+                  <div className={styles.imageContainer}>
+                    <Image 
+                      src={imageUrl} 
+                      alt={imageAlt || ''}
+                      width={800}
+                      height={500}
+                      className={styles.newsImage}
+                    />
+                  </div>
+                )}
                 <div className={styles.contentContainer}>
                   <h1 className={styles.newsTitle}>{title}</h1>
                   <time className={styles.newsDate}>

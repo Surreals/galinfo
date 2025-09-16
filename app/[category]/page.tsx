@@ -63,7 +63,7 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
         hour: "2-digit",
         minute: "2-digit",
       }),
-      imageUrl: `https://picsum.photos/seed/category-${index + 1}/300/200`,
+      imageUrl: '',
       url: `/article/${articleIds[index % articleIds.length]}-${index + 1}`,
     }));
   };

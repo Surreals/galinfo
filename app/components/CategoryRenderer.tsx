@@ -112,7 +112,7 @@ const CategoryRenderer: React.FC<CategoryRendererProps> = ({ category }) => {
     title: item.nheader,
     date: formatFullNewsDate(item.ndate, item.ntime),
     url: generateArticleUrl(item as any),
-    imageUrl: getNewsImage(item as any) || 'https://picsum.photos/300/200?random=1',
+    imageUrl: getNewsImage(item as any),
     imageAlt: item.nheader,
     isImportant: item.ntype === 1 || (item as any).nweight > 0,
     nweight: (item as any).nweight || 0,
@@ -166,7 +166,7 @@ const CategoryRenderer: React.FC<CategoryRendererProps> = ({ category }) => {
               date: formatFullNewsDate(newsWithPhoto.ndate, newsWithPhoto.ntime),
               time: newsWithPhoto.ntime,
               url: generateArticleUrl(newsWithPhoto as any),
-              imageUrl: getNewsImage(newsWithPhoto as any, 'full') || 'https://picsum.photos/300/200?random=1',
+              imageUrl: getNewsImage(newsWithPhoto as any, 'full'),
               imageAlt: newsWithPhoto.nheader
             };
           }
@@ -179,7 +179,7 @@ const CategoryRenderer: React.FC<CategoryRendererProps> = ({ category }) => {
               date: formatFullNewsDate(newsWithPhoto.ndate, newsWithPhoto.ntime),
               time: newsWithPhoto.ntime,
               url: generateArticleUrl(newsWithPhoto as any),
-              imageUrl: getNewsImage(newsWithPhoto as any, 'full') || 'https://picsum.photos/300/200?random=1',
+              imageUrl: getNewsImage(newsWithPhoto as any, 'full'),
               imageAlt: newsWithPhoto.nheader
             };
           }
@@ -198,7 +198,7 @@ const CategoryRenderer: React.FC<CategoryRendererProps> = ({ category }) => {
                 date: formatFullNewsDate(importantNewsWithPhoto.ndate, importantNewsWithPhoto.ntime),
                 time: importantNewsWithPhoto.ntime,
                 url: generateArticleUrl(importantNewsWithPhoto as any),
-                imageUrl: getNewsImage(importantNewsWithPhoto as any, 'full') || 'https://picsum.photos/300/200?random=1',
+                imageUrl: getNewsImage(importantNewsWithPhoto as any, 'full'),
                 imageAlt: importantNewsWithPhoto.nheader
               };
             } else {
@@ -210,7 +210,7 @@ const CategoryRenderer: React.FC<CategoryRendererProps> = ({ category }) => {
                   date: formatFullNewsDate(newsWithPhoto.ndate, newsWithPhoto.ntime),
                   time: newsWithPhoto.ntime,
                   url: generateArticleUrl(newsWithPhoto as any),
-                  imageUrl: getNewsImage(newsWithPhoto as any, 'full') || 'https://picsum.photos/300/200?random=1',
+                  imageUrl: getNewsImage(newsWithPhoto as any, 'full'),
                   imageAlt: newsWithPhoto.nheader
                 };
               }
@@ -240,7 +240,7 @@ const CategoryRenderer: React.FC<CategoryRendererProps> = ({ category }) => {
                 date: formatFullNewsDate(firstNews.ndate, firstNews.ntime),
                 time: firstNews.ntime,
                 url: generateArticleUrl(firstNews as any),
-                imageUrl: getNewsImage(firstNews as any, 'full') || 'https://picsum.photos/300/200?random=1',
+                imageUrl: getNewsImage(firstNews as any, 'full'),
                 imageAlt: firstNews.nheader
               };
             } else {

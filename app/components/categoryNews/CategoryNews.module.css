@@ -448,4 +448,11 @@
     width: 240px !important;
     height: 160px !important;
   }
+}
+
+/* Стилі для заглушок з логотипом */
+.placeholderImage {
+  background-color: rgb(127 127 127 / 25%);
+  object-fit: contain;
+  padding: 14px;
 } 

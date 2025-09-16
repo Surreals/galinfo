@@ -10,6 +10,7 @@ import { useNewsByRubric } from '@/app/hooks/useNewsByRubric';
 import { getImageUrlFromApi, getMainImageFromApi, type ApiNewsImage } from '@/app/lib/imageUtils';
 import { getUniversalNewsImageThumbnail, formatFullNewsDate } from '@/app/lib/newsUtils';
 import { getUrlFromCategoryId } from '@/app/lib/categoryMapper';
+import galinfoLogo from '@/assets/logos/galInfoLogo.png';
 
 import styles from "./listNews.module.scss";
 import {Skeleton} from "antd";
@@ -19,7 +20,7 @@ type NewsItem = {
   title: string;
   data: string; // Форматована дата з часом
   time?: string; // Залишаємо для сумісності
-  imageUrl?: string;
+  imageUrl?: string | null;
   url?: string;
 };
 
@@ -104,7 +105,7 @@ export default function NewsList({
     // Використовуємо реальні дані з API
     displayData = apiData.news.map(item => {
       // Використовуємо універсальну функцію getUniversalNewsImageThumbnail з newsUtils
-      const imageUrl = getUniversalNewsImageThumbnail(item) || `https://picsum.photos/seed/${item.id || 'default'}/200/150`;
+      const imageUrl = getUniversalNewsImageThumbnail(item);
 
       return {
         id: item.id.toString(),
@@ -178,11 +179,13 @@ export default function NewsList({
                     <a href={item.url}
                        className={`${styles.itemLink} ${shouldShowHorizontal ? styles.itemLinkHorizontal : ''}`}>
                       {/* Показуємо зображення на мобільних для кожної новини при горизонтальному відображенні, або за параметром showImagesAt */}
-                      {(shouldShowHorizontal || showImagesAt.includes(index)) && item.imageUrl && (
-                        <img
-                          src={item.imageUrl}
-                          alt={item.title}
-                          className={styles.image}
+                      {(shouldShowHorizontal || showImagesAt.includes(index)) && (
+                        <Image
+                          src={item.imageUrl || galinfoLogo}
+                          alt={item.title || 'GalInfo Logo'}
+                          width={200}
+                          height={150}
+                          className={`${styles.image} ${!item.imageUrl ? styles.placeholderImage : ''}`}
                         />
                       )}
                       <div className={styles.textBlock}>
@@ -193,11 +196,13 @@ export default function NewsList({
                   ) : (
                     <>
                       {/* Показуємо зображення на мобільних для кожної новини при горизонтальному відображенні, або за параметром showImagesAt */}
-                      {(shouldShowHorizontal || showImagesAt.includes(index)) && item.imageUrl && (
-                        <img
-                          src={item.imageUrl}
-                          alt={item.title}
-                          className={styles.image}
+                      {(shouldShowHorizontal || showImagesAt.includes(index)) && (
+                        <Image
+                          src={item.imageUrl || galinfoLogo}
+                          alt={item.title || 'GalInfo Logo'}
+                          width={200}
+                          height={150}
+                          className={`${styles.image} ${!item.imageUrl ? styles.placeholderImage : ''}`}
                         />
                       )}
                       <div className={styles.textBlock}>

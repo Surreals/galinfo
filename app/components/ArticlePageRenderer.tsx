@@ -53,7 +53,7 @@ const ArticlePageRenderer: React.FC<ArticlePageRendererProps> = ({ article, load
     title: item.nheader,
     date: formatFullNewsDate(item.ndate, item.ntime),
     url: generateArticleUrl(item as any),
-    imageUrl: getNewsImage(item as any) || 'https://picsum.photos/300/200?random=1',
+    imageUrl: getNewsImage(item as any),
     imageAlt: item.nheader,
     isImportant: item.ntype === 1 || (item as any).nweight > 0,
     nweight: (item as any).nweight || 0,
@@ -66,7 +66,7 @@ const ArticlePageRenderer: React.FC<ArticlePageRendererProps> = ({ article, load
     title: item.nheader,
     date: formatFullNewsDate(item.ndate, item.ntime),
     url: generateArticleUrl(item as any),
-    imageUrl: getNewsImage(item as any) || 'https://picsum.photos/300/200?random=1',
+    imageUrl: getNewsImage(item as any),
     imageAlt: item.nheader,
     isImportant: item.ntype === 1 || (item as any).nweight > 0,
     nweight: (item as any).nweight || 0,
@@ -151,10 +151,10 @@ const ArticlePageRenderer: React.FC<ArticlePageRendererProps> = ({ article, load
 
         if (!article?.images_data?.length) return null;
 
-        const imageUrl = getUniversalNewsImage(article, 'full') || getUniversalNewsImage(article) || 'https://picsum.photos/300/200?random=1';
+        const imageUrl = getUniversalNewsImage(article, 'full') || getUniversalNewsImage(article);
         console.log(imageUrl, 'imageUrl');
         
-        return (
+        return imageUrl ? (
           <div key={index} className={styles.articleImage}>
             <Image
               src={imageUrl}
@@ -172,7 +172,7 @@ const ArticlePageRenderer: React.FC<ArticlePageRendererProps> = ({ article, load
               )}
             </div>
           </div>
-        );
+        ) : null;
 
       case 'ARTICLE_CONTENT':
         if (loading) {

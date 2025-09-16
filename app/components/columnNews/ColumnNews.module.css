@@ -842,3 +842,10 @@
   margin: 24px 0;
   opacity: 1;
 }
+
+/* Стилі для заглушок з логотипом */
+.placeholderImage {
+  background-color: rgb(127 127 127 / 25%);
+  object-fit: contain;
+  padding: 14px;
+}
