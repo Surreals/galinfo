@@ -1,0 +1,60 @@
+.toggleButton {
+  position: fixed;
+  bottom: 20px;
+  left: 20px;
+  z-index: 1000;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.telegramCard {
+  position: fixed;
+  bottom: 20px;
+  left: 20px;
+  width: 300px;
+  height: 200px;
+  z-index: 1000;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.telegramContent {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  height: 100%;
+}
+
+.telegramContent p {
+  margin: 0;
+  color: #666;
+  font-size: 14px;
+}
+
+.imagePreview {
+  margin-top: 16px;
+  padding: 12px;
+  background: #f5f5f5;
+  border-radius: 8px;
+}
+
+.imagePreview p {
+  margin: 0 0 8px 0;
+  font-size: 12px;
+  color: #999;
+}
+
+.previewImage {
+  max-width: 100%;
+  max-height: 150px;
+  border-radius: 4px;
+  object-fit: cover;
+}
+
+@media (max-width: 768px) {
+  .telegramCard {
+    width: calc(100vw - 40px);
+    left: 20px;
+    right: 20px;
+  }
+}

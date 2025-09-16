@@ -10,6 +10,8 @@ import NewsEditorSidebar from "@/app/admin/article-editor/components/NewsEditorS
 import NewsEditor from "@/app/admin/article-editor/components/NewsEditor";
 import NewsFullEditor from "@/app/admin/article-editor/components/NewsEditorTipTap";
 import ArticleEditorLoader from "@/app/admin/article-editor/components/ArticleEditorLoader";
+import ChatGPTIframe from "@/app/admin/article-editor/components/ChatGPTIframe";
+import TelegramMessenger from "@/app/admin/article-editor/components/TelegramMessenger";
 import { useArticleData, ArticleData } from "@/app/hooks/useArticleData";
 
 // Dynamically import the TipTap editor to avoid SSR issues
@@ -22,6 +24,8 @@ function ArticleEditorContent() {
   const searchParams = useSearchParams();
   const newsId = searchParams.get('id');
   const [isEditing, setIsEditing] = useState(false);
+  const [isChatGPTVisible, setIsChatGPTVisible] = useState(false);
+  const [isTelegramVisible, setIsTelegramVisible] = useState(false);
 
   // Завантажуємо дані новини
   const { data: articleData, loading, error, updateData } = useArticleData({ id: newsId });
@@ -60,6 +64,18 @@ function ArticleEditorContent() {
         />
         {/* <NewsFullEditor/> */}
       </div>
+      
+      {/* Floating action buttons and modals */}
+      <ChatGPTIframe 
+        isVisible={isChatGPTVisible}
+        onToggle={() => setIsChatGPTVisible(!isChatGPTVisible)}
+        articleData={articleData}
+      />
+      <TelegramMessenger 
+        articleData={articleData}
+        isVisible={isTelegramVisible}
+        onToggle={() => setIsTelegramVisible(!isTelegramVisible)}
+      />
     </ArticleEditorLoader>
   );
 }
