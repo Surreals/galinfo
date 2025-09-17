@@ -17,14 +17,14 @@ export const CATEGORY_URL_MAPPER: Record<string, number> = {
   'crime': CATEGORY_IDS.CRIME,            // 100 - Кримінал
   'accident': CATEGORY_IDS.ACCIDENT,      // 106 - Надзвичайні події
 
-  // Регіональні категорії
+  // Регіональні категорії (тепер будуть використовувати маршрут /region/)
   'ukraine': CATEGORY_IDS.UKRAINE,        // 7 - Україна
   'lviv': CATEGORY_IDS.LVIV,              // 99 - Львів
   'evropa': CATEGORY_IDS.EVROPA,          // 110 - Європа
   'svit': CATEGORY_IDS.SVIT,             // 111 - Світ
   'volyn': CATEGORY_IDS.VOLYN,            // 118 - Волинь
 
-  // Спеціальні теми
+  // Спеціальні теми (тепер будуть використовувати маршрут /topthemes/)
   'vidverta-rozmova': CATEGORY_IDS.VIDVERTA_ROZMOVA,  // 136 - Відверта Розмова
   'vidverta-rozmova-z': CATEGORY_IDS.VIDVERTA_ROZMOVA, // 136 - Відверта Розмова (альтернативний слаг)
   'pressluzhba': CATEGORY_IDS.PRESSLUZHBA,            // 140 - Пресслужба
@@ -52,4 +52,63 @@ export function isValidCategoryUrl(categoryParam: string): boolean {
 // Функція для отримання всіх доступних URL параметрів
 export function getAllCategoryUrls(): string[] {
   return Object.keys(CATEGORY_URL_MAPPER);
+}
+
+// Функція для генерації правильного URL на основі categoryId
+export function generateCategoryUrl(categoryId: number | string): string {
+  const numericId = typeof categoryId === 'string' ? parseInt(categoryId, 10) : categoryId;
+  
+  // Регіональні категорії
+  const regionIds: number[] = [
+    CATEGORY_IDS.UKRAINE,
+    CATEGORY_IDS.LVIV,
+    CATEGORY_IDS.EVROPA,
+    CATEGORY_IDS.SVIT,
+    CATEGORY_IDS.VOLYN
+  ];
+  
+  // Спеціальні теми
+  const specialThemeIds: number[] = [
+    CATEGORY_IDS.VIDVERTA_ROZMOVA,
+    CATEGORY_IDS.PRESSLUZHBA,
+    CATEGORY_IDS.RAYONY_LVOVA
+  ];
+  
+  if (regionIds.includes(numericId)) {
+    const urlParam = getUrlFromCategoryId(numericId);
+    return urlParam ? `/region/${urlParam}` : '';
+  }
+  
+  if (specialThemeIds.includes(numericId)) {
+    const urlParam = getUrlFromCategoryId(numericId);
+    return urlParam ? `/topthemes/${urlParam}` : '';
+  }
+  
+  // Для всіх інших категорій використовуємо стандартний маршрут
+  const urlParam = getUrlFromCategoryId(numericId);
+  return urlParam ? `/${urlParam}` : '';
+}
+
+// Функція для перевірки, чи є категорія регіональною
+export function isRegionCategory(categoryId: number | string): boolean {
+  const numericId = typeof categoryId === 'string' ? parseInt(categoryId, 10) : categoryId;
+  const regionIds: number[] = [
+    CATEGORY_IDS.UKRAINE,
+    CATEGORY_IDS.LVIV,
+    CATEGORY_IDS.EVROPA,
+    CATEGORY_IDS.SVIT,
+    CATEGORY_IDS.VOLYN
+  ];
+  return regionIds.includes(numericId);
+}
+
+// Функція для перевірки, чи є категорія спеціальною темою
+export function isSpecialThemeCategory(categoryId: number | string): boolean {
+  const numericId = typeof categoryId === 'string' ? parseInt(categoryId, 10) : categoryId;
+  const specialThemeIds: number[] = [
+    CATEGORY_IDS.VIDVERTA_ROZMOVA,
+    CATEGORY_IDS.PRESSLUZHBA,
+    CATEGORY_IDS.RAYONY_LVOVA
+  ];
+  return specialThemeIds.includes(numericId);
 }

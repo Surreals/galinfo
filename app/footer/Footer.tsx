@@ -9,6 +9,7 @@ import inFomoLogoWhite from '@/assets/logos/inFomoLogoWhite.png';
 import arrowUpPrimary from "@/assets/icons/arrowUpPrimary.svg";
 import rssIcon from "@/assets/icons/rssIcon.svg";
 import { useMenuContext } from "@/app/contexts/MenuContext";
+import { generateCategoryUrl } from "@/app/lib/categoryMapper";
 
 import styles from './Footer.module.css';
 
@@ -93,7 +94,7 @@ export default function Footer() {
             <ul className={styles.list}>
               {specialThemesItem.map((item) => (
                 <li key={item.id}>
-                  <Link href={item.link} className={styles.link}>
+                  <Link href={generateCategoryUrl(item.id) || item.link} className={styles.link}>
                     {item.title.toUpperCase()}
                   </Link>
                 </li>
@@ -115,7 +116,7 @@ export default function Footer() {
             <div className={styles.grid}>
               <div className={styles.gridColumn}>
                 {regions.map((region) => (
-                  <Link key={region.id} href={region.link} className={styles.link}>
+                  <Link key={region.id} href={generateCategoryUrl(region.id) || region.link} className={styles.link}>
                     {region.title?.toUpperCase()}
                   </Link>
                 ))}
@@ -130,7 +131,7 @@ export default function Footer() {
 
               <div className={styles.gridColumn}>
                 {mainCategories.slice(0, 5).map((cat) => (
-                  <Link key={cat.id} href={cat.link} className={styles.link}>
+                  <Link key={cat.id} href={generateCategoryUrl(cat.id) || cat.link} className={styles.link}>
                     {cat.title.toUpperCase()}
                   </Link>
                 ))}
@@ -138,7 +139,7 @@ export default function Footer() {
 
               <div className={styles.gridColumn}>
                 {mainCategories.slice(5).map((cat) => (
-                  <Link key={cat.id} href={cat.link} className={styles.link}>
+                  <Link key={cat.id} href={generateCategoryUrl(cat.id) || cat.link} className={styles.link}>
                     {cat.title.toUpperCase()}
                   </Link>
                 ))}

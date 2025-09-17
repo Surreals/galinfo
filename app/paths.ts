@@ -6,28 +6,28 @@ const paths = {
   contacts: '/contacts',
   termsOfUse: '/terms-of-use',
   
-  // ТОП ТЕМИ
-  frankConversation: '/frank-conversation',
-  lvivDistricts: '/lviv-districts',
-  pressService: '/press-service',
+  // ТОП ТЕМИ (тепер використовують /topthemes/)
+  frankConversation: '/topthemes/vidverta-rozmova',
+  lvivDistricts: '/topthemes/rayony-lvova',
+  pressService: '/topthemes/pressluzhba',
   
-  // КАТЕГОРІЇ - Регіони
-  lvivRegion: '/lviv-region',
-  ternopilRegion: '/ternopil-region',
-  volyn: '/volyn',
-  ukraine: '/ukraine',
-  eu: '/eu',
-  world: '/world',
+  // КАТЕГОРІЇ - Регіони (тепер використовують /region/)
+  lvivRegion: '/region/lviv',
+  ternopilRegion: '/region/ternopil',
+  volyn: '/region/volyn',
+  ukraine: '/region/ukraine',
+  eu: '/region/evropa',
+  world: '/region/svit',
   
-  // КАТЕГОРІЇ - Теми
+  // КАТЕГОРІЇ - Теми (залишаються стандартними)
   society: '/society',
   politics: '/politics',
-  economy: '/economy',
+  economy: '/economics',
   culture: '/culture',
   health: '/health',
   sport: '/sport',
   crime: '/crime',
-  emergency: '/emergency',
+  emergency: '/accident',
   history: '/history',
   technologies: '/technologies',
   

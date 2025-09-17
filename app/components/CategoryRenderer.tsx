@@ -2,8 +2,8 @@
 
 import React from 'react';
 import { useMobileContext } from '@/app/contexts/MobileContext';
-import { getCategoryIdFromUrl } from '@/app/lib/categoryMapper';
-import { isRegionCategory, CATEGORY_IDS } from '@/app/lib/categoryUtils';
+import { getCategoryIdFromUrl, isRegionCategory as isRegionCategoryFromMapper, isSpecialThemeCategory } from '@/app/lib/categoryMapper';
+import { CATEGORY_IDS } from '@/app/lib/categoryUtils';
 import { useNewsByRubric } from '@/app/hooks/useNewsByRubric';
 import { useNewsByRegion } from '@/app/hooks/useNewsByRegion';
 import { useImportantNewsByCategory } from '@/app/hooks/useImportantNewsByCategory';
@@ -43,7 +43,7 @@ const CategoryRenderer: React.FC<CategoryRendererProps> = ({ category }) => {
   const categoryId = getCategoryIdFromUrl(category);
   
   // Визначаємо, чи це регіональна категорія
-  const isRegion = categoryId !== null ? isRegionCategory(categoryId) : false;
+  const isRegion = categoryId !== null ? isRegionCategoryFromMapper(categoryId) : false;
   
   // Визначаємо, чи це категорія "all" (всі новини)
   const isAllCategory = categoryId === 0;
@@ -52,12 +52,7 @@ const CategoryRenderer: React.FC<CategoryRendererProps> = ({ category }) => {
   const isImportantCategory = categoryId === -1;
 
   // Визначаємо, чи це спеціальна тема, яка має використовувати useSpecialThemesNews
-  const specialThemeIds: number[] = [
-    CATEGORY_IDS.VIDVERTA_ROZMOVA,
-    CATEGORY_IDS.PRESSLUZHBA,
-    CATEGORY_IDS.RAYONY_LVOVA
-  ];
-  const isSpecialThemeCategory = categoryId !== null && specialThemeIds.includes(categoryId);
+  const isSpecialTheme = categoryId !== null && isSpecialThemeCategory(categoryId);
   
   // Хук для важливих новин (для головної новини)
   const importantNewsHook = useImportantNewsByCategory({
@@ -76,7 +71,7 @@ const CategoryRenderer: React.FC<CategoryRendererProps> = ({ category }) => {
     lang: '1',
     approved: true,
     type: undefined,
-    autoFetch: categoryId !== null && !isRegion && !isAllCategory && !isSpecialThemeCategory
+    autoFetch: categoryId !== null && !isRegion && !isAllCategory && !isSpecialTheme
   });
 
   // Хук для спеціальних тем (коли categoryId є одним із зазначених спеціальних ID)
@@ -85,7 +80,7 @@ const CategoryRenderer: React.FC<CategoryRendererProps> = ({ category }) => {
     limit: 36,
     lang: '1',
     approved: true,
-    autoFetch: categoryId !== null && isSpecialThemeCategory
+    autoFetch: categoryId !== null && isSpecialTheme
   });
 
   const regionHook = useNewsByRegion({
@@ -116,13 +111,13 @@ const CategoryRenderer: React.FC<CategoryRendererProps> = ({ category }) => {
   // Вибираємо дані з відповідного хука
   const currentCategoryData = isAllCategory ? allNewsHook.data : 
                              isImportantCategory ? { news: importantNewsCategoryHook.importantNews } : 
-                             (isRegion ? regionHook.data : (isSpecialThemeCategory ? specialThemeHook.data : rubricHook.data));
+                             (isRegion ? regionHook.data : (isSpecialTheme ? specialThemeHook.data : rubricHook.data));
   const currentCategoryLoading = isAllCategory ? allNewsHook.loading : 
                                 isImportantCategory ? importantNewsCategoryHook.loading : 
-                                (isRegion ? regionHook.loading : (isSpecialThemeCategory ? specialThemeHook.loading : rubricHook.loading));
+                                (isRegion ? regionHook.loading : (isSpecialTheme ? specialThemeHook.loading : rubricHook.loading));
   const currentCategoryError = isAllCategory ? allNewsHook.error : 
                               isImportantCategory ? importantNewsCategoryHook.error : 
-                              (isRegion ? regionHook.error : (isSpecialThemeCategory ? specialThemeHook.error : rubricHook.error));
+                              (isRegion ? regionHook.error : (isSpecialTheme ? specialThemeHook.error : rubricHook.error));
 
   // Трансформуємо дані для поточної категорії (36 новин для звичайних категорій, 56 для "all" та "important")
   const transformedCurrentCategoryData = currentCategoryData?.news?.filter(item => item && item.id)?.map(item => ({

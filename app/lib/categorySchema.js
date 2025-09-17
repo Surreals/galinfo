@@ -222,7 +222,7 @@ export const categoryDesktopSchema = {
       // NewsList - Політика
       {
         type: NEWS_LIST,
-        categoryId: CATEGORY_IDS.SPORT,
+        categoryId: CATEGORY_IDS.POLITICS,
         config: {
           show: true,
           mobileLayout: "horizontal",
