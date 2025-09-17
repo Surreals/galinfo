@@ -41,6 +41,12 @@ export function getCategoryTitle(category: string): string {
       return "Світ";
     case "pressluzhba":
       return "Пресслужба";
+    case "rayony-lvova":
+      return "Райони Львова";
+    case "vidverta-rozmova":
+      return "Відверта розмова";
+    case "vidverta-rozmova-z":
+      return "Відверта розмова";
     default:
       return "Невідома категорія";
   }
@@ -85,6 +91,10 @@ export function getBreadCrumbsNav(category: string): string {
       return "svit";
     case "Пресслужба" :
       return "pressluzhba";
+    case "Райони Львова" :
+      return "rayony-lvova";
+    case "Відверта розмова" :
+      return "vidverta-rozmova";
     default:
       return "Невідома категорія";
   }

@@ -26,6 +26,7 @@ export const CATEGORY_URL_MAPPER: Record<string, number> = {
 
   // Спеціальні теми
   'vidverta-rozmova': CATEGORY_IDS.VIDVERTA_ROZMOVA,  // 136 - Відверта Розмова
+  'vidverta-rozmova-z': CATEGORY_IDS.VIDVERTA_ROZMOVA, // 136 - Відверта Розмова (альтернативний слаг)
   'pressluzhba': CATEGORY_IDS.PRESSLUZHBA,            // 140 - Пресслужба
   'rayony-lvova': CATEGORY_IDS.RAYONY_LVOVA,          // 142 - Райони Львова
 } as const;
