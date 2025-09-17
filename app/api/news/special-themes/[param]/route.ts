@@ -53,10 +53,10 @@ export interface SpecialThemesNewsResponse {
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { param: string } }
+  { params }: { params: Promise<{ param: string }> }
 ) {
   try {
-    const { param } = params;
+    const { param } = await params;
     const { searchParams } = new URL(request.url);
     
     const page = parseInt(searchParams.get('page') || '1');
