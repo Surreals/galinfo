@@ -38,6 +38,27 @@ export {
   useLatestSpecialThemesNewsById,
   useAllSpecialThemesNewsById
 } from './useSpecialThemesNews';
+export { 
+  useNewsByTag,
+  useLatestNewsByTag,
+  useNewsByTagWithImages,
+  useVideoNewsByTag,
+  useNewsByTagAndType,
+  useAllNewsByTag,
+  useNewsByMultipleTags
+} from './useNewsByTag';
+export { 
+  useImportantNewsWithPhotos,
+  useImportantNewsWithPhotosByCategory,
+  useImportantNewsWithPhotosByRegion,
+  useImportantNewsWithPhotosByTag,
+  useImportantNewsWithPhotosBySpecialTheme,
+  useTopImportantNewsWithPhotos,
+  usePhotoImportantNews,
+  useIllustratedImportantNews,
+  useImportantNewsWithPhotosMultiFilter,
+  useLatestImportantNewsWithPhoto
+} from './useImportantNewsWithPhotos';
 
 // Типи для експорту
 export type { 
@@ -82,3 +103,17 @@ export type {
   UseSpecialThemesNewsOptions,
   UseSpecialThemesNewsReturn
 } from './useSpecialThemesNews';
+
+export type {
+  NewsByTagItem,
+  NewsByTagResponse,
+  UseNewsByTagOptions,
+  UseNewsByTagReturn
+} from './useNewsByTag';
+
+export type {
+  ImportantNewsWithPhotosItem,
+  ImportantNewsWithPhotosResponse,
+  UseImportantNewsWithPhotosOptions,
+  UseImportantNewsWithPhotosReturn
+} from './useImportantNewsWithPhotos';
