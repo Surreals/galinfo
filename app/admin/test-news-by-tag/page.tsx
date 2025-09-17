@@ -11,6 +11,8 @@ import {
 
 export default function TestNewsByTagPage() {
   const [selectedTagId, setSelectedTagId] = useState(1844); // Кабмін
+  const [selectedTagName, setSelectedTagName] = useState('Кабмін');
+  const [searchByName, setSearchByName] = useState(false);
   const [currentTest, setCurrentTest] = useState<'basic' | 'latest' | 'images' | 'video' | 'all'>('basic');
 
   // Test 1: Basic usage
@@ -31,7 +33,7 @@ export default function TestNewsByTagPage() {
     getTotalNews,
     getNewsCount
   } = useNewsByTag({
-    tagId: selectedTagId,
+    ...(searchByName ? { tagName: selectedTagName } : { tagId: selectedTagId }),
     limit: 5,
     autoFetch: currentTest === 'basic'
   });
@@ -41,7 +43,9 @@ export default function TestNewsByTagPage() {
     data: latestData,
     loading: latestLoading,
     error: latestError
-  } = useLatestNewsByTag(selectedTagId, {
+  } = useNewsByTag({
+    ...(searchByName ? { tagName: selectedTagName } : { tagId: selectedTagId }),
+    limit: 1,
     autoFetch: currentTest === 'latest'
   });
 
@@ -290,18 +294,68 @@ export default function TestNewsByTagPage() {
     <div style={{ padding: '20px', maxWidth: '1200px', margin: '0 auto' }}>
       <h1>🧪 Тестування useNewsByTag Hook</h1>
       
-      {/* Tag Selector */}
+      {/* Search Mode Selector */}
       <div style={{ marginBottom: '20px', padding: '15px', backgroundColor: '#f8f9fa', borderRadius: '8px' }}>
-        <h3>Виберіть тег для тестування:</h3>
-        <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', marginBottom: '10px' }}>
+        <h3>Режим пошуку:</h3>
+        <div style={{ marginBottom: '15px' }}>
+          <label style={{ marginRight: '20px' }}>
+            <input 
+              type="radio" 
+              checked={!searchByName} 
+              onChange={() => setSearchByName(false)} 
+            />
+            За ID тегу
+          </label>
+          <label>
+            <input 
+              type="radio" 
+              checked={searchByName} 
+              onChange={() => setSearchByName(true)} 
+            />
+            За назвою тегу
+          </label>
+        </div>
+        
+        {searchByName ? (
+          <div style={{ marginBottom: '10px' }}>
+            <label>
+              Назва тегу: 
+              <input 
+                type="text" 
+                value={selectedTagName} 
+                onChange={(e) => setSelectedTagName(e.target.value)}
+                style={{ marginLeft: '10px', padding: '5px', width: '200px' }}
+                placeholder="Кабмін, житло, фінанси..."
+              />
+            </label>
+          </div>
+        ) : (
+          <div style={{ marginBottom: '10px' }}>
+            <label>
+              ID тегу: 
+              <input 
+                type="number" 
+                value={selectedTagId} 
+                onChange={(e) => setSelectedTagId(Number(e.target.value))}
+                style={{ marginLeft: '10px', padding: '5px', width: '100px' }}
+              />
+            </label>
+          </div>
+        )}
+
+        <h4>Швидкий вибір:</h4>
+        <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
           {sampleTags.map(tag => (
             <button
               key={tag.id}
-              onClick={() => setSelectedTagId(tag.id)}
+              onClick={() => {
+                setSelectedTagId(tag.id);
+                setSelectedTagName(tag.name);
+              }}
               style={{
                 padding: '8px 12px',
-                backgroundColor: selectedTagId === tag.id ? '#0066cc' : '#f0f0f0',
-                color: selectedTagId === tag.id ? 'white' : 'black',
+                backgroundColor: (searchByName ? selectedTagName === tag.name : selectedTagId === tag.id) ? '#0066cc' : '#f0f0f0',
+                color: (searchByName ? selectedTagName === tag.name : selectedTagId === tag.id) ? 'white' : 'black',
                 border: 'none',
                 borderRadius: '4px',
                 cursor: 'pointer'
@@ -310,17 +364,6 @@ export default function TestNewsByTagPage() {
               {tag.name} (ID: {tag.id})
             </button>
           ))}
-        </div>
-        <div>
-          <label>
-            Або введіть ID тегу: 
-            <input 
-              type="number" 
-              value={selectedTagId} 
-              onChange={(e) => setSelectedTagId(Number(e.target.value))}
-              style={{ marginLeft: '10px', padding: '5px', width: '100px' }}
-            />
-          </label>
         </div>
       </div>
       

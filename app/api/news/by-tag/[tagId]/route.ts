@@ -57,27 +57,44 @@ export async function GET(
     const lang = searchParams.get('lang') || '1';
     const approved = searchParams.get('approved') !== 'false';
     const type = searchParams.get('type');
+    const byName = searchParams.get('byName') === 'true';
     
     const offset = (page - 1) * limit;
-    const tagIdNum = parseInt(tagId);
-
-    if (isNaN(tagIdNum)) {
-      return NextResponse.json(
-        { error: 'Invalid tag ID' },
-        { status: 400 }
-      );
-    }
 
     // First, get the tag information
-    const [tagResult] = await executeQuery<{
-      id: number;
-      tag: string;
-    }>(
-      `SELECT id, tag 
-       FROM a_tags 
-       WHERE id = ?`,
-      [tagIdNum]
-    );
+    let tagResult;
+    
+    if (byName) {
+      // Search by tag name
+      [tagResult] = await executeQuery<{
+        id: number;
+        tag: string;
+      }>(
+        `SELECT id, tag 
+         FROM a_tags 
+         WHERE tag = ?`,
+        [tagId]
+      );
+    } else {
+      // Search by tag ID (original behavior)
+      const tagIdNum = parseInt(tagId);
+      if (isNaN(tagIdNum)) {
+        return NextResponse.json(
+          { error: 'Invalid tag ID' },
+          { status: 400 }
+        );
+      }
+
+      [tagResult] = await executeQuery<{
+        id: number;
+        tag: string;
+      }>(
+        `SELECT id, tag 
+         FROM a_tags 
+         WHERE id = ?`,
+        [tagIdNum]
+      );
+    }
 
     if (!tagResult || tagResult.length === 0) {
       return NextResponse.json(
@@ -150,7 +167,7 @@ export async function GET(
 
     const [newsResult] = await executeQuery<NewsByTagItem>(
       newsQuery,
-      [tagIdNum, ...queryParams, limit, offset]
+      [tag.id, ...queryParams, limit, offset]
     );
 
     // Get total count for pagination
@@ -163,7 +180,7 @@ export async function GET(
 
     const [countResult] = await executeQuery<{ total: number }>(
       countQuery,
-      [tagIdNum, ...queryParams]
+      [tag.id, ...queryParams]
     );
 
     const total = countResult[0]?.total || 0;
@@ -204,7 +221,9 @@ export async function GET(
         hasPrev: page > 1
       },
       filters: {
-        tagId: tagIdNum,
+        tagId: tag.id,
+        tagSearch: byName ? tagId : tag.id.toString(),
+        searchByName: byName,
         lang,
         approved,
         ...(type && { type })

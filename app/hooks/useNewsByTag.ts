@@ -47,7 +47,8 @@ export interface NewsByTagResponse {
 }
 
 export interface UseNewsByTagOptions {
-  tagId: number;
+  tagId?: number;           // Tag ID (use either tagId OR tagName)
+  tagName?: string;         // Tag name (use either tagId OR tagName)
   page?: number;
   limit?: number;
   type?: string;
@@ -67,6 +68,7 @@ export interface UseNewsByTagReturn {
   setLang: (lang: string) => void;
   setApproved: (approved: boolean) => void;
   setTagId: (tagId: number) => void;
+  setTagName: (tagName: string) => void;
   // Додаткові методи для навігації
   goToNextPage: () => void;
   goToPrevPage: () => void;
@@ -92,6 +94,7 @@ export interface UseNewsByTagReturn {
 export function useNewsByTag(options: UseNewsByTagOptions): UseNewsByTagReturn {
   const {
     tagId,
+    tagName,
     page: initialPage = 1,
     limit: initialLimit = 20,
     type: initialType,
@@ -99,6 +102,11 @@ export function useNewsByTag(options: UseNewsByTagOptions): UseNewsByTagReturn {
     approved: initialApproved = true,
     autoFetch = true
   } = options;
+
+  // Validate that either tagId or tagName is provided
+  if (!tagId && !tagName) {
+    throw new Error('Either tagId or tagName must be provided');
+  }
 
   const [data, setData] = useState<NewsByTagResponse | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
@@ -108,10 +116,11 @@ export function useNewsByTag(options: UseNewsByTagOptions): UseNewsByTagReturn {
   const [type, setType] = useState<string | undefined>(initialType);
   const [lang, setLang] = useState<string>(initialLang);
   const [approved, setApproved] = useState<boolean>(initialApproved);
-  const [tagIdState, setTagIdState] = useState<number>(tagId);
+  const [tagIdState, setTagIdState] = useState<number | undefined>(tagId);
+  const [tagNameState, setTagNameState] = useState<string | undefined>(tagName);
 
   const fetchNewsByTag = useCallback(async () => {
-    if (!tagIdState) return;
+    if (!tagIdState && !tagNameState) return;
 
     setLoading(true);
     setError(null);
@@ -128,7 +137,15 @@ export function useNewsByTag(options: UseNewsByTagOptions): UseNewsByTagReturn {
         params.append('type', type);
       }
 
-      const response = await fetch(`/api/news/by-tag/${tagIdState}?${params}`);
+      // Determine search method and parameter
+      const searchParam = tagNameState || tagIdState?.toString() || '';
+      const byName = Boolean(tagNameState);
+      
+      if (byName) {
+        params.append('byName', 'true');
+      }
+
+      const response = await fetch(`/api/news/by-tag/${searchParam}?${params}`);
       
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
@@ -143,7 +160,7 @@ export function useNewsByTag(options: UseNewsByTagOptions): UseNewsByTagReturn {
     } finally {
       setLoading(false);
     }
-  }, [tagIdState, page, limit, type, lang, approved]);
+  }, [tagIdState, tagNameState, page, limit, type, lang, approved]);
 
   // Автоматичне завантаження при зміні параметрів
   useEffect(() => {
@@ -160,14 +177,15 @@ export function useNewsByTag(options: UseNewsByTagOptions): UseNewsByTagReturn {
     setLang(initialLang);
     setApproved(initialApproved);
     setTagIdState(tagId);
-  }, [initialPage, initialLimit, initialType, initialLang, initialApproved, tagId]);
+    setTagNameState(tagName);
+  }, [initialPage, initialLimit, initialType, initialLang, initialApproved, tagId, tagName]);
 
-  // Скидання на першу сторінку при зміні tagId (але не при зміні page)
+  // Скидання на першу сторінку при зміні tagId або tagName (але не при зміні page)
   useEffect(() => {
     if (page !== initialPage) {
       setPage(1);
     }
-  }, [tagId, initialPage]);
+  }, [tagId, tagName, initialPage]);
 
   const refetch = useCallback(() => {
     fetchNewsByTag();
@@ -196,6 +214,12 @@ export function useNewsByTag(options: UseNewsByTagOptions): UseNewsByTagReturn {
 
   const handleSetTagId = useCallback((newTagId: number) => {
     setTagIdState(newTagId);
+    setTagNameState(undefined); // Clear tag name when setting ID
+  }, []);
+
+  const handleSetTagName = useCallback((newTagName: string) => {
+    setTagNameState(newTagName);
+    setTagIdState(undefined); // Clear tag ID when setting name
   }, []);
 
   // Додаткові методи для навігації
@@ -281,6 +305,7 @@ export function useNewsByTag(options: UseNewsByTagOptions): UseNewsByTagReturn {
     setLang: handleSetLang,
     setApproved: handleSetApproved,
     setTagId: handleSetTagId,
+    setTagName: handleSetTagName,
     goToNextPage,
     goToPrevPage,
     goToFirstPage,
@@ -339,4 +364,25 @@ export function useAllNewsByTag(tagId: number, options: Omit<UseNewsByTagOptions
 export function useNewsByMultipleTags(tagIds: number[], options: Omit<UseNewsByTagOptions, 'tagId'> = {}) {
   const primaryTagId = tagIds[0] || 0;
   return useNewsByTag({ ...options, tagId: primaryTagId });
+}
+
+// Хуки для пошуку за назвою тегу
+export function useNewsByTagName(tagName: string, options: Omit<UseNewsByTagOptions, 'tagName'> = {}) {
+  return useNewsByTag({ ...options, tagName });
+}
+
+export function useLatestNewsByTagName(tagName: string, options: Omit<UseNewsByTagOptions, 'tagName' | 'limit'> = {}) {
+  return useNewsByTag({ ...options, tagName, limit: 1 });
+}
+
+export function useNewsByTagNameWithImages(tagName: string, options: Omit<UseNewsByTagOptions, 'tagName'> = {}) {
+  const hook = useNewsByTag({ ...options, tagName });
+  return {
+    ...hook,
+    newsWithImages: hook.getNewsWithImages()
+  };
+}
+
+export function useAllNewsByTagName(tagName: string, options: Omit<UseNewsByTagOptions, 'tagName'> = {}) {
+  return useNewsByTag({ ...options, tagName, limit: 50 });
 }

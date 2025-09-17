@@ -45,7 +45,11 @@ export {
   useVideoNewsByTag,
   useNewsByTagAndType,
   useAllNewsByTag,
-  useNewsByMultipleTags
+  useNewsByMultipleTags,
+  useNewsByTagName,
+  useLatestNewsByTagName,
+  useNewsByTagNameWithImages,
+  useAllNewsByTagName
 } from './useNewsByTag';
 export { 
   useImportantNewsWithPhotos,
