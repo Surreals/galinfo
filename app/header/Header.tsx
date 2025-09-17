@@ -18,6 +18,7 @@ import SearchBox from "@/app/header/components/SearchBox";
 import {useImportantNewsByLevel} from "@/app/hooks/useImportantNews";
 import {RateRow, useCurrencyRates} from "@/app/hooks/UseCurrencyRatesResult";
 import {useWeather} from "@/app/hooks/useWeather";
+import { generateCategoryUrl } from "@/app/lib/categoryMapper";
 
 import styles from "@/app/header/Header.module.scss";
 
@@ -215,7 +216,7 @@ export default function Header() {
               {/* Dynamic main categories from database */}
               {mainCategories.map((category) => (
                 <li key={category.id}>
-                  <Link href={category.link} className={styles.link}>
+                  <Link href={generateCategoryUrl(category.id) || category.link} className={styles.link}>
                     {category.title?.toUpperCase()}
                   </Link>
                 </li>
@@ -310,13 +311,12 @@ export default function Header() {
             <div className={styles.divider}></div>
             <ul className={styles.list}>
               {specialThemesItem.map((region) => (
-                <Link key={region.id} href={region.link} className={styles.linkSlider}>
+                <Link key={region.id} href={generateCategoryUrl(region.id) || region.link} className={styles.linkSlider}>
                   {region.title?.toUpperCase()}
                 </Link>
               ))}
               {/* Fallback to static regions if no dynamic data */}
-              {specialThemesItem.length === 0 && (
-                <>
+              {specialThemesItem.length === 0 && (                <>
                   <Link href={paths.frankConversation} className={styles.linkSlider}>
                     ВІДВЕРТА РОЗМОВА З
                   </Link>
@@ -335,7 +335,7 @@ export default function Header() {
               {/* Підколонка 1 - Регіони */}
               <div className={styles.gridColumn}>
                 {regions.map((region) => (
-                  <Link key={region.id} href={region.link} className={styles.linkSlider}>
+                  <Link key={region.id} href={generateCategoryUrl(region.id) || region.link} className={styles.linkSlider}>
                     {region.title?.toUpperCase()}
                   </Link>
                 ))}
@@ -367,7 +367,7 @@ export default function Header() {
               {/* Підколонка 2 - Теми */}
               <div className={styles.gridColumn}>
                 {mainCategories.slice(0, 5).map((category) => (
-                  <Link key={category.id} href={category.link} className={styles.linkSlider}>
+                  <Link key={category.id} href={generateCategoryUrl(category.id) || category.link} className={styles.linkSlider}>
                     {category.title?.toUpperCase()}
                   </Link>
                 ))}
@@ -396,7 +396,7 @@ export default function Header() {
               {/* Підколонка 3 - Додаткові теми */}
               <div className={styles.gridColumn}>
                 {mainCategories.slice(5).map((category) => (
-                  <Link key={category.id} href={category.link} className={styles.linkSlider}>
+                  <Link key={category.id} href={generateCategoryUrl(category.id) || category.link} className={styles.linkSlider}>
                     {category.title?.toUpperCase()}
                   </Link>
                 ))}
@@ -615,12 +615,12 @@ export default function Header() {
             <div className={styles.categories}>
               {/* Dynamic categories from database */}
               {regions.map((region) => (
-                <Link key={region.id} className={styles.textCategory} href={region.link}>
+                <Link key={region.id} className={styles.textCategory} href={generateCategoryUrl(region.id) || region.link}>
                   {region.title?.toUpperCase()}
                 </Link>
               ))}
               {mainCategories.map((category) => (
-                <Link key={category.id} className={styles.textCategory} href={category.link}>
+                <Link key={category.id} className={styles.textCategory} href={generateCategoryUrl(category.id) || category.link}>
                   {category.title?.toUpperCase()}
                 </Link>
               ))}

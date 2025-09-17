@@ -227,10 +227,10 @@ export const categoryDesktopSchema = {
           show: true,
           mobileLayout: "horizontal",
           arrowRightIcon: true,
-          title: "ПОЛІТИКА",
+          title: "СПОРТ",
           showImagesAt: [0, 1],
           showMoreButton: true,
-          moreButtonUrl: "/politics",
+          moreButtonUrl: "/sport",
           widthPercent: 100,
           apiParams: {
             page: 1,
