@@ -1,18 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { executeQuery } from '@/app/lib/db';
+import { formatNewsImages } from '@/app/lib/imageUtils';
 
 export interface SpecialThemesNewsItem {
   id: number;
   ndate: string;
   ntime: string;
   ntype: number;
-  images: Array<{
-    urls: {
-      full: string;
-      intxt: string;
-      tmb: string;
-    };
-  }>;
+  images: any; // Will be processed by formatNewsImages
   urlkey: string;
   photo: number;
   video: number;
@@ -118,42 +113,76 @@ export async function GET(
     // Get news for this special theme using the theme's param as rubric
     const [newsResult] = await executeQuery<SpecialThemesNewsItem>(
       `SELECT 
-        n.id, n.ndate, n.ntime, n.ntype, n.urlkey, n.photo, n.video, 
-        n.comments, n.printsubheader, n.rubric, n.nweight, n.nheader, 
-        n.nsubheader, n.nteaser, n.comments_count, n.views_count,
-        JSON_ARRAYAGG(
-          JSON_OBJECT(
-            'urls', JSON_OBJECT(
-              'full', CONCAT('/im/', SUBSTRING(ni.filename, 1, 1), '/', SUBSTRING(ni.filename, 2, 1), '/', ni.filename),
-              'intxt', CONCAT('/im/', SUBSTRING(ni.filename, 1, 1), '/', SUBSTRING(ni.filename, 2, 1), '/', ni.filename),
-              'tmb', CONCAT('/im/', SUBSTRING(ni.filename, 1, 1), '/', SUBSTRING(ni.filename, 2, 1), '/', ni.filename)
-            )
-          )
-        ) as images
-       FROM a_news n
-       LEFT JOIN a_news_images ni ON n.id = ni.news_id
-       WHERE n.rubric = ? 
-         AND n.approved = ?
-         AND n.lng = ?
-       GROUP BY n.id
-       ORDER BY n.ndate DESC, n.ntime DESC
+        a_news.id,
+        a_news.ndate,
+        a_news.ntime,
+        a_news.ntype,
+        a_news.images,
+        a_news.urlkey,
+        a_news.photo,
+        a_news.video,
+        a_news.comments,
+        a_news.printsubheader,
+        a_news.rubric,
+        a_news.nweight,
+        a_news_headers.nheader,
+        a_news_headers.nsubheader,
+        a_news_headers.nteaser,
+        a_statcomm.qty as comments_count,
+        a_statview.qty as views_count
+       FROM a_news
+       LEFT JOIN a_news_headers ON a_news.id = a_news_headers.id
+       LEFT JOIN a_statcomm ON a_news.id = a_statcomm.id
+       LEFT JOIN a_statview ON a_news.id = a_statview.id
+       WHERE FIND_IN_SET(?, a_news.rubric) > 0
+         AND a_news.approved = 1
+         AND a_news.lang = ?
+         AND a_news.udate < UNIX_TIMESTAMP()
+       ORDER BY a_news.udate DESC
        LIMIT ? OFFSET ?`,
-      [specialTheme.param, approved, lang, limit, offset]
+      [specialTheme.param, lang, limit, offset]
     );
 
     // Get total count for pagination
     const [countResult] = await executeQuery<{ total: number }>(
       `SELECT COUNT(*) as total 
        FROM a_news 
-       WHERE rubric = ? AND approved = ? AND lng = ?`,
-      [specialTheme.param, approved, lang]
+       WHERE FIND_IN_SET(?, a_news.rubric) > 0
+         AND a_news.approved = 1
+         AND a_news.lang = ?
+         AND a_news.udate < UNIX_TIMESTAMP()`,
+      [specialTheme.param, lang]
     );
 
     const total = countResult[0]?.total || 0;
     const totalPages = Math.ceil(total / limit);
 
+    // Get images for news items
+    const imageIds = newsResult
+      .filter(news => news.images)
+      .map(news => news.images.split(','))
+      .flat()
+      .filter(id => id.trim());
+    
+    let imagesData: any[] = [];
+    if (imageIds.length > 0) {
+      const imagesQuery = `
+        SELECT id, filename, title_ua
+        FROM a_pics
+        WHERE id IN (${imageIds.map(() => '?').join(',')})
+      `;
+      const [imagesDataResult] = await executeQuery(imagesQuery, imageIds);
+      imagesData = imagesDataResult;
+    }
+
+    // Process news with images
+    const processedNews = (newsResult || []).map(news => ({
+      ...news,
+      images: news.images ? formatNewsImages(imagesData, news.images.split(',').map((id: string) => parseInt(id.trim())).filter((id: number) => !isNaN(id)), lang) : []
+    }));
+
     const response: SpecialThemesNewsResponse = {
-      news: newsResult || [],
+      news: processedNews,
       pagination: {
         page,
         limit,

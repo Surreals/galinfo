@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from 'react';
+import { NewsImage, getMainImage, hasImages, getImagesCount } from '@/app/lib/imageUtils';
 
 // Типи для новин спеціальних тем
 export interface SpecialThemesNewsItem {
@@ -8,13 +9,7 @@ export interface SpecialThemesNewsItem {
   ndate: string;
   ntime: string;
   ntype: number;
-  images: Array<{
-    urls: {
-      full: string;
-      intxt: string;
-      tmb: string;
-    };
-  }>;
+  images: NewsImage[];
   urlkey: string;
   photo: number;
   video: number;
@@ -57,6 +52,7 @@ export interface UseSpecialThemesNewsOptions {
   param: string;
   page?: number;
   limit?: number;
+  type?: string;
   lang?: string;
   approved?: boolean;
   autoFetch?: boolean;
@@ -72,8 +68,14 @@ export interface UseSpecialThemesNewsReturn {
   setLimit: (limit: number) => void;
   setLang: (lang: string) => void;
   setApproved: (approved: boolean) => void;
+  setType: (type: string) => void;
   setParam: (param: string) => void;
   setById: (byId: boolean) => void;
+  // Додаткові методи для навігації
+  goToNextPage: () => void;
+  goToPrevPage: () => void;
+  goToFirstPage: () => void;
+  goToLastPage: () => void;
   // Додаткові методи для зручності
   getLatestNews: () => SpecialThemesNewsItem | null;
   getNewsWithImages: () => SpecialThemesNewsItem[];
@@ -81,6 +83,10 @@ export interface UseSpecialThemesNewsReturn {
   hasNews: boolean;
   getNewsByWeight: (weight: number) => SpecialThemesNewsItem[];
   getSpecialThemeInfo: () => SpecialThemesNewsResponse['specialTheme'] | null;
+  // Методи для роботи з зображеннями
+  getMainImage: (newsItem: SpecialThemesNewsItem) => NewsImage | null;
+  hasImages: (newsItem: SpecialThemesNewsItem) => boolean;
+  getImagesCount: (newsItem: SpecialThemesNewsItem) => number;
 }
 
 export function useSpecialThemesNews(options: UseSpecialThemesNewsOptions): UseSpecialThemesNewsReturn {
@@ -88,6 +94,7 @@ export function useSpecialThemesNews(options: UseSpecialThemesNewsOptions): UseS
     param,
     page: initialPage = 1,
     limit: initialLimit = 20,
+    type: initialType,
     lang: initialLang = '1',
     approved: initialApproved = true,
     autoFetch = true,
@@ -99,6 +106,7 @@ export function useSpecialThemesNews(options: UseSpecialThemesNewsOptions): UseS
   const [error, setError] = useState<string | null>(null);
   const [page, setPage] = useState<number>(initialPage);
   const [limit, setLimit] = useState<number>(initialLimit);
+  const [type, setType] = useState<string | undefined>(initialType);
   const [lang, setLang] = useState<string>(initialLang);
   const [approved, setApproved] = useState<boolean>(initialApproved);
   const [paramState, setParamState] = useState<string>(param);
@@ -117,6 +125,10 @@ export function useSpecialThemesNews(options: UseSpecialThemesNewsOptions): UseS
         lang,
         approved: approved.toString()
       });
+
+      if (type) {
+        params.append('type', type);
+      }
 
       if (byIdState) {
         params.append('byId', 'true');
@@ -137,7 +149,7 @@ export function useSpecialThemesNews(options: UseSpecialThemesNewsOptions): UseS
     } finally {
       setLoading(false);
     }
-  }, [paramState, page, limit, lang, approved, byIdState]);
+  }, [paramState, page, limit, type, lang, approved, byIdState]);
 
   // Автоматичне завантаження при зміні параметрів
   useEffect(() => {
@@ -150,18 +162,19 @@ export function useSpecialThemesNews(options: UseSpecialThemesNewsOptions): UseS
   useEffect(() => {
     setPage(initialPage);
     setLimit(initialLimit);
+    setType(initialType);
     setLang(initialLang);
     setApproved(initialApproved);
     setParamState(param);
     setByIdState(byId);
-  }, [initialPage, initialLimit, initialLang, initialApproved, param, byId]);
+  }, [initialPage, initialLimit, initialType, initialLang, initialApproved, param, byId]);
 
-  // Скидання на першу сторінку при зміні param
+  // Скидання на першу сторінку при зміні param (але не при зміні page)
   useEffect(() => {
-    if (paramState !== param) {
+    if (page !== initialPage) {
       setPage(1);
     }
-  }, [param, paramState]);
+  }, [param, initialPage]);
 
   const refetch = useCallback(() => {
     fetchSpecialThemesNews();
@@ -180,6 +193,10 @@ export function useSpecialThemesNews(options: UseSpecialThemesNewsOptions): UseS
     setLang(newLang);
   }, []);
 
+  const handleSetType = useCallback((newType: string) => {
+    setType(newType);
+  }, []);
+
   const handleSetApproved = useCallback((newApproved: boolean) => {
     setApproved(newApproved);
   }, []);
@@ -191,6 +208,29 @@ export function useSpecialThemesNews(options: UseSpecialThemesNewsOptions): UseS
   const handleSetById = useCallback((newById: boolean) => {
     setByIdState(newById);
   }, []);
+
+  // Додаткові методи для навігації
+  const goToNextPage = useCallback(() => {
+    if (data?.pagination.hasNext) {
+      setPage(page + 1);
+    }
+  }, [data?.pagination.hasNext, page]);
+
+  const goToPrevPage = useCallback(() => {
+    if (data?.pagination.hasPrev) {
+      setPage(page - 1);
+    }
+  }, [data?.pagination.hasPrev, page]);
+
+  const goToFirstPage = useCallback(() => {
+    setPage(1);
+  }, []);
+
+  const goToLastPage = useCallback(() => {
+    if (data?.pagination.totalPages) {
+      setPage(data.pagination.totalPages);
+    }
+  }, [data?.pagination.totalPages]);
 
   // Додаткові методи для зручності
   const getLatestNews = useCallback((): SpecialThemesNewsItem | null => {
@@ -215,6 +255,19 @@ export function useSpecialThemesNews(options: UseSpecialThemesNewsOptions): UseS
     return data?.specialTheme || null;
   }, [data]);
 
+  // Методи для роботи з зображеннями
+  const getMainImageForNews = useCallback((newsItem: SpecialThemesNewsItem) => {
+    return getMainImage(newsItem.images);
+  }, []);
+
+  const hasImagesForNews = useCallback((newsItem: SpecialThemesNewsItem) => {
+    return hasImages(newsItem.images);
+  }, []);
+
+  const getImagesCountForNews = useCallback((newsItem: SpecialThemesNewsItem) => {
+    return getImagesCount(newsItem.images);
+  }, []);
+
   return {
     data,
     loading,
@@ -224,14 +277,22 @@ export function useSpecialThemesNews(options: UseSpecialThemesNewsOptions): UseS
     setLimit: handleSetLimit,
     setLang: handleSetLang,
     setApproved: handleSetApproved,
+    setType: handleSetType,
     setParam: handleSetParam,
     setById: handleSetById,
+    goToNextPage,
+    goToPrevPage,
+    goToFirstPage,
+    goToLastPage,
     getLatestNews,
     getNewsWithImages,
     getVideoNews,
     hasNews,
     getNewsByWeight,
-    getSpecialThemeInfo
+    getSpecialThemeInfo,
+    getMainImage: getMainImageForNews,
+    hasImages: hasImagesForNews,
+    getImagesCount: getImagesCountForNews
   };
 }
 
