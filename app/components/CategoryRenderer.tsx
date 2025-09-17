@@ -3,12 +3,13 @@
 import React from 'react';
 import { useMobileContext } from '@/app/contexts/MobileContext';
 import { getCategoryIdFromUrl } from '@/app/lib/categoryMapper';
-import { isRegionCategory } from '@/app/lib/categoryUtils';
+import { isRegionCategory, CATEGORY_IDS } from '@/app/lib/categoryUtils';
 import { useNewsByRubric } from '@/app/hooks/useNewsByRubric';
 import { useNewsByRegion } from '@/app/hooks/useNewsByRegion';
 import { useImportantNewsByCategory } from '@/app/hooks/useImportantNewsByCategory';
 import { useImportantNews } from '@/app/hooks/useImportantNews';
 import { useLatestNews } from '@/app/hooks/useLatestNews';
+import { useSpecialThemesNewsById } from '@/app/hooks/useSpecialThemesNews';
 import { getCategoryTitle } from '@/assets/utils/getTranslateCategory';
 import { formatNewsDate, formatFullNewsDate, generateArticleUrl, getNewsImage, hasNewsPhoto } from '@/app/lib/newsUtils';
 import { categoryDesktopSchema, categoryMobileSchema } from '@/app/lib/categorySchema';
@@ -49,6 +50,14 @@ const CategoryRenderer: React.FC<CategoryRendererProps> = ({ category }) => {
   
   // Визначаємо, чи це категорія "important" (важливі новини)
   const isImportantCategory = categoryId === -1;
+
+  // Визначаємо, чи це спеціальна тема, яка має використовувати useSpecialThemesNews
+  const specialThemeIds: number[] = [
+    CATEGORY_IDS.VIDVERTA_ROZMOVA,
+    CATEGORY_IDS.PRESSLUZHBA,
+    CATEGORY_IDS.RAYONY_LVOVA
+  ];
+  const isSpecialThemeCategory = categoryId !== null && specialThemeIds.includes(categoryId);
   
   // Хук для важливих новин (для головної новини)
   const importantNewsHook = useImportantNewsByCategory({
@@ -67,7 +76,16 @@ const CategoryRenderer: React.FC<CategoryRendererProps> = ({ category }) => {
     lang: '1',
     approved: true,
     type: undefined,
-    autoFetch: categoryId !== null && !isRegion && !isAllCategory
+    autoFetch: categoryId !== null && !isRegion && !isAllCategory && !isSpecialThemeCategory
+  });
+
+  // Хук для спеціальних тем (коли categoryId є одним із зазначених спеціальних ID)
+  const specialThemeHook = useSpecialThemesNewsById(categoryId ?? 0, {
+    page: 1,
+    limit: 36,
+    lang: '1',
+    approved: true,
+    autoFetch: categoryId !== null && isSpecialThemeCategory
   });
 
   const regionHook = useNewsByRegion({
@@ -98,13 +116,13 @@ const CategoryRenderer: React.FC<CategoryRendererProps> = ({ category }) => {
   // Вибираємо дані з відповідного хука
   const currentCategoryData = isAllCategory ? allNewsHook.data : 
                              isImportantCategory ? { news: importantNewsCategoryHook.importantNews } : 
-                             (isRegion ? regionHook.data : rubricHook.data);
+                             (isRegion ? regionHook.data : (isSpecialThemeCategory ? specialThemeHook.data : rubricHook.data));
   const currentCategoryLoading = isAllCategory ? allNewsHook.loading : 
                                 isImportantCategory ? importantNewsCategoryHook.loading : 
-                                (isRegion ? regionHook.loading : rubricHook.loading);
+                                (isRegion ? regionHook.loading : (isSpecialThemeCategory ? specialThemeHook.loading : rubricHook.loading));
   const currentCategoryError = isAllCategory ? allNewsHook.error : 
                               isImportantCategory ? importantNewsCategoryHook.error : 
-                              (isRegion ? regionHook.error : rubricHook.error);
+                              (isRegion ? regionHook.error : (isSpecialThemeCategory ? specialThemeHook.error : rubricHook.error));
 
   // Трансформуємо дані для поточної категорії (36 новин для звичайних категорій, 56 для "all" та "important")
   const transformedCurrentCategoryData = currentCategoryData?.news?.filter(item => item && item.id)?.map(item => ({
