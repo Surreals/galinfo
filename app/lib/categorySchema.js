@@ -222,15 +222,15 @@ export const categoryDesktopSchema = {
       // NewsList - Політика
       {
         type: NEWS_LIST,
-        categoryId: CATEGORY_IDS.SPORT,
+        categoryId: CATEGORY_IDS.POLITICS,
         config: {
           show: true,
           mobileLayout: "horizontal",
           arrowRightIcon: true,
-          title: "СПОРТ",
+          title: "ПОЛІТИКА",
           showImagesAt: [0, 1],
           showMoreButton: true,
-          moreButtonUrl: "/sport",
+          moreButtonUrl: "/politics",
           widthPercent: 100,
           apiParams: {
             page: 1,
