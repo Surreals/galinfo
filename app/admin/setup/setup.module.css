@@ -1,0 +1,303 @@
+/* Admin Setup Page Styles */
+
+.setupPage {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 20px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+}
+
+.setupContainer {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+  max-width: 600px;
+  width: 100%;
+  overflow: hidden;
+}
+
+.setupHeader {
+  background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+  color: white;
+  padding: 40px 30px;
+  text-align: center;
+}
+
+.logo {
+  width: 60px;
+  height: 60px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 20px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+}
+
+.logoText {
+  font-size: 28px;
+  font-weight: bold;
+  color: white;
+}
+
+.setupHeader h1 {
+  margin: 0 0 10px;
+  font-size: 28px;
+  font-weight: 600;
+}
+
+.setupHeader p {
+  margin: 0;
+  opacity: 0.9;
+  font-size: 16px;
+}
+
+.setupContent {
+  padding: 40px 30px;
+}
+
+.loadingMessage {
+  text-align: center;
+  padding: 40px 20px;
+  color: #6b7280;
+  font-size: 16px;
+}
+
+.successSection {
+  text-align: center;
+}
+
+.successIcon {
+  font-size: 48px;
+  margin-bottom: 20px;
+}
+
+.successSection h2 {
+  color: #059669;
+  margin: 0 0 15px;
+  font-size: 24px;
+  font-weight: 600;
+}
+
+.successSection p {
+  color: #6b7280;
+  margin-bottom: 30px;
+  font-size: 16px;
+  line-height: 1.6;
+}
+
+.setupSection {
+  text-align: center;
+}
+
+.infoBox {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 30px;
+  margin-bottom: 30px;
+  text-align: left;
+}
+
+.infoBox h2 {
+  color: #1e293b;
+  margin: 0 0 15px;
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.infoBox p {
+  color: #475569;
+  margin-bottom: 15px;
+  line-height: 1.6;
+}
+
+.credentialsPreview {
+  background: #f1f5f9;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  padding: 15px;
+  margin: 15px 0;
+  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+  font-size: 14px;
+  color: #334155;
+}
+
+.warning {
+  color: #dc2626 !important;
+  font-weight: 500;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 6px;
+  padding: 12px;
+  margin-top: 15px;
+}
+
+.createButton {
+  background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+  color: white;
+  border: none;
+  padding: 15px 40px;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  min-width: 200px;
+}
+
+.createButton:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(79, 70, 229, 0.3);
+}
+
+.createButton:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.loginButton {
+  background: #059669;
+  color: white;
+  border: none;
+  padding: 12px 30px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-decoration: none;
+  display: inline-block;
+}
+
+.loginButton:hover {
+  background: #047857;
+  transform: translateY(-1px);
+}
+
+.messageBox {
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  border-radius: 8px;
+  padding: 20px;
+  margin-top: 20px;
+  text-align: left;
+}
+
+.messageBox pre {
+  color: #166534;
+  font-family: inherit;
+  white-space: pre-line;
+  margin: 0 0 20px;
+  line-height: 1.6;
+}
+
+.errorBox {
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 8px;
+  padding: 15px;
+  color: #dc2626;
+  margin-top: 20px;
+  font-weight: 500;
+}
+
+.setupFooter {
+  background: #f8fafc;
+  padding: 30px;
+  border-top: 1px solid #e2e8f0;
+}
+
+.helpSection {
+  margin-bottom: 30px;
+}
+
+.helpSection h3 {
+  color: #374151;
+  margin: 0 0 15px;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.helpMethods {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.method {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.method strong {
+  color: #374151;
+  font-size: 14px;
+}
+
+.method code {
+  background: #1f2937;
+  color: #f9fafb;
+  padding: 8px 12px;
+  border-radius: 4px;
+  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+  font-size: 13px;
+  display: inline-block;
+}
+
+.footerInfo {
+  text-align: center;
+  color: #6b7280;
+}
+
+.footerInfo p {
+  margin: 0;
+  font-weight: 600;
+  color: #374151;
+}
+
+.footerInfo small {
+  font-size: 12px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .setupPage {
+    padding: 10px;
+  }
+  
+  .setupContainer {
+    max-width: none;
+  }
+  
+  .setupHeader {
+    padding: 30px 20px;
+  }
+  
+  .setupContent {
+    padding: 30px 20px;
+  }
+  
+  .setupFooter {
+    padding: 20px;
+  }
+  
+  .helpMethods {
+    gap: 15px;
+  }
+  
+  .method {
+    gap: 8px;
+  }
+  
+  .method code {
+    font-size: 12px;
+    padding: 6px 10px;
+  }
+}

@@ -4,11 +4,14 @@ import crypto from 'crypto';
 
 export async function POST(request: NextRequest) {
   try {
-    const { email, password } = await request.json();
+    const { login, email, password } = await request.json();
+    
+    // Accept either 'login' or 'email' parameter for backward compatibility
+    const userLogin = login || email;
 
-    if (!email || !password) {
+    if (!userLogin || !password) {
       return NextResponse.json(
-        { error: 'Email and password are required' },
+        { error: 'Login and password are required' },
         { status: 400 }
       );
     }
@@ -16,24 +19,25 @@ export async function POST(request: NextRequest) {
     // Query user from database
     const users = await executeQuery(
       'SELECT * FROM a_users WHERE uname = ? AND approved IS NOT NULL',
-      [email]
+      [userLogin]
     );
 
     if (users.length === 0) {
       return NextResponse.json(
-        { error: 'Invalid email or password' },
+        { error: 'Invalid login or password' },
         { status: 401 }
       );
     }
 
-    const user = users[0];
+    // Handle case where executeQuery returns nested arrays
+    const user = Array.isArray(users[0]) ? users[0][0] : users[0];
 
     // Check if password matches (assuming MD5 hash)
     const hashedPassword = crypto.createHash('md5').update(password).digest('hex');
     
     if (user.upass !== hashedPassword) {
       return NextResponse.json(
-        { error: 'Invalid email or password' },
+        { error: 'Invalid login or password' },
         { status: 401 }
       );
     }

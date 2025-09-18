@@ -6,11 +6,11 @@ import { useAdminAuth } from '@/app/contexts/AdminAuthContext';
 import styles from './login.module.css';
 
 export default function AdminLoginPage() {
-  const [email, setEmail] = useState('');
+  const [login, setLogin] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
-  const { login, isAuthenticated, isLoading: authLoading } = useAdminAuth();
+  const { login: authLogin, isAuthenticated, isLoading: authLoading } = useAdminAuth();
   const router = useRouter();
 
   useEffect(() => {
@@ -23,7 +23,7 @@ export default function AdminLoginPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!email || !password) {
+    if (!login || !password) {
       setError('Будь ласка, заповніть всі поля');
       return;
     }
@@ -32,12 +32,12 @@ export default function AdminLoginPage() {
     setError('');
 
     try {
-      const success = await login(email, password);
+      const success = await authLogin(login, password);
       
       if (success) {
         router.push('/admin');
       } else {
-        setError('Невірний email або пароль');
+        setError('Невірний логін або пароль');
       }
     } catch (err) {
       setError('Помилка входу. Спробуйте ще раз.');
@@ -74,12 +74,13 @@ export default function AdminLoginPage() {
           )}
 
           <div className={styles.formGroup}>
-            <label htmlFor="email">Email або логін</label>
+            <label htmlFor="login">Логін</label>
             <input
-              id="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="Введіть ваш email"
+              id="login"
+              type="text"
+              value={login}
+              onChange={(e) => setLogin(e.target.value)}
+              placeholder="Введіть ваш логін"
               required
               disabled={isLoading}
             />

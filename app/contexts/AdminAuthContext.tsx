@@ -19,7 +19,7 @@ interface AdminAuthContextType {
   user: AdminUser | null;
   token: string | null;
   isLoading: boolean;
-  login: (email: string, password: string) => Promise<boolean>;
+  login: (login: string, password: string) => Promise<boolean>;
   logout: () => void;
   isAuthenticated: boolean;
 }
@@ -68,7 +68,7 @@ export function AdminAuthProvider({ children }: AdminAuthProviderProps) {
     checkAuth();
   }, []);
 
-  const login = async (email: string, password: string): Promise<boolean> => {
+  const login = async (login: string, password: string): Promise<boolean> => {
     try {
       setIsLoading(true);
       
@@ -77,7 +77,7 @@ export function AdminAuthProvider({ children }: AdminAuthProviderProps) {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ login, password }),
       });
 
       const data = await response.json();
