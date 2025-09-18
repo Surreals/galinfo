@@ -15,8 +15,10 @@ interface ArticlePageProps {
 // Генерація метаданих для новини
 export async function generateMetadata({ params }: ArticlePageProps): Promise<Metadata> {
   const { id: urlParams } = await params;
-  const lastDashIndex = urlParams.lastIndexOf("_");
 
+
+  const lastDashIndex = urlParams.lastIndexOf("_");
+  console.log('AAAA',lastDashIndex);
   if (lastDashIndex === -1) {
     return {
       title: 'Новина не знайдена | Гал-Інфо',
@@ -31,7 +33,8 @@ export async function generateMetadata({ params }: ArticlePageProps): Promise<Me
 }
 
 export default async function ArticlePage({ params, searchParams }: ArticlePageProps) {
-  const { id: urlParams } = await params;
+  const { id:url } = await params;
+  const urlParams = url.replace(/\.html$/i, "");
   const lastDashIndex = urlParams.lastIndexOf("_");
 
   const urlkey = urlParams.substring(0, lastDashIndex);
