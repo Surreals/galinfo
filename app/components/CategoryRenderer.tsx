@@ -11,6 +11,7 @@ import { useImportantNews } from '@/app/hooks/useImportantNews';
 import { useLatestNews } from '@/app/hooks/useLatestNews';
 import { useSpecialThemesNewsById } from '@/app/hooks/useSpecialThemesNews';
 import { useNewsByTag, useImportantNewsWithPhotosByTag } from '@/app/hooks';
+import { useImportantNewsWithPhotosByCategory, useImportantNewsWithPhotosByRegion, useImportantNewsWithPhotosBySpecialTheme } from '@/app/hooks/useImportantNewsWithPhotos';
 import { getCategoryTitle } from '@/assets/utils/getTranslateCategory';
 import { formatNewsDate, formatFullNewsDate, generateArticleUrl, getNewsImage, hasNewsPhoto } from '@/app/lib/newsUtils';
 import { categoryDesktopSchema, categoryMobileSchema } from '@/app/lib/categorySchema';
@@ -152,6 +153,34 @@ const CategoryRenderer: React.FC<CategoryRendererProps> = ({ category }) => {
     }
   );
 
+  // Хуки для головної новини для різних типів категорій
+  const categoryImportantNewsHook = useImportantNewsWithPhotosByCategory(
+    category,
+    {
+      lang: '1',
+      limit: 1,
+      autoFetch: !isTag && !isAllCategory && !isImportantCategory && !isRegion && !isSpecialTheme
+    }
+  );
+
+  const regionImportantNewsHook = useImportantNewsWithPhotosByRegion(
+    categoryId?.toString() || '',
+    {
+      lang: '1',
+      limit: 1,
+      autoFetch: isRegion && Boolean(categoryId)
+    }
+  );
+
+  const specialThemeImportantNewsHook = useImportantNewsWithPhotosBySpecialTheme(
+    categoryId || 0,
+    {
+      lang: '1',
+      limit: 1,
+      autoFetch: isSpecialTheme && Boolean(categoryId)
+    }
+  );
+
   // Вибираємо дані з відповідного хука
   const currentCategoryData = isTag ? tagNewsHook.data :
                              isAllCategory ? allNewsHook.data : 
@@ -216,13 +245,45 @@ const CategoryRenderer: React.FC<CategoryRendererProps> = ({ category }) => {
         );
 
       case 'MAIN_NEWS':
-        const isLoadingImportantNews = !isRegion && !isImportantCategory && !isTag && importantNewsHook.loading;
+        // Визначаємо стан завантаження для різних типів категорій
+        const isLoadingImportantNews = isTag ? tagImportantNewsHook.loading :
+                                      isRegion ? regionImportantNewsHook.loading :
+                                      isSpecialTheme ? specialThemeImportantNewsHook.loading :
+                                      !isAllCategory && !isImportantCategory ? categoryImportantNewsHook.loading :
+                                      false;
+        
         // Використовуємо важливі новини для головної новини, але тільки ті, що мають фото
         let mainNewsItem = null;
 
         if (isTag && tagImportantNewsHook.data?.news && tagImportantNewsHook.data.news.length > 0) {
           // Для тегів використовуємо важливу новину з фото за тегом
           const newsWithPhoto = tagImportantNewsHook.data.news.find(news => hasNewsPhoto(news));
+          if (newsWithPhoto) {
+            mainNewsItem = {
+              title: newsWithPhoto.nheader,
+              date: formatFullNewsDate(newsWithPhoto.ndate, newsWithPhoto.ntime),
+              time: newsWithPhoto.ntime,
+              url: generateArticleUrl(newsWithPhoto as any),
+              imageUrl: getNewsImage(newsWithPhoto as any, 'full'),
+              imageAlt: newsWithPhoto.nheader
+            };
+          }
+        } else if (isRegion && regionImportantNewsHook.data?.news && regionImportantNewsHook.data.news.length > 0) {
+          // Для регіонів використовуємо важливу новину з фото за регіоном
+          const newsWithPhoto = regionImportantNewsHook.data.news.find(news => hasNewsPhoto(news));
+          if (newsWithPhoto) {
+            mainNewsItem = {
+              title: newsWithPhoto.nheader,
+              date: formatFullNewsDate(newsWithPhoto.ndate, newsWithPhoto.ntime),
+              time: newsWithPhoto.ntime,
+              url: generateArticleUrl(newsWithPhoto as any),
+              imageUrl: getNewsImage(newsWithPhoto as any, 'full'),
+              imageAlt: newsWithPhoto.nheader
+            };
+          }
+        } else if (isSpecialTheme && specialThemeImportantNewsHook.data?.news && specialThemeImportantNewsHook.data.news.length > 0) {
+          // Для спеціальних тем використовуємо важливу новину з фото за спеціальною темою
+          const newsWithPhoto = specialThemeImportantNewsHook.data.news.find(news => hasNewsPhoto(news));
           if (newsWithPhoto) {
             mainNewsItem = {
               title: newsWithPhoto.nheader,
@@ -246,9 +307,9 @@ const CategoryRenderer: React.FC<CategoryRendererProps> = ({ category }) => {
               imageAlt: newsWithPhoto.nheader
             };
           }
-        } else if (!isRegion && !isImportantCategory && !isAllCategory && !isTag && importantNewsHook.data?.importantNews && importantNewsHook.data.importantNews.length > 0) {
-          // Використовуємо важливу новину з фото якщо є (для звичайних категорій, але не для "all")
-          const newsWithPhoto = importantNewsHook.data.importantNews.find(news => hasNewsPhoto(news));
+        } else if (!isAllCategory && !isImportantCategory && categoryImportantNewsHook.data?.news && categoryImportantNewsHook.data.news.length > 0) {
+          // Для звичайних категорій використовуємо важливу новину з фото за категорією
+          const newsWithPhoto = categoryImportantNewsHook.data.news.find(news => hasNewsPhoto(news));
           if (newsWithPhoto) {
             mainNewsItem = {
               title: newsWithPhoto.nheader,
