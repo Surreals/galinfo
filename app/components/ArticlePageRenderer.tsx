@@ -11,7 +11,7 @@ import {
   generateArticleUrl,
   getNewsImage,
   getUniversalNewsImage,
-  getImageFromImagesData, getImageFromImageData
+  getImageFromImageData
 } from '@/app/lib/newsUtils';
 import { articlePageDesktopSchema, articlePageMobileSchema } from '@/app/lib/articlePageSchema';
 
@@ -193,14 +193,16 @@ const ArticlePageRenderer: React.FC<ArticlePageRendererProps> = ({ article, load
           return (
             <>
               <div key={index} className={styles.articleImage}>
-                <Image
-                  src={imageUrl}
-                  alt={imageUrl || 'Article image'}
-                  width={800}
-                  height={500}
-                  className={styles.mainImage}
-                  priority={true}
-                />
+                {imageUrl && (
+                  <Image
+                    src={imageUrl}
+                    alt={imageUrl || 'Article image'}
+                    width={800}
+                    height={500}
+                    className={styles.mainImage}
+                    priority={true}
+                  />
+                )}
                 <div className={styles.imageCredits}>
                   {article?.images_data?.[0]?.title && (
                     <span className={styles.photoCredit}>
@@ -240,11 +242,13 @@ const ArticlePageRenderer: React.FC<ArticlePageRendererProps> = ({ article, load
                       const imgUrl = getImageFromImageData(img,'full')
                       return (
                         <div key={i} style={{ display: 'flex', flexDirection: 'column', gap: '5px', width: '100%' }}>
-                          <Image src={imgUrl} alt={img.title || 'Image'}
-                                 width={800}
-                                 height={500}
-                                 className={styles.mainImage}
-                                 priority={true}/>
+                          {imgUrl && (
+                            <Image src={imgUrl} alt={img.title || 'Image'}
+                                   width={800}
+                                   height={500}
+                                   className={styles.mainImage}
+                                   priority={true}/>
+                          )}
                           {img.title && <div className={styles.imageCredits}>{img.title}</div>}
                         </div>
                       );
@@ -272,9 +276,22 @@ const ArticlePageRenderer: React.FC<ArticlePageRendererProps> = ({ article, load
           <div key={index} className={styles.articleMetadata}>
             <div className={styles.tags}>
               {article?.tags?.map((tag: any, index: number) => (
-                <span key={tag.id || index} className={styles.tag}>
+                <a 
+                  key={tag.id || index} 
+                  href={`/${encodeURIComponent(tag.tag)}`}
+                  className={styles.tag}
+                  style={{ 
+                    textDecoration: 'none',
+                    cursor: 'pointer',
+                    display: 'inline-block'
+                  }}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    window.location.href = `/${encodeURIComponent(tag.tag)}`;
+                  }}
+                >
                   {tag.tag}
-                </span>
+                </a>
               ))}
             </div>
             {article?.author_name && (

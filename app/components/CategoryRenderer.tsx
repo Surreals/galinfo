@@ -10,6 +10,7 @@ import { useImportantNewsByCategory } from '@/app/hooks/useImportantNewsByCatego
 import { useImportantNews } from '@/app/hooks/useImportantNews';
 import { useLatestNews } from '@/app/hooks/useLatestNews';
 import { useSpecialThemesNewsById } from '@/app/hooks/useSpecialThemesNews';
+import { useNewsByTag, useImportantNewsWithPhotosByTag } from '@/app/hooks';
 import { getCategoryTitle } from '@/assets/utils/getTranslateCategory';
 import { formatNewsDate, formatFullNewsDate, generateArticleUrl, getNewsImage, hasNewsPhoto } from '@/app/lib/newsUtils';
 import { categoryDesktopSchema, categoryMobileSchema } from '@/app/lib/categorySchema';
@@ -39,8 +40,14 @@ interface CategoryRendererProps {
 const CategoryRenderer: React.FC<CategoryRendererProps> = ({ category }) => {
   const { isMobile } = useMobileContext();
   
+  // Стан для тегу
+  const [tagData, setTagData] = React.useState<{ id: number; tag: string } | null>(null);
+  
   // Отримуємо categoryId з URL параметра
   const categoryId = getCategoryIdFromUrl(category);
+  
+  // Перевіряємо, чи це тег (якщо categoryId не знайдено, можливо це тег)
+  const isTag = categoryId === null;
   
   // Визначаємо, чи це регіональна категорія
   const isRegion = categoryId !== null ? isRegionCategoryFromMapper(categoryId) : false;
@@ -53,6 +60,24 @@ const CategoryRenderer: React.FC<CategoryRendererProps> = ({ category }) => {
 
   // Визначаємо, чи це спеціальна тема, яка має використовувати useSpecialThemesNews
   const isSpecialTheme = categoryId !== null && isSpecialThemeCategory(categoryId);
+  
+  // Завантажуємо дані тегу, якщо це тег
+  React.useEffect(() => {
+    if (isTag) {
+      const fetchTagData = async () => {
+        try {
+          const response = await fetch(`/api/tags/by-name/${encodeURIComponent(category)}`);
+          if (response.ok) {
+            const data = await response.json();
+            setTagData(data.tag);
+          }
+        } catch (error) {
+          console.error('Error fetching tag data:', error);
+        }
+      };
+      fetchTagData();
+    }
+  }, [isTag, category]);
   
   // Хук для важливих новин (для головної новини)
   const importantNewsHook = useImportantNewsByCategory({
@@ -108,14 +133,36 @@ const CategoryRenderer: React.FC<CategoryRendererProps> = ({ category }) => {
     autoFetch: isImportantCategory
   });
 
+  // Хуки для тегів - завжди викликаємо, але з умовною логікою
+  const tagNewsHook = useNewsByTag({
+    tagId: isTag ? undefined : undefined, // Не передаємо tagId
+    tagName: isTag ? category : 'dummy', // Для звичайних категорій передаємо dummy значення
+    page: 1,
+    limit: 36,
+    lang: '1',
+    autoFetch: isTag && Boolean(category) // Автозавантаження тільки для тегів
+  });
+
+  const tagImportantNewsHook = useImportantNewsWithPhotosByTag(
+    tagData?.id || 0,
+    {
+      lang: '1',
+      limit: 1,
+      autoFetch: isTag && Boolean(tagData?.id) // Автозавантаження тільки для тегів з ID
+    }
+  );
+
   // Вибираємо дані з відповідного хука
-  const currentCategoryData = isAllCategory ? allNewsHook.data : 
+  const currentCategoryData = isTag ? tagNewsHook.data :
+                             isAllCategory ? allNewsHook.data : 
                              isImportantCategory ? { news: importantNewsCategoryHook.importantNews } : 
                              (isRegion ? regionHook.data : (isSpecialTheme ? specialThemeHook.data : rubricHook.data));
-  const currentCategoryLoading = isAllCategory ? allNewsHook.loading : 
+  const currentCategoryLoading = isTag ? tagNewsHook.loading :
+                                isAllCategory ? allNewsHook.loading : 
                                 isImportantCategory ? importantNewsCategoryHook.loading : 
                                 (isRegion ? regionHook.loading : (isSpecialTheme ? specialThemeHook.loading : rubricHook.loading));
-  const currentCategoryError = isAllCategory ? allNewsHook.error : 
+  const currentCategoryError = isTag ? tagNewsHook.error :
+                              isAllCategory ? allNewsHook.error : 
                               isImportantCategory ? importantNewsCategoryHook.error : 
                               (isRegion ? regionHook.error : (isSpecialTheme ? specialThemeHook.error : rubricHook.error));
 
@@ -147,31 +194,46 @@ const CategoryRenderer: React.FC<CategoryRendererProps> = ({ category }) => {
 
     switch (block.type) {
       case 'BREADCRUMBS':
+        const breadcrumbTitle = isTag ? (tagData?.tag || category) : getCategoryTitle(category);
         return (
           <Breadcrumbs 
             key={index}
             items={[
               { label: 'ГОЛОВНА', href: '/' },
-              { label: getCategoryTitle(category).toUpperCase() }
+              { label: breadcrumbTitle.toUpperCase() }
             ]} 
           />
         );
 
       case 'CATEGORY_TITLE':
+        const categoryTitle = isTag ? (tagData?.tag || category) : getCategoryTitle(category);
         return (
           <CategoryTitle
             key={index}
-            title={getCategoryTitle(category)}
+            title={categoryTitle}
             className={styles[config.className]}
           />
         );
 
       case 'MAIN_NEWS':
-        const isLoadingImportantNews = !isRegion && !isImportantCategory && importantNewsHook.loading;
+        const isLoadingImportantNews = !isRegion && !isImportantCategory && !isTag && importantNewsHook.loading;
         // Використовуємо важливі новини для головної новини, але тільки ті, що мають фото
         let mainNewsItem = null;
 
-        if (isImportantCategory && importantNewsCategoryHook.importantNews && importantNewsCategoryHook.importantNews.length > 0) {
+        if (isTag && tagImportantNewsHook.data?.news && tagImportantNewsHook.data.news.length > 0) {
+          // Для тегів використовуємо важливу новину з фото за тегом
+          const newsWithPhoto = tagImportantNewsHook.data.news.find(news => hasNewsPhoto(news));
+          if (newsWithPhoto) {
+            mainNewsItem = {
+              title: newsWithPhoto.nheader,
+              date: formatFullNewsDate(newsWithPhoto.ndate, newsWithPhoto.ntime),
+              time: newsWithPhoto.ntime,
+              url: generateArticleUrl(newsWithPhoto as any),
+              imageUrl: getNewsImage(newsWithPhoto as any, 'full'),
+              imageAlt: newsWithPhoto.nheader
+            };
+          }
+        } else if (isImportantCategory && importantNewsCategoryHook.importantNews && importantNewsCategoryHook.importantNews.length > 0) {
           // Для категорії important використовуємо першу важливу новину з фото
           const newsWithPhoto = importantNewsCategoryHook.importantNews.find(news => hasNewsPhoto(news));
           if (newsWithPhoto) {
@@ -184,7 +246,7 @@ const CategoryRenderer: React.FC<CategoryRendererProps> = ({ category }) => {
               imageAlt: newsWithPhoto.nheader
             };
           }
-        } else if (!isRegion && !isImportantCategory && !isAllCategory && importantNewsHook.data?.importantNews && importantNewsHook.data.importantNews.length > 0) {
+        } else if (!isRegion && !isImportantCategory && !isAllCategory && !isTag && importantNewsHook.data?.importantNews && importantNewsHook.data.importantNews.length > 0) {
           // Використовуємо важливу новину з фото якщо є (для звичайних категорій, але не для "all")
           const newsWithPhoto = importantNewsHook.data.importantNews.find(news => hasNewsPhoto(news));
           if (newsWithPhoto) {
