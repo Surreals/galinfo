@@ -12,10 +12,8 @@ import { useNewsByRubric, NewsItem as ApiNewsItem } from '@/app/hooks/useNewsByR
 import { useNewsByRegion } from '@/app/hooks/useNewsByRegion';
 import { isRegionCategory } from '@/app/lib/categoryUtils';
 import {
-  formatNewsDate,
   formatFullNewsDate,
   generateArticleUrl,
-  getUniversalNewsImageIntxt,
   getNewsTitle,
   getUniversalNewsImageFull,
   getAllNewsImages
@@ -24,13 +22,11 @@ import { heroSchema, heroInfoSchema, heroInfoMobileSchema } from '@/app/lib/hero
 import dayjs from 'dayjs';
 import 'dayjs/locale/uk';
 
-import arrowRight from "@/assets/icons/arrowRight.svg";
 import roundArrowRight from "@/assets/icons/roundArrowRight.svg";
 import roundArrowLeft from "@/assets/icons/roundArrowLeft.svg";
 import adBannerIndfomo from '@/assets/images/Ad Banner white.png';
 
 import styles from './hero/Hero.module.scss';
-import {log} from "next/dist/server/typescript/utils";
 
 dayjs.locale('uk');
 
@@ -75,8 +71,6 @@ export default function HeroRenderer({
     router.push(url);
   };
 
-  console.log('heroNews', heroNews)
-
   // Transform hero news for carousel
   const carouselItems = heroNews?.slice(0, carouselConfig?.limit || 4).map((item) => ({
     src: getUniversalNewsImageFull(item),
@@ -110,7 +104,6 @@ export default function HeroRenderer({
 
   const finalCarouselItems = carouselItems.length > 0 ? carouselItems : fallbackCarouselItems;
 
-  console.log('finalCarouselItems',finalCarouselItems)
 
   // Рендер компонентів на основі схеми
   const renderBlock = (block: any, index: number) => {

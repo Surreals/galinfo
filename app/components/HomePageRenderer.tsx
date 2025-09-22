@@ -13,8 +13,7 @@ interface HomePageRendererProps {
 }
 
 export default function HomePageRenderer({ 
-  schema, 
-  useMockData = true 
+  schema
 }: HomePageRendererProps) {
   const { getCategoryById } = useMenuContext();
   const isMobile = useIsMobile();

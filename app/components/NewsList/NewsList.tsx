@@ -50,7 +50,7 @@ export default function NewsList({
   };
 
   const handleTypeChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    setType(event.target.value || undefined);
+    setType(event.target.value);
   };
 
   const handleLangChange = (event: React.ChangeEvent<HTMLSelectElement>) => {

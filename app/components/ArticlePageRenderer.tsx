@@ -1,12 +1,12 @@
 'use client';
 
-import React from 'react';
-import { Skeleton } from "antd";
+import React, {useRef} from 'react';
+import {Carousel, Skeleton} from 'antd';
+import { useState } from "react";
 import { useMobileContext } from '@/app/contexts/MobileContext';
 import { useLatestNews } from '@/app/hooks/useLatestNews';
 import { useImportantNews } from '@/app/hooks/useImportantNews';
 import {
-  formatNewsDate,
   formatFullNewsDate,
   generateArticleUrl,
   getNewsImage,
@@ -14,6 +14,7 @@ import {
   getImageFromImageData
 } from '@/app/lib/newsUtils';
 import { articlePageDesktopSchema, articlePageMobileSchema } from '@/app/lib/articlePageSchema';
+import galinfoLogo from '@/assets/logos/galInfoLogo.png';
 
 // Імпорт компонентів
 import {
@@ -30,6 +31,8 @@ import Image from "next/image";
 import styles from "../news/[id]/page.module.css";
 import banner3 from '@/assets/images/banner3.png';
 import adBannerIndfomo from '@/assets/images/Ad Banner black.png';
+import roundArrowRight from "@/assets/icons/roundArrowRight.svg";
+import roundArrowLeft from "@/assets/icons/roundArrowLeft.svg";
 
 interface ArticlePageRendererProps {
   article: any;
@@ -63,7 +66,22 @@ const parseNbody = (nbody: string) => {
 };
 
 const ArticlePageRenderer: React.FC<ArticlePageRendererProps> = ({ article, loading }) => {
+  const [allImages, setAllImages] = useState<string[]>([]);
+  const [isShowCarousel, setIsShowCarousel] = useState<boolean>(false);
+  const [startIndex, setStartIndex] = useState<number>(0);
+
+  const carouselRef = useRef<any>(null);
   const { isMobile } = useMobileContext();
+
+  React.useEffect(() => {
+    if (!article?.images_data) return;
+
+    const urls: string[] = article.images_data
+      .map((img: any) => getImageFromImageData(img, 'full'))
+      .filter((u: string): u is string => Boolean(u));
+
+    setAllImages(Array.from(new Set<string>(urls)));
+  }, [article]);
 
   // Хук для свіжих новин (СВІЖІ НОВИНИ)
   const latestNewsHook = useLatestNews({
@@ -180,7 +198,6 @@ const ArticlePageRenderer: React.FC<ArticlePageRendererProps> = ({ article, load
         }
 
         if(article?.images_data.length === 0) {
-          console.log(1)
           return (
             <div
               key={index}
@@ -193,16 +210,14 @@ const ArticlePageRenderer: React.FC<ArticlePageRendererProps> = ({ article, load
           return (
             <>
               <div key={index} className={styles.articleImage}>
-                {imageUrl && (
-                  <Image
-                    src={imageUrl}
-                    alt={imageUrl || 'Article image'}
-                    width={800}
-                    height={500}
-                    className={styles.mainImage}
-                    priority={true}
-                  />
-                )}
+                <Image
+                  src={imageUrl ?? galinfoLogo}
+                  alt={imageUrl || 'Article image'}
+                  width={800}
+                  height={500}
+                  className={styles.mainImage}
+                  priority={true}
+                />
                 <div className={styles.imageCredits}>
                   {article?.images_data?.[0]?.title && (
                     <span className={styles.photoCredit}>
@@ -222,7 +237,8 @@ const ArticlePageRenderer: React.FC<ArticlePageRendererProps> = ({ article, load
             ;
         } else {
           const blocks = parseNbody(article?.nbody || '');
-          console.log(article?.nbody)
+          const currentImages: string[] = [];
+
           return (
             <div key={index} className={styles.articleImage}>
               {blocks.map((b, idx) => {
@@ -240,15 +256,21 @@ const ArticlePageRenderer: React.FC<ArticlePageRendererProps> = ({ article, load
                       const img = article.images_data[i];
                       if (!img) return null;
                       const imgUrl = getImageFromImageData(img,'full')
+                      if (imgUrl) currentImages.push(imgUrl);
+
                       return (
                         <div key={i} style={{ display: 'flex', flexDirection: 'column', gap: '5px', width: '100%' }}>
-                          {imgUrl && (
-                            <Image src={imgUrl} alt={img.title || 'Image'}
-                                   width={800}
-                                   height={500}
-                                   className={styles.mainImage}
-                                   priority={true}/>
-                          )}
+                          <Image src={imgUrl ?? galinfoLogo} alt={img.title || 'Image'}
+                                 width={800}
+                                 height={500}
+                                 className={styles.mainImage}
+                                 priority={true}
+                                 onClick={() => {
+                                   setStartIndex(i);
+                                   setIsShowCarousel(true);
+                                 }}
+                          />
+
                           {img.title && <div className={styles.imageCredits}>{img.title}</div>}
                         </div>
                       );
@@ -256,6 +278,52 @@ const ArticlePageRenderer: React.FC<ArticlePageRendererProps> = ({ article, load
                   </div>
                 );
               })}
+              {
+                isShowCarousel && (
+                  <div className={styles.backDrop} onClick={(e) => {
+                    if (e.target === e.currentTarget) {
+                      setIsShowCarousel(false);
+                    }
+                  }}>
+                    <div className={styles.carouselBox} >
+                      <Carousel
+                        ref={carouselRef}
+                        dots={false}
+                        initialSlide={startIndex}
+                      >
+                        {allImages.map((url, idx) => (
+                          <div key={idx} className={styles.carouselItem}>
+                            <img alt={'img'} src={url} loading="lazy" style={{width: '100%', borderRadius: '8px'}}/>
+                          </div>
+                        ))}
+                      </Carousel>
+                      <button
+                        onClick={() => carouselRef.current?.next()}
+                        className={styles.rightArrowButton}
+                      >
+
+                        <Image
+                          src={roundArrowRight}
+                          alt="Right arrow"
+                          width={44}
+                          height={44}
+                        />
+                      </button>
+                      <button
+                        onClick={() => carouselRef.current?.prev()}
+                        className={styles.leftArrowButton}
+                      >
+                        <Image
+                          src={roundArrowLeft}
+                          alt="Left arrow"
+                          width={44}
+                          height={44}
+                        />
+                      </button>
+                    </div>
+                  </div>
+                )
+              }
             </div>
           );
         }
@@ -266,7 +334,7 @@ const ArticlePageRenderer: React.FC<ArticlePageRendererProps> = ({ article, load
             <div key={index} className={styles.articleMetadata}>
               <Skeleton.Input
                 active
-                style={{ width: 120, height: 20, marginTop: 16 }}
+                style={{width: 120, height: 20, marginTop: 16}}
               />
             </div>
           );
@@ -276,11 +344,11 @@ const ArticlePageRenderer: React.FC<ArticlePageRendererProps> = ({ article, load
           <div key={index} className={styles.articleMetadata}>
             <div className={styles.tags}>
               {article?.tags?.map((tag: any, index: number) => (
-                <a 
-                  key={tag.id || index} 
+                <a
+                  key={tag.id || index}
                   href={`/${encodeURIComponent(tag.tag)}`}
                   className={styles.tag}
-                  style={{ 
+                  style={{
                     textDecoration: 'none',
                     cursor: 'pointer',
                     display: 'inline-block'
@@ -468,6 +536,7 @@ const ArticlePageRenderer: React.FC<ArticlePageRendererProps> = ({ article, load
           {(schema as any).footer.blocks.map((block: any, index: number) => renderBlock(block, index))}
         </div>
       )}
+
     </>
   );
 };
