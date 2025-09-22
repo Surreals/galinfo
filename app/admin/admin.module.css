@@ -148,7 +148,30 @@
   border: 2px solid transparent;
 }
 
+
+
 .quickAction:hover {
+  background: #e9ecef;
+  border-color: #007bff;
+  transform: translateY(-2px);
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.quickActionActive {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+  background: #f8f9fa;
+  border-radius: 8px;
+  text-decoration: none;
+  color: inherit;
+  transition: all 0.2s ease;
+  border: 2px solid transparent;
+}
+
+.quickActionActive:hover {
   background: #e9ecef;
   border-color: #007bff;
   transform: translateY(-2px);

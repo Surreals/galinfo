@@ -134,31 +134,43 @@ export default function AdminPage() {
         <div className={styles.quickActions}>
           <h2>Швидкі дії</h2>
           <div className={styles.quickActionsGrid}>
-            <Link href="/admin/article-editor" className={styles.quickAction}>
+            <Link href="/admin/article-editor" className={styles.quickActionActive}>
               <span className={styles.quickActionIcon}>✏️</span>
               <span>Редактор новин</span>
             </Link>
-            <Link href="/admin/dashboard" className={styles.quickAction}>
+            <Link href="/admin/dashboard" onClick={(e) => {
+              if (DISABLE) e.preventDefault(); // блокуємо перехід
+            }} className={styles.quickAction}>
               <span className={styles.quickActionIcon}>📊</span>
               <span>Дашборд</span>
             </Link>
-            <Link href="/admin/test-db" className={styles.quickAction}>
+            <Link href="/admin/test-db" onClick={(e) => {
+              if (DISABLE) e.preventDefault(); // блокуємо перехід
+            }} className={styles.quickAction}>
               <span className={styles.quickActionIcon}>🗄️</span>
               <span>Тест БД</span>
             </Link>
-            <Link href="/admin/test-homepage-api" className={styles.quickAction}>
+            <Link href="/admin/test-homepage-api" onClick={(e) => {
+              if (DISABLE) e.preventDefault(); // блокуємо перехід
+            }} className={styles.quickAction}>
               <span className={styles.quickActionIcon}>🔌</span>
               <span>Тест API</span>
             </Link>
-            <Link href="/admin/test-category-news" className={styles.quickAction}>
+            <Link href="/admin/test-category-news" onClick={(e) => {
+              if (DISABLE) e.preventDefault(); // блокуємо перехід
+            }} className={styles.quickAction}>
               <span className={styles.quickActionIcon}>📋</span>
               <span>Тест новин по категорії</span>
             </Link>
-            <Link href="/admin/test-menu" className={styles.quickAction}>
+            <Link href="/admin/test-menu" onClick={(e) => {
+              if (DISABLE) e.preventDefault(); // блокуємо перехід
+            }} className={styles.quickAction}>
               <span className={styles.quickActionIcon}>🍽️</span>
               <span>Тест меню</span>
             </Link>
-            <Link href="/admin/test-news" className={styles.quickAction}>
+            <Link href="/admin/test-news" onClick={(e) => {
+              if (DISABLE) e.preventDefault(); // блокуємо перехід
+            }} className={styles.quickAction}>
               <span className={styles.quickActionIcon}>📰</span>
               <span>Тест системи новин</span>
             </Link>
