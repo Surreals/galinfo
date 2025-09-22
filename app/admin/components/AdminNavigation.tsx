@@ -53,22 +53,6 @@ export default function AdminNavigation({ onClose }: AdminNavigationProps) {
     <div className="adminNavigation">
       {/* Main Navigation Bar */}
       <div className="mainNavBar">
-        <div className="navLogo">
-          <div className="logoIcon">G</div>
-        </div>
-        
-        <div className="navTabs">
-          {mainTabs.map((tab) => (
-            <Link
-              key={tab.id}
-              href={tab.href}
-              className={`navTab ${activeMainTab === tab.id ? 'active' : ''}`}
-              onClick={() => setActiveMainTab(tab.id)}
-            >
-              {tab.label}
-            </Link>
-          ))}
-        </div>
 
         {/* User Menu */}
         {user && (

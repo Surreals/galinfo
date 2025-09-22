@@ -35,6 +35,7 @@
 }
 
 .sectionCard {
+  cursor: not-allowed;
   background: white;
   border-radius: 12px;
   padding: 2rem;
@@ -49,6 +50,7 @@
   overflow: hidden;
 }
 
+
 .sectionCard::before {
   content: '';
   position: absolute;
@@ -62,6 +64,7 @@
 }
 
 .sectionCard:hover {
+  opacity: 0.5;
   transform: translateY(-5px);
   box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
 }

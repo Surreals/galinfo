@@ -10,6 +10,8 @@ import styles from './admin.module.css';
 export default function AdminPage() {
   const { isAuthenticated, isLoading } = useAdminAuth();
   const router = useRouter();
+  const DISABLE = true;
+
 
   useEffect(() => {
     if (!isLoading && !isAuthenticated) {
@@ -100,7 +102,7 @@ export default function AdminPage() {
   return (
     <div className={styles.adminPage}>
       <AdminNavigation />
-      
+
       <div className={styles.mainContent}>
         <div className={styles.header}>
           <h1>Панель адміністратора</h1>
@@ -109,8 +111,15 @@ export default function AdminPage() {
 
         <div className={styles.sectionsGrid}>
           {adminSections.map((section) => (
-            <Link key={section.id} href={section.href} className={styles.sectionCard}>
-              <div className={styles.sectionIcon} style={{ backgroundColor: section.color }}>
+            <Link
+              key={section.id}
+              href={section.href}
+              onClick={(e) => {
+                if (DISABLE) e.preventDefault(); // блокуємо перехід
+              }}
+              className={`${styles.sectionCard} ${styles.disabledCard}`}
+            >
+              <div className={styles.sectionIcon} style={{backgroundColor: section.color}}>
                 {section.icon}
               </div>
               <div className={styles.sectionContent}>
