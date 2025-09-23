@@ -35,7 +35,6 @@
 }
 
 .sectionCard {
-  cursor: not-allowed;
   background: white;
   border-radius: 12px;
   padding: 2rem;
@@ -48,6 +47,12 @@
   gap: 1.5rem;
   position: relative;
   overflow: hidden;
+}
+
+.disabledCard {
+  cursor: not-allowed;
+  pointer-events: none;
+  opacity: 0.5;
 }
 
 
@@ -64,7 +69,7 @@
 }
 
 .sectionCard:hover {
-  opacity: 0.5;
+  opacity: 0.9;
   transform: translateY(-5px);
   box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
 }

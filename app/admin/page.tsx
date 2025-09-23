@@ -47,6 +47,7 @@ export default function AdminPage() {
       description: 'Управління новинами та статтями',
       href: '/admin/news',
       icon: '📰',
+      disabled: false,
       color: '#007bff'
     },
     {
@@ -55,6 +56,7 @@ export default function AdminPage() {
       description: 'Управління зображеннями та медіа',
       href: '/admin/gallery',
       icon: '🖼️',
+      disabled: true,
       color: '#28a745'
     },
     {
@@ -63,6 +65,7 @@ export default function AdminPage() {
       description: 'Управління структурою та налаштуваннями сайту',
       href: '/admin/site',
       icon: '🌐',
+      disabled: true,
       color: '#6f42c1'
     },
     {
@@ -71,6 +74,7 @@ export default function AdminPage() {
       description: 'Управління мовними налаштуваннями',
       href: '/admin/languages',
       icon: '🌍',
+      disabled: true,
       color: '#fd7e14'
     },
     {
@@ -79,6 +83,7 @@ export default function AdminPage() {
       description: 'Управління системними властивостями',
       href: '/admin/properties',
       icon: '⚙️',
+      disabled: true,
       color: '#20c997'
     },
     {
@@ -87,6 +92,7 @@ export default function AdminPage() {
       description: 'Управління користувачами та правами доступу',
       href: '/admin/users',
       icon: '👥',
+      disabled: true,
       color: '#e83e8c'
     },
     {
@@ -95,6 +101,7 @@ export default function AdminPage() {
       description: 'Управління рекламними матеріалами',
       href: '/admin/advertising',
       icon: '📢',
+      disabled: true,
       color: '#ffc107'
     }
   ];
@@ -115,9 +122,9 @@ export default function AdminPage() {
               key={section.id}
               href={section.href}
               onClick={(e) => {
-                if (DISABLE) e.preventDefault(); // блокуємо перехід
+                if (section.disabled) e.preventDefault(); // блокуємо перехід
               }}
-              className={`${styles.sectionCard} ${styles.disabledCard}`}
+              className={`${styles.sectionCard} ${section.disabled ? styles.disabledCard : ''}`}
             >
               <div className={styles.sectionIcon} style={{backgroundColor: section.color}}>
                 {section.icon}
