@@ -142,8 +142,8 @@ const ArticlePageRenderer: React.FC<ArticlePageRendererProps> = ({ article, load
             items={[
               { label: 'ГОЛОВНА', href: '/' },
               ...(article?.breadcrumbs?.map(
-                (item: { title: string; link: string }, index: number, arr: any[]) => {
-                  if (index === arr.length - 1) {
+                (item: { title: string; link: string }, breadcrumbIndex: number, arr: any[]) => {
+                  if (breadcrumbIndex === arr.length - 1) {
                     return { label: item.title };
                   }
                   return { label: item.title, href: item.link };
@@ -209,7 +209,7 @@ const ArticlePageRenderer: React.FC<ArticlePageRendererProps> = ({ article, load
           const imageUrl = getUniversalNewsImage(article, 'full') || getUniversalNewsImage(article);
           return (
             <>
-              <div key={index} className={styles.articleImage}>
+              <div key={`${index}-image`} className={styles.articleImage}>
                 <Image
                   src={imageUrl ?? galinfoLogo}
                   alt={imageUrl || 'Article image'}
@@ -227,7 +227,7 @@ const ArticlePageRenderer: React.FC<ArticlePageRendererProps> = ({ article, load
                 </div>
               </div>
               <div
-                key={index}
+                key={`${index}-content`}
                 className={styles.paragraph}
                 dangerouslySetInnerHTML={{__html: article?.nbody || ''}}
               />
@@ -252,14 +252,14 @@ const ArticlePageRenderer: React.FC<ArticlePageRendererProps> = ({ article, load
 
                 return (
                   <div key={idx} style={{ display: 'flex', flexWrap: 'wrap', gap: '30px', marginBottom: '16px' }}>
-                    {indices.map(i => {
+                    {indices.map((i, imgIdx) => {
                       const img = article.images_data[i];
                       if (!img) return null;
                       const imgUrl = getImageFromImageData(img,'full')
                       if (imgUrl) currentImages.push(imgUrl);
 
                       return (
-                        <div key={i} style={{ display: 'flex', flexDirection: 'column', gap: '5px', width: '100%' }}>
+                        <div key={`${idx}-${imgIdx}`} style={{ display: 'flex', flexDirection: 'column', gap: '5px', width: '100%' }}>
                           <Image src={imgUrl ?? galinfoLogo} alt={img.title || 'Image'}
                                  width={800}
                                  height={500}
@@ -486,7 +486,11 @@ const ArticlePageRenderer: React.FC<ArticlePageRendererProps> = ({ article, load
       case 'INFO_SECTION':
         return (
           <div key={index} className={styles.infoSection}>
-            {block.children?.map((child: any, childIndex: number) => renderBlock(child, childIndex))}
+            {block.children?.map((child: any, childIndex: number) => (
+              <React.Fragment key={`${index}-${childIndex}`}>
+                {renderBlock(child, childIndex)}
+              </React.Fragment>
+            ))}
           </div>
         );
 
@@ -519,13 +523,21 @@ const ArticlePageRenderer: React.FC<ArticlePageRendererProps> = ({ article, load
       <div className={styles.container}>
         {/* Основний контент - ліва частина */}
         <div className={styles.mainContent}>
-          {schema.blocks.map((block, index) => renderBlock(block, index))}
+          {schema.blocks.map((block, index) => (
+            <React.Fragment key={`main-${index}`}>
+              {renderBlock(block, index)}
+            </React.Fragment>
+          ))}
         </div>
 
         {/* Бокова панель для десктопу */}
         {!isMobile && (schema as any).sidebar && (
           <div className={styles.sidebar}>
-            {(schema as any).sidebar.blocks.map((block: any, index: number) => renderBlock(block, index))}
+            {(schema as any).sidebar.blocks.map((block: any, index: number) => (
+              <React.Fragment key={`sidebar-${index}`}>
+                {renderBlock(block, index)}
+              </React.Fragment>
+            ))}
           </div>
         )}
       </div>
@@ -533,7 +545,11 @@ const ArticlePageRenderer: React.FC<ArticlePageRendererProps> = ({ article, load
       {/* Футер (ТОП НОВИНИ на всю ширину екрана) */}
       {(schema as any).footer && (
         <div className={styles.containerAllNews}>
-          {(schema as any).footer.blocks.map((block: any, index: number) => renderBlock(block, index))}
+          {(schema as any).footer.blocks.map((block: any, index: number) => (
+            <React.Fragment key={`footer-${index}`}>
+              {renderBlock(block, index)}
+            </React.Fragment>
+          ))}
         </div>
       )}
 
