@@ -25,9 +25,19 @@ export const CATEGORY_URL_MAPPER: Record<string, number> = {
   'volyn': CATEGORY_IDS.VOLYN,            // 118 - Волинь
 
   // Спеціальні теми (тепер будуть використовувати маршрут /topthemes/)
+  'reporter': CATEGORY_IDS.REPORTER,                  // 104 - Голос народу
+  'euro-2012': CATEGORY_IDS.EURO_2012,                // 105 - Весняні мотиви
+  'lvivska-miska-vyborcha-komisiya': CATEGORY_IDS.LVIV_MISKA_VYBORCHA_KOMISIYA, // 114 - Львівська міська виборча комісія
+  'lvivska-oblasna-vyborcha-komisiya': CATEGORY_IDS.LVIV_OBLASNA_VYBORCHA_KOMISIYA, // 115 - Львівська обласна виборча комісія
+  'blits-intervyu': CATEGORY_IDS.BLITS_INTERVYU,      // 116 - Бліц-інтерв'ю
+  'olimpiyski-igry-v-rio-2016': CATEGORY_IDS.OLIMPIYSKI_IGRY_RIO_2016, // 117 - Олімпійські ігри в Ріо 2016
   'vidverta-rozmova': CATEGORY_IDS.VIDVERTA_ROZMOVA,  // 136 - Відверта Розмова
   'vidverta-rozmova-z': CATEGORY_IDS.VIDVERTA_ROZMOVA, // 136 - Відверта Розмова (альтернативний слаг)
+  'tvk': CATEGORY_IDS.TVK,                            // 137 - ТВК
+  'vybory-zmin': CATEGORY_IDS.VYBORY_ZMIN,            // 138 - Вибори
+  'zhurnalistyka-zmin': CATEGORY_IDS.ZHURNALISTYKA_ZMIN, // 139 - Журналістика змін
   'pressluzhba': CATEGORY_IDS.PRESSLUZHBA,            // 140 - Пресслужба
+  'vybory-rektora-lnu': CATEGORY_IDS.VYBORY_REKTORA_LNU, // 141 - Вибори ректора ЛНУ
   'rayony-lvova': CATEGORY_IDS.RAYONY_LVOVA,          // 142 - Райони Львова
 } as const;
 
@@ -69,8 +79,18 @@ export function generateCategoryUrl(categoryId: number | string): string {
   
   // Спеціальні теми
   const specialThemeIds: number[] = [
+    CATEGORY_IDS.REPORTER,
+    CATEGORY_IDS.EURO_2012,
+    CATEGORY_IDS.LVIV_MISKA_VYBORCHA_KOMISIYA,
+    CATEGORY_IDS.LVIV_OBLASNA_VYBORCHA_KOMISIYA,
+    CATEGORY_IDS.BLITS_INTERVYU,
+    CATEGORY_IDS.OLIMPIYSKI_IGRY_RIO_2016,
     CATEGORY_IDS.VIDVERTA_ROZMOVA,
+    CATEGORY_IDS.TVK,
+    CATEGORY_IDS.VYBORY_ZMIN,
+    CATEGORY_IDS.ZHURNALISTYKA_ZMIN,
     CATEGORY_IDS.PRESSLUZHBA,
+    CATEGORY_IDS.VYBORY_REKTORA_LNU,
     CATEGORY_IDS.RAYONY_LVOVA
   ];
   
@@ -106,8 +126,18 @@ export function isRegionCategory(categoryId: number | string): boolean {
 export function isSpecialThemeCategory(categoryId: number | string): boolean {
   const numericId = typeof categoryId === 'string' ? parseInt(categoryId, 10) : categoryId;
   const specialThemeIds: number[] = [
+    CATEGORY_IDS.REPORTER,
+    CATEGORY_IDS.EURO_2012,
+    CATEGORY_IDS.LVIV_MISKA_VYBORCHA_KOMISIYA,
+    CATEGORY_IDS.LVIV_OBLASNA_VYBORCHA_KOMISIYA,
+    CATEGORY_IDS.BLITS_INTERVYU,
+    CATEGORY_IDS.OLIMPIYSKI_IGRY_RIO_2016,
     CATEGORY_IDS.VIDVERTA_ROZMOVA,
+    CATEGORY_IDS.TVK,
+    CATEGORY_IDS.VYBORY_ZMIN,
+    CATEGORY_IDS.ZHURNALISTYKA_ZMIN,
     CATEGORY_IDS.PRESSLUZHBA,
+    CATEGORY_IDS.VYBORY_REKTORA_LNU,
     CATEGORY_IDS.RAYONY_LVOVA
   ];
   return specialThemeIds.includes(numericId);

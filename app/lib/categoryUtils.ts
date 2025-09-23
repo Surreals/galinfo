@@ -24,8 +24,18 @@ export const CATEGORY_IDS = {
   VOLYN: 118,        // Волинь
 
   // Special themes (cattype = 2)
+  REPORTER: 104,          // Голос народу
+  EURO_2012: 105,         // Весняні мотиви
+  LVIV_MISKA_VYBORCHA_KOMISIYA: 114,  // Львівська міська виборча комісія
+  LVIV_OBLASNA_VYBORCHA_KOMISIYA: 115, // Львівська обласна виборча комісія
+  BLITS_INTERVYU: 116,    // Бліц-інтерв'ю
+  OLIMPIYSKI_IGRY_RIO_2016: 117, // Олімпійські ігри в Ріо 2016
   VIDVERTA_ROZMOVA: 136,  // Відверта Розмова_з
+  TVK: 137,               // ТВК
+  VYBORY_ZMIN: 138,       // Вибори
+  ZHURNALISTYKA_ZMIN: 139, // Журналістика змін
   PRESSLUZHBA: 140,       // Пресслужба
+  VYBORY_REKTORA_LNU: 141, // Вибори ректора ЛНУ
   RAYONY_LVOVA: 142,      // Райони Львова
 } as const;
 
