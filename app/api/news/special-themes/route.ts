@@ -20,6 +20,12 @@ export interface SpecialThemesNewsItem {
   nteaser: string;
   comments_count: number;
   views_count: number;
+  special_theme: {
+    id: number;
+    param: string;
+    title: string;
+    cattype: number;
+  };
 }
 
 export interface SpecialThemesNewsResponse {
@@ -33,85 +39,66 @@ export interface SpecialThemesNewsResponse {
     hasPrev: boolean;
   };
   filters: {
-    param: string;
     lang: string;
     approved: boolean;
   };
-  specialTheme: {
+  specialThemes: {
     id: number;
     param: string;
     title: string;
-    link: string;
     cattype: number;
-  };
+    newsCount: number;
+  }[];
 }
 
-export async function GET(
-  request: NextRequest,
-  { params }: { params: Promise<{ param: string }> }
-) {
+export async function GET(request: NextRequest) {
   try {
-    const { param } = await params;
     const { searchParams } = new URL(request.url);
     
     const page = parseInt(searchParams.get('page') || '1');
     const limit = parseInt(searchParams.get('limit') || '20');
     const lang = searchParams.get('lang') || '1';
     const approved = searchParams.get('approved') !== 'false';
-    const searchById = searchParams.get('byId') === 'true';
     
     const offset = (page - 1) * limit;
 
-    // First, get the special theme information
-    let specialThemeResult;
-    
-    if (searchById) {
-      // Search by ID
-      const themeId = parseInt(param);
-      if (isNaN(themeId)) {
-        return NextResponse.json(
-          { error: 'Invalid theme ID' },
-          { status: 400 }
-        );
-      }
-      
-      [specialThemeResult] = await executeQuery<{
-        id: number;
-        param: string;
-        title: string;
-        cattype: number;
-      }>(
-        `SELECT id, param, title, cattype 
-         FROM a_cats 
-         WHERE id = ? AND cattype = 2 AND isvis = 1 AND lng = ?`,
-        [themeId, lang]
-      );
-    } else {
-      // Search by param (original behavior)
-      [specialThemeResult] = await executeQuery<{
-        id: number;
-        param: string;
-        title: string;
-        cattype: number;
-      }>(
-        `SELECT id, param, title, cattype 
-         FROM a_cats 
-         WHERE param = ? AND cattype = 2 AND isvis = 1 AND lng = ?`,
-        [param, lang]
-      );
+    // First, get all visible special themes
+    const [specialThemesResult] = await executeQuery<{
+      id: number;
+      param: string;
+      title: string;
+      cattype: number;
+    }>(
+      `SELECT id, param, title, cattype 
+       FROM a_cats 
+       WHERE cattype = 2 AND isvis = 1 AND lng = ?
+       ORDER BY id`,
+      [lang]
+    );
+
+    if (!specialThemesResult || specialThemesResult.length === 0) {
+      return NextResponse.json({
+        news: [],
+        pagination: {
+          page,
+          limit,
+          total: 0,
+          totalPages: 0,
+          hasNext: false,
+          hasPrev: false
+        },
+        filters: {
+          lang,
+          approved
+        },
+        specialThemes: []
+      });
     }
 
-    if (!specialThemeResult || specialThemeResult.length === 0) {
-      return NextResponse.json(
-        { error: 'Special theme not found' },
-        { status: 404 }
-      );
-    }
+    const specialThemeIds = specialThemesResult.map(theme => theme.id);
 
-    const specialTheme = specialThemeResult[0];
-
-    // Get news for this special theme using the theme's ID in rubric
-    const [newsResult] = await executeQuery<SpecialThemesNewsItem>(
+    // Get news from all special themes
+    const [newsResult] = await executeQuery<SpecialThemesNewsItem & { theme_id: number }>(
       `SELECT 
         a_news.id,
         a_news.ndate,
@@ -129,33 +116,54 @@ export async function GET(
         a_news_headers.nsubheader,
         a_news_headers.nteaser,
         a_statcomm.qty as comments_count,
-        a_statview.qty as views_count
+        a_statview.qty as views_count,
+        a_cats.id as theme_id,
+        a_cats.param as theme_param,
+        a_cats.title as theme_title,
+        a_cats.cattype as theme_cattype
        FROM a_news
        LEFT JOIN a_news_headers ON a_news.id = a_news_headers.id
        LEFT JOIN a_statcomm ON a_news.id = a_statcomm.id
        LEFT JOIN a_statview ON a_news.id = a_statview.id
-       WHERE FIND_IN_SET(?, a_news.rubric) > 0
+       LEFT JOIN a_cats ON FIND_IN_SET(a_cats.id, a_news.rubric) > 0 AND a_cats.cattype = 2
+       WHERE a_cats.id IN (${specialThemeIds.map(() => '?').join(',')})
          AND a_news.approved = 1
          AND a_news.lang = ?
          AND a_news.udate < UNIX_TIMESTAMP()
        ORDER BY a_news.udate DESC
        LIMIT ? OFFSET ?`,
-      [specialTheme.id, lang, limit, offset]
+      [...specialThemeIds, lang, limit, offset]
     );
 
     // Get total count for pagination
     const [countResult] = await executeQuery<{ total: number }>(
-      `SELECT COUNT(*) as total 
-       FROM a_news 
-       WHERE FIND_IN_SET(?, a_news.rubric) > 0
+      `SELECT COUNT(*) as total
+       FROM a_news
+       LEFT JOIN a_cats ON FIND_IN_SET(a_cats.id, a_news.rubric) > 0 AND a_cats.cattype = 2
+       WHERE a_cats.id IN (${specialThemeIds.map(() => '?').join(',')})
          AND a_news.approved = 1
          AND a_news.lang = ?
          AND a_news.udate < UNIX_TIMESTAMP()`,
-      [specialTheme.id, lang]
+      [...specialThemeIds, lang]
     );
 
     const total = countResult[0]?.total || 0;
     const totalPages = Math.ceil(total / limit);
+
+    // Get news count per theme
+    const [themeCounts] = await executeQuery<{ theme_id: number; count: number }>(
+      `SELECT a_cats.id as theme_id, COUNT(*) as count
+       FROM a_news
+       LEFT JOIN a_cats ON FIND_IN_SET(a_cats.id, a_news.rubric) > 0 AND a_cats.cattype = 2
+       WHERE a_cats.id IN (${specialThemeIds.map(() => '?').join(',')})
+         AND a_news.approved = 1
+         AND a_news.lang = ?
+         AND a_news.udate < UNIX_TIMESTAMP()
+       GROUP BY a_cats.id`,
+      [...specialThemeIds, lang]
+    );
+
+    const themeCountMap = new Map(themeCounts.map(tc => [tc.theme_id, tc.count]));
 
     // Get images for news items
     const imageIds = newsResult
@@ -175,14 +183,23 @@ export async function GET(
       imagesData = imagesDataResult;
     }
 
-    // Process news with images
+    // Process news with images and theme information
     const processedNews = (newsResult || []).map(news => ({
       ...news,
-      images: news.images ? formatNewsImages(imagesData, news.images.split(',').map((id: string) => parseInt(id.trim())).filter((id: number) => !isNaN(id)), lang) : []
+      images: news.images ? formatNewsImages(imagesData, news.images.split(',').map((id: string) => parseInt(id.trim())).filter((id: number) => !isNaN(id)), lang) : [],
+      special_theme: {
+        id: news.theme_id,
+        param: news.theme_param,
+        title: news.theme_title,
+        cattype: news.theme_cattype
+      }
     }));
 
+    // Remove theme fields from news items
+    const cleanedNews = processedNews.map(({ theme_id, theme_param, theme_title, theme_cattype, ...news }) => news);
+
     const response: SpecialThemesNewsResponse = {
-      news: processedNews,
+      news: cleanedNews,
       pagination: {
         page,
         limit,
@@ -192,14 +209,13 @@ export async function GET(
         hasPrev: page > 1
       },
       filters: {
-        param: searchById ? specialTheme.param : param,
         lang,
         approved
       },
-      specialTheme: {
-        ...specialTheme,
-        link: `/${specialTheme.param}/`
-      }
+      specialThemes: specialThemesResult.map(theme => ({
+        ...theme,
+        newsCount: themeCountMap.get(theme.id) || 0
+      }))
     };
 
     return NextResponse.json(response);
