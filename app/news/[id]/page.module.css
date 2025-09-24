@@ -61,8 +61,19 @@
   cursor: pointer;
   width: 100%;
   height: auto;
+  max-height: 768px;
   border-radius: 8px;
   margin-bottom: 12px;
+}
+
+/* Для вертикальних зображень - використовуємо contain */
+.mainImageVertical {
+  object-fit: contain;
+}
+
+/* Для горизонтальних зображень - використовуємо cover */
+.mainImageHorizontal {
+  object-fit: cover;
 }
 
 .backDrop {
@@ -463,6 +474,18 @@
     font-size: 28px;
   }
   
+  .mainImage {
+    max-height: 400px;
+  }
+  
+  .mainImageVertical {
+    max-height: 400px;
+  }
+  
+  .mainImageHorizontal {
+    max-height: 400px;
+  }
+  
   .tags {
     gap: 14px;
   }
@@ -495,6 +518,18 @@
   
   .articleLead {
     font-size: 16px;
+  }
+  
+  .mainImage {
+    max-height: 300px;
+  }
+  
+  .mainImageVertical {
+    max-height: 300px;
+  }
+  
+  .mainImageHorizontal {
+    max-height: 300px;
   }
   
   .articleMetadata {

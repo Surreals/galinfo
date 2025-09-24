@@ -12,7 +12,7 @@ import { isRegionCategory } from '@/app/lib/categoryUtils';
 import { getImageUrlFromApi, getMainImageFromApi, hasApiImages, type ApiNewsImage } from '@/app/lib/imageUtils';
 import { getUniversalNewsImageIntxt, formatFullNewsDate } from '@/app/lib/newsUtils';
 import { getUrlFromCategoryId } from '@/app/lib/categoryMapper';
-import galinfoLogo from '@/assets/logos/galInfoLogo.png';
+import placeholderImage from '@/assets/images/Gal-info logo v13.png';
 
 // Інтерфейси для типізації даних
 export interface CategoryNewsItem {
@@ -197,7 +197,7 @@ export default function CategoryNews({
                   <div 
                   className={isCategoryPage ? styles.imageContainerCategoryPage : styles.imageContainer}>
                     <Image 
-                      src={item.imageUrl || galinfoLogo} 
+                      src={item.imageUrl || placeholderImage} 
                       alt={item.imageAlt || 'GalInfo Logo'}
                       width={300}
                       height={shouldShowHorizontal ? height : (isCategoryPage ? 133 : 200)}

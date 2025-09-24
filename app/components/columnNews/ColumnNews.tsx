@@ -10,7 +10,7 @@ import { Skeleton } from 'antd';
 import { useNewsByRubric } from '@/app/hooks/useNewsByRubric';
 import { getUniversalNewsImageIntxt, formatFullNewsDate } from '@/app/lib/newsUtils';
 import { getUrlFromCategoryId } from '@/app/lib/categoryMapper';
-import galinfoLogo from '@/assets/logos/galInfoLogo.png';
+import placeholderImage from '@/assets/images/Gal-info logo v13.png';
 
 // Інтерфейси для типізації даних
 export interface ColumnNewsItem {
@@ -256,7 +256,7 @@ export default function ColumnNews({
                   <Link href={item.url} className={styles.newsLink}>
                     <div className={smallImg ? styles.imageContainerSmall : styles.imageContainer}>
                       <Image
-                        src={item.imageUrl || galinfoLogo}
+                        src={item.imageUrl || placeholderImage}
                         alt={item.imageAlt || 'GalInfo Logo'}
                         width={280}
                         height={350}

@@ -10,7 +10,7 @@ import { useNewsByRubric } from '@/app/hooks/useNewsByRubric';
 import { getImageUrlFromApi, getMainImageFromApi, type ApiNewsImage } from '@/app/lib/imageUtils';
 import { getUniversalNewsImageThumbnail, formatFullNewsDate } from '@/app/lib/newsUtils';
 import { getUrlFromCategoryId } from '@/app/lib/categoryMapper';
-import galinfoLogo from '@/assets/logos/galInfoLogo.png';
+import placeholderImage from '@/assets/images/Gal-info logo v13.png';
 
 import styles from "./listNews.module.scss";
 import {Skeleton} from "antd";
@@ -212,7 +212,7 @@ export default function NewsList({
                             // Показуємо тільки перше зображення (як раніше)
                             <div className={styles.imageWrapper}>
                               <Image
-                                src={item.imageUrl || galinfoLogo}
+                                src={item.imageUrl || placeholderImage}
                                 alt={item.title || 'GalInfo Logo'}
                                 width={200}
                                 height={150}
@@ -262,7 +262,7 @@ export default function NewsList({
                             // Показуємо тільки перше зображення (як раніше)
                             <div className={styles.imageWrapper}>
                               <Image
-                                src={item.imageUrl || galinfoLogo}
+                                src={item.imageUrl || placeholderImage}
                                 alt={item.title || 'GalInfo Logo'}
                                 width={200}
                                 height={150}

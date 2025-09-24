@@ -2,7 +2,7 @@
 
 import React, {useRef} from 'react';
 import {Carousel, Skeleton} from 'antd';
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useMobileContext } from '@/app/contexts/MobileContext';
 import { useLatestNews } from '@/app/hooks/useLatestNews';
 import { useImportantNews } from '@/app/hooks/useImportantNews';
@@ -14,7 +14,7 @@ import {
   getImageFromImageData
 } from '@/app/lib/newsUtils';
 import { articlePageDesktopSchema, articlePageMobileSchema } from '@/app/lib/articlePageSchema';
-import galinfoLogo from '@/assets/logos/galInfoLogo.png';
+import placeholderImage from '@/assets/images/Gal-info logo v13.png';
 
 // Імпорт компонентів
 import {
@@ -38,6 +38,49 @@ interface ArticlePageRendererProps {
   article: any;
   loading: boolean;
 }
+
+// Компонент для зображення з автоматичним визначенням орієнтації
+const SmartImage: React.FC<{
+  src: string | any;
+  alt: string;
+  width: number;
+  height: number;
+  priority?: boolean;
+  onClick?: () => void;
+}> = ({ src, alt, width, height, priority, onClick }) => {
+  const [imageOrientation, setImageOrientation] = useState<'horizontal' | 'vertical' | null>(null);
+
+  useEffect(() => {
+    const img = document.createElement('img');
+    img.onload = () => {
+      const isHorizontal = img.naturalWidth > img.naturalHeight;
+      setImageOrientation(isHorizontal ? 'horizontal' : 'vertical');
+    };
+    img.src = typeof src === 'string' ? src : src.src || '';
+  }, [src]);
+
+  const getImageClassName = () => {
+    const baseClass = styles.mainImage;
+    if (imageOrientation === 'horizontal') {
+      return `${baseClass} ${styles.mainImageHorizontal}`;
+    } else if (imageOrientation === 'vertical') {
+      return `${baseClass} ${styles.mainImageVertical}`;
+    }
+    return baseClass;
+  };
+
+  return (
+    <Image
+      src={src}
+      alt={alt}
+      width={width}
+      height={height}
+      className={getImageClassName()}
+      priority={priority}
+      onClick={onClick}
+    />
+  );
+};
 
 const parseNbody = (nbody: string) => {
   const regex = /\{\{([\d,]+)\}\}/g;
@@ -210,12 +253,11 @@ const ArticlePageRenderer: React.FC<ArticlePageRendererProps> = ({ article, load
           return (
             <>
               <div key={`${index}-image`} className={styles.articleImage}>
-                <Image
-                  src={imageUrl ?? galinfoLogo}
+                <SmartImage
+                  src={imageUrl ?? placeholderImage}
                   alt={imageUrl || 'Article image'}
                   width={800}
                   height={500}
-                  className={styles.mainImage}
                   priority={true}
                 />
                 <div className={styles.imageCredits}>
@@ -260,15 +302,16 @@ const ArticlePageRenderer: React.FC<ArticlePageRendererProps> = ({ article, load
 
                       return (
                         <div key={`${idx}-${imgIdx}`} style={{ display: 'flex', flexDirection: 'column', gap: '5px', width: '100%' }}>
-                          <Image src={imgUrl ?? galinfoLogo} alt={img.title || 'Image'}
-                                 width={800}
-                                 height={500}
-                                 className={styles.mainImage}
-                                 priority={true}
-                                 onClick={() => {
-                                   setStartIndex(i);
-                                   setIsShowCarousel(true);
-                                 }}
+                          <SmartImage 
+                            src={imgUrl ?? placeholderImage} 
+                            alt={img.title || 'Image'}
+                            width={800}
+                            height={500}
+                            priority={true}
+                            onClick={() => {
+                              setStartIndex(i);
+                              setIsShowCarousel(true);
+                            }}
                           />
 
                           {img.title && <div className={styles.imageCredits}>{img.title}</div>}
