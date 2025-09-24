@@ -154,7 +154,7 @@ const CategoryRenderer: React.FC<CategoryRendererProps> = ({ category }) => {
     title: item.nheader,
     date: formatFullNewsDate(item.ndate, item.ntime),
     url: generateArticleUrl(item as any),
-    imageUrl: getNewsImage(item as any),
+    imageUrl: getNewsImage(item as any, 'full'),
     imageAlt: item.nheader,
     isImportant: item.ntype === 1 || (item as any).nweight > 0,
     important: (item as any).nweight > 0, // Додаємо поле important для ColumnNews
@@ -273,6 +273,8 @@ const CategoryRenderer: React.FC<CategoryRendererProps> = ({ category }) => {
         mainNewsItem = sortedCurrentCategoryData[0];
       }
     }
+
+    console.log('mainNewsItem', mainNewsItem);
 
     return mainNewsItem;
   };
