@@ -220,9 +220,9 @@ export default function AllNews({ news = [], isLoading = false, hideHeader = fal
           ) : (
             // Відображення новин
             displayNews.map((item) => (
-              <article key={item.id} className={`${styles.newsItem} ${item.important ? styles.importantNewsItem : ''}`}>
+              <article key={item.id} className={styles.newsItem}>
                 <Link href={item.url} className={styles.newsLink}>
-                  <h3 className={styles.newsTitle}>{item.title}</h3>
+                  <h3 className={`${styles.newsTitle} ${item.important ? styles.importantTitle : ''}`}>{item.title}</h3>
                   <time className={styles.newsDate}>
                     {item.date}
                   </time>

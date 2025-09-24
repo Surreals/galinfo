@@ -228,8 +228,8 @@ export default function NewsList({
                           )}
                         </>
                       )}
-                      <div className={`${styles.textBlock} ${!showImagesAt.includes(index) && item.important ? styles.importantTextBlock : ''}`}>
-                        <p className={styles.itemTitle}>{item.title}</p>
+                      <div className={styles.textBlock}>
+                        <p className={`${styles.itemTitle} ${item.important ? styles.importantTitle : ''}`}>{item.title}</p>
                         <p className={styles.itemTime}>{item.data}</p>
                       </div>
                     </a>
@@ -278,8 +278,8 @@ export default function NewsList({
                           )}
                         </>
                       )}
-                      <div className={`${styles.textBlock} ${!showImagesAt.includes(index) && item.important ? styles.importantTextBlock : ''}`}>
-                        <p className={styles.itemTitle}>{item.title}</p>
+                      <div className={styles.textBlock}>
+                        <p className={`${styles.itemTitle} ${item.important ? styles.importantTitle : ''}`}>{item.title}</p>
                         <p className={styles.itemTime}>{item.data}</p>
                       </div>
                     </>

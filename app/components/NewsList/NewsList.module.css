@@ -157,12 +157,10 @@
   font-weight: 600;
 }
 
-/* Стилі для важливих новин без фото - світло-рожевий фон */
-.importantNewsContent {
-  background-color: rgba(199, 8, 79, 0.1) !important; /* Світло-рожевий фон */
-  border-radius: 8px;
-  padding: 16px !important;
-  margin: 0 !important;
+/* Стилі для важливих заголовків */
+.importantTitle,
+.newsTitle.importantTitle {
+  font-weight: 700 !important;
 }
 
 /* Тег "ВАЖЛИВО" на зображеннях */
