@@ -12,18 +12,16 @@ const { TextArea } = Input;
 
 interface NewsEditorHeaderProps {
   isEditing: boolean;
-  newsId: string | null;
   articleData?: ArticleData | null;
   onNbodyChange?: (nbody: string) => void;
   onDataChange?: (updates: Partial<ArticleData>) => void;
 }
 
-export default function NewsEditorHeader({ isEditing, newsId, articleData, onNbodyChange, onDataChange }: NewsEditorHeaderProps) {
+export default function NewsEditorHeader({ isEditing, articleData, onNbodyChange, onDataChange }: NewsEditorHeaderProps) {
   // --- стейти для всіх текстерій ---
   const [mainTitle, setMainTitle] = useState(articleData?.nheader || "");
   const [mainLead, setMainLead] = useState(articleData?.nteaser || "");
 
-  const [topBlockTitle, setTopBlockTitle] = useState(articleData?.sheader || "");
 
   const [metaTitle, setMetaTitle] = useState(articleData?.ntitle || "");
   const [metaDescription, setMetaDescription] = useState(articleData?.ndescription || "");
@@ -34,7 +32,6 @@ export default function NewsEditorHeader({ isEditing, newsId, articleData, onNbo
     if (articleData) {
       setMainTitle(articleData.nheader);
       setMainLead(articleData.nteaser);
-      setTopBlockTitle(articleData.sheader || "");
       setMetaTitle(articleData.ntitle || "");
       setMetaDescription(articleData.ndescription || "");
       setMetaKeywords(articleData.nkeywords || "");
@@ -42,7 +39,6 @@ export default function NewsEditorHeader({ isEditing, newsId, articleData, onNbo
       // Скидаємо до значень за замовчуванням при створенні нової новини
       setMainTitle("");
       setMainLead("");
-      setTopBlockTitle("");
       setMetaTitle("");
       setMetaDescription("");
       setMetaKeywords("");
@@ -58,11 +54,6 @@ export default function NewsEditorHeader({ isEditing, newsId, articleData, onNbo
   const handleMainLeadChange = (value: string) => {
     setMainLead(value);
     onDataChange?.({ nteaser: value });
-  };
-
-  const handleTopBlockTitleChange = (value: string) => {
-    setTopBlockTitle(value);
-    onDataChange?.({ sheader: value });
   };
 
   const handleMetaTitleChange = (value: string) => {
@@ -109,24 +100,6 @@ export default function NewsEditorHeader({ isEditing, newsId, articleData, onNbo
     },
     {
       key: "2",
-      label: "Для ТОР БЛОКІВ",
-      children: (
-        <div className={styles.tabsBox}>
-          <div className={styles.tabContent}>
-            <div className={styles.field}>
-              <label className={styles.label}>Заголовок</label>
-              <TextArea
-                rows={2}
-                value={topBlockTitle}
-                onChange={(e) => handleTopBlockTitleChange(e.target.value)}
-              />
-            </div>
-          </div>
-        </div>
-      ),
-    },
-    {
-      key: "3",
       label:
         "Мета дані",
       children:
@@ -172,11 +145,11 @@ export default function NewsEditorHeader({ isEditing, newsId, articleData, onNbo
       />
 
       <h2 className={styles.header}>Повний текст новини</h2>
-      <EditorJSClient
-        htmlContent={articleData?.nbody}
-        onHtmlChange={onNbodyChange}
-        placeholder="Введіть повний текст новини..."
-      />
+      {/*<EditorJSClient*/}
+      {/*  htmlContent={articleData?.nbody}*/}
+      {/*  onHtmlChange={onNbodyChange}*/}
+      {/*  placeholder="Введіть повний текст новини..."*/}
+      {/*/>*/}
     </div>
   );
 }

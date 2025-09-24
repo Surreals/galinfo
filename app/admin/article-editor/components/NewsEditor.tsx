@@ -9,7 +9,7 @@ export default function NewsEditorFull() {
   return (
     <Editor
       apiKey="yfffpxjyf0g4fx9jay81jkrvaoz54cv9cg78k2mkkhcg5716"
-      onInit={(evt, editor) => (editorRef.current = editor)}
+      onInit={(editor) => (editorRef.current = editor)}
       initialValue="<p>Введіть текст новини...</p>"
       init={{
         height: 600,

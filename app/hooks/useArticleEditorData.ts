@@ -150,9 +150,6 @@ export function getBloggers(users: User[]): User[] {
 export const ARTICLE_TYPE_OPTIONS = [
   { value: 1, label: 'Новина' },
   { value: 2, label: 'Стаття' },
-  { value: 3, label: 'Фоторепортаж' },
-  { value: 4, label: 'Відео' },
-  { value: 20, label: 'Блог' },
 ];
 
 export const PRIORITY_OPTIONS = [

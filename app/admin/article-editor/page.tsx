@@ -13,6 +13,7 @@ import ArticleEditorLoader from "@/app/admin/article-editor/components/ArticleEd
 import ChatGPTIframe from "@/app/admin/article-editor/components/ChatGPTIframe";
 import TelegramMessenger from "@/app/admin/article-editor/components/TelegramMessenger";
 import { useArticleData, ArticleData } from "@/app/hooks/useArticleData";
+import {useMenuContext} from "@/app/contexts/MenuContext";
 
 // Dynamically import the TipTap editor to avoid SSR issues
 const RichTextEditor = dynamic(() => import('../components/RichTextEditor'), {
@@ -27,8 +28,10 @@ function ArticleEditorContent() {
   const [isChatGPTVisible, setIsChatGPTVisible] = useState(false);
   const [isTelegramVisible, setIsTelegramVisible] = useState(false);
 
+
   // Завантажуємо дані новини
   const { data: articleData, loading, error, updateData } = useArticleData({ id: newsId });
+  const { menuData } = useMenuContext();
 
   useEffect(() => {
     if (newsId) {
@@ -50,17 +53,15 @@ function ArticleEditorContent() {
     <ArticleEditorLoader loading={loading} error={error}>
       <div style={{ padding: '2rem', maxWidth: '1400px', margin: '0 auto', display: 'flex', gap: '24px' }}>
         <NewsEditorHeader 
-          isEditing={isEditing} 
-          newsId={newsId} 
+          isEditing={isEditing}
           articleData={articleData}
           onNbodyChange={handleNbodyChange}
           onDataChange={handleDataChange}
         />
-        <NewsEditorSidebar 
-          isEditing={isEditing} 
+        <NewsEditorSidebar
+          menuData={menuData}
           newsId={newsId} 
           articleData={articleData}
-          onNbodyChange={handleNbodyChange}
         />
         {/* <NewsFullEditor/> */}
       </div>

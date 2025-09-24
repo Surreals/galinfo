@@ -44,13 +44,12 @@ const { TextArea } = Input;
 const { Title } = Typography;
 
 interface NewsEditorSidebarProps {
-  isEditing: boolean;
   newsId: string | null;
   articleData?: ArticleData | null;
-  onNbodyChange?: (nbody: string) => void;
+  menuData: ArticleData | null;
 }
 
-export default function NewsEditorSidebar({ isEditing, newsId, articleData, onNbodyChange }: NewsEditorSidebarProps) {
+export default function NewsEditorSidebar({ newsId, articleData, menuData }: NewsEditorSidebarProps) {
   // Завантажуємо дані через хук
   const { 
     articleTypes, 
@@ -61,6 +60,11 @@ export default function NewsEditorSidebar({ isEditing, newsId, articleData, onNb
     loading, 
     error 
   } = useArticleEditorData({ lang: 'ua' });
+
+  const mainCategoriesResponse = menuData?.mainCategories || [];
+  const regionsResponse = menuData?.regions || [];
+  const specialThemesResponse = menuData?.specialThemes || [];
+
 
   // Стан для модалки зображень
   const [isImageModalOpen, setIsImageModalOpen] = useState(false);
@@ -89,9 +93,10 @@ export default function NewsEditorSidebar({ isEditing, newsId, articleData, onNb
   };
 
   // Фільтруємо дані
-  const rubrics = getRubrics(categories);
-  const themes = getThemes(categories);
-  const regions = getRegions(categories);
+  const rubrics = mainCategoriesResponse;
+  const regions = regionsResponse;
+  const themes  = specialThemesResponse;
+
   const editors = getEditors(users);
   const journalists = getJournalists(users);
   const bloggers = getBloggers(users);
@@ -255,18 +260,18 @@ export default function NewsEditorSidebar({ isEditing, newsId, articleData, onNb
       // Автори
       nauthor: editor,
       userid: author,
-      showauthor: showAuthorInfo,
+      showauthor: showAuthorInfo ? 1 : 0,
       
       // Налаштування
       nweight: priority,
       layout: template,
       
       // Додаткові параметри
-      rated: mainFeed,
+      rated: mainFeed ? 1 : 0,
       headlineblock: blockInMain,
       hiderss: noRss,
       nocomment: banComments,
-      maininblock: mainInRubric,
+      maininblock: mainInRubric ? 1 : 0,
       idtotop: idToTop,
       suggest: favBlock,
       photo: markPhoto,
@@ -275,9 +280,11 @@ export default function NewsEditorSidebar({ isEditing, newsId, articleData, onNb
       // Час публікації
       ndate: (() => {
         if (!publishAt || !publishAt.isValid()) {
-          return new Date().toISOString().split('T')[0];
+          // якщо дати немає — поточний час у форматі ISO
+          return new Date().toISOString();
         }
-        return publishAt.format('YYYY-MM-DD');
+        // publishAt – це moment або dayjs, тому викликаємо toISOString()
+        return publishAt.toDate().toISOString();
       })(),
       ntime: (() => {
         if (!publishAt || !publishAt.isValid()) {
@@ -285,9 +292,10 @@ export default function NewsEditorSidebar({ isEditing, newsId, articleData, onNb
         }
         return publishAt.format('HH:mm:ss');
       })(),
+      udate: Math.floor(Date.now() / 1000),
       
       // Публікація
-      approved: publishOnSite,
+      approved: publishOnSite ? 1 : 0,
       to_twitter: publishOnTwitter,
       
       // Зображення
@@ -296,8 +304,9 @@ export default function NewsEditorSidebar({ isEditing, newsId, articleData, onNb
       // Мова
       lang: articleData?.lang || 'ua',
     };
-    
-    await saveArticle(payload);
+
+    console.log('payload',payload)
+    // await saveArticle(payload);
   };
 
   const onDelete = async () => {
@@ -364,6 +373,7 @@ export default function NewsEditorSidebar({ isEditing, newsId, articleData, onNb
       <div className={styles.section}>
         <div className={styles.sectionTitle}>Тип статті</div>
         <Select
+          defaultValue={1}
           size="large"
           options={ARTICLE_TYPE_OPTIONS}
           value={articleType}
@@ -382,13 +392,13 @@ export default function NewsEditorSidebar({ isEditing, newsId, articleData, onNb
               placeholder="Оберіть рубрики"
               value={selectedRubrics}
               onChange={setSelectedRubrics}
-              options={rubrics.map(r => ({ label: r.title, value: r.id }))}
+              options={rubrics.map(r => ({
+                label: r.title,
+                value: r.id.toString()
+              }))}
               className={styles.fullWidth}
               size="middle"
               showSearch
-              filterOption={(input, option) =>
-                (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
-              }
               notFoundContent="Рубрики не знайдені"
               loading={loading}
             />
@@ -405,15 +415,11 @@ export default function NewsEditorSidebar({ isEditing, newsId, articleData, onNb
               onChange={setSelectedRegions}
               options={regions.map(r => ({ 
                 label: r.title, 
-                value: r.id,
-                description: r.description 
+                value: r.id.toString()
               }))}
               className={styles.fullWidth}
               size="middle"
               showSearch
-              filterOption={(input, option) =>
-                (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
-              }
               notFoundContent="Регіони не знайдені"
               loading={loading}
             />
@@ -425,14 +431,11 @@ export default function NewsEditorSidebar({ isEditing, newsId, articleData, onNb
               placeholder="Оберіть тему"
               value={selectedTheme}
               onChange={setSelectedTheme}
-              options={themes.map(t => ({ label: t.title, value: t.id }))}
+              options={themes.map(t => ({ label: t.title, value: t.id.toString()}))}
               className={styles.fullWidth}
               size="middle"
               allowClear
               showSearch
-              filterOption={(input, option) =>
-                (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
-              }
               notFoundContent="Теми не знайдені"
               loading={loading}
             />
@@ -456,24 +459,7 @@ export default function NewsEditorSidebar({ isEditing, newsId, articleData, onNb
         <div className={styles.section}>
           <div className={styles.sectionTitle}>Автор</div>
           <div className={styles.twoCols}>
-            <div>
-              <div className={styles.subLabel}>Редактор:</div>
-              <Select
-                placeholder="Оберіть редактора"
-                value={editor}
-                onChange={setEditor}
-                options={editors.map(e => ({ label: e.name, value: e.id }))}
-                className={styles.fullWidth}
-                allowClear
-                showSearch
-                filterOption={(input, option) =>
-                  (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
-                }
-                notFoundContent="Редактори не знайдені"
-                loading={loading}
-              />
-            </div>
-            <div>
+
               <div className={styles.subLabel}>Автор / журналіст:</div>
               <Select
                 placeholder="Оберіть автора"
@@ -493,7 +479,6 @@ export default function NewsEditorSidebar({ isEditing, newsId, articleData, onNb
                 loading={loading}
               />
             </div>
-          </div>
           <Checkbox
             className={styles.mt8}
             checked={showAuthorInfo}
@@ -504,8 +489,6 @@ export default function NewsEditorSidebar({ isEditing, newsId, articleData, onNb
         </div>
 
         <div className={styles.section}>
-          <div className={styles.twoCols}>
-            <div>
               <div className={styles.sectionTitle}>Пріоритет статті</div>
               <Select
                 options={PRIORITY_OPTIONS}
@@ -513,17 +496,6 @@ export default function NewsEditorSidebar({ isEditing, newsId, articleData, onNb
                 onChange={setPriority}
                 className={styles.fullWidth}
               />
-            </div>
-            <div>
-              <div className={styles.sectionTitle}>Шаблон</div>
-              <Select
-                options={LAYOUT_OPTIONS}
-                value={template}
-                onChange={setTemplate}
-                className={styles.fullWidth}
-              />
-            </div>
-          </div>
         </div>
       </div>
 
@@ -533,136 +505,80 @@ export default function NewsEditorSidebar({ isEditing, newsId, articleData, onNb
 
         <div className={styles.checkboxGrid}>
           <Checkbox
-            checked={mainFeed}
-            onChange={(e) => setMainFeed(e.target.checked)}
+            checked={mainInRubric}
+            onChange={(e) => setMainInRubric(e.target.checked)}
           >
             Головна стрічка
           </Checkbox>
           <Checkbox
-            checked={blockInMain}
-            onChange={(e) => setBlockInMain(e.target.checked)}
+            checked={mainFeed}
+            onChange={(e) => setMainFeed(e.target.checked)}
           >
-            Блок в головній стрічці
+            Не транслювати в RSS додати
           </Checkbox>
-          <Checkbox checked={noRss} onChange={(e) => setNoRss(e.target.checked)}>
-            НЕ транслювати в RSS
-          </Checkbox>
-          <Checkbox
-            checked={banComments}
-            onChange={(e) => setBanComments(e.target.checked)}
-          >
-            Заборонити коментарі
-          </Checkbox>
-          <Checkbox
-            checked={mainInRubric}
-            onChange={(e) => setMainInRubric(e.target.checked)}
-          >
-            Головна в блоці рубрик
-          </Checkbox>
+        </div>
+        </div>
 
-          <Checkbox
-            checked={favBlock}
-            onChange={(e) => setFavBlock(e.target.checked)}
-          >
-            Блок ВИБРАНЕ
-          </Checkbox>
-          <Checkbox
-            checked={markPhoto}
-            onChange={(e) => setMarkPhoto(e.target.checked)}
-          >
-            Позначати «з фото»
-          </Checkbox>
-          <Checkbox
-            checked={markVideo}
-            onChange={(e) => setMarkVideo(e.target.checked)}
-          >
-            Позначати «з відео»
-          </Checkbox>
-          <div className={styles.inline}>
-            <div className={styles.inlineLabel}>ID —&gt; TOP</div>
-            <Select
-              style={{ minWidth: 120 }}
-              value={idToTop}
-              onChange={setIdToTop}
-              options={ID_TO_TOP_OPTIONS}
-            />
+        {/* Час публікації */}
+        <div className={styles.section}>
+          <div className={styles.sectionTitle}>Час публікації</div>
+          <DatePicker
+            showTime
+            value={publishAt}
+            onChange={(v) => setPublishAt(v)}
+            format="HH:mm DD.MM.YYYY"
+            className={styles.fullWidth}
+          />
+          <div className={styles.timeHints}>
+            <a>» Час останньої новини</a>
+            <a>♥ Час останньої опублікованої</a>
+            <a>» Час на сервері</a>
           </div>
         </div>
-      </div>
 
-      {/* Час публікації */}
-      <div className={styles.section}>
-        <div className={styles.sectionTitle}>Час публікації</div>
-        <DatePicker
-          showTime
-          value={publishAt}
-          onChange={(v) => setPublishAt(v)}
-          format="HH:mm DD.MM.YYYY"
-          className={styles.fullWidth}
-        />
-        <div className={styles.timeHints}>
-          <a>» Час останньої новини</a>
-          <a>♥ Час останньої опублікованої</a>
-          <a>» Час на сервері</a>
+        {/* Плашки публікації */}
+        <div
+          className={`${styles.publishBar} ${
+            publishOnSite ? styles.publishBarActive : ""
+          }`}
+        >
+          <Checkbox
+            checked={publishOnSite}
+            onChange={(e) => setPublishOnSite(e.target.checked)}
+          >
+            Опублікувати на сайті
+          </Checkbox>
         </div>
-      </div>
+        <Divider className={styles.divider}/>
 
-      {/* Плашки публікації */}
-      <div
-        className={`${styles.publishBar} ${
-          publishOnSite ? styles.publishBarActive : ""
-        }`}
-      >
-        <Checkbox
-          checked={publishOnSite}
-          onChange={(e) => setPublishOnSite(e.target.checked)}
-        >
-          Опублікувати на сайті
-        </Checkbox>
-      </div>
-      <div
-        className={`${styles.publishBar} ${
-          publishOnTwitter ? styles.publishBarActiveLight : ""
-        }`}
-      >
-        <Checkbox
-          checked={publishOnTwitter}
-          onChange={(e) => setPublishOnTwitter(e.target.checked)}
-        >
-          Опублікувати в Twitter (Очікує публікації)
-        </Checkbox>
-      </div>
-
-      <Divider className={styles.divider} />
-
-      {/* Кнопки */}
-      <div className={styles.actions}>
-        <Button
-          type="primary"
-          size="large"
-          icon={<SaveOutlined />}
-          onClick={onSave}
-          loading={saving}
-          disabled={saving}
-          className={styles.greenBtn}
-        >
-          ЗБЕРЕГТИ
-        </Button>
-
-        {newsId && (
+        {/* Кнопки */}
+        <div className={styles.actions}>
           <Button
-            danger
+            type="primary"
             size="large"
-            icon={<DeleteOutlined />}
-            onClick={onDelete}
+            icon={<SaveOutlined/>}
+            onClick={onSave}
             loading={saving}
             disabled={saving}
-            className={styles.blueBtn}
+            className={styles.greenBtn}
           >
-            ВИДАЛИТИ
+            ЗБЕРЕГТИ
           </Button>
-        )}
-      </div>
+
+          {newsId && (
+            <Button
+              danger
+              size="large"
+              icon={<DeleteOutlined/>}
+              onClick={onDelete}
+              loading={saving}
+              disabled={saving}
+              className={styles.blueBtn}
+            >
+              ВИДАЛИТИ
+            </Button>
+          )}
+        </div>
 
       {/* Модалка для вибору зображень */}
       <ImagePickerModal
@@ -672,5 +588,5 @@ export default function NewsEditorSidebar({ isEditing, newsId, articleData, onNb
         currentImage={null}
       />
     </aside>
-  );
+);
 }

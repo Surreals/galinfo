@@ -174,7 +174,7 @@
 .subLabel {
     font-size: 12px;
     font-weight: 600;
-    color: #666;
+    color: #667;
     margin-bottom: 4px;
 }
 
@@ -185,8 +185,6 @@
 }
 
 .twoCols {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
     gap: 12px;
 }
 

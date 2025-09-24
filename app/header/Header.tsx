@@ -195,8 +195,8 @@ export default function Header() {
 
   const mainCategories = menuData?.mainCategories || [];
   const regions = menuData?.regions || [];
-  const additionalItems = menuData?.additionalItems || [];
   const specialThemesItem = menuData?.specialThemes || [];
+  const additionalItems = menuData?.additionalItems || [];
 
   return (
     <header className={styles.headerMain}>

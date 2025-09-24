@@ -24,13 +24,9 @@ export type EditorJSClientProps = {
   id?: string;
 };
 
-export default function EditorJSClient({
-                                         data,
-                                         htmlContent,
-                                         onChange,
+export default function EditorJSClient({htmlContent,
                                          onHtmlChange,
-                                         readOnly,
-                                         placeholder = "Введіть текст…",
+                                         placeholder,
                                          id = "editorjs-holder",
                                        }: EditorJSClientProps) {
   const holderRef = useRef<HTMLDivElement | null>(null);
@@ -63,7 +59,7 @@ export default function EditorJSClient({
       // Process each element
       const processElement = (element: Element) => {
         const tagName = element.tagName.toLowerCase();
-        
+
         switch (tagName) {
           case 'h1':
           case 'h2':
@@ -183,13 +179,13 @@ export default function EditorJSClient({
         case 'code':
           return `<pre><code>${block.data?.code || ''}</code></pre>`;
         case 'checklist':
-          const checklistItems = block.data?.items?.map((item: any) => 
+          const checklistItems = block.data?.items?.map((item: any) =>
             `<li><input type="checkbox" ${item.checked ? 'checked' : ''} disabled> ${item.text}</li>`
           ).join('') || '';
           return `<ul class="checklist">${checklistItems}</ul>`;
         case 'table':
           const tableData = block.data?.content || [];
-          const tableRows = tableData.map((row: any[]) => 
+          const tableRows = tableData.map((row: any[]) =>
             `<tr>${row.map(cell => `<td>${cell}</td>`).join('')}</tr>`
           ).join('');
           return `<table><tbody>${tableRows}</tbody></table>`;
@@ -277,7 +273,6 @@ export default function EditorJSClient({
     try {
       const editor = new Editor({
         holder: holderRef.current,
-        readOnly,
         placeholder,
         minHeight: 50,
         inlineToolbar: ['bold', 'italic', 'underline', 'marker', 'inlineCode', 'link', 'textColor', 'textAlignment'],
@@ -326,23 +321,23 @@ export default function EditorJSClient({
           class: (Paragraph as any).default ?? (Paragraph as any),
           inlineToolbar: true,
         },
-        list: { 
-          class: (List as any).default ?? (List as any), 
-          inlineToolbar: true 
+        list: {
+          class: (List as any).default ?? (List as any),
+          inlineToolbar: true
         },
-        nestedList: { 
-          class: (NestedList as any).default ?? (NestedList as any), 
-          inlineToolbar: true 
+        nestedList: {
+          class: (NestedList as any).default ?? (NestedList as any),
+          inlineToolbar: true
         },
-        checklist: { 
+        checklist: {
           class: (Checklist as any).default ?? (Checklist as any),
-          inlineToolbar: true 
+          inlineToolbar: true
         },
-        quote: { 
+        quote: {
           class: (Quote as any).default ?? (Quote as any),
-          inlineToolbar: true 
+          inlineToolbar: true
         },
-        
+
         // Code and formatting
         code: {
           class: (Code as any).default ?? (Code as any),
@@ -350,8 +345,8 @@ export default function EditorJSClient({
             placeholder: 'Enter code...',
           }
         },
-        inlineCode: { 
-          class: (InlineCode as any).default ?? (InlineCode as any) 
+        inlineCode: {
+          class: (InlineCode as any).default ?? (InlineCode as any)
         },
         marker: {
           class: (Marker as any).default ?? (Marker as any),
@@ -359,7 +354,7 @@ export default function EditorJSClient({
         underline: {
           class: (Underline as any).default ?? (Underline as any),
         },
-        
+
         // Media and embeds
         simpleImage: {
           class: (SimpleImage as any).default ?? (SimpleImage as any),
@@ -376,7 +371,7 @@ export default function EditorJSClient({
             }
           }
         },
-        
+
         // Links and attachments
         link: {
           class: (Link as any).default ?? (Link as any),
@@ -390,11 +385,11 @@ export default function EditorJSClient({
             endpoint: '/api/upload-file', // You can implement this endpoint
           }
         },
-        
+
         // Layout and structure
-        table: { 
+        table: {
           class: (Table as any).default ?? (Table as any),
-          inlineToolbar: true 
+          inlineToolbar: true
         },
         delimiter: {
           class: (Delimiter as any).default ?? (Delimiter as any),
@@ -407,12 +402,12 @@ export default function EditorJSClient({
             messagePlaceholder: 'Message',
           }
         },
-        
+
         // Raw HTML
         raw: {
           class: (Raw as any).default ?? (Raw as any),
         },
-        
+
         // Advanced tools
         alert: {
           class: (Alert as any).default ?? (Alert as any),
@@ -460,13 +455,12 @@ export default function EditorJSClient({
         setIsInitialized(true);
         setInitError(null);
       },
-      data: data || (htmlContent ? htmlToEditorJS(htmlContent) : undefined),
+      data: (htmlContent ? htmlToEditorJS(htmlContent) : undefined),
       onChange: throttle(async () => {
-        if (!editorRef.current) return;
-        const saved = await editorRef.current.save();
-        onChange?.(saved);
-        
+
         // Also call onHtmlChange if provided
+        const saved = '<div>ddd</div>'
+
         if (onHtmlChange) {
           const html = editorJSToHtml(saved);
           onHtmlChange(html);
@@ -479,7 +473,7 @@ export default function EditorJSClient({
       console.error('Failed to initialize Editor.js:', error);
       setInitError(error instanceof Error ? error.message : 'Failed to initialize editor');
     }
-  }, [data, htmlContent, onChange, onHtmlChange, placeholder, readOnly]);
+  }, [htmlContent, onHtmlChange, placeholder]);
 
   useEffect(() => {
     // Add a small delay to ensure the DOM element is mounted
@@ -501,17 +495,17 @@ export default function EditorJSClient({
       <div className={styles.editorJSClient}>
         <div style={{ padding: '20px', textAlign: 'center', color: '#ff4d4f' }}>
           <p>Помилка ініціалізації редактора: {initError}</p>
-          <button 
+          <button
             onClick={() => {
               setInitError(null);
               setIsInitialized(false);
               initEditor();
             }}
-            style={{ 
-              padding: '8px 16px', 
-              background: '#1890ff', 
-              color: 'white', 
-              border: 'none', 
+            style={{
+              padding: '8px 16px',
+              background: '#1890ff',
+              color: 'white',
+              border: 'none',
               borderRadius: '4px',
               cursor: 'pointer'
             }}
