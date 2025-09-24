@@ -104,6 +104,7 @@
 .itemTitle {
   color: var(--color-primary);
   -webkit-line-clamp: 2;
+  line-clamp: 2;
   text-overflow: ellipsis;
   -webkit-box-orient: vertical;
   transition: color 0.3s ease;
@@ -256,12 +257,10 @@
   padding: 14px;
 }
 
-/* Стилі для важливих новин без фото - світло-рожевий фон */
-.importantTextBlock {
-  background-color: rgb(197 5 30 / 11%) !important;
-  border-radius: 6px;
-  padding: 12px !important;
-  margin: 0 !important;
+/* Стилі для важливих заголовків */
+.importantTitle,
+.itemTitle.importantTitle {
+  font-weight: 700 !important;
 }
 
 /* Обгортка для зображення з міткою */

@@ -64,13 +64,6 @@ export async function getMenuData(): Promise<MenuData> {
       },
       {
         id: 0,
-        param: 'announce',
-        title: 'Анонси',
-        link: '/announce/',
-        cattype: 0
-      },
-      {
-        id: 0,
         param: 'archive',
         title: 'Архів',
         link: '/archive/',

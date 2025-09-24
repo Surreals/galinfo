@@ -424,7 +424,7 @@ export default function Header() {
 
               {/* Підколонка 4 - Типи контенту */}
               <div className={styles.gridColumn}>
-                {additionalItems.slice(0, 3).map((item) => (
+                {additionalItems.slice(0, 2).map((item) => (
                   <Link key={item.param} href={item.link} className={styles.linkSlider}>
                     {item.title.toUpperCase()}
                   </Link>
@@ -437,9 +437,6 @@ export default function Header() {
                     </Link>
                     <Link href={paths.article} className={styles.linkSlider}>
                       СТАТТЯ
-                    </Link>
-                    <Link href={paths.interview} className={styles.linkSlider}>
-                      ІНТЕРВ'Ю
                     </Link>
                   </>
                 )}

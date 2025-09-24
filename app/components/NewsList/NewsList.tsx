@@ -113,7 +113,6 @@ export default function NewsList({
               <option value="photo">Фоторепортажі</option>
               <option value="video">Відео</option>
               <option value="audio">Аудіо</option>
-              <option value="announces">Анонси</option>
               <option value="blogs">Блоги</option>
             </select>
           </div>
@@ -261,13 +260,13 @@ function NewsCard({ news, showImage = false }: { news: NewsItem; showImage?: boo
         </div>
       )}
       
-      <div className={`${styles.newsContent} ${!showImage && (news as any).nweight > 0 ? styles.importantNewsContent : ''}`}>
+      <div className={styles.newsContent}>
         <div className={styles.newsMeta}>
           <span className={styles.newsType}>{getNewsTypeLabel(news.ntype)}</span>
           <span className={styles.newsDate}>{formatFullNewsDate(news.ndate, news.ntime)}</span>
         </div>
         
-        <h3 className={styles.newsTitle}>
+        <h3 className={`${styles.newsTitle} ${(news as any).nweight > 0 ? styles.importantTitle : ''}`}>
           <a href={`/news/${news.urlkey}_${news.id}`} className={styles.newsTitleLink}>
             {news.nheader}
           </a>
