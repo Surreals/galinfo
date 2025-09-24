@@ -53,7 +53,7 @@ export async function POST(request: NextRequest) {
           newsData.bytheme, newsData.ispopular, newsData.supervideo, newsData.printsubheader,
           newsData.topnews, newsData.isexpert, newsData.photo, newsData.video, newsData.subrubric,
           newsData.imagescopy, newsData.suggest, newsData.headlineblock, newsData.twitter_status,
-          newsData.youcode, newsData._todel1, newsData._todel2, newsData._todel3, newsData._stage,
+          newsData.youcode, newsData._todel1, newsData._todel2, newsData._todel3, 99,
           newsData.maininblock, newsData.udate, newsData.id
         ]
       );
@@ -98,12 +98,12 @@ export async function POST(request: NextRequest) {
           newsData.bytheme, newsData.ispopular, newsData.supervideo, newsData.printsubheader,
           newsData.topnews, newsData.isexpert, newsData.photo, newsData.video, newsData.subrubric,
           newsData.imagescopy, newsData.suggest, newsData.headlineblock, newsData.twitter_status,
-          newsData.youcode, newsData._todel1, newsData._todel2, newsData._todel3, newsData._stage,
+          newsData.youcode, newsData._todel1, newsData._todel2, newsData._todel3, 99,
           newsData.maininblock, newsData.udate
         ]
       );
 
-      newsId = newsResult.insertId;
+      newsId = (newsResult as any).insertId;
 
       // Insert into news headers table
       await executeQuery(
@@ -151,7 +151,7 @@ export async function POST(request: NextRequest) {
         },
         body: {
           id: newsId,
-          nbody: bodyResult?.nbody || body.nbody
+          nbody: (bodyResult as any)?.[0]?.nbody || body.nbody
         }
       }
     });
