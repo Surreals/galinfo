@@ -118,7 +118,7 @@ export default function NewsEditor({ newsId, onSave, onCancel, initialData }: Ne
     _todel1: '0',
     _todel2: '0',
     _todel3: '',
-    _stage: 0,
+    _stage: 99, // Mark as created/edited from Next.js app
     maininblock: null,
   });
 
@@ -126,7 +126,7 @@ export default function NewsEditor({ newsId, onSave, onCancel, initialData }: Ne
     nheader: '',
     nteaser: '',
     nsubheader: '',
-    _stage: 0,
+    _stage: 99, // Mark as created/edited from Next.js app
   });
 
   const [body, setBody] = useState<NewsBody>({
