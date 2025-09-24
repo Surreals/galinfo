@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, Suspense } from 'react';
+import {useState, useEffect, Suspense, useRef} from 'react';
 import { useSearchParams } from 'next/navigation';
 import dynamic from 'next/dynamic';
 import { Spin } from 'antd';
@@ -51,8 +51,8 @@ function ArticleEditorContent() {
 
   return (
     <ArticleEditorLoader loading={loading} error={error}>
-      <div style={{ padding: '2rem', maxWidth: '1400px', margin: '0 auto', display: 'flex', gap: '24px' }}>
-        <NewsEditorHeader 
+      <div style={{ padding: '10px', maxWidth: '1440px', margin: '0 auto', display: 'flex', gap: '10px' }}>
+        <NewsEditorHeader
           isEditing={isEditing}
           articleData={articleData}
           onNbodyChange={handleNbodyChange}

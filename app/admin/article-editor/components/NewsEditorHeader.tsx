@@ -145,11 +145,11 @@ export default function NewsEditorHeader({ isEditing, articleData, onNbodyChange
       />
 
       <h2 className={styles.header}>Повний текст новини</h2>
-      {/*<EditorJSClient*/}
-      {/*  htmlContent={articleData?.nbody}*/}
-      {/*  onHtmlChange={onNbodyChange}*/}
-      {/*  placeholder="Введіть повний текст новини..."*/}
-      {/*/>*/}
+      <EditorJSClient
+        htmlContent={articleData?.nbody}
+        onHtmlChange={onNbodyChange}
+        placeholder="Введіть повний текст новини..."
+      />
     </div>
   );
 }

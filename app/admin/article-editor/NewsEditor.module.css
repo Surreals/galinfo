@@ -123,10 +123,55 @@
     border: 1px solid #e8e8e8;
     padding: 12px;
     border-radius: 8px;
-    width: 40%;
+    width: 100%;
+    display: flex;
+    gap: 12px;
+}
+
+.sidebarBox {
+    width: 100%;
+    gap: 10px;
     display: flex;
     flex-direction: column;
-    gap: 12px;
+}
+
+.editor {
+    background: #ffffff;
+    border-width: 1px;
+    border-style: solid;
+    border-color: rgb(207, 207, 207);
+    padding: 11px;
+    border-radius: 8px;
+}
+
+.editor:hover {
+    border-color: #c7084f;
+    cursor: text;
+}
+
+/* пересунути тулбар вправо */
+.editor :global(.ce-toolbar) {
+    left: auto !important;
+    right: 0 !important;
+}
+
+/* кнопка "+" також вправо */
+.editor :global(.ce-toolbar__plus) {
+    margin-left: auto;
+    margin-right: 0;
+}
+
+/* блок налаштувань */
+.editor :global(.ce-settings) {
+    left: auto !important;
+    right: 0 !important;
+}
+.editor :global(.cdx-block) {
+    padding-right: 45px!important;
+}
+
+.editor :global(.codex-editor__redactor) {
+    padding-bottom: 40px !important;
 }
 
 .heading {

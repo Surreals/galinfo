@@ -41,7 +41,6 @@ import { getImageUrl, ensureFullImageUrl } from "@/app/lib/imageUtils";
 import ImagePickerModal from "./ImagePickerModal";
 
 const { TextArea } = Input;
-const { Title } = Typography;
 
 interface NewsEditorSidebarProps {
   newsId: string | null;
@@ -51,12 +50,8 @@ interface NewsEditorSidebarProps {
 
 export default function NewsEditorSidebar({ newsId, articleData, menuData }: NewsEditorSidebarProps) {
   // Завантажуємо дані через хук
-  const { 
-    articleTypes, 
-    categories, 
-    users, 
-    languages, 
-    tags: availableTags, 
+  const {
+    users,
     loading, 
     error 
   } = useArticleEditorData({ lang: 'ua' });
@@ -238,6 +233,7 @@ export default function NewsEditorSidebar({ newsId, articleData, menuData }: New
 
   // handlers
   const onSave = async () => {
+
     const payload = {
       // Основні поля
       nheader: articleData?.nheader || '',
@@ -335,130 +331,129 @@ export default function NewsEditorSidebar({ newsId, articleData, menuData }: New
 
   return (
     <aside className={styles.sidebar}>
-      {/* Заголовок */}
-      <Title level={5} className={styles.heading}>
-        Налаштування публікації
-      </Title>
-
-      {/* Фото */}
-      <div className={styles.section}>
-        {
-          fileList.length ? <div className={styles.sectionLabel}>{fileList.length}</div> : null
-        }
-        <div className={styles.sectionTitle}>Фото</div>
-        <Upload
-          listType="picture-card"
-          multiple
-          fileList={fileList}
-          onChange={({ fileList }) => setFileList(fileList)}
-          beforeUpload={() => false} // блокуємо реальний аплоад, лише превʼю
-        >
-          <div className={styles.uploadBtn}>
-            <PictureOutlined />
-            <div>Додати</div>
-          </div>
-        </Upload>
-        <Button
-          type="default"
-          size="small"
-          icon={<PictureOutlined />}
-          onClick={openImagePicker}
-          style={{ marginTop: '8px', width: '100%' }}
-        >
-          Вибрати з галереї
-        </Button>
-      </div>
-
-      {/* Тип статті */}
-      <div className={styles.section}>
-        <div className={styles.sectionTitle}>Тип статті</div>
-        <Select
-          defaultValue={1}
-          size="large"
-          options={ARTICLE_TYPE_OPTIONS}
-          value={articleType}
-          onChange={setArticleType}
-          className={styles.fullWidth}
-        />
-      </div>
-
-      {/* Рубрики + Регіон + Тема */}
-      <div className={styles.flexRow}>
+      <div className={styles.sidebarBox}>
+        {/* Фото */}
         <div className={styles.section}>
-          <div className={styles.sectionTitle}>Рубрики</div>
-          <div className={styles.scrollBox}>
-            <Select
-              mode="multiple"
-              placeholder="Оберіть рубрики"
-              value={selectedRubrics}
-              onChange={setSelectedRubrics}
-              options={rubrics.map(r => ({
-                label: r.title,
-                value: r.id.toString()
-              }))}
-              className={styles.fullWidth}
-              size="middle"
-              showSearch
-              notFoundContent="Рубрики не знайдені"
-              loading={loading}
-            />
-          </div>
+          {
+            fileList.length ? <div className={styles.sectionLabel}>{fileList.length}</div> : null
+          }
+          <div className={styles.sectionTitle}>Фото</div>
+          <Upload
+            listType="picture-card"
+            multiple
+            fileList={fileList}
+            onChange={({ fileList }) => setFileList(fileList)}
+            beforeUpload={() => false} // блокуємо реальний аплоад, лише превʼю
+          >
+            <div className={styles.uploadBtn}>
+              <PictureOutlined />
+              <div>Додати</div>
+            </div>
+          </Upload>
+          <Button
+            type="default"
+            size="small"
+            icon={<PictureOutlined />}
+            onClick={openImagePicker}
+            style={{ marginTop: '8px', width: '100%' }}
+          >
+            Вибрати з галереї
+          </Button>
         </div>
 
+        {/* Тип статті */}
         <div className={styles.section}>
-          <div className={styles.sectionTitle}>Регіон</div>
-          <div className={styles.scrollBox}>
-            <Select
-              mode="multiple"
-              placeholder="Оберіть регіони"
-              value={selectedRegions}
-              onChange={setSelectedRegions}
-              options={regions.map(r => ({ 
-                label: r.title, 
-                value: r.id.toString()
-              }))}
-              className={styles.fullWidth}
-              size="middle"
-              showSearch
-              notFoundContent="Регіони не знайдені"
-              loading={loading}
-            />
+          <div className={styles.sectionTitle}>Тип статті</div>
+          <Select
+            defaultValue={1}
+            size="large"
+            options={ARTICLE_TYPE_OPTIONS}
+            value={articleType}
+            onChange={setArticleType}
+            className={styles.fullWidth}
+          />
+        </div>
+
+        {/* Рубрики + Регіон + Тема */}
+        <div className={styles.flexRow}>
+          <div className={styles.section}>
+            <div className={styles.sectionTitle}>Рубрики</div>
+            <div className={styles.scrollBox}>
+              <Select
+                mode="multiple"
+                placeholder="Оберіть рубрики"
+                value={selectedRubrics}
+                onChange={setSelectedRubrics}
+                options={rubrics.map(r => ({
+                  label: r.title,
+                  value: r.id.toString()
+                }))}
+                className={styles.fullWidth}
+                size="middle"
+                showSearch
+                notFoundContent="Рубрики не знайдені"
+                loading={loading}
+              />
+            </div>
           </div>
 
-          <div className={styles.subField}>
-            <div className={styles.subLabel}>Тема</div>
-            <Select
-              placeholder="Оберіть тему"
-              value={selectedTheme}
-              onChange={setSelectedTheme}
-              options={themes.map(t => ({ label: t.title, value: t.id.toString()}))}
-              className={styles.fullWidth}
-              size="middle"
-              allowClear
-              showSearch
-              notFoundContent="Теми не знайдені"
-              loading={loading}
-            />
+          <div className={styles.section}>
+            <div className={styles.sectionTitle}>Регіон</div>
+            <div className={styles.scrollBox}>
+              <Select
+                mode="multiple"
+                placeholder="Оберіть регіони"
+                value={selectedRegions}
+                onChange={setSelectedRegions}
+                options={regions.map(r => ({
+                  label: r.title,
+                  value: r.id.toString()
+                }))}
+                className={styles.fullWidth}
+                size="middle"
+                showSearch
+                notFoundContent="Регіони не знайдені"
+                loading={loading}
+              />
+            </div>
+
+            <div className={styles.subField}>
+              <div className={styles.subLabel}>Тема</div>
+              <Select
+                placeholder="Оберіть тему"
+                value={selectedTheme}
+                onChange={setSelectedTheme}
+                options={themes.map(t => ({ label: t.title, value: t.id.toString()}))}
+                className={styles.fullWidth}
+                size="middle"
+                allowClear
+                showSearch
+                notFoundContent="Теми не знайдені"
+                loading={loading}
+              />
+            </div>
           </div>
         </div>
-      </div>
-
-      {/* Теги */}
-      <div className={styles.section}>
-        <div className={styles.sectionTitle}>Теги ( , )</div>
-        <TextArea
-          rows={2}
-          value={tags}
-          onChange={(e) => setTags(e.target.value)}
-          placeholder="Львівщина, полювання, ... "
-        />
-      </div>
-
-      {/* Автори */}
-      <div className={styles.flexRow}>
+        {/* Теги */}
         <div className={styles.section}>
-          <div className={styles.sectionTitle}>Автор</div>
-          <div className={styles.twoCols}>
+          <div className={styles.sectionTitle}>Теги ( , )</div>
+          <TextArea
+            rows={2}
+            value={tags}
+            onChange={(e) => setTags(e.target.value)}
+            placeholder="Львівщина, полювання, ... "
+          />
+        </div>
+
+      </div>
+      <div className={styles.sidebarBox}>
+
+
+        {/* Автори */}
+        <div className={styles.flexRow}>
+          <div className={styles.section}>
+            <div className={styles.sectionTitle}>Автор</div>
+            <div className={styles.twoCols}>
 
               <div className={styles.subLabel}>Автор / журналіст:</div>
               <Select
@@ -479,44 +474,44 @@ export default function NewsEditorSidebar({ newsId, articleData, menuData }: New
                 loading={loading}
               />
             </div>
-          <Checkbox
-            className={styles.mt8}
-            checked={showAuthorInfo}
-            onChange={(e) => setShowAuthorInfo(e.target.checked)}
-          >
-            Відображати інформацію про автора
-          </Checkbox>
+            <Checkbox
+              className={styles.mt8}
+              checked={showAuthorInfo}
+              onChange={(e) => setShowAuthorInfo(e.target.checked)}
+            >
+              Відображати інформацію про автора
+            </Checkbox>
+          </div>
+
+          <div className={styles.section}>
+            <div className={styles.sectionTitle}>Пріоритет статті</div>
+            <Select
+              options={PRIORITY_OPTIONS}
+              value={priority}
+              onChange={setPriority}
+              className={styles.fullWidth}
+            />
+          </div>
         </div>
 
+        {/* Додаткові параметри */}
         <div className={styles.section}>
-              <div className={styles.sectionTitle}>Пріоритет статті</div>
-              <Select
-                options={PRIORITY_OPTIONS}
-                value={priority}
-                onChange={setPriority}
-                className={styles.fullWidth}
-              />
-        </div>
-      </div>
+          <div className={styles.sectionTitle}>Додаткові параметри</div>
 
-      {/* Додаткові параметри */}
-      <div className={styles.section}>
-        <div className={styles.sectionTitle}>Додаткові параметри</div>
-
-        <div className={styles.checkboxGrid}>
-          <Checkbox
-            checked={mainInRubric}
-            onChange={(e) => setMainInRubric(e.target.checked)}
-          >
-            Головна стрічка
-          </Checkbox>
-          <Checkbox
-            checked={mainFeed}
-            onChange={(e) => setMainFeed(e.target.checked)}
-          >
-            Не транслювати в RSS додати
-          </Checkbox>
-        </div>
+          <div className={styles.checkboxGrid}>
+            <Checkbox
+              checked={mainInRubric}
+              onChange={(e) => setMainInRubric(e.target.checked)}
+            >
+              Головна стрічка
+            </Checkbox>
+            <Checkbox
+              checked={mainFeed}
+              onChange={(e) => setMainFeed(e.target.checked)}
+            >
+              Не транслювати в RSS додати
+            </Checkbox>
+          </div>
         </div>
 
         {/* Час публікації */}
@@ -557,7 +552,9 @@ export default function NewsEditorSidebar({ newsId, articleData, menuData }: New
             type="primary"
             size="large"
             icon={<SaveOutlined/>}
-            onClick={onSave}
+            onClick={async () => {
+              onSave();
+            }}
             loading={saving}
             disabled={saving}
             className={styles.greenBtn}
@@ -579,6 +576,9 @@ export default function NewsEditorSidebar({ newsId, articleData, menuData }: New
             </Button>
           )}
         </div>
+      </div>
+
+
 
       {/* Модалка для вибору зображень */}
       <ImagePickerModal
