@@ -57,6 +57,30 @@
   margin-bottom: 24px;
 }
 
+/* Галерея з мініатюрами під головним фото */
+.galleryThumbs {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+  overflow-x: auto;
+  padding: 2px 0px;
+}
+
+.galleryThumb {
+  width: 100px;
+  height: 70px;
+  object-fit: cover;
+  border-radius: 6px;
+  cursor: pointer;
+  opacity: 0.8;
+  transition: opacity 0.2s ease, outline 0.2s ease;
+}
+
+.galleryThumbActive {
+  opacity: 1;
+  outline: 2px solid var(--color-accent);
+}
+
 .mainImage {
   cursor: pointer;
   width: 100%;
@@ -477,6 +501,11 @@
   .mainImage {
     max-height: 400px;
   }
+
+  .galleryThumb {
+    width: 80px;
+    height: 56px;
+  }
   
   .mainImageVertical {
     max-height: 400px;
@@ -522,6 +551,11 @@
   
   .mainImage {
     max-height: 300px;
+  }
+
+  .galleryThumb {
+    width: 68px;
+    height: 48px;
   }
   
   .mainImageVertical {

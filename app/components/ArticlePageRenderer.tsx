@@ -112,6 +112,7 @@ const ArticlePageRenderer: React.FC<ArticlePageRendererProps> = ({ article, load
   const [allImages, setAllImages] = useState<string[]>([]);
   const [isShowCarousel, setIsShowCarousel] = useState<boolean>(false);
   const [startIndex, setStartIndex] = useState<number>(0);
+  const [activeAbsImageIndex, setActiveAbsImageIndex] = useState<number>(0);
 
   const carouselRef = useRef<any>(null);
   const { isMobile } = useMobileContext();
@@ -240,7 +241,8 @@ const ArticlePageRenderer: React.FC<ArticlePageRendererProps> = ({ article, load
           );
         }
 
-        if(article?.images_data.length === 0) {
+        // Якщо масив зображень відсутній або порожній — лише текст
+        if(!article?.images_data || article?.images_data.length === 0) {
           return (
             <div
               key={index}
@@ -248,7 +250,7 @@ const ArticlePageRenderer: React.FC<ArticlePageRendererProps> = ({ article, load
               dangerouslySetInnerHTML={{__html: article?.nbody || ''}}
             />
           )
-        } else if (article?.images_data.length === 1) {
+        } else if (article?.images_data?.length === 1) {
           const imageUrl = getUniversalNewsImage(article, 'full') || getUniversalNewsImage(article);
           return (
             <>
@@ -279,95 +281,100 @@ const ArticlePageRenderer: React.FC<ArticlePageRendererProps> = ({ article, load
             ;
         } else {
           const blocks = parseNbody(article?.nbody || '');
-          const currentImages: string[] = [];
+          // Збираємо всі індекси зображень з усіх груп (залишаємо групування в даних, але показуємо єдиною галереєю)
+          const combinedIndexesZeroBased: number[] = blocks
+            .filter((b: any) => b.type === 'images')
+            .flatMap((b: any) => (b.content as number[]));
+
+          // Текст без плейсхолдерів
+          const cleanedHtml = blocks
+            .map((b: any) => (b.type === 'text' ? (b.content as string) : ''))
+            .join('');
+
+          // Обчислюємо активний абсолютний індекс (у масиві images_data), за замовчуванням перше з комбінації
+          const firstAbs = (combinedIndexesZeroBased[0] ?? 0) + 1;
+          const activeAbs = activeAbsImageIndex || firstAbs;
+
+          const getAbsUrl = (absIndex: number) => {
+            const img = article?.images_data?.[absIndex];
+            return img ? getImageFromImageData(img, 'full') : undefined;
+          };
+
+          const activeUrl = getAbsUrl(activeAbs) ?? placeholderImage;
+          const activeTitle = article.images_data?.[activeAbs]?.title;
 
           return (
-            <div key={index} className={styles.articleImage}>
-              {blocks.map((b, idx) => {
-                if (b.type === 'text') {
-                  return <p key={idx} className={styles.paragraph}
-                            dangerouslySetInnerHTML={{__html: b.content as string}}/>;
-                }
-
-                // Рендер картинок
-                const indices = (b.content as number[]).map(i => i + 1);
-
-                return (
-                  <div key={idx} style={{ display: 'flex', flexWrap: 'wrap', gap: '30px', marginBottom: '16px' }}>
-                    {indices.map((i, imgIdx) => {
-                      const img = article.images_data[i];
-                      if (!img) return null;
-                      const imgUrl = getImageFromImageData(img,'full')
-                      if (imgUrl) currentImages.push(imgUrl);
-
+            <>
+              <div key={`${index}-gallery`} className={styles.articleImage}>
+                <SmartImage
+                  src={activeUrl}
+                  alt={activeTitle || 'Image'}
+                  width={800}
+                  height={500}
+                  priority={true}
+                  onClick={() => {
+                    setStartIndex(activeAbs);
+                    setIsShowCarousel(true);
+                  }}
+                />
+                {(activeTitle || null) && (
+                  <div className={styles.imageCredits}>{activeTitle}</div>
+                )}
+                {combinedIndexesZeroBased.length > 1 && (
+                  <div className={styles.galleryThumbs}>
+                    {combinedIndexesZeroBased.map((zeroBasedIdx: number, tIdx: number) => {
+                      const abs = zeroBasedIdx + 1;
+                      const url = getAbsUrl(abs);
+                      if (!url) return null;
+                      const isActive = abs === activeAbs;
                       return (
-                        <div key={`${idx}-${imgIdx}`} style={{ display: 'flex', flexDirection: 'column', gap: '5px', width: '100%' }}>
-                          <SmartImage 
-                            src={imgUrl ?? placeholderImage} 
-                            alt={img.title || 'Image'}
-                            width={800}
-                            height={500}
-                            priority={true}
-                            onClick={() => {
-                              setStartIndex(i);
-                              setIsShowCarousel(true);
-                            }}
-                          />
-
-                          {img.title && <div className={styles.imageCredits}>{img.title}</div>}
-                        </div>
+                        <img
+                          key={`thumb-${tIdx}`}
+                          src={url}
+                          alt={article.images_data?.[abs]?.title || 'thumb'}
+                          className={`${styles.galleryThumb} ${isActive ? styles.galleryThumbActive : ''}`}
+                          onClick={() => setActiveAbsImageIndex(abs)}
+                          loading="lazy"
+                        />
                       );
                     })}
                   </div>
-                );
-              })}
-              {
-                isShowCarousel && (
-                  <div className={styles.backDrop} onClick={(e) => {
+                )}
+              </div>
+
+              <div
+                key={`${index}-content`}
+                className={styles.paragraph}
+                dangerouslySetInnerHTML={{ __html: cleanedHtml }}
+              />
+
+              {isShowCarousel && (
+                <div
+                  className={styles.backDrop}
+                  onClick={(e) => {
                     if (e.target === e.currentTarget) {
                       setIsShowCarousel(false);
                     }
-                  }}>
-                    <div className={styles.carouselBox} >
-                      <Carousel
-                        ref={carouselRef}
-                        dots={false}
-                        initialSlide={startIndex}
-                      >
-                        {allImages.map((url, idx) => (
-                          <div key={idx} className={styles.carouselItem}>
-                            <img alt={'img'} src={url} loading="lazy" style={{width: '100%', borderRadius: '8px'}}/>
-                          </div>
-                        ))}
-                      </Carousel>
-                      <button
-                        onClick={() => carouselRef.current?.next()}
-                        className={styles.rightArrowButton}
-                      >
-
-                        <Image
-                          src={roundArrowRight}
-                          alt="Right arrow"
-                          width={44}
-                          height={44}
-                        />
-                      </button>
-                      <button
-                        onClick={() => carouselRef.current?.prev()}
-                        className={styles.leftArrowButton}
-                      >
-                        <Image
-                          src={roundArrowLeft}
-                          alt="Left arrow"
-                          width={44}
-                          height={44}
-                        />
-                      </button>
-                    </div>
+                  }}
+                >
+                  <div className={styles.carouselBox}>
+                    <Carousel ref={carouselRef} dots={false} initialSlide={startIndex}>
+                      {allImages.map((url, idx) => (
+                        <div key={idx} className={styles.carouselItem}>
+                          <img alt={'img'} src={url} loading="lazy" style={{ width: '100%', borderRadius: '8px' }} />
+                        </div>
+                      ))}
+                    </Carousel>
+                    <button onClick={() => carouselRef.current?.next()} className={styles.rightArrowButton}>
+                      <Image src={roundArrowRight} alt="Right arrow" width={44} height={44} />
+                    </button>
+                    <button onClick={() => carouselRef.current?.prev()} className={styles.leftArrowButton}>
+                      <Image src={roundArrowLeft} alt="Left arrow" width={44} height={44} />
+                    </button>
                   </div>
-                )
-              }
-            </div>
+                </div>
+              )}
+            </>
           );
         }
 
