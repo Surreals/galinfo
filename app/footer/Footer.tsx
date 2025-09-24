@@ -146,7 +146,7 @@ export default function Footer() {
               </div>
 
               <div className={styles.gridColumn}>
-                {additionalItems.slice(0, 3).map((item) => (
+                {additionalItems.slice(0, 2).map((item) => (
                   <Link key={item.param} href={item.link} className={styles.link}>
                     {item.title.toUpperCase()}
                   </Link>

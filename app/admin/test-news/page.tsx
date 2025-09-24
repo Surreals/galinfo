@@ -29,7 +29,6 @@ export default function AdminTestNewsPage() {
     { value: 'photo', label: 'Фоторепортажі' },
     { value: 'video', label: 'Відео' },
     { value: 'audio', label: 'Аудіо' },
-    { value: 'announces', label: 'Анонси' },
     { value: 'blogs', label: 'Блоги' }
   ];
 

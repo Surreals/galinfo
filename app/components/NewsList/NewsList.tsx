@@ -113,7 +113,6 @@ export default function NewsList({
               <option value="photo">Фоторепортажі</option>
               <option value="video">Відео</option>
               <option value="audio">Аудіо</option>
-              <option value="announces">Анонси</option>
               <option value="blogs">Блоги</option>
             </select>
           </div>
