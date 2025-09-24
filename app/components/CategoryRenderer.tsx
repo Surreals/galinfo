@@ -78,11 +78,11 @@ const CategoryRenderer: React.FC<CategoryRendererProps> = ({ category }) => {
   }, [isTag, category]);
   
 
-  // Використовуємо відповідний хук для поточної категорії (єдиний запит на 37 новин)
+  // Використовуємо відповідний хук для поточної категорії (запитуємо на 1 новину більше для вибору головної)
   const rubricHook = useNewsByRubric({
     rubric: categoryId?.toString() || '',
     page: 1,
-    limit: 37, // Запитуємо 37 новин одразу
+    limit: 38, // Було 37: +1 для головної новини
     lang: '1',
     approved: true,
     type: undefined,
@@ -92,7 +92,7 @@ const CategoryRenderer: React.FC<CategoryRendererProps> = ({ category }) => {
   // Хук для спеціальних тем (коли categoryId є одним із зазначених спеціальних ID)
   const specialThemeHook = useSpecialThemesNewsById(categoryId ?? 0, {
     page: 1,
-    limit: 37,
+    limit: 38, // Було 37: +1 для головної новини
     lang: '1',
     approved: true,
     autoFetch: categoryId !== null && isSpecialTheme
@@ -101,24 +101,24 @@ const CategoryRenderer: React.FC<CategoryRendererProps> = ({ category }) => {
   const regionHook = useNewsByRegion({
     region: categoryId?.toString() || '',
     page: 1,
-    limit: 37, // Запитуємо 37 новин одразу
+    limit: 38, // Було 37: +1 для головної новини
     lang: '1',
     approved: true,
     type: undefined,
     autoFetch: categoryId !== null && isRegion
   });
 
-  // Хук для всіх новин (коли categoryId = 0) - завантажуємо 57 новин
+  // Хук для всіх новин (коли categoryId = 0) - завантажуємо на 1 більше (58)
   const allNewsHook = useLatestNews({
     page: 1,
-    limit: 57, // Запитуємо 57 новин одразу для категорії "all"
+    limit: 58, // Було 57: +1 для головної новини
     lang: '1',
     autoFetch: isAllCategory
   });
 
-  // Хук для важливих новин (коли categoryId = -1) - завантажуємо 57 новин
+  // Хук для важливих новин (коли categoryId = -1) - завантажуємо на 1 більше (58)
   const importantNewsCategoryHook = useImportantNews({
-    limit: 57, // Запитуємо 57 новин одразу для категорії "important" (як і для "all")
+    limit: 58, // Було 57: +1 для головної новини
     lang: '1',
     autoFetch: isImportantCategory
   });
@@ -128,7 +128,7 @@ const CategoryRenderer: React.FC<CategoryRendererProps> = ({ category }) => {
     tagId: isTag ? undefined : undefined, // Не передаємо tagId
     tagName: isTag ? category : 'dummy', // Для звичайних категорій передаємо dummy значення
     page: 1,
-    limit: 37,
+    limit: 38, // Було 37: +1 для головної новини
     lang: '1',
     autoFetch: isTag && Boolean(category) // Автозавантаження тільки для тегів
   });
@@ -165,7 +165,7 @@ const CategoryRenderer: React.FC<CategoryRendererProps> = ({ category }) => {
   // Використовуємо оригінальний порядок новин (за датою)
   const sortedCurrentCategoryData = transformedCurrentCategoryData;
 
-  // Функція для отримання головної новини
+  // Функція для отримання головної новини (пріоритет: nweight > 0 з фото → будь-яка з фото)
   const getMainNewsItem = () => {
     let mainNewsItem = null;
 
@@ -229,14 +229,13 @@ const CategoryRenderer: React.FC<CategoryRendererProps> = ({ category }) => {
         }
       }
     } else {
-      // Для інших категорій шукаємо першу новину з фото та nweight > 0
+      // Для інших категорій: nweight > 0 → будь-яка з фото
       const importantNewsWithPhoto = sortedCurrentCategoryData.find(news => 
         news.hasPhoto && news.nweight > 0
       );
       if (importantNewsWithPhoto) {
         mainNewsItem = importantNewsWithPhoto;
       } else {
-        // Якщо немає важливих новин з фото, шукаємо будь-яку новину з фото
         const newsWithPhoto = sortedCurrentCategoryData.find(news => news.hasPhoto);
         if (newsWithPhoto) {
           mainNewsItem = newsWithPhoto;
