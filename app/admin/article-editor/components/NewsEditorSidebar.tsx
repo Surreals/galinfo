@@ -38,6 +38,7 @@ import {
 import { ArticleData } from "@/app/hooks/useArticleData";
 import { useArticleSave } from "@/app/hooks/useArticleSave";
 import { getImageUrl, ensureFullImageUrl } from "@/app/lib/imageUtils";
+import ImagePickerModal from "./ImagePickerModal";
 
 const { TextArea } = Input;
 const { Title } = Typography;
@@ -60,6 +61,32 @@ export default function NewsEditorSidebar({ isEditing, newsId, articleData, onNb
     loading, 
     error 
   } = useArticleEditorData({ lang: 'ua' });
+
+  // Стан для модалки зображень
+  const [isImageModalOpen, setIsImageModalOpen] = useState(false);
+
+  // Функції для роботи з модалкою зображень
+  const openImagePicker = () => {
+    setIsImageModalOpen(true);
+  };
+
+  const closeImagePicker = () => {
+    setIsImageModalOpen(false);
+  };
+
+  const handleImageSelect = (image: any) => {
+    // Додаємо вибране зображення до списку файлів
+    const newFile = {
+      uid: `image-${Date.now()}`,
+      name: image.filename,
+      status: 'done' as const,
+      url: image.url,
+      thumbnail_url: image.thumbnail_url,
+    };
+    
+    setFileList(prev => [...prev, newFile]);
+    closeImagePicker();
+  };
 
   // Фільтруємо дані
   const rubrics = getRubrics(categories);
@@ -322,6 +349,15 @@ export default function NewsEditorSidebar({ isEditing, newsId, articleData, onNb
             <div>Додати</div>
           </div>
         </Upload>
+        <Button
+          type="default"
+          size="small"
+          icon={<PictureOutlined />}
+          onClick={openImagePicker}
+          style={{ marginTop: '8px', width: '100%' }}
+        >
+          Вибрати з галереї
+        </Button>
       </div>
 
       {/* Тип статті */}
@@ -627,6 +663,14 @@ export default function NewsEditorSidebar({ isEditing, newsId, articleData, onNb
           </Button>
         )}
       </div>
+
+      {/* Модалка для вибору зображень */}
+      <ImagePickerModal
+        isOpen={isImageModalOpen}
+        onClose={closeImagePicker}
+        onSelect={handleImageSelect}
+        currentImage={null}
+      />
     </aside>
   );
 }

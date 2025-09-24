@@ -226,7 +226,6 @@ export default function EditorJSClient({
       Checklist,
       InlineCode,
       Quote,
-      ImageTool,
       Code,
       Delimiter,
       Embed,
@@ -254,7 +253,6 @@ export default function EditorJSClient({
       import("@editorjs/checklist"),
       import("@editorjs/inline-code"),
       import("@editorjs/quote"),
-      import("@editorjs/image"),
       import("@editorjs/code"),
       import("@editorjs/delimiter"),
       import("@editorjs/embed"),
@@ -363,14 +361,6 @@ export default function EditorJSClient({
         },
         
         // Media and embeds
-        image: {
-          class: (ImageTool as any).default ?? (ImageTool as any),
-          config: {
-            uploader: {
-              uploadByUrl: async (url: string) => ({ success: 1, file: { url } }),
-            },
-          },
-        },
         simpleImage: {
           class: (SimpleImage as any).default ?? (SimpleImage as any),
         },
