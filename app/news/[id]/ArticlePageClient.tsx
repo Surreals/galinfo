@@ -13,7 +13,7 @@ export const ArticlePageClient: React.FC<ArticlePageClientProps> = ({ urlkey, id
   const { data, loading } = useCompleteNewsData({
     id,
     urlkey,
-    articleType: 'news',
+    articleType: 'mixed', // Використовуємо 'mixed' для пошуку як новин, так і статей
   });
 
   const article = data?.article;

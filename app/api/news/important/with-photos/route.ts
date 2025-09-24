@@ -62,7 +62,8 @@ export async function GET(request: NextRequest) {
       'a_news.udate < UNIX_TIMESTAMP()', // Only published
       'a_news.approved = 1',             // Only approved
       'a_news.lang = ?',                 // Language
-      'a_news.nweight > 0'               // Important news only
+      'a_news.nweight > 0',              // Important news only
+      'a_news.udate > UNIX_TIMESTAMP(DATE_SUB(NOW(), INTERVAL 1 YEAR))' // Only news from last year
     ];
     
     let queryParams: any[] = [lang];
@@ -86,16 +87,15 @@ export async function GET(request: NextRequest) {
 
     // Filter by category/rubric
     if (category) {
-      whereConditions.push('FIND_IN_SET(?, a_news.rubric) > 0');
-      queryParams.push(category);
-      
-      // Get category metadata
+      // Get category metadata first to get the ID
+      let categoryId = category;
       try {
         const [categoryData] = await executeQuery(
           'SELECT id, param, title FROM a_cats WHERE param = ? AND lng = ?',
           [category, lang]
         );
         if (categoryData && categoryData.length > 0) {
+          categoryId = categoryData[0].id.toString(); // Use the numeric ID from database
           metadata.category = {
             id: categoryData[0].param,
             name: categoryData[0].title
@@ -104,20 +104,23 @@ export async function GET(request: NextRequest) {
       } catch (err) {
         console.warn('Failed to fetch category metadata:', err);
       }
+      
+      // Use the category ID (either from lookup or original parameter if it's already numeric)
+      whereConditions.push('FIND_IN_SET(?, a_news.rubric) > 0');
+      queryParams.push(categoryId);
     }
 
     // Filter by region
-    if (region) {
-      whereConditions.push('FIND_IN_SET(?, a_news.rubric) > 0');
-      queryParams.push(region);
-      
-      // Get region metadata
+    if (region && region.trim() !== '') {
+      // Get region metadata first to get the ID
+      let regionId = region;
       try {
         const [regionData] = await executeQuery(
           'SELECT id, param, title FROM a_cats WHERE param = ? AND cattype = 3 AND lng = ?',
           [region, lang]
         );
         if (regionData && regionData.length > 0) {
+          regionId = regionData[0].id.toString(); // Use the numeric ID from database
           metadata.region = {
             id: regionData[0].param,
             name: regionData[0].title
@@ -126,12 +129,16 @@ export async function GET(request: NextRequest) {
       } catch (err) {
         console.warn('Failed to fetch region metadata:', err);
       }
+      
+      // Use the region ID (either from lookup or original parameter if it's already numeric)
+      whereConditions.push('FIND_IN_SET(?, a_news.rubric) > 0');
+      queryParams.push(regionId);
     }
 
     // Filter by tag
-    if (tagId) {
+    if (tagId && tagId !== '0') {
       const tagIdNum = parseInt(tagId);
-      if (!isNaN(tagIdNum)) {
+      if (!isNaN(tagIdNum) && tagIdNum > 0) {
         joins.push('INNER JOIN a_tags_map ON a_news.id = a_tags_map.newsid');
         whereConditions.push('a_tags_map.tagid = ?');
         queryParams.push(tagIdNum);
@@ -155,9 +162,9 @@ export async function GET(request: NextRequest) {
     }
 
     // Filter by special theme
-    if (specialThemeId) {
+    if (specialThemeId && specialThemeId !== '0') {
       const themeIdNum = parseInt(specialThemeId);
-      if (!isNaN(themeIdNum)) {
+      if (!isNaN(themeIdNum) && themeIdNum > 0) {
         // Get special theme info first
         try {
           const [themeData] = await executeQuery(

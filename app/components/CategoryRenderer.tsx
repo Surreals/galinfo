@@ -149,7 +149,7 @@ const CategoryRenderer: React.FC<CategoryRendererProps> = ({ category }) => {
     {
       lang: '1',
       limit: 1,
-      autoFetch: isTag && Boolean(tagData?.id) // Автозавантаження тільки для тегів з ID
+      autoFetch: isTag && Boolean(tagData?.id && tagData.id > 0) // Автозавантаження тільки для тегів з валідним ID
     }
   );
 
@@ -168,7 +168,7 @@ const CategoryRenderer: React.FC<CategoryRendererProps> = ({ category }) => {
     {
       lang: '1',
       limit: 1,
-      autoFetch: isRegion && Boolean(categoryId)
+      autoFetch: isRegion && Boolean(categoryId && categoryId > 0)
     }
   );
 
@@ -177,7 +177,7 @@ const CategoryRenderer: React.FC<CategoryRendererProps> = ({ category }) => {
     {
       lang: '1',
       limit: 1,
-      autoFetch: isSpecialTheme && Boolean(categoryId)
+      autoFetch: isSpecialTheme && Boolean(categoryId && categoryId > 0)
     }
   );
 
