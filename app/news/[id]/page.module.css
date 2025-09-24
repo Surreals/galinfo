@@ -47,7 +47,7 @@
 .articleLead {
   font-size: 18px;
   line-height: 1.6;
-  color: var(--color-secondary);
+  color: var(--color-primary);
   font-weight: 500;
   margin-bottom: 0;
 }

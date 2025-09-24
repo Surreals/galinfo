@@ -66,13 +66,22 @@ export async function GET(
       );
     }
     
-    // Отримання типу новини
-    const newsType = ARTICLE_TYPES[articleType as keyof typeof ARTICLE_TYPES];
-    if (!newsType) {
-      return NextResponse.json(
-        { error: 'Invalid article type' },
-        { status: 400 }
-      );
+    // Отримання типу новини - підтримка множинних типів
+    let newsTypes: number[] = [];
+    
+    if (articleType === 'mixed') {
+      // Якщо тип "mixed", то шукаємо і новини (1) і статті (2)
+      newsTypes = [1, 2];
+    } else {
+      // Звичайна логіка для одного типу
+      const newsType = ARTICLE_TYPES[articleType as keyof typeof ARTICLE_TYPES];
+      if (!newsType) {
+        return NextResponse.json(
+          { error: 'Invalid article type' },
+          { status: 400 }
+        );
+      }
+      newsTypes = [newsType];
     }
     
     // Основний запит для отримання новини з усіма даними
@@ -100,13 +109,13 @@ export async function GET(
       LEFT JOIN a_cats ON a_cats.id = a_news.region
       WHERE a_news.id = ? 
         AND a_news.urlkey = ? 
-        AND a_news.ntype = ? 
+        AND a_news.ntype IN (${newsTypes.map(() => '?').join(',')})
         AND a_news.lang = ?
         AND a_news.approved = 1
         AND a_news.udate < UNIX_TIMESTAMP()
     `;
     
-    const [newsData] = await executeQuery(newsQuery, [id, urlkey, newsType, lang]);
+    const [newsData] = await executeQuery(newsQuery, [id, urlkey, ...newsTypes, lang]);
     
     if (!newsData || newsData.length === 0) {
       return NextResponse.json(
@@ -203,7 +212,7 @@ export async function GET(
         LEFT JOIN a_statcomm ON a_news.id = a_statcomm.id
         LEFT JOIN a_statview ON a_news.id = a_statview.id
         WHERE a_news.id != ? 
-          AND a_news.ntype = ?
+          AND a_news.ntype IN (${newsTypes.map(() => '?').join(',')})
           AND FIND_IN_SET(?, a_news.rubric) > 0
           AND a_news.lang = ?
           AND a_news.approved = 1
@@ -211,7 +220,7 @@ export async function GET(
         ORDER BY a_news.udate DESC
         LIMIT 5
       `;
-      const [relatedNewsData] = await executeQuery(relatedQuery, [id, newsType, news.rubric.split(',')[0], lang]);
+      const [relatedNewsData] = await executeQuery(relatedQuery, [id, ...newsTypes, news.rubric.split(',')[0], lang]);
       relatedNews = relatedNewsData;
     }
     
@@ -303,6 +312,7 @@ export async function GET(
       },
       meta: {
         type: articleType,
+        types: newsTypes,
         urlkey,
         id: parseInt(id),
         printUrl: `/${lang}/print/${new Date(news.ndate).toISOString().split('T')[0].split('-')[0]}/${new Date(news.ndate).toISOString().split('T')[0].split('-')[1]}/${new Date(news.ndate).toISOString().split('T')[0].split('-')[2]}/${urlkey}_${id}`,

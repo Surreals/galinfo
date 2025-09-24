@@ -68,7 +68,7 @@
 .title {
   font-family: 'Open Sans', sans-serif;
   font-weight: 600;
-  font-size: 12px;
+  font-size: 14px;
   line-height: 1.2;
   letter-spacing: 0.025em;
   height: 28px;
@@ -95,7 +95,7 @@
 .link {
   font-family: 'Open Sans', sans-serif;
   font-weight: 600;
-  font-size: 12px;
+  font-size: 14px;
   line-height: 1.2;
   letter-spacing: 0;
   display: block;
@@ -201,7 +201,7 @@
 }
 
 .andText {
-  font-size: 12px;
+  font-size: 14px;
   font-weight: 500;
   color: var(--color-white);
 }

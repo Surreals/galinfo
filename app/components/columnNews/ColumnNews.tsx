@@ -169,49 +169,8 @@ export default function ColumnNews({
     }
   ];
 
-  const generateRandomNews = (count: number) => {
-    const titles = [
-      "Зеленський підписав новий закон підписав новий закон підписав новий закон",
-      "В Україні прогнозують грози підписав новий закон ",
-      "Трамп дав нове інтерв'ю підписав новий закон",
-      "На Львівщині відкрили парк підписав новий закон",
-      "Вчені винайшли новий велосипед підписав новий закон підписав новий закон",
-      "Новий арт-проєкт у центрі Києва підписав новий закон підписав новий закон",
-    ];
-
-    const articleIds = [
-      "zelensky-new-law",
-      "ukraine-thunderstorms-forecast",
-      "trump-new-interview",
-      "lviv-region-park-opening",
-      "scientists-new-bicycle",
-      "kyiv-art-project"
-    ];
-
-    return Array.from({ length: count }, (_, index) => {
-      const formattedDate = new Date(
-        Date.now() - (index * 3600000) // 1 hour intervals
-      ).toLocaleString("uk-UA", {
-        day: "2-digit",
-        month: "long",
-        year: "numeric",
-        hour: "2-digit",
-        minute: "2-digit",
-      });
-      
-      return {
-        id: `random-${index + 1}`,
-        title: titles[index % titles.length],
-        data: formattedDate,
-        time: formattedDate,
-        imageUrl: '',
-        url: `/article/${articleIds[index % articleIds.length]}-${index + 1}`,
-      };
-    });
-  };
-
-  // Генеруємо дані для listNews тільки якщо не використовуємо реальні дані
-  const newsData = useRealData ? [] : generateRandomNews(newsQuantity);
+  // Використовуємо порожній масив замість генерації випадкових новин
+  const newsData: any[] = [];
 
   // Визначаємо, які дані використовувати
   let displayNews: ColumnNewsItem[] = [];
