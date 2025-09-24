@@ -64,6 +64,27 @@
   margin-top: 8px;
   overflow-x: auto;
   padding: 2px 0px;
+  /* Firefox custom scrollbar */
+  scrollbar-color: var(--color-accent) rgba(0, 0, 0, 0.08);
+  scrollbar-width: auto;
+}
+
+.galleryThumbs::-webkit-scrollbar {
+  height: 8px;
+}
+
+.galleryThumbs::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.08);
+  border-radius: 8px;
+}
+
+.galleryThumbs::-webkit-scrollbar-thumb {
+  background: var(--color-accent);
+  border-radius: 8px;
+}
+
+.galleryThumbs::-webkit-scrollbar-thumb:hover {
+  background: #a0063a;
 }
 
 .galleryThumb {
