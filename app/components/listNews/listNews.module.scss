@@ -255,3 +255,17 @@
   object-fit: contain;
   padding: 14px;
 }
+
+/* Тег "ВАЖЛИВО" */
+.importantTag {
+  display: inline-block;
+  background-color: var(--color-accent);
+  color: var(--color-white);
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 3px 6px;
+  border-radius: 3px;
+  margin: 6px 0 8px 0;
+}

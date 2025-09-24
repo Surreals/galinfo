@@ -267,6 +267,13 @@ function NewsCard({ news }: { news: NewsItem }) {
           </a>
         </h3>
         
+        {/* Мітка "Важливо" для новин без фото, але з nweight > 0 */}
+        {!hasImage && (news as any).nweight > 0 && (
+          <div className={styles.importantTag}>
+            ВАЖЛИВО
+          </div>
+        )}
+        
         {news.nsubheader && (
           <h4 className={styles.newsSubtitle}>{news.nsubheader}</h4>
         )}

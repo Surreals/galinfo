@@ -23,6 +23,7 @@ type NewsItem = {
   imageUrl?: string | null;
   imageUrls?: string[]; // Масив всіх доступних зображень
   url?: string;
+  important?: boolean; // Чи є новина важливою
 };
 
 type NewsListProps = {
@@ -119,6 +120,7 @@ export default function NewsList({
         time: item.ntime, // Залишаємо для сумісності, але використовуємо data
         imageUrl: imageUrl,
         url: `/news/${item.urlkey}_${item.id}`,
+        important: (item as any).nweight > 0, // Додаємо поле важливості
       };
     });
     displayLoading = apiLoading;
@@ -220,6 +222,12 @@ export default function NewsList({
                       )}
                       <div className={styles.textBlock}>
                         <p className={styles.itemTitle}>{item.title}</p>
+                        {/* Мітка "Важливо" для новин без фото, але з важливістю */}
+                        {!item.imageUrl && item.important && (
+                          <div className={styles.importantTag}>
+                            ВАЖЛИВО
+                          </div>
+                        )}
                         <p className={styles.itemTime}>{item.data}</p>
                       </div>
                     </a>
@@ -262,6 +270,12 @@ export default function NewsList({
                       )}
                       <div className={styles.textBlock}>
                         <p className={styles.itemTitle}>{item.title}</p>
+                        {/* Мітка "Важливо" для новин без фото, але з важливістю */}
+                        {!item.imageUrl && item.important && (
+                          <div className={styles.importantTag}>
+                            ВАЖЛИВО
+                          </div>
+                        )}
                         <p className={styles.itemTime}>{item.data}</p>
                       </div>
                     </>

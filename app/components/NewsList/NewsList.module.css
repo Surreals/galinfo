@@ -157,6 +157,20 @@
   font-weight: 600;
 }
 
+/* Тег "ВАЖЛИВО" */
+.importantTag {
+  display: inline-block;
+  background-color: var(--color-accent);
+  color: var(--color-white);
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 4px 8px;
+  border-radius: 4px;
+  margin: 8px 0 12px 0;
+}
+
 /* Тізер */
 .newsTeaser {
   margin: 0 0 20px 0;
