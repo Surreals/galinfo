@@ -60,7 +60,7 @@ export const heroInfoSchema = {
         widthPercent: 45,
         showMoreButton: false,
         useRealData: true,
-        noFallbackImages: true, // Не показувати fallback зображення для першого блоку
+        // noFallbackImages: true, // Не показувати fallback зображення для першого блоку
         apiParams: {
           page: 1,
           limit: 11,

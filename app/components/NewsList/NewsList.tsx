@@ -160,8 +160,8 @@ export default function NewsList({
 
       {/* Список новин */}
       <div className={styles.newsGrid}>
-        {data.news.map((news) => (
-          <NewsCard key={news.id} news={news} />
+        {data.news.map((news, index) => (
+          <NewsCard key={news.id} news={news} showImage={false} />
         ))}
       </div>
 
@@ -223,7 +223,7 @@ export default function NewsList({
 }
 
 // Компонент для окремої новини
-function NewsCard({ news }: { news: NewsItem }) {
+function NewsCard({ news, showImage = false }: { news: NewsItem; showImage?: boolean }) {
   const mainImage = getMainImage(news.images);
   const hasImage = hasImages(news.images);
   
@@ -252,10 +252,16 @@ function NewsCard({ news }: { news: NewsItem }) {
             alt={mainImage.title}
             className={styles.newsImageImg}
           />
+          {/* Мітка "Важливо" для важливих новин з фото */}
+          {(news as any).nweight > 0 && (
+            <div className={styles.importantTag}>
+              ВАЖЛИВО
+            </div>
+          )}
         </div>
       )}
       
-      <div className={styles.newsContent}>
+      <div className={`${styles.newsContent} ${!showImage && (news as any).nweight > 0 ? styles.importantNewsContent : ''}`}>
         <div className={styles.newsMeta}>
           <span className={styles.newsType}>{getNewsTypeLabel(news.ntype)}</span>
           <span className={styles.newsDate}>{formatFullNewsDate(news.ndate, news.ntime)}</span>
@@ -266,13 +272,6 @@ function NewsCard({ news }: { news: NewsItem }) {
             {news.nheader}
           </a>
         </h3>
-        
-        {/* Мітка "Важливо" для новин без фото, але з nweight > 0 */}
-        {!hasImage && (news as any).nweight > 0 && (
-          <div className={styles.importantTag}>
-            ВАЖЛИВО
-          </div>
-        )}
         
         {news.nsubheader && (
           <h4 className={styles.newsSubtitle}>{news.nsubheader}</h4>

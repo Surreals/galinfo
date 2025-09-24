@@ -94,6 +94,13 @@
   width: 100%;
 }
 
+/* Стилі для важливих новин - світло-рожевий фон */
+.importantNewsItem {
+  background-color: rgb(197 5 30 / 11%) !important;
+  border-radius: 6px;
+  padding: 12px !important;
+}
+
 
 
 /* Скелетон для завантаження */

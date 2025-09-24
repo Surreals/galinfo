@@ -210,24 +210,26 @@ export default function NewsList({
                             null
                           ) : (
                             // Показуємо тільки перше зображення (як раніше)
-                            <Image
-                              src={item.imageUrl || galinfoLogo}
-                              alt={item.title || 'GalInfo Logo'}
-                              width={200}
-                              height={150}
-                              className={`${styles.image} ${!item.imageUrl ? styles.placeholderImage : ''}`}
-                            />
+                            <div className={styles.imageWrapper}>
+                              <Image
+                                src={item.imageUrl || galinfoLogo}
+                                alt={item.title || 'GalInfo Logo'}
+                                width={200}
+                                height={150}
+                                className={`${styles.image} ${!item.imageUrl ? styles.placeholderImage : ''}`}
+                              />
+                              {/* Мітка "Важливо" для важливих новин з фото */}
+                              {item.important && (
+                                <div className={styles.importantTag}>
+                                  ВАЖЛИВО
+                                </div>
+                              )}
+                            </div>
                           )}
                         </>
                       )}
-                      <div className={styles.textBlock}>
+                      <div className={`${styles.textBlock} ${!showImagesAt.includes(index) && item.important ? styles.importantTextBlock : ''}`}>
                         <p className={styles.itemTitle}>{item.title}</p>
-                        {/* Мітка "Важливо" для новин без фото, але з важливістю */}
-                        {!item.imageUrl && item.important && (
-                          <div className={styles.importantTag}>
-                            ВАЖЛИВО
-                          </div>
-                        )}
                         <p className={styles.itemTime}>{item.data}</p>
                       </div>
                     </a>
@@ -258,24 +260,26 @@ export default function NewsList({
                             null
                           ) : (
                             // Показуємо тільки перше зображення (як раніше)
-                            <Image
-                              src={item.imageUrl || galinfoLogo}
-                              alt={item.title || 'GalInfo Logo'}
-                              width={200}
-                              height={150}
-                              className={`${styles.image} ${!item.imageUrl ? styles.placeholderImage : ''}`}
-                            />
+                            <div className={styles.imageWrapper}>
+                              <Image
+                                src={item.imageUrl || galinfoLogo}
+                                alt={item.title || 'GalInfo Logo'}
+                                width={200}
+                                height={150}
+                                className={`${styles.image} ${!item.imageUrl ? styles.placeholderImage : ''}`}
+                              />
+                              {/* Мітка "Важливо" для важливих новин з фото */}
+                              {item.important && (
+                                <div className={styles.importantTag}>
+                                  ВАЖЛИВО
+                                </div>
+                              )}
+                            </div>
                           )}
                         </>
                       )}
-                      <div className={styles.textBlock}>
+                      <div className={`${styles.textBlock} ${!showImagesAt.includes(index) && item.important ? styles.importantTextBlock : ''}`}>
                         <p className={styles.itemTitle}>{item.title}</p>
-                        {/* Мітка "Важливо" для новин без фото, але з важливістю */}
-                        {!item.imageUrl && item.important && (
-                          <div className={styles.importantTag}>
-                            ВАЖЛИВО
-                          </div>
-                        )}
                         <p className={styles.itemTime}>{item.data}</p>
                       </div>
                     </>

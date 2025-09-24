@@ -157,6 +157,7 @@ const CategoryRenderer: React.FC<CategoryRendererProps> = ({ category }) => {
     imageUrl: getNewsImage(item as any),
     imageAlt: item.nheader,
     isImportant: item.ntype === 1 || (item as any).nweight > 0,
+    important: (item as any).nweight > 0, // Додаємо поле important для ColumnNews
     nweight: (item as any).nweight || 0,
     summary: (item as any).nteaser || (item as any).nsubheader || '',
     hasPhoto: hasNewsPhoto(item)

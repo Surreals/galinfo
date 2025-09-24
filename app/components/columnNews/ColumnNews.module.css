@@ -154,6 +154,7 @@
 
 /* Контейнер зображення */
 .imageContainer {
+  position: relative;
   flex-shrink: 0;
   width: 270px;
   height: 270px;
@@ -162,6 +163,7 @@
 }
 
 .imageContainerSmall {
+  position: relative;
   flex-shrink: 0;
   width: 135px;
   height: 135px;
@@ -174,6 +176,23 @@
   height: 100%;
   object-fit: cover;
   border-radius: 8px;
+}
+
+/* Тег "ВАЖЛИВО" */
+.importantTag {
+  position: absolute;
+  top: 0;
+  left: 0;
+  border-bottom-right-radius: 8px;
+  background-color: var(--color-accent);
+  color: var(--color-white);
+  padding: 8px;
+  font-family: 'Open Sans', sans-serif;
+  font-weight: 600;
+  font-size: 10px;
+  line-height: 1.2;
+  text-transform: uppercase;
+  z-index: 1;
 }
 
 /* Стилі для фото при горизонтальному відображенні */

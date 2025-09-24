@@ -12,6 +12,7 @@ export interface NewsItem {
   date: string;
   time?: string; // Опціональне поле, оскільки час тепер включений в date
   url: string;
+  important?: boolean; // Чи є новина важливою
 }
 
 export interface AllNewsProps {
@@ -40,7 +41,8 @@ export default function AllNews({ news = [], isLoading = false, hideHeader = fal
     id: item.id.toString(),
     title: item.nheader,
     date: formatFullNewsDate(item.ndate, item.ntime),
-    url: generateArticleUrl(item as any)
+    url: generateArticleUrl(item as any),
+    important: (item as any).nweight > 0 // Додаємо поле важливості
   })) || [];
 
   // Мокові дані для fallback (будуть замінені на реальні дані)
@@ -218,7 +220,7 @@ export default function AllNews({ news = [], isLoading = false, hideHeader = fal
           ) : (
             // Відображення новин
             displayNews.map((item) => (
-              <article key={item.id} className={styles.newsItem}>
+              <article key={item.id} className={`${styles.newsItem} ${item.important ? styles.importantNewsItem : ''}`}>
                 <Link href={item.url} className={styles.newsLink}>
                   <h3 className={styles.newsTitle}>{item.title}</h3>
                   <time className={styles.newsDate}>

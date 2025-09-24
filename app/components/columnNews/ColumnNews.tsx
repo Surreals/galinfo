@@ -22,6 +22,7 @@ export interface ColumnNewsItem {
   url: string;
   imageUrl: string | null;
   imageAlt: string;
+  important?: boolean; // Чи є новина важливою
 }
 
 export interface ColumnNewsProps {
@@ -261,6 +262,12 @@ export default function ColumnNews({
                         height={350}
                         className={`${styles.newsImage} ${!item.imageUrl ? styles.placeholderImage : ''}`}
                       />
+                      {/* Мітка "Важливо" для важливих новин */}
+                      {item.important && (
+                        <div className={styles.importantTag}>
+                          ВАЖЛИВО
+                        </div>
+                      )}
                     </div>
                     <div className={smallImg ? styles.contentSmall : styles.content}>
                       <h3 className={smallImg ? styles.newsTitleSmall : styles.newsTitle}>{item.title}</h3>

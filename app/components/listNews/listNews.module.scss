@@ -256,16 +256,33 @@
   padding: 14px;
 }
 
-/* Тег "ВАЖЛИВО" */
+/* Стилі для важливих новин без фото - світло-рожевий фон */
+.importantTextBlock {
+  background-color: rgb(197 5 30 / 11%) !important;
+  border-radius: 6px;
+  padding: 12px !important;
+  margin: 0 !important;
+}
+
+/* Обгортка для зображення з міткою */
+.imageWrapper {
+  position: relative;
+  width: 100%;
+}
+
+/* Тег "ВАЖЛИВО" на зображеннях */
 .importantTag {
-  display: inline-block;
+  position: absolute;
+  top: 0;
+  left: 0;
+  border-bottom-right-radius: 6px;
   background-color: var(--color-accent);
   color: var(--color-white);
+  padding: 8px;
+  font-family: 'Open Sans', sans-serif;
+  font-weight: 600;
   font-size: 10px;
-  font-weight: 700;
+  line-height: 1.2;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
-  padding: 3px 6px;
-  border-radius: 3px;
-  margin: 6px 0 8px 0;
+  z-index: 1;
 }
