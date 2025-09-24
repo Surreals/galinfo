@@ -346,7 +346,7 @@ const ArticlePageRenderer: React.FC<ArticlePageRendererProps> = ({ article, load
               {article?.tags?.map((tag: any, index: number) => (
                 <a
                   key={tag.id || index}
-                  href={`/${encodeURIComponent(tag.tag)}`}
+                  href={`/tags/${encodeURIComponent(tag.tag)}`}
                   className={styles.tag}
                   style={{
                     textDecoration: 'none',
@@ -355,7 +355,7 @@ const ArticlePageRenderer: React.FC<ArticlePageRendererProps> = ({ article, load
                   }}
                   onClick={(e) => {
                     e.preventDefault();
-                    window.location.href = `/${encodeURIComponent(tag.tag)}`;
+                    window.location.href = `/tags/${encodeURIComponent(tag.tag)}`;
                   }}
                 >
                   {tag.tag}
