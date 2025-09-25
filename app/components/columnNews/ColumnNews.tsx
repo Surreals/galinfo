@@ -187,7 +187,9 @@ export default function ColumnNews({
       date: formatFullNewsDate(item.ndate, item.ntime),
       url: `/news/${item.urlkey}_${item.id}`,
       imageUrl: getUniversalNewsImageIntxt(item),
-      imageAlt: item.nheader
+      imageAlt: item.nheader,
+      // Прапорець важливості для бейджа
+      important: ((item as any).nweight ?? 0) > 0
     }));
     displayLoading = apiLoading;
   } else if (news.length > 0) {
