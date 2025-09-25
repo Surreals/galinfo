@@ -398,6 +398,48 @@ export async function updateNews(id: number, data: Partial<NewsData>): Promise<b
       updateValues.push(data.userid || 0);
     }
     
+    // Boolean fields
+    if (data.showauthor !== undefined) {
+      updateFields.push('showauthor = ?');
+      updateValues.push(data.showauthor ? 1 : 0);
+    }
+    if (data.hiderss !== undefined) {
+      updateFields.push('hiderss = ?');
+      updateValues.push(data.hiderss ? 1 : 0);
+    }
+    if (data.rated !== undefined) {
+      updateFields.push('rated = ?');
+      updateValues.push(data.rated ? 1 : 0);
+    }
+    if (data.photo !== undefined) {
+      updateFields.push('photo = ?');
+      updateValues.push(data.photo ? 1 : 0);
+    }
+    if (data.video !== undefined) {
+      updateFields.push('video = ?');
+      updateValues.push(data.video ? 1 : 0);
+    }
+    if (data.approved !== undefined) {
+      updateFields.push('approved = ?');
+      updateValues.push(data.approved ? 1 : 0);
+    }
+    if (data.nocomment !== undefined) {
+      updateFields.push('nocomment = ?');
+      updateValues.push(data.nocomment ? 1 : 0);
+    }
+    if (data.suggest !== undefined) {
+      updateFields.push('suggest = ?');
+      updateValues.push(data.suggest ? 1 : 0);
+    }
+    if (data.headlineblock !== undefined) {
+      updateFields.push('headlineblock = ?');
+      updateValues.push(data.headlineblock ? 1 : 0);
+    }
+    if (data.maininblock !== undefined) {
+      updateFields.push('maininblock = ?');
+      updateValues.push(data.maininblock ? 1 : 0);
+    }
+    
     // Завжди оновлюємо udate
     updateFields.push('udate = ?');
     updateValues.push(Math.floor(Date.now() / 1000));
