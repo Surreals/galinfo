@@ -70,6 +70,7 @@ export default function NewsPage() {
     newsTitle: ''
   });
   const [deleting, setDeleting] = useState(false);
+  const [isUpdatingUrlKeys, setIsUpdatingUrlKeys] = useState(false);
   
   // Фільтри
   const [filters, setFilters] = useState({
@@ -142,6 +143,38 @@ export default function NewsPage() {
   // Обробка додавання нової новини
   const handleAddNews = () => {
     router.push('/admin/article-editor');
+  };
+
+  // Обробка оновлення URL ключів
+  const handleUpdateUrlKeys = async () => {
+    if (!confirm('Ви впевнені, що хочете оновити URL ключі для всіх новин без них? Це може зайняти деякий час.')) {
+      return;
+    }
+
+    setIsUpdatingUrlKeys(true);
+    try {
+      const response = await fetch('/api/admin/news/update-url-keys', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      const result = await response.json();
+
+      if (result.success) {
+        alert(`Оновлено ${result.updated} новин. Помилок: ${result.errors}`);
+        // Перезавантажуємо список новин
+        fetchNews();
+      } else {
+        alert('Помилка при оновленні URL ключів: ' + result.error);
+      }
+    } catch (error) {
+      console.error('Error updating URL keys:', error);
+      alert('Помилка при оновленні URL ключів');
+    } finally {
+      setIsUpdatingUrlKeys(false);
+    }
   };
 
   // Обробка видалення новини
@@ -244,12 +277,20 @@ export default function NewsPage() {
         <div className={styles.header}>
           <h1>Новини / Статті</h1>
           <div className={styles.headerActions}>
+          <button 
+              className={styles.updateUrlKeysButton}
+              onClick={handleUpdateUrlKeys}
+              disabled={isUpdatingUrlKeys}
+            >
+              {isUpdatingUrlKeys ? 'Оновлення...' : 'Оновити URL ключі'}
+            </button>
             <button 
               className={styles.addButton}
               onClick={handleAddNews}
             >
               Додати новину
             </button>
+            
           </div>
         </div>
 

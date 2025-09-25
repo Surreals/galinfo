@@ -1,4 +1,5 @@
 import { executeQuery } from './db';
+import { generateUrlKey } from './transliteration';
 
 // Константи таблиць (відповідно до PHP коду)
 const TABLES = {
@@ -210,7 +211,7 @@ export async function createNews(data: Partial<NewsData>): Promise<number> {
       data.lang === 'ua' ? 1 : (data.lang === 'en' ? 2 : (data.lang === 'ru' ? 3 : 1)),
       data.rated ? 1 : 0,
       Math.floor(Date.now() / 1000),
-      data.urlkey || '',
+      data.urlkey || (data.nheader ? generateUrlKey(data.nheader) : ''),
       data.userid || 0,
       data.layout || 0,
       '', // bytheme - required field

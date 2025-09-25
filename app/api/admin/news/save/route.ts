@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { executeQuery } from '@/app/lib/db';
+import { generateUrlKey } from '@/app/lib/transliteration';
 
 export async function POST(request: NextRequest) {
   try {
@@ -25,6 +26,11 @@ export async function POST(request: NextRequest) {
         { error: 'News body is required' },
         { status: 400 }
       );
+    }
+
+    // Auto-generate url_key if not provided
+    if (!newsData.urlkey || newsData.urlkey.trim() === '') {
+      newsData.urlkey = generateUrlKey(headers.nheader);
     }
 
     let newsId: number;

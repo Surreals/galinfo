@@ -188,13 +188,15 @@ export default function NewsEditor({ newsId, onSave, onCancel, initialData }: Ne
     }
   }, [initialData, isClient]);
 
-  // Generate URL key from header
+  // Generate URL key from header using proper transliteration
   const generateUrlKey = (header: string) => {
-    return header
-      .toLowerCase()
-      .replace(/[^a-z0-9\s]/g, '')
-      .replace(/\s+/g, '_')
-      .substring(0, 100);
+    if (!header || typeof header !== 'string') {
+      return '';
+    }
+
+    // Import the transliteration function
+    const { generateUrlKey: transliterateUrlKey } = require('@/app/lib/transliteration');
+    return transliterateUrlKey(header);
   };
 
   const handleHeaderChange = (field: keyof NewsHeaders, value: string) => {
