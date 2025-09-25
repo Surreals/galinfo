@@ -1,6 +1,6 @@
 'use client';
 
-import {useState, useEffect, Suspense, useRef} from 'react';
+import {useState, useEffect, Suspense, useRef, useCallback} from 'react';
 import { useSearchParams } from 'next/navigation';
 import dynamic from 'next/dynamic';
 import { Spin } from 'antd';
@@ -27,7 +27,7 @@ function ArticleEditorContent() {
   const [isEditing, setIsEditing] = useState(false);
   const [isChatGPTVisible, setIsChatGPTVisible] = useState(false);
   const [isTelegramVisible, setIsTelegramVisible] = useState(false);
-
+  const [editorSaveFn, setEditorSaveFn] = useState<(() => Promise<string>) | null>(null);
 
   // Завантажуємо дані новини
   const { data: articleData, loading, error, updateData } = useArticleData({ id: newsId });
@@ -49,6 +49,11 @@ function ArticleEditorContent() {
     updateData(updates);
   };
 
+  // Handler for editor save function
+  const handleEditorSaveRef = useCallback((saveFn: () => Promise<string>) => {
+    setEditorSaveFn(() => saveFn);
+  }, []);
+
   return (
     <ArticleEditorLoader loading={loading} error={error}>
       <div style={{ padding: '10px', maxWidth: '1440px', margin: '0 auto', display: 'flex', gap: '10px' }}>
@@ -57,11 +62,13 @@ function ArticleEditorContent() {
           articleData={articleData}
           onNbodyChange={handleNbodyChange}
           onDataChange={handleDataChange}
+          onEditorSaveRef={handleEditorSaveRef}
         />
         <NewsEditorSidebar
           menuData={menuData}
           newsId={newsId} 
           articleData={articleData}
+          onEditorSave={editorSaveFn}
         />
         {/* <NewsFullEditor/> */}
       </div>

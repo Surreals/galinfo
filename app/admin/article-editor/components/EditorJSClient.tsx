@@ -1,17 +1,22 @@
 "use client";
 
-import {useEffect, useImperativeHandle, useRef} from "react";
-import type EditorJS, { OutputData } from "@editorjs/editorjs";
+import {useEffect, useImperativeHandle, useRef, forwardRef} from "react";
+import type { OutputData } from "@editorjs/editorjs";
+import type EditorJS from "@editorjs/editorjs";
 
 import styles from "../NewsEditor.module.css";
-import {Button} from "antd";
 
-export default function EditorJSClient({
+export interface EditorJSClientRef {
+  save: () => Promise<void>;
+  getHtmlContent: () => Promise<string>;
+}
+
+const EditorJSClient = forwardRef<EditorJSClientRef, Props>(({
                                          htmlContent,
                                          onHtmlChange,
                                          placeholder = "Start typing...",
                                          id = "editorjs-holder",
-                                       }: Props) {
+                                       }, ref) => {
   const holderRef = useRef<HTMLDivElement | null>(null);
   const editorRef = useRef<EditorJS | null>(null);
 
@@ -134,17 +139,36 @@ export default function EditorJSClient({
     if (!editorRef.current) return;
     const saved = await editorRef.current.save();
     const html = editorJSToHtml(saved);
+    console.log(3, html)
     onHtmlChange?.(html);
   };
+
+  useImperativeHandle(ref, () => ({
+    save: handleSave,
+    getHtmlContent: async () => {
+      if (editorRef.current) {
+        try {
+          const saved = await editorRef.current.save();
+          return editorJSToHtml(saved);
+        } catch {
+          return '';
+        }
+      }
+      return '';
+    },
+  }));
 
 
   return (
     <div>
       <div ref={holderRef} id={id} className={styles.editor} />
-      <Button type={'primary'} style={{ marginTop: 10 }} onClick={handleSave}>ЗБЕРЕГТИ</Button>
     </div>
-);
-}
+  );
+});
+
+EditorJSClient.displayName = 'EditorJSClient';
+
+export default EditorJSClient;
 
 type Props = {
   htmlContent?: string;
