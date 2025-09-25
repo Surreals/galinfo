@@ -112,6 +112,7 @@ const ArticlePageRenderer: React.FC<ArticlePageRendererProps> = ({ article, load
   const [allImages, setAllImages] = useState<string[]>([]);
   const [isShowCarousel, setIsShowCarousel] = useState<boolean>(false);
   const [startIndex, setStartIndex] = useState<number>(0);
+  const [modalImages, setModalImages] = useState<string[] | null>(null);
   const [activeAbsImageIndex, setActiveAbsImageIndex] = useState<number>(0);
 
   const carouselRef = useRef<any>(null);
@@ -179,13 +180,22 @@ const ArticlePageRenderer: React.FC<ArticlePageRendererProps> = ({ article, load
       zeroBasedIndexes?.[0] ?? 0
     );
 
+    // Отримуємо масив ID зображень з article.images (comma-separated string)
+    const imageIds = article?.images ? article.images.split(',').map((id: string) => parseInt(id.trim())).filter((id: number) => !isNaN(id)) : [];
+
     const getUrlByZeroBased = (zeroBasedIndex: number) => {
-      const img = article?.images_data?.[zeroBasedIndex];
+      const imageId = imageIds[zeroBasedIndex];
+      if (!imageId) return undefined;
+      
+      // Знаходимо відповідне зображення в images_data за ID
+      const img = article?.images_data?.find((imgData: any) => imgData.id === imageId);
       return img ? getImageFromImageData(img, 'full') : undefined;
     };
 
     const activeUrl = getUrlByZeroBased(activeZeroBasedIndex) ?? placeholderImage;
-    const activeTitle = article?.images_data?.[activeZeroBasedIndex]?.title;
+    const activeImageId = imageIds[activeZeroBasedIndex];
+    const activeImg = article?.images_data?.find((imgData: any) => imgData.id === activeImageId);
+    const activeTitle = activeImg?.title;
 
     return (
       <div key={`${groupKey}-gallery`} className={styles.articleImage}>
@@ -196,7 +206,13 @@ const ArticlePageRenderer: React.FC<ArticlePageRendererProps> = ({ article, load
           height={500}
           priority={true}
           onClick={() => {
-            setStartIndex(activeZeroBasedIndex);
+            // Відкриваємо модалку з фото ТІЛЬКИ цієї групи у порядку з nbody
+            const groupUrls = zeroBasedIndexes
+              .map((z) => getUrlByZeroBased(z))
+              .filter((u): u is string => Boolean(u));
+            setModalImages(groupUrls);
+            const posInGroup = Math.max(0, zeroBasedIndexes.indexOf(activeZeroBasedIndex));
+            setStartIndex(posInGroup);
             setIsShowCarousel(true);
           }}
         />
@@ -213,7 +229,11 @@ const ArticlePageRenderer: React.FC<ArticlePageRendererProps> = ({ article, load
                 <img
                   key={`thumb-${groupKey}-${tIdx}`}
                   src={url}
-                  alt={article?.images_data?.[zeroBasedIdx]?.title || 'thumb'}
+                  alt={(() => {
+                    const imgId = imageIds[zeroBasedIdx];
+                    const img = article?.images_data?.find((imgData: any) => imgData.id === imgId);
+                    return img?.title || 'thumb';
+                  })()}
                   className={`${styles.galleryThumb} ${isActive ? styles.galleryThumbActive : ''}`}
                   onClick={() => setActiveZeroBasedIndex(zeroBasedIdx)}
                   loading="lazy"
@@ -343,16 +363,18 @@ const ArticlePageRenderer: React.FC<ArticlePageRendererProps> = ({ article, load
 
           // Якщо немає плейсхолдерів-індексів у nbody — повертаємось до дефолтного відображення: перше фото + весь текст
           if (!imageBlocks.length) {
-            const firstImageUrl = article?.images_data?.[0]
-              ? getImageFromImageData(article.images_data[0], 'full')
-              : undefined;
+            // Отримуємо перше зображення з article.images
+            const imageIds = article?.images ? article.images.split(',').map((id: string) => parseInt(id.trim())).filter((id: number) => !isNaN(id)) : [];
+            const firstImageId = imageIds[0];
+            const firstImg = firstImageId ? article?.images_data?.find((imgData: any) => imgData.id === firstImageId) : null;
+            const firstImageUrl = firstImg ? getImageFromImageData(firstImg, 'full') : undefined;
             return (
               <>
                 {firstImageUrl && (
                   <div key={`${index}-image`} className={styles.articleImage}>
                     <SmartImage
                       src={firstImageUrl ?? placeholderImage}
-                      alt={article?.images_data?.[0]?.title || 'Article image'}
+                      alt={firstImg?.title || 'Article image'}
                       width={800}
                       height={500}
                       priority={true}
@@ -362,9 +384,9 @@ const ArticlePageRenderer: React.FC<ArticlePageRendererProps> = ({ article, load
                       }}
                     />
                     <div className={styles.imageCredits}>
-                      {article?.images_data?.[0]?.title && (
+                      {firstImg?.title && (
                         <span className={styles.photoCredit}>
-                          {article?.images_data?.[0]?.title}
+                          {firstImg?.title}
                         </span>
                       )}
                     </div>
@@ -382,12 +404,13 @@ const ArticlePageRenderer: React.FC<ArticlePageRendererProps> = ({ article, load
                     onClick={(e) => {
                       if (e.target === e.currentTarget) {
                         setIsShowCarousel(false);
+                        setModalImages(null);
                       }
                     }}
                   >
                     <div className={styles.carouselBox}>
                       <Carousel ref={carouselRef} dots={false} initialSlide={startIndex}>
-                        {allImages.map((url, idx) => (
+                        {(modalImages ?? allImages).map((url, idx) => (
                           <div key={idx} className={styles.carouselItem}>
                             <img alt={'img'} src={url} loading="lazy" style={{ width: '100%', borderRadius: '8px' }} />
                           </div>
@@ -436,12 +459,13 @@ const ArticlePageRenderer: React.FC<ArticlePageRendererProps> = ({ article, load
                   onClick={(e) => {
                     if (e.target === e.currentTarget) {
                       setIsShowCarousel(false);
+                      setModalImages(null);
                     }
                   }}
                 >
                   <div className={styles.carouselBox}>
                     <Carousel ref={carouselRef} dots={false} initialSlide={startIndex}>
-                      {allImages.map((url, idx) => (
+                      {(modalImages ?? allImages).map((url, idx) => (
                         <div key={idx} className={styles.carouselItem}>
                           <img alt={'img'} src={url} loading="lazy" style={{ width: '100%', borderRadius: '8px' }} />
                         </div>
