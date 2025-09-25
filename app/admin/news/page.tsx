@@ -16,7 +16,6 @@ interface NewsItem {
   approved: number;
   images: any[];
   authorDisplayName: string;
-  comments_count: number;
   views_count: number;
   formattedDate: string;
   formattedTime: string;
@@ -24,6 +23,7 @@ interface NewsItem {
   isImportant: boolean;
   isTopNews: boolean;
   isDelayed: boolean;
+  urlkey?: string;
 }
 
 interface NewsListResponse {
@@ -384,6 +384,7 @@ export default function NewsPage() {
                   <th>Автор</th>
                   <th>Статус</th>
                   <th>Перегляди</th>
+                  <th>Перегляд</th>
                   <th>Дії</th>
                 </tr>
               </thead>
@@ -431,8 +432,16 @@ export default function NewsPage() {
                     <td className={styles.statsCell}>
                       <div className={styles.stats}>
                         <span>👁 {news.views_count}</span>
-                        <span>💬 {news.comments_count}</span>
                       </div>
+                    </td>
+                    <td className={styles.viewCell}>
+                      <button 
+                        className={styles.viewButton}
+                        onClick={() => window.open(`/news/${news.urlkey || 'article'}_${news.id}`, '_blank')}
+                        title="Відкрити в новій вкладці"
+                      >
+                        👁
+                      </button>
                     </td>
                     <td className={styles.actionsCell}>
                       <div className={styles.actionButtons}>

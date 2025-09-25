@@ -1,5 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { executeQuery } from '@/app/lib/db';
+import dayjs from 'dayjs';
+import utc from 'dayjs/plugin/utc';
+import timezone from 'dayjs/plugin/timezone';
+
+// Розширюємо dayjs плагінами
+dayjs.extend(utc);
+dayjs.extend(timezone);
 
 // Типи новин
 const ARTICLE_TYPES = {
@@ -202,7 +209,7 @@ export async function GET(request: NextRequest) {
             tmb: `/media/gallery/tmb/${img.filename}`
           }
         })) : [],
-        formattedDate: new Date(news.ndate + ' ' + news.ntime).toLocaleDateString('uk-UA'),
+        formattedDate: formatDate(news.ndate),
         formattedTime: news.ntime,
         typeName: getTypeName(news.ntype),
         authorDisplayName: news.fuser_name || news.author_name || 'Невідомий автор',
@@ -318,4 +325,25 @@ function getTypeName(ntype: number): string {
     21: 'Основні медіа'
   };
   return typeMap[ntype] || 'Невідомий тип';
+}
+
+// Функція для форматування дати
+function formatDate(dateString: string): string {
+  if (!dateString) return 'Невідома дата';
+  
+  try {
+    // Парсимо дату з dayjs
+    const date = dayjs(dateString);
+    
+    // Перевіряємо, чи дата валідна
+    if (!date.isValid()) {
+      return 'Невідома дата';
+    }
+    
+    // Форматуємо дату в українському форматі з урахуванням часового поясу
+    return date.tz('Europe/Kiev').format('DD.MM.YYYY');
+  } catch (error) {
+    console.error('Error formatting date:', error, 'Input:', dateString);
+    return 'Невідома дата';
+  }
 }

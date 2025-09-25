@@ -13,6 +13,7 @@ import {
   Divider,
   message,
   Spin,
+  App,
 } from "antd";
 import type { UploadFile } from "antd";
 import {
@@ -39,6 +40,7 @@ import { ArticleData } from "@/app/hooks/useArticleData";
 import { useArticleSave } from "@/app/hooks/useArticleSave";
 import { getImageUrl, ensureFullImageUrl } from "@/app/lib/imageUtils";
 import ImagePickerModal from "./ImagePickerModal";
+import { useRouter } from "next/navigation";
 
 const { TextArea } = Input;
 
@@ -49,6 +51,9 @@ interface NewsEditorSidebarProps {
 }
 
 export default function NewsEditorSidebar({ newsId, articleData, menuData }: NewsEditorSidebarProps) {
+  const router = useRouter();
+  const { modal } = App.useApp();
+  
   // Завантажуємо дані через хук
   const {
     users,
@@ -306,7 +311,19 @@ export default function NewsEditorSidebar({ newsId, articleData, menuData }: New
   };
 
   const onDelete = async () => {
-    await deleteArticle();
+    modal.confirm({
+      title: 'Підтвердження видалення',
+      content: 'Ви впевнені, що хочете видалити цю новину? Цю дію неможливо скасувати.',
+      okText: 'Видалити',
+      okType: 'danger',
+      cancelText: 'Скасувати',
+      onOk: async () => {
+        const success = await deleteArticle();
+        if (success) {
+          router.push('/admin/news');
+        }
+      },
+    });
   };
 
   if (loading) {

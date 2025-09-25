@@ -1,4 +1,5 @@
 import { AdminAuthProvider } from '@/app/contexts/AdminAuthContext';
+import { App } from 'antd';
 
 export default function AdminLayout({
   children,
@@ -7,7 +8,9 @@ export default function AdminLayout({
 }) {
   return (
     <AdminAuthProvider>
-      {children}
+      <App>
+        {children}
+      </App>
     </AdminAuthProvider>
   );
 }
