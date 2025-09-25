@@ -50,14 +50,16 @@ export function generateRSS(items: NewsItem[], config: RSSConfig): string {
     </image>` : ''
 
   return `<?xml version="1.0" encoding="UTF-8"?>
-<rss version="2.0">
+<rss version="2.0" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title><![CDATA[${escapeCDATA(config.title)}]]></title>
     <link>${config.link}</link>
     <description><![CDATA[${escapeCDATA(config.description)}]]></description>
     <language>${config.language}</language>
     <lastBuildDate>${new Date().toUTCString()}</lastBuildDate>
-    <generator>Гал-Інфо RSS Generator</generator>
+    <generator>Гал-Інфо RSS Generator v2.0</generator>
+    <atom:link href="${config.link}/api/rss/export" rel="self" type="application/rss+xml"/>
+    <ttl>600</ttl>
     ${imageTag}
     ${rssItems}
   </channel>

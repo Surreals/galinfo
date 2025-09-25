@@ -15,7 +15,7 @@ export async function GET(request: NextRequest) {
       status: 200,
       headers: {
         'Content-Type': 'application/rss+xml; charset=utf-8',
-        'Cache-Control': 'public, max-age=300, s-maxage=300', // 5 хвилин кешування
+        'Cache-Control': 'public, max-age=600, s-maxage=600', // 10 хвилин кешування
       },
     })
   } catch (error) {

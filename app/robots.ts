@@ -17,7 +17,11 @@ export default function robots(): MetadataRoute.Robots {
         '/static/'
       ],
     },
-    sitemap: 'https://galinfo.com.ua/sitemap.xml',
+    sitemap: [
+      'https://galinfo.com.ua/sitemap.xml',
+      'https://galinfo.com.ua/sitemap-index.xml',
+      'https://galinfo.com.ua/api/rss/googlenews'
+    ],
     host: 'https://galinfo.com.ua'
   }
 }

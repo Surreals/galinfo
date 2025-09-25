@@ -1,7 +1,16 @@
+import { BreadcrumbStructuredData } from '@/components/BreadcrumbStructuredData'
+
 export default function AboutPage() {
+  const breadcrumbs = [
+    { name: 'Головна', item: 'https://galinfo.com.ua/' },
+    { name: 'Про редакцію', item: 'https://galinfo.com.ua/about' }
+  ]
+  
   return (
-    <div className="max-w-4xl mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold mb-6">ПРО РЕДАКЦІЮ</h1>
+    <>
+      <BreadcrumbStructuredData breadcrumbs={breadcrumbs} />
+      <div className="max-w-4xl mx-auto px-4 py-8">
+        <h1 className="text-3xl font-bold mb-6">ПРО РЕДАКЦІЮ</h1>
       <div className="prose prose-lg">
         <p className="mb-6"><strong>Увага ! Матеріали сайту призначені для осіб старше 21 року (21+)</strong></p>
 
@@ -47,5 +56,6 @@ export default function AboutPage() {
         <p className="mt-2">Посвідчення чинні до 01.03.2027</p>
       </div>
     </div>
+    </>
   );
 }

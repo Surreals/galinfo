@@ -1,0 +1,33 @@
+{
+  "name": "Гал-Інфо - Агенція інформації та аналітики",
+  "short_name": "Гал-Інфо",
+  "description": "Останні новини Львова та регіону від агенції інформації та аналітики Гал-інфо",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#c7084f",
+  "orientation": "portrait-primary",
+  "categories": ["news", "media"],
+  "lang": "uk",
+  "icons": [
+    {
+      "src": "/galinfo-favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "/favicon.ico",
+      "sizes": "16x16 32x32 48x48",
+      "type": "image/x-icon"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "/im/logo-rss-100.png",
+      "sizes": "100x100",
+      "type": "image/png",
+      "form_factor": "wide"
+    }
+  ]
+}
