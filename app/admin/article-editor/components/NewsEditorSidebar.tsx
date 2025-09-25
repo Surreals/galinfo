@@ -115,8 +115,9 @@ export default function NewsEditorSidebar({ newsId, articleData, menuData, onEdi
 
   // Рубрика / Регіон (можна обрати кілька)
   const [selectedRubrics, setSelectedRubrics] = useState<number[]>(
-    articleData?.rubric || []
+    articleData?.rubric.filter(id => id) || []
   );
+
   const [selectedRegions, setSelectedRegions] = useState<number[]>(
     articleData?.region || []
   );
@@ -180,7 +181,7 @@ export default function NewsEditorSidebar({ newsId, articleData, menuData, onEdi
   useEffect(() => {
     if (articleData && !loading) {
       setArticleType(articleData.ntype);
-      setSelectedRubrics(articleData.rubric);
+      setSelectedRubrics(articleData.rubric.filter(id => id));
       setSelectedRegions(articleData.region);
       setSelectedTheme(articleData.theme || null);
       setTags(articleData.tags.join(', '));
@@ -270,18 +271,18 @@ export default function NewsEditorSidebar({ newsId, articleData, menuData, onEdi
       // Автори
       nauthor: editor,
       userid: author,
-      showauthor: showAuthorInfo ? 1 : 0,
+      showauthor: showAuthorInfo,
       
       // Налаштування
       nweight: priority,
       layout: template,
       
       // Додаткові параметри
-      rated: mainFeed ? 1 : 0,
+      rated: mainFeed,
       headlineblock: blockInMain,
       hiderss: noRss,
       nocomment: banComments,
-      maininblock: mainInRubric ? 1 : 0,
+      maininblock: mainInRubric,
       idtotop: idToTop,
       suggest: favBlock,
       photo: markPhoto,
@@ -305,7 +306,7 @@ export default function NewsEditorSidebar({ newsId, articleData, menuData, onEdi
       udate: Math.floor(Date.now() / 1000),
       
       // Публікація
-      approved: publishOnSite ? 1 : 0,
+      approved: publishOnSite,
       to_twitter: publishOnTwitter,
       
       // Зображення
@@ -613,7 +614,7 @@ export default function NewsEditorSidebar({ newsId, articleData, menuData, onEdi
 
       {/* Модалка для вибору зображень */}
       <ImagePickerModal
-        isOpen={isImageModalOpen}
+        open={isImageModalOpen}
         onClose={closeImagePicker}
         onSelect={handleImageSelect}
         currentImage={null}

@@ -73,14 +73,14 @@ export default function Header() {
   const [isSearchLoading, setIsSearchLoading] = useState(false);
   const [searchError, setSearchError] = useState<string | null>(null);
   const searchRef = useRef<HTMLDivElement>(null);
-  const pathname = usePathname();
 
   const { menuData } = useMenuContext();
   const { weather, loading: weatherLoading, refetch: refetchWeather } = useWeather("Lviv");
   const { importantNews, loading, refetch: refetchRates } = useImportantNewsByLevel(1)
   const currencies = useMemo(() => ['USD', 'EUR'], []);
   const { rates } = useCurrencyRates(currencies);
-  const isAdmin = window.location.pathname.includes("admin");
+  const pathname = usePathname();
+  const isAdmin = pathname.includes("admin");
 
   // debounced search handler
   const handleSearch = useCallback(
