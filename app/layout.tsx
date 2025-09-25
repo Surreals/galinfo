@@ -9,6 +9,7 @@ import Footer from "@/app/footer/Footer";
 import Header from "@/app/header/Header";
 import {MobileProvider} from "@/app/contexts/MobileContext";
 import {MenuProvider} from "@/app/contexts/MenuContext";
+import BytcdConsole from "@/app/components/BytcdConsole";
 
 import "./globals.css";
 import "antd/dist/reset.css";
@@ -196,6 +197,7 @@ export default function RootLayout({
               <Header/>
               {children}
               <Footer/>
+              <BytcdConsole />
             </MenuProvider>
           </MobileProvider>
         </ConfigProvider>

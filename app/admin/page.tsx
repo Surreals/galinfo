@@ -115,6 +115,31 @@ export default function AdminPage() {
             </Link>
           </div>
         </div>
+
+        <div className={styles.bytcdCorner}>
+          <a 
+            href="https://bytcd.com" 
+            target="_blank" 
+            rel="noopener noreferrer" 
+            className={styles.bytcdCircle}
+          >
+            <span className={styles.bytcdInitials}>BYTCD</span>
+          </a>
+          <div className={styles.bytcdPopover}>
+            <div className={styles.bytcdPopoverContent}>
+              <div className={styles.bytcdPopoverHeader}>
+                {/* <div className={styles.bytcdPopoverLogo}>BYTCD</div> */}
+                <div className={styles.bytcdPopoverTitle}>Розроблено командою BYTCD</div>
+              </div>
+              <div className={styles.bytcdPopoverBody}>
+                {/* <p>Веб-розробка та технічна підтримка</p> */}
+                <a href="https://bytcd.com" target="_blank" rel="noopener noreferrer" className={styles.bytcdPopoverLink}>
+                  bytcd.com
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );
