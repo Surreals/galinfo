@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { useSingleNews, SingleNewsArticle } from '@/app/hooks/useSingleNews';
 import { NewsImage } from '@/app/lib/imageUtils';
+import { highlightUrlsInHtml } from '@/app/lib/urlUtils';
 import styles from './NewsDetail.module.css';
 
 interface NewsDetailProps {
@@ -98,7 +99,7 @@ export default function NewsDetail({
         {article.nbody && (
           <div 
             className={styles.newsBody}
-            dangerouslySetInnerHTML={{ __html: article.nbody }}
+            dangerouslySetInnerHTML={{ __html: highlightUrlsInHtml(article.nbody) }}
           />
         )}
       </div>

@@ -238,6 +238,29 @@
   margin-bottom: 0;
 }
 
+/* Стилі для виділених URL в тексті новин */
+.paragraph a {
+  color: #007bff !important;
+  text-decoration: underline !important;
+  border-bottom: 1px solid transparent;
+  transition: border-color 0.2s ease;
+  cursor: pointer;
+}
+
+.paragraph a:hover {
+  border-bottom-color: #007bff !important;
+  text-decoration: none !important;
+}
+
+.paragraph a:visited {
+  color: #6f42c1 !important;
+}
+
+.paragraph a:focus {
+  outline: 2px solid #007bff;
+  outline-offset: 2px;
+}
+
 /* Метадані статті */
 .articleMetadata {
   display: flex;

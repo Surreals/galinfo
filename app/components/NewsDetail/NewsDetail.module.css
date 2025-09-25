@@ -295,13 +295,23 @@
 
 .newsBody a {
   color: #007bff;
-  text-decoration: none;
+  text-decoration: underline;
   border-bottom: 1px solid transparent;
   transition: border-color 0.2s ease;
 }
 
 .newsBody a:hover {
   border-bottom-color: #007bff;
+}
+
+/* Додаткові стилі для виділених URL */
+.newsBody a:visited {
+  color: #6f42c1;
+}
+
+.newsBody a:focus {
+  outline: 2px solid #007bff;
+  outline-offset: 2px;
 }
 
 /* Футер новини */

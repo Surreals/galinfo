@@ -271,6 +271,11 @@
   color: #333;
   margin-bottom: 0.5rem;
   line-height: 1.4;
+  transition: color 0.2s ease;
+}
+
+.title:hover {
+  color: #007bff;
 }
 
 .newsId {

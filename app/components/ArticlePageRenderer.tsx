@@ -13,6 +13,7 @@ import {
   getUniversalNewsImage,
   getImageFromImageData
 } from '@/app/lib/newsUtils';
+import { highlightUrlsInHtml } from '@/app/lib/urlUtils';
 import { articlePageDesktopSchema, articlePageMobileSchema } from '@/app/lib/articlePageSchema';
 import placeholderImage from '@/assets/images/Gal-info logo v13.png';
 
@@ -325,7 +326,7 @@ const ArticlePageRenderer: React.FC<ArticlePageRendererProps> = ({ article, load
             <div
               key={index}
               className={styles.paragraph}
-              dangerouslySetInnerHTML={{__html: article?.nbody || ''}}
+              dangerouslySetInnerHTML={{__html: highlightUrlsInHtml(article?.nbody || '')}}
             />
           )
         } else if (article?.images_data?.length === 1) {
@@ -351,7 +352,7 @@ const ArticlePageRenderer: React.FC<ArticlePageRendererProps> = ({ article, load
               <div
                 key={`${index}-content`}
                 className={styles.paragraph}
-                dangerouslySetInnerHTML={{__html: article?.nbody || ''}}
+                dangerouslySetInnerHTML={{__html: highlightUrlsInHtml(article?.nbody || '')}}
               />
             </>
 
@@ -395,7 +396,7 @@ const ArticlePageRenderer: React.FC<ArticlePageRendererProps> = ({ article, load
                 <div
                   key={`${index}-content`}
                   className={styles.paragraph}
-                  dangerouslySetInnerHTML={{ __html: article?.nbody || '' }}
+                  dangerouslySetInnerHTML={{ __html: highlightUrlsInHtml(article?.nbody || '') }}
                 />
 
                 {isShowCarousel && (
@@ -438,7 +439,7 @@ const ArticlePageRenderer: React.FC<ArticlePageRendererProps> = ({ article, load
                     <div
                       key={`${index}-text-${bIdx}`}
                       className={styles.paragraph}
-                      dangerouslySetInnerHTML={{ __html: b.content as string }}
+                      dangerouslySetInnerHTML={{ __html: highlightUrlsInHtml(b.content as string) }}
                     />
                   );
                 }

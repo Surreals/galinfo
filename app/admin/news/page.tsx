@@ -451,7 +451,12 @@ export default function NewsPage() {
                       <div className={styles.time}>{news.formattedTime}</div>
                     </td>
                     <td className={styles.titleCell}>
-                      <div className={styles.title}>
+                      <div 
+                        className={styles.title}
+                        onClick={() => handleEditNews(news.id)}
+                        style={{ cursor: 'pointer' }}
+                        title="Клікніть для редагування"
+                      >
                         <span className={styles.newsId}>#{news.id}</span>
                         {news.nheader || 'Без заголовка'}
                         {news.images.length > 0 && (
