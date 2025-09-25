@@ -63,6 +63,14 @@
   flex-wrap: wrap;
 }
 
+/* Ensure consistent column widths across rows */
+.filterGroup {
+  display: flex;
+  flex-direction: column;
+  min-width: 220px;
+  width: 220px;
+}
+
 .filterRow:last-child {
   margin-bottom: 0;
 }
@@ -82,15 +90,25 @@
 
 .filterGroup select,
 .filterGroup input {
-  padding: 0.5rem;
+  padding: 8px 11px;
   border: 1px solid #ddd;
   border-radius: 4px;
   font-size: 0.9rem;
+  height: 41px;
+  line-height: 1;
 }
 
 .filterGroup input[type="text"],
 .filterGroup input[type="date"] {
   min-width: 200px;
+}
+
+/* Make DatePickers follow the same column width */
+.datePicker,
+:global(.ant-picker).datePicker,
+.datePicker:global(.ant-picker),
+.datePicker :global(.ant-picker) {
+  width: 220px !important;
 }
 
 .clearButton {

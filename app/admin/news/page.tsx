@@ -342,7 +342,6 @@ export default function NewsPage() {
                 format="YYYY-MM-DD"
                 value={filters.dateFrom ? dayjs(filters.dateFrom) : null}
                 onChange={(date) => handleFilterChange('dateFrom', date ? date.format('YYYY-MM-DD') : '')}
-                style={{ width: 200 }}
                 className={styles.datePicker}
               />
             </div>
@@ -354,7 +353,6 @@ export default function NewsPage() {
                 format="YYYY-MM-DD"
                 value={filters.dateTo ? dayjs(filters.dateTo) : null}
                 onChange={(date) => handleFilterChange('dateTo', date ? date.format('YYYY-MM-DD') : '')}
-                style={{ width: 200 }}
                 className={styles.datePicker}
               />
             </div>
