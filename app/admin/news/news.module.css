@@ -94,6 +94,7 @@
 }
 
 .clearButton {
+  align-self: flex-end;
   background: #6c757d;
   color: white;
   border: none;
@@ -101,11 +102,22 @@
   border-radius: 4px;
   cursor: pointer;
   font-size: 0.9rem;
-  margin-top: 1.5rem;
+  margin-top: 1.85rem;
+  height: 41px;
+  line-height: 1;
 }
 
 .clearButton:hover {
   background: #545b62;
+}
+
+/* Local override for antd DatePicker only on admin news page */
+/* target either same element or descendant just in case CSS Modules scoping differs */
+:global(.ant-picker).datePicker,
+.datePicker:global(.ant-picker),
+.datePicker :global(.ant-picker) {
+  padding: 8px 11px !important;
+  border-radius: 4px !important;
 }
 
 /* Статистика */

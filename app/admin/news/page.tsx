@@ -1,6 +1,8 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import dayjs from 'dayjs';
+import { DatePicker } from 'antd';
 import { useRouter } from 'next/navigation';
 import AdminNavigation from '../components/AdminNavigation';
 import styles from './news.module.css';
@@ -335,19 +337,25 @@ export default function NewsPage() {
 
             <div className={styles.filterGroup}>
               <label>Дата від:</label>
-              <input
-                type="date"
-                value={filters.dateFrom}
-                onChange={(e) => handleFilterChange('dateFrom', e.target.value)}
+              <DatePicker
+                allowClear
+                format="YYYY-MM-DD"
+                value={filters.dateFrom ? dayjs(filters.dateFrom) : null}
+                onChange={(date) => handleFilterChange('dateFrom', date ? date.format('YYYY-MM-DD') : '')}
+                style={{ width: 200 }}
+                className={styles.datePicker}
               />
             </div>
 
             <div className={styles.filterGroup}>
               <label>Дата до:</label>
-              <input
-                type="date"
-                value={filters.dateTo}
-                onChange={(e) => handleFilterChange('dateTo', e.target.value)}
+              <DatePicker
+                allowClear
+                format="YYYY-MM-DD"
+                value={filters.dateTo ? dayjs(filters.dateTo) : null}
+                onChange={(date) => handleFilterChange('dateTo', date ? date.format('YYYY-MM-DD') : '')}
+                style={{ width: 200 }}
+                className={styles.datePicker}
               />
             </div>
 
