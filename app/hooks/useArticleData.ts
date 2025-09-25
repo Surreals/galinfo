@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 
 // Типи для даних новини
 export interface ArticleData {
@@ -109,7 +109,7 @@ export function useArticleData(options: UseArticleDataOptions = {}): UseArticleD
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchArticle = async () => {
+  const fetchArticle = useCallback(async () => {
     if (!options.id) {
       setData(defaultArticleData);
       setLoading(false);
@@ -134,7 +134,7 @@ export function useArticleData(options: UseArticleDataOptions = {}): UseArticleD
     } finally {
       setLoading(false);
     }
-  };
+  }, [options.id]);
 
   const updateData = (updates: Partial<ArticleData>) => {
     setData(prev => prev ? { ...prev, ...updates } : null);

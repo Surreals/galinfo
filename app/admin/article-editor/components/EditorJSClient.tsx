@@ -1,17 +1,29 @@
 "use client";
 
-import {useEffect, useImperativeHandle, useRef} from "react";
-import type EditorJS, { OutputData } from "@editorjs/editorjs";
+import {useEffect, useImperativeHandle, useRef, forwardRef} from "react";
+import type { OutputData } from "@editorjs/editorjs";
+import type EditorJS from "@editorjs/editorjs";
 
 import styles from "../NewsEditor.module.css";
-import {Button} from "antd";
 
-export default function EditorJSClient({
+export interface EditorJSClientRef {
+  save: () => Promise<void>;
+  getHtmlContent: () => Promise<string>;
+}
+
+type Props = {
+  htmlContent?: string;
+  onHtmlChange?: (html: string) => void;
+  placeholder?: string;
+  id?: string;
+};
+
+
+const EditorJSClient = forwardRef<EditorJSClientRef, Props>(({
                                          htmlContent,
                                          onHtmlChange,
                                          placeholder = "Start typing...",
-                                         id = "editorjs-holder",
-                                       }: Props) {
+                                       }, ref) => {
   const holderRef = useRef<HTMLDivElement | null>(null);
   const editorRef = useRef<EditorJS | null>(null);
 
@@ -53,46 +65,11 @@ export default function EditorJSClient({
       )
       .join("");
 
-  // Ініціалізуємо EditorJS лише один раз
-  useEffect(() => {
-    let isMounted = true;
-
-    const init = async () => {
-      if (!holderRef.current || !isMounted || editorRef.current) return;
-
-      const { default: Editor } = await import("@editorjs/editorjs");
-      const { default: Paragraph } = await import("@editorjs/paragraph");
-      const { default: Raw } = await import("@editorjs/raw");
-
-      const editor = new Editor({
-        holder: holderRef.current,
-        placeholder,
-        tools: {
-          paragraph: { class: Paragraph },
-          raw: { class: Raw },
-        },
-      });
-
-      editorRef.current = editor;
-
-    };
-
-    init();
-
-    return () => {
-      isMounted = false;
-      editorRef.current?.destroy();
-      editorRef.current = null;
-    };
-    // Ініціалізація — лише один раз
-  }, []);
 
   // Якщо зовнішній htmlContent змінюється — замінюємо вміст редактора
 
   useEffect(() => {
-    console.log(1)
     const init = async () => {
-      console.log(2)
       if (!holderRef.current || editorRef.current) return;
 
       const { default: Editor } = await import("@editorjs/editorjs");
@@ -100,7 +77,7 @@ export default function EditorJSClient({
       const { default: Raw } = await import("@editorjs/raw");
 
       const editor = new Editor({
-        holder: holderRef.current,
+        holder: 'editorjs',
         placeholder,
         tools: {
           paragraph: { class: Paragraph },
@@ -129,26 +106,35 @@ export default function EditorJSClient({
   }, []); // <- ПУСТИЙ масив залежностей, щоб init викликався один раз
 
 
-
   const handleSave = async () => {
     if (!editorRef.current) return;
     const saved = await editorRef.current.save();
     const html = editorJSToHtml(saved);
+    console.log(3, html)
     onHtmlChange?.(html);
   };
 
+  useImperativeHandle(ref, () => ({
+    save: handleSave,
+    getHtmlContent: async () => {
+      if (editorRef.current) {
+        try {
+          const saved = await editorRef.current.save();
+          return editorJSToHtml(saved);
+        } catch {
+          return '';
+        }
+      }
+      return '';
+    },
+  }));
+
 
   return (
-    <div>
-      <div ref={holderRef} id={id} className={styles.editor} />
-      <Button type={'primary'} style={{ marginTop: 10 }} onClick={handleSave}>ЗБЕРЕГТИ</Button>
-    </div>
-);
-}
+      <div ref={holderRef} id={'editorjs'} className={styles.editor} />
+  );
+});
 
-type Props = {
-  htmlContent?: string;
-  onHtmlChange?: (html: string) => void;
-  placeholder?: string;
-  id?: string;
-};
+EditorJSClient.displayName = 'EditorJSClient';
+
+export default EditorJSClient;

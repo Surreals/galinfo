@@ -172,7 +172,26 @@ export async function createNews(data: Partial<NewsData>): Promise<number> {
     
     const newsValues = [
       data.images || '',
-      data.ndate || new Date().toISOString().split('T')[0],
+      (() => {
+        // Обробляємо дату - конвертуємо ISO timestamp в YYYY-MM-DD формат
+        if (data.ndate) {
+          if (typeof data.ndate === 'string' && data.ndate.includes('T')) {
+            // Якщо це ISO timestamp, витягуємо тільки дату
+            return data.ndate.split('T')[0];
+          } else if (typeof data.ndate === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(data.ndate)) {
+            // Якщо це вже в правильному форматі YYYY-MM-DD
+            return data.ndate;
+          } else {
+            // Спробуємо парсити як дату
+            const date = new Date(data.ndate);
+            if (!isNaN(date.getTime())) {
+              return date.toISOString().split('T')[0];
+            }
+          }
+        }
+        // За замовчуванням - поточна дата
+        return new Date().toISOString().split('T')[0];
+      })(),
       data.ntime || new Date().toTimeString().split(' ')[0].substring(0, 8),
       data.ntype || 1,
       data.nauthor || 0,

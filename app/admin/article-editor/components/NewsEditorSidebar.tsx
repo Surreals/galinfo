@@ -41,16 +41,19 @@ import { useArticleSave } from "@/app/hooks/useArticleSave";
 import { getImageUrl, ensureFullImageUrl } from "@/app/lib/imageUtils";
 import ImagePickerModal from "./ImagePickerModal";
 import { useRouter } from "next/navigation";
+import { MenuData } from "@/app/api/homepage/services/menuService";
+import TimeButtons from "./TimeButtons";
 
 const { TextArea } = Input;
 
 interface NewsEditorSidebarProps {
   newsId: string | null;
   articleData?: ArticleData | null;
-  menuData: ArticleData | null;
+  menuData: MenuData | null;
+  onEditorSave?: (() => Promise<string>) | null;
 }
 
-export default function NewsEditorSidebar({ newsId, articleData, menuData }: NewsEditorSidebarProps) {
+export default function NewsEditorSidebar({ newsId, articleData, menuData, onEditorSave }: NewsEditorSidebarProps) {
   const router = useRouter();
   const { modal } = App.useApp();
   
@@ -60,6 +63,7 @@ export default function NewsEditorSidebar({ newsId, articleData, menuData }: New
     loading, 
     error 
   } = useArticleEditorData({ lang: 'ua' });
+
 
   const mainCategoriesResponse = menuData?.mainCategories || [];
   const regionsResponse = menuData?.regions || [];
@@ -238,13 +242,18 @@ export default function NewsEditorSidebar({ newsId, articleData, menuData }: New
 
   // handlers
   const onSave = async () => {
+    // Спочатку зберігаємо контент редактора та отримуємо актуальний HTML
+    let currentNbody = articleData?.nbody || '';
+    if (onEditorSave) {
+      currentNbody = await onEditorSave();
+    }
 
     const payload = {
       // Основні поля
       nheader: articleData?.nheader || '',
       nsubheader: articleData?.nsubheader || '',
       nteaser: articleData?.nteaser || '',
-      nbody: articleData?.nbody || '',
+      nbody: currentNbody,
       ntitle: articleData?.ntitle || '',
       ndescription: articleData?.ndescription || '',
       nkeywords: articleData?.nkeywords || '',
@@ -401,7 +410,7 @@ export default function NewsEditorSidebar({ newsId, articleData, menuData }: New
                 placeholder="Оберіть рубрики"
                 value={selectedRubrics}
                 onChange={setSelectedRubrics}
-                options={rubrics.map(r => ({
+                options={rubrics.map((r: any) => ({
                   label: r.title,
                   value: r.id.toString()
                 }))}
@@ -422,7 +431,7 @@ export default function NewsEditorSidebar({ newsId, articleData, menuData }: New
                 placeholder="Оберіть регіони"
                 value={selectedRegions}
                 onChange={setSelectedRegions}
-                options={regions.map(r => ({
+                options={regions.map((r: any) => ({
                   label: r.title,
                   value: r.id.toString()
                 }))}
@@ -440,7 +449,7 @@ export default function NewsEditorSidebar({ newsId, articleData, menuData }: New
                 placeholder="Оберіть тему"
                 value={selectedTheme}
                 onChange={setSelectedTheme}
-                options={themes.map(t => ({ label: t.title, value: t.id.toString()}))}
+                options={themes.map((t: any) => ({ label: t.title, value: t.id.toString()}))}
                 className={styles.fullWidth}
                 size="middle"
                 allowClear
@@ -541,11 +550,10 @@ export default function NewsEditorSidebar({ newsId, articleData, menuData }: New
             format="HH:mm DD.MM.YYYY"
             className={styles.fullWidth}
           />
-          <div className={styles.timeHints}>
-            <a>» Час останньої новини</a>
-            <a>♥ Час останньої опублікованої</a>
-            <a>» Час на сервері</a>
-          </div>
+          <TimeButtons 
+            publishAt={publishAt} 
+            setPublishAt={setPublishAt} 
+          />
         </div>
 
         {/* Плашки публікації */}

@@ -1,12 +1,17 @@
 // components/NewsEditor.tsx
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Tabs, Input } from "antd";
-import EditorJSClient from "@/app/admin/article-editor/components/EditorJSClient";
 import { ArticleData } from "@/app/hooks/useArticleData";
+import { EditorJSClientRef } from "@/app/admin/article-editor/components/EditorJSClient";
+const EditorJSClient = dynamic(
+  () => import("@/app/admin/article-editor/components/EditorJSClient"),
+  { ssr: false }
+);
 
 import styles from "../NewsEditor.module.css";
+import dynamic from "next/dynamic";
 
 const { TextArea } = Input;
 
@@ -15,9 +20,12 @@ interface NewsEditorHeaderProps {
   articleData?: ArticleData | null;
   onNbodyChange?: (nbody: string) => void;
   onDataChange?: (updates: Partial<ArticleData>) => void;
+  onEditorSaveRef?: (saveFn: () => Promise<string>) => void;
 }
 
-export default function NewsEditorHeader({ isEditing, articleData, onNbodyChange, onDataChange }: NewsEditorHeaderProps) {
+export default function NewsEditorHeader({ isEditing, articleData, onNbodyChange, onDataChange, onEditorSaveRef }: NewsEditorHeaderProps) {
+  const editorRef = useRef<EditorJSClientRef>(null);
+  
   // --- стейти для всіх текстерій ---
   const [mainTitle, setMainTitle] = useState(articleData?.nheader || "");
   const [mainLead, setMainLead] = useState(articleData?.nteaser || "");
@@ -70,6 +78,23 @@ export default function NewsEditorHeader({ isEditing, articleData, onNbodyChange
     setMetaKeywords(value);
     onDataChange?.({ nkeywords: value });
   };
+
+  // Функція для збереження контенту редактора
+  const handleEditorSave = async (): Promise<string> => {
+    if (editorRef.current) {
+      await editorRef.current.save();
+      // Отримуємо поточний HTML контент з редактора
+      return await editorRef.current.getHtmlContent();
+    }
+    return articleData?.nbody || '';
+  };
+
+  // Передаємо функцію збереження наверх
+  useEffect(() => {
+    if (onEditorSaveRef) {
+      onEditorSaveRef(handleEditorSave);
+    }
+  }, [onEditorSaveRef]);
 
   const items = [
     {
@@ -146,6 +171,7 @@ export default function NewsEditorHeader({ isEditing, articleData, onNbodyChange
 
       <h2 className={styles.header}>Повний текст новини</h2>
       <EditorJSClient
+        ref={editorRef}
         htmlContent={articleData?.nbody}
         onHtmlChange={onNbodyChange}
         placeholder="Введіть повний текст новини..."
