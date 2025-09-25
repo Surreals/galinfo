@@ -1,6 +1,9 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import dayjs from 'dayjs';
+import { DatePicker } from 'antd';
+import { EyeOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
 import { useRouter } from 'next/navigation';
 import AdminNavigation from '../components/AdminNavigation';
 import styles from './news.module.css';
@@ -335,23 +338,27 @@ export default function NewsPage() {
 
             <div className={styles.filterGroup}>
               <label>Дата від:</label>
-              <input
-                type="date"
-                value={filters.dateFrom}
-                onChange={(e) => handleFilterChange('dateFrom', e.target.value)}
+              <DatePicker
+                allowClear
+                format="YYYY-MM-DD"
+                value={filters.dateFrom ? dayjs(filters.dateFrom) : null}
+                onChange={(date) => handleFilterChange('dateFrom', date ? date.format('YYYY-MM-DD') : '')}
+                className={styles.datePicker}
               />
             </div>
 
             <div className={styles.filterGroup}>
               <label>Дата до:</label>
-              <input
-                type="date"
-                value={filters.dateTo}
-                onChange={(e) => handleFilterChange('dateTo', e.target.value)}
+              <DatePicker
+                allowClear
+                format="YYYY-MM-DD"
+                value={filters.dateTo ? dayjs(filters.dateTo) : null}
+                onChange={(date) => handleFilterChange('dateTo', date ? date.format('YYYY-MM-DD') : '')}
+                className={styles.datePicker}
               />
             </div>
 
-            <div className={styles.filterGroup}>
+            <div className={`${styles.filterGroup} ${styles.clearButtonGroup}`}>
               <button 
                 className={styles.clearButton}
                 onClick={clearFilters}
@@ -430,32 +437,35 @@ export default function NewsPage() {
                       </span>
                     </td>
                     <td className={styles.statsCell}>
-                      <div className={styles.stats}>
-                        <span>👁 {news.views_count}</span>
+                      <div className={styles.viewsValue}>
+                        <EyeOutlined className={styles.inlineIcon} />
+                        <span>{news.views_count}</span>
                       </div>
                     </td>
                     <td className={styles.viewCell}>
-                      <button 
-                        className={styles.viewButton}
+                      <button
+                        className={`${styles.iconButton} ${styles.viewIconButton}`}
                         onClick={() => window.open(`/news/${news.urlkey || 'article'}_${news.id}`, '_blank')}
-                        title="Відкрити в новій вкладці"
+                        title="Перегляд"
                       >
-                        👁
+                        <EyeOutlined />
                       </button>
                     </td>
                     <td className={styles.actionsCell}>
                       <div className={styles.actionButtons}>
-                        <button 
-                          className={styles.editButton}
+                        <button
+                          className={`${styles.iconButton} ${styles.editIconButton}`}
                           onClick={() => handleEditNews(news.id)}
+                          title="Редагувати"
                         >
-                          Редагувати
+                          <EditOutlined />
                         </button>
-                        <button 
-                          className={styles.deleteButton}
+                        <button
+                          className={`${styles.iconButton} ${styles.deleteIconButton}`}
                           onClick={() => handleDeleteNews(news.id, news.nheader || 'Без заголовка')}
+                          title="Видалити"
                         >
-                          Видалити
+                          <DeleteOutlined />
                         </button>
                       </div>
                     </td>
