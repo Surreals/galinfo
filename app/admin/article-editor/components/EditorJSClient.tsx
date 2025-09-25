@@ -11,11 +11,18 @@ export interface EditorJSClientRef {
   getHtmlContent: () => Promise<string>;
 }
 
+type Props = {
+  htmlContent?: string;
+  onHtmlChange?: (html: string) => void;
+  placeholder?: string;
+  id?: string;
+};
+
+
 const EditorJSClient = forwardRef<EditorJSClientRef, Props>(({
                                          htmlContent,
                                          onHtmlChange,
                                          placeholder = "Start typing...",
-                                         id = "editorjs-holder",
                                        }, ref) => {
   const holderRef = useRef<HTMLDivElement | null>(null);
   const editorRef = useRef<EditorJS | null>(null);
@@ -58,46 +65,11 @@ const EditorJSClient = forwardRef<EditorJSClientRef, Props>(({
       )
       .join("");
 
-  // Ініціалізуємо EditorJS лише один раз
-  useEffect(() => {
-    let isMounted = true;
-
-    const init = async () => {
-      if (!holderRef.current || !isMounted || editorRef.current) return;
-
-      const { default: Editor } = await import("@editorjs/editorjs");
-      const { default: Paragraph } = await import("@editorjs/paragraph");
-      const { default: Raw } = await import("@editorjs/raw");
-
-      const editor = new Editor({
-        holder: holderRef.current,
-        placeholder,
-        tools: {
-          paragraph: { class: Paragraph },
-          raw: { class: Raw },
-        },
-      });
-
-      editorRef.current = editor;
-
-    };
-
-    init();
-
-    return () => {
-      isMounted = false;
-      editorRef.current?.destroy();
-      editorRef.current = null;
-    };
-    // Ініціалізація — лише один раз
-  }, []);
 
   // Якщо зовнішній htmlContent змінюється — замінюємо вміст редактора
 
   useEffect(() => {
-    console.log(1)
     const init = async () => {
-      console.log(2)
       if (!holderRef.current || editorRef.current) return;
 
       const { default: Editor } = await import("@editorjs/editorjs");
@@ -105,7 +77,7 @@ const EditorJSClient = forwardRef<EditorJSClientRef, Props>(({
       const { default: Raw } = await import("@editorjs/raw");
 
       const editor = new Editor({
-        holder: holderRef.current,
+        holder: 'editorjs',
         placeholder,
         tools: {
           paragraph: { class: Paragraph },
@@ -134,7 +106,6 @@ const EditorJSClient = forwardRef<EditorJSClientRef, Props>(({
   }, []); // <- ПУСТИЙ масив залежностей, щоб init викликався один раз
 
 
-
   const handleSave = async () => {
     if (!editorRef.current) return;
     const saved = await editorRef.current.save();
@@ -160,19 +131,10 @@ const EditorJSClient = forwardRef<EditorJSClientRef, Props>(({
 
 
   return (
-    <div>
-      <div ref={holderRef} id={id} className={styles.editor} />
-    </div>
+      <div ref={holderRef} id={'editorjs'} className={styles.editor} />
   );
 });
 
 EditorJSClient.displayName = 'EditorJSClient';
 
 export default EditorJSClient;
-
-type Props = {
-  htmlContent?: string;
-  onHtmlChange?: (html: string) => void;
-  placeholder?: string;
-  id?: string;
-};
