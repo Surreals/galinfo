@@ -270,18 +270,18 @@ export default function NewsEditorSidebar({ newsId, articleData, menuData, onEdi
       // Автори
       nauthor: editor,
       userid: author,
-      showauthor: showAuthorInfo ? 1 : 0,
+      showauthor: showAuthorInfo,
       
       // Налаштування
       nweight: priority,
       layout: template,
       
       // Додаткові параметри
-      rated: mainFeed ? 1 : 0,
+      rated: mainFeed,
       headlineblock: blockInMain,
       hiderss: noRss,
       nocomment: banComments,
-      maininblock: mainInRubric ? 1 : 0,
+      maininblock: mainInRubric,
       idtotop: idToTop,
       suggest: favBlock,
       photo: markPhoto,
@@ -305,7 +305,7 @@ export default function NewsEditorSidebar({ newsId, articleData, menuData, onEdi
       udate: Math.floor(Date.now() / 1000),
       
       // Публікація
-      approved: publishOnSite ? 1 : 0,
+      approved: publishOnSite,
       to_twitter: publishOnTwitter,
       
       // Зображення
@@ -316,7 +316,13 @@ export default function NewsEditorSidebar({ newsId, articleData, menuData, onEdi
     };
 
     console.log('payload',payload)
-    // await saveArticle(payload);
+    const result = await saveArticle(payload);
+    if (result.success) {
+      if (!newsId && result.id) {
+        router.push(`/admin/article-editor?id=${result.id}`);
+        return;
+      }
+    }
   };
 
   const onDelete = async () => {

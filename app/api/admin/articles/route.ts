@@ -14,6 +14,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
       success: true,
       data: newArticle,
+      id: newId,
       message: 'Article created successfully',
     });
   } catch (error) {

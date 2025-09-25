@@ -177,7 +177,8 @@ export async function createNews(data: Partial<NewsData>): Promise<number> {
         if (data.ndate) {
           if (typeof data.ndate === 'string' && data.ndate.includes('T')) {
             // Якщо це ISO timestamp, витягуємо тільки дату
-            return data.ndate.split('T')[0];
+            const result = data.ndate.split('T')[0];
+            return result;
           } else if (typeof data.ndate === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(data.ndate)) {
             // Якщо це вже в правильному форматі YYYY-MM-DD
             return data.ndate;
@@ -185,12 +186,14 @@ export async function createNews(data: Partial<NewsData>): Promise<number> {
             // Спробуємо парсити як дату
             const date = new Date(data.ndate);
             if (!isNaN(date.getTime())) {
-              return date.toISOString().split('T')[0];
+              const result = date.toISOString().split('T')[0];
+              return result;
             }
           }
         }
         // За замовчуванням - поточна дата
-        return new Date().toISOString().split('T')[0];
+        const defaultDate = new Date().toISOString().split('T')[0];
+        return defaultDate;
       })(),
       data.ntime || new Date().toTimeString().split(' ')[0].substring(0, 8),
       data.ntype || 1,
@@ -226,8 +229,33 @@ export async function createNews(data: Partial<NewsData>): Promise<number> {
       data.maininblock ? 1 : 0,
     ];
     
-    const [result] = await executeQuery<{ insertId: number }>(newsQuery, newsValues);
-    const newsId = result[0].insertId;
+    console.log('🔍 SQL Query values:', newsValues);
+    const result = await executeQuery<{ insertId: number }>(newsQuery, newsValues);
+    console.log('🔍 Full query result:', result);
+    
+    // executeQuery повертає [rows, fields], але для INSERT запитів
+    // insertId знаходиться в result[0].insertId або result.insertId
+    let newsId: number;
+    
+    if (Array.isArray(result) && result.length > 0) {
+      // Якщо result - це масив [rows, fields]
+      const [rows, fields] = result;
+      console.log('🔍 Rows:', rows);
+      console.log('🔍 Fields:', fields);
+      
+      // Для INSERT запитів insertId може бути в різних місцях
+      newsId = (rows as any)?.insertId || (fields as any)?.insertId || (result as any)?.insertId;
+    } else {
+      // Якщо result - це об'єкт
+      newsId = (result as any)?.insertId;
+    }
+    
+    if (!newsId) {
+      console.error('❌ No insertId found in result:', result);
+      throw new Error('Failed to get insertId from INSERT query');
+    }
+    
+    console.log('✅ Created news with ID:', newsId);
     
     // Створюємо запис в таблиці тіла новини
     if (data.nbody) {
