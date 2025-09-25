@@ -7,6 +7,7 @@ interface HeroNewsItem {
   ndate: string;
   ntime: string;
   ntype: number;
+  nweight?: number;
   images: Array<{
     urls: {
       full: string;

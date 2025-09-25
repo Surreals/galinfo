@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
 import { Open_Sans, Rubik } from "next/font/google";
 import { ConfigProvider } from "antd";
+import dayjs from 'dayjs';
+import 'dayjs/locale/uk';
+import locale from 'antd/locale/uk_UA';
 
 import Footer from "@/app/footer/Footer";
 import Header from "@/app/header/Header";
@@ -9,6 +12,9 @@ import {MenuProvider} from "@/app/contexts/MenuContext";
 
 import "./globals.css";
 import "antd/dist/reset.css";
+
+// Configure dayjs to use Ukrainian locale
+dayjs.locale('uk');
 
 const openSans = Open_Sans({
   variable: "--font-open-sans",
@@ -176,13 +182,14 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="uk">
       <body
         className={`${openSans.variable} ${rubik.variable} antialiased`}
         suppressHydrationWarning={true}
       >
         <ConfigProvider
           theme={customTheme}
+          locale={locale}
         >
           <MobileProvider>
             <MenuProvider>

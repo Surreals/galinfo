@@ -112,6 +112,7 @@ const ArticlePageRenderer: React.FC<ArticlePageRendererProps> = ({ article, load
   const [allImages, setAllImages] = useState<string[]>([]);
   const [isShowCarousel, setIsShowCarousel] = useState<boolean>(false);
   const [startIndex, setStartIndex] = useState<number>(0);
+  const [modalImages, setModalImages] = useState<string[] | null>(null);
   const [activeAbsImageIndex, setActiveAbsImageIndex] = useState<number>(0);
 
   const carouselRef = useRef<any>(null);
@@ -151,6 +152,7 @@ const ArticlePageRenderer: React.FC<ArticlePageRendererProps> = ({ article, load
     imageUrl: getNewsImage(item as any),
     imageAlt: item.nheader,
     isImportant: item.ntype === 1 || (item as any).nweight > 0,
+    important: (item as any).nweight > 0, // Додаємо поле important для ColumnNews
     nweight: (item as any).nweight || 0,
     summary: (item as any).nteaser || (item as any).nsubheader || ''
   })) || [];
@@ -164,9 +166,85 @@ const ArticlePageRenderer: React.FC<ArticlePageRendererProps> = ({ article, load
     imageUrl: getNewsImage(item as any),
     imageAlt: item.nheader,
     isImportant: item.ntype === 1 || (item as any).nweight > 0,
+    important: (item as any).nweight > 0, // Додаємо поле important для ColumnNews
     nweight: (item as any).nweight || 0,
     summary: (item as any).nteaser || (item as any).nsubheader || ''
   })) || [];
+
+  // Локальна галерея для групи зображень (відповідає одному плейсхолдеру у nbody)
+  const ImageGroupGallery: React.FC<{
+    zeroBasedIndexes: number[];
+    groupKey: string;
+  }> = ({ zeroBasedIndexes, groupKey }) => {
+    const [activeZeroBasedIndex, setActiveZeroBasedIndex] = useState<number>(
+      zeroBasedIndexes?.[0] ?? 0
+    );
+
+    // Отримуємо масив ID зображень з article.images (comma-separated string)
+    const imageIds = article?.images ? article.images.split(',').map((id: string) => parseInt(id.trim())).filter((id: number) => !isNaN(id)) : [];
+
+    const getUrlByZeroBased = (zeroBasedIndex: number) => {
+      const imageId = imageIds[zeroBasedIndex];
+      if (!imageId) return undefined;
+      
+      // Знаходимо відповідне зображення в images_data за ID
+      const img = article?.images_data?.find((imgData: any) => imgData.id === imageId);
+      return img ? getImageFromImageData(img, 'full') : undefined;
+    };
+
+    const activeUrl = getUrlByZeroBased(activeZeroBasedIndex) ?? placeholderImage;
+    const activeImageId = imageIds[activeZeroBasedIndex];
+    const activeImg = article?.images_data?.find((imgData: any) => imgData.id === activeImageId);
+    const activeTitle = activeImg?.title;
+
+    return (
+      <div key={`${groupKey}-gallery`} className={styles.articleImage}>
+        <SmartImage
+          src={activeUrl}
+          alt={activeTitle || 'Image'}
+          width={800}
+          height={500}
+          priority={true}
+          onClick={() => {
+            // Відкриваємо модалку з фото ТІЛЬКИ цієї групи у порядку з nbody
+            const groupUrls = zeroBasedIndexes
+              .map((z) => getUrlByZeroBased(z))
+              .filter((u): u is string => Boolean(u));
+            setModalImages(groupUrls);
+            const posInGroup = Math.max(0, zeroBasedIndexes.indexOf(activeZeroBasedIndex));
+            setStartIndex(posInGroup);
+            setIsShowCarousel(true);
+          }}
+        />
+        {(activeTitle || null) && (
+          <div className={styles.imageCredits}>{activeTitle}</div>
+        )}
+        {zeroBasedIndexes.length > 1 && (
+          <div className={styles.galleryThumbs}>
+            {zeroBasedIndexes.map((zeroBasedIdx: number, tIdx: number) => {
+              const url = getUrlByZeroBased(zeroBasedIdx);
+              if (!url) return null;
+              const isActive = zeroBasedIdx === activeZeroBasedIndex;
+              return (
+                <img
+                  key={`thumb-${groupKey}-${tIdx}`}
+                  src={url}
+                  alt={(() => {
+                    const imgId = imageIds[zeroBasedIdx];
+                    const img = article?.images_data?.find((imgData: any) => imgData.id === imgId);
+                    return img?.title || 'thumb';
+                  })()}
+                  className={`${styles.galleryThumb} ${isActive ? styles.galleryThumbActive : ''}`}
+                  onClick={() => setActiveZeroBasedIndex(zeroBasedIdx)}
+                  loading="lazy"
+                />
+              );
+            })}
+          </div>
+        )}
+      </div>
+    );
+  };
 
   // Функція для рендерингу блоку
   const renderBlock = (block: any, index: number) => {
@@ -281,72 +359,99 @@ const ArticlePageRenderer: React.FC<ArticlePageRendererProps> = ({ article, load
             ;
         } else {
           const blocks = parseNbody(article?.nbody || '');
-          // Збираємо всі індекси зображень з усіх груп (залишаємо групування в даних, але показуємо єдиною галереєю)
-          const combinedIndexesZeroBased: number[] = blocks
-            .filter((b: any) => b.type === 'images')
-            .flatMap((b: any) => (b.content as number[]));
+          const imageBlocks = blocks.filter((b: any) => b.type === 'images');
 
-          // Текст без плейсхолдерів
-          const cleanedHtml = blocks
-            .map((b: any) => (b.type === 'text' ? (b.content as string) : ''))
-            .join('');
-
-          // Обчислюємо активний абсолютний індекс (у масиві images_data), за замовчуванням перше з комбінації
-          const firstAbs = (combinedIndexesZeroBased[0] ?? 0) + 1;
-          const activeAbs = activeAbsImageIndex || firstAbs;
-
-          const getAbsUrl = (absIndex: number) => {
-            const img = article?.images_data?.[absIndex];
-            return img ? getImageFromImageData(img, 'full') : undefined;
-          };
-
-          const activeUrl = getAbsUrl(activeAbs) ?? placeholderImage;
-          const activeTitle = article.images_data?.[activeAbs]?.title;
-
-          return (
-            <>
-              <div key={`${index}-gallery`} className={styles.articleImage}>
-                <SmartImage
-                  src={activeUrl}
-                  alt={activeTitle || 'Image'}
-                  width={800}
-                  height={500}
-                  priority={true}
-                  onClick={() => {
-                    setStartIndex(activeAbs);
-                    setIsShowCarousel(true);
-                  }}
-                />
-                {(activeTitle || null) && (
-                  <div className={styles.imageCredits}>{activeTitle}</div>
-                )}
-                {combinedIndexesZeroBased.length > 1 && (
-                  <div className={styles.galleryThumbs}>
-                    {combinedIndexesZeroBased.map((zeroBasedIdx: number, tIdx: number) => {
-                      const abs = zeroBasedIdx + 1;
-                      const url = getAbsUrl(abs);
-                      if (!url) return null;
-                      const isActive = abs === activeAbs;
-                      return (
-                        <img
-                          key={`thumb-${tIdx}`}
-                          src={url}
-                          alt={article.images_data?.[abs]?.title || 'thumb'}
-                          className={`${styles.galleryThumb} ${isActive ? styles.galleryThumbActive : ''}`}
-                          onClick={() => setActiveAbsImageIndex(abs)}
-                          loading="lazy"
-                        />
-                      );
-                    })}
+          // Якщо немає плейсхолдерів-індексів у nbody — повертаємось до дефолтного відображення: перше фото + весь текст
+          if (!imageBlocks.length) {
+            // Отримуємо перше зображення з article.images
+            const imageIds = article?.images ? article.images.split(',').map((id: string) => parseInt(id.trim())).filter((id: number) => !isNaN(id)) : [];
+            const firstImageId = imageIds[0];
+            const firstImg = firstImageId ? article?.images_data?.find((imgData: any) => imgData.id === firstImageId) : null;
+            const firstImageUrl = firstImg ? getImageFromImageData(firstImg, 'full') : undefined;
+            return (
+              <>
+                {firstImageUrl && (
+                  <div key={`${index}-image`} className={styles.articleImage}>
+                    <SmartImage
+                      src={firstImageUrl ?? placeholderImage}
+                      alt={firstImg?.title || 'Article image'}
+                      width={800}
+                      height={500}
+                      priority={true}
+                      onClick={() => {
+                        setStartIndex(0);
+                        setIsShowCarousel(true);
+                      }}
+                    />
+                    <div className={styles.imageCredits}>
+                      {firstImg?.title && (
+                        <span className={styles.photoCredit}>
+                          {firstImg?.title}
+                        </span>
+                      )}
+                    </div>
                   </div>
                 )}
-              </div>
+                <div
+                  key={`${index}-content`}
+                  className={styles.paragraph}
+                  dangerouslySetInnerHTML={{ __html: article?.nbody || '' }}
+                />
 
-              <div
-                key={`${index}-content`}
-                className={styles.paragraph}
-                dangerouslySetInnerHTML={{ __html: cleanedHtml }}
-              />
+                {isShowCarousel && (
+                  <div
+                    className={styles.backDrop}
+                    onClick={(e) => {
+                      if (e.target === e.currentTarget) {
+                        setIsShowCarousel(false);
+                        setModalImages(null);
+                      }
+                    }}
+                  >
+                    <div className={styles.carouselBox}>
+                      <Carousel ref={carouselRef} dots={false} initialSlide={startIndex}>
+                        {(modalImages ?? allImages).map((url, idx) => (
+                          <div key={idx} className={styles.carouselItem}>
+                            <img alt={'img'} src={url} loading="lazy" style={{ width: '100%', borderRadius: '8px' }} />
+                          </div>
+                        ))}
+                      </Carousel>
+                      <button onClick={() => carouselRef.current?.next()} className={styles.rightArrowButton}>
+                        <Image src={roundArrowRight} alt="Right arrow" width={44} height={44} />
+                      </button>
+                      <button onClick={() => carouselRef.current?.prev()} className={styles.leftArrowButton}>
+                        <Image src={roundArrowLeft} alt="Left arrow" width={44} height={44} />
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </>
+            );
+          }
+
+          // Є плейсхолдери — рендеримо контент послідовно: текстові блоки та групові галереї зображень
+          return (
+            <>
+              {blocks.map((b: any, bIdx: number) => {
+                if (b.type === 'text') {
+                  return (
+                    <div
+                      key={`${index}-text-${bIdx}`}
+                      className={styles.paragraph}
+                      dangerouslySetInnerHTML={{ __html: b.content as string }}
+                    />
+                  );
+                }
+                // images
+                const group = b.content as number[];
+                return (
+                  <ImageGroupGallery
+                    key={`${index}-imgs-${bIdx}`}
+                    zeroBasedIndexes={group}
+                    groupKey={`${index}-${bIdx}`}
+                  />
+                );
+              })}
 
               {isShowCarousel && (
                 <div
@@ -354,12 +459,13 @@ const ArticlePageRenderer: React.FC<ArticlePageRendererProps> = ({ article, load
                   onClick={(e) => {
                     if (e.target === e.currentTarget) {
                       setIsShowCarousel(false);
+                      setModalImages(null);
                     }
                   }}
                 >
                   <div className={styles.carouselBox}>
                     <Carousel ref={carouselRef} dots={false} initialSlide={startIndex}>
-                      {allImages.map((url, idx) => (
+                      {(modalImages ?? allImages).map((url, idx) => (
                         <div key={idx} className={styles.carouselItem}>
                           <img alt={'img'} src={url} loading="lazy" style={{ width: '100%', borderRadius: '8px' }} />
                         </div>
