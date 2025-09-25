@@ -319,6 +319,7 @@ function NewsListRenderer({ block, isMobile }: { block: any; isMobile: boolean }
       imageUrl: getUniversalNewsImageFull(item as any),
       imageUrls: imageUrls, // Всі доступні зображення
       url: generateArticleUrl(item as any),
+      important: ((item as any).nweight ?? 0) > 0,
     };
   }) || [];
 
