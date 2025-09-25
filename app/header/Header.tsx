@@ -80,6 +80,7 @@ export default function Header() {
   const { importantNews, loading, refetch: refetchRates } = useImportantNewsByLevel(1)
   const currencies = useMemo(() => ['USD', 'EUR'], []);
   const { rates } = useCurrencyRates(currencies);
+  const isAdmin = window.location.pathname.includes("admin");
 
   // debounced search handler
   const handleSearch = useCallback(
@@ -445,64 +446,66 @@ export default function Header() {
           </div>
         </div>
       </div>
-      <div className={styles.secondaryHeaderBox}>
-        <div className={styles.secondaryHeader}>
-          <p className={styles.text}>
-            Агенція інформації та аналітики "Гал-інфо"
-          </p>
-          <div className={styles.infoContainer}>
-            {/* Статичний блок "ТЕРМІНОВІ НОВИНИ" */}
-            <Link href={paths.society} className={styles.newInfoLink}>
-              <p className={styles.boltText}>ТЕРМІНОВІ НОВИНИ</p>
-              <Image src={dotIcon} alt="Dot Logo" width={8} height={8}/>
-            </Link>
+      {
+        isAdmin ? null : <div className={styles.secondaryHeaderBox}>
+          <div className={styles.secondaryHeader}>
+            <p className={styles.text}>
+              Агенція інформації та аналітики "Гал-інфо"
+            </p>
+            <div className={styles.infoContainer}>
+              {/* Статичний блок "ТЕРМІНОВІ НОВИНИ" */}
+              <Link href={paths.society} className={styles.newInfoLink}>
+                <p className={styles.boltText}>ТЕРМІНОВІ НОВИНИ</p>
+                <Image src={dotIcon} alt="Dot Logo" width={8} height={8}/>
+              </Link>
 
-            <div className={styles.marqueeWrapper}>
-              <div className={styles.marqueeContent}>
-                {
-                  loading ? Array.from({ length: 5 }).map((_, index) => (
-                    <Skeleton.Input
-                      key={index}
-                      active
-                      style={{width: '100%', height: 16}}
-                    />
-                  )) : importantNews && importantNews.map((item, index) => (
+              <div className={styles.marqueeWrapper}>
+                <div className={styles.marqueeContent}>
+                  {
+                    loading ? Array.from({length: 5}).map((_, index) => (
+                      <Skeleton.Input
+                        key={index}
+                        active
+                        style={{width: '100%', height: 16}}
+                      />
+                    )) : importantNews && importantNews.map((item, index) => (
                       <Link key={index} href={`/news/${item.urlkey}_${item.id}`} className={styles.newInfoLink}>
                         <p className={styles.gradientTextStart}>{item.nheader}</p>
                         <Image src={dotIcon} alt="Dot Logo" width={8} height={8}/>
                       </Link>
                     ))
-                }
-                {
-                  loading ? Array.from({ length: 5 }).map((_, index) => (
-                    <Skeleton.Input
-                      key={index}
-                      active
-                      style={{width: '100%', height: 16}}
-                    />
-                  )) : importantNews && importantNews.map((item, index) => (
-                    <Link key={index} href={`/news/${item.urlkey}_${item.id}`} className={styles.newInfoLink}>
-                      <p className={styles.gradientTextStart}>{item.nheader}</p>
-                      <Image src={dotIcon} alt="Dot Logo" width={8} height={8}/>
-                    </Link>
-                  ))
-                }
+                  }
+                  {
+                    loading ? Array.from({length: 5}).map((_, index) => (
+                      <Skeleton.Input
+                        key={index}
+                        active
+                        style={{width: '100%', height: 16}}
+                      />
+                    )) : importantNews && importantNews.map((item, index) => (
+                      <Link key={index} href={`/news/${item.urlkey}_${item.id}`} className={styles.newInfoLink}>
+                        <p className={styles.gradientTextStart}>{item.nheader}</p>
+                        <Image src={dotIcon} alt="Dot Logo" width={8} height={8}/>
+                      </Link>
+                    ))
+                  }
+                </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
+      }
       <div className={styles.infoSection}>
         <div className={styles.weatherBox}>
           {
             weatherLoading ?
-              <div style={{ width: '35px' }}>
+              <div style={{width: '35px'}}>
                 <Skeleton.Avatar
                   active
                   style={{width: '100%', height: '18px'}}
                 />
               </div>
-               : <div className={styles.sityText}>{weather?.temp}°C</div>
+              : <div className={styles.sityText}>{weather?.temp}°C</div>
           }
 
           <Image src={locationIcon} alt={'location'}/>

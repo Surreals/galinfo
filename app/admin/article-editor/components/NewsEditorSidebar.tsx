@@ -270,18 +270,18 @@ export default function NewsEditorSidebar({ newsId, articleData, menuData, onEdi
       // Автори
       nauthor: editor,
       userid: author,
-      showauthor: showAuthorInfo,
+      showauthor: showAuthorInfo ? 1 : 0,
       
       // Налаштування
       nweight: priority,
       layout: template,
       
       // Додаткові параметри
-      rated: mainFeed,
+      rated: mainFeed ? 1 : 0,
       headlineblock: blockInMain,
       hiderss: noRss,
       nocomment: banComments,
-      maininblock: mainInRubric,
+      maininblock: mainInRubric ? 1 : 0,
       idtotop: idToTop,
       suggest: favBlock,
       photo: markPhoto,
@@ -305,7 +305,7 @@ export default function NewsEditorSidebar({ newsId, articleData, menuData, onEdi
       udate: Math.floor(Date.now() / 1000),
       
       // Публікація
-      approved: publishOnSite,
+      approved: publishOnSite ? 1 : 0,
       to_twitter: publishOnTwitter,
       
       // Зображення
