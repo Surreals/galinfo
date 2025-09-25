@@ -170,6 +170,62 @@ const ArticlePageRenderer: React.FC<ArticlePageRendererProps> = ({ article, load
     summary: (item as any).nteaser || (item as any).nsubheader || ''
   })) || [];
 
+  // Локальна галерея для групи зображень (відповідає одному плейсхолдеру у nbody)
+  const ImageGroupGallery: React.FC<{
+    zeroBasedIndexes: number[];
+    groupKey: string;
+  }> = ({ zeroBasedIndexes, groupKey }) => {
+    const [activeZeroBasedIndex, setActiveZeroBasedIndex] = useState<number>(
+      zeroBasedIndexes?.[0] ?? 0
+    );
+
+    const getUrlByZeroBased = (zeroBasedIndex: number) => {
+      const img = article?.images_data?.[zeroBasedIndex];
+      return img ? getImageFromImageData(img, 'full') : undefined;
+    };
+
+    const activeUrl = getUrlByZeroBased(activeZeroBasedIndex) ?? placeholderImage;
+    const activeTitle = article?.images_data?.[activeZeroBasedIndex]?.title;
+
+    return (
+      <div key={`${groupKey}-gallery`} className={styles.articleImage}>
+        <SmartImage
+          src={activeUrl}
+          alt={activeTitle || 'Image'}
+          width={800}
+          height={500}
+          priority={true}
+          onClick={() => {
+            setStartIndex(activeZeroBasedIndex);
+            setIsShowCarousel(true);
+          }}
+        />
+        {(activeTitle || null) && (
+          <div className={styles.imageCredits}>{activeTitle}</div>
+        )}
+        {zeroBasedIndexes.length > 1 && (
+          <div className={styles.galleryThumbs}>
+            {zeroBasedIndexes.map((zeroBasedIdx: number, tIdx: number) => {
+              const url = getUrlByZeroBased(zeroBasedIdx);
+              if (!url) return null;
+              const isActive = zeroBasedIdx === activeZeroBasedIndex;
+              return (
+                <img
+                  key={`thumb-${groupKey}-${tIdx}`}
+                  src={url}
+                  alt={article?.images_data?.[zeroBasedIdx]?.title || 'thumb'}
+                  className={`${styles.galleryThumb} ${isActive ? styles.galleryThumbActive : ''}`}
+                  onClick={() => setActiveZeroBasedIndex(zeroBasedIdx)}
+                  loading="lazy"
+                />
+              );
+            })}
+          </div>
+        )}
+      </div>
+    );
+  };
+
   // Функція для рендерингу блоку
   const renderBlock = (block: any, index: number) => {
     const config = block.config;
@@ -283,72 +339,96 @@ const ArticlePageRenderer: React.FC<ArticlePageRendererProps> = ({ article, load
             ;
         } else {
           const blocks = parseNbody(article?.nbody || '');
-          // Збираємо всі індекси зображень з усіх груп (залишаємо групування в даних, але показуємо єдиною галереєю)
-          const combinedIndexesZeroBased: number[] = blocks
-            .filter((b: any) => b.type === 'images')
-            .flatMap((b: any) => (b.content as number[]));
+          const imageBlocks = blocks.filter((b: any) => b.type === 'images');
 
-          // Текст без плейсхолдерів
-          const cleanedHtml = blocks
-            .map((b: any) => (b.type === 'text' ? (b.content as string) : ''))
-            .join('');
-
-          // Обчислюємо активний абсолютний індекс (у масиві images_data), за замовчуванням перше з комбінації
-          const firstAbs = (combinedIndexesZeroBased[0] ?? 0) + 1;
-          const activeAbs = activeAbsImageIndex || firstAbs;
-
-          const getAbsUrl = (absIndex: number) => {
-            const img = article?.images_data?.[absIndex];
-            return img ? getImageFromImageData(img, 'full') : undefined;
-          };
-
-          const activeUrl = getAbsUrl(activeAbs) ?? placeholderImage;
-          const activeTitle = article.images_data?.[activeAbs]?.title;
-
-          return (
-            <>
-              <div key={`${index}-gallery`} className={styles.articleImage}>
-                <SmartImage
-                  src={activeUrl}
-                  alt={activeTitle || 'Image'}
-                  width={800}
-                  height={500}
-                  priority={true}
-                  onClick={() => {
-                    setStartIndex(activeAbs);
-                    setIsShowCarousel(true);
-                  }}
-                />
-                {(activeTitle || null) && (
-                  <div className={styles.imageCredits}>{activeTitle}</div>
-                )}
-                {combinedIndexesZeroBased.length > 1 && (
-                  <div className={styles.galleryThumbs}>
-                    {combinedIndexesZeroBased.map((zeroBasedIdx: number, tIdx: number) => {
-                      const abs = zeroBasedIdx + 1;
-                      const url = getAbsUrl(abs);
-                      if (!url) return null;
-                      const isActive = abs === activeAbs;
-                      return (
-                        <img
-                          key={`thumb-${tIdx}`}
-                          src={url}
-                          alt={article.images_data?.[abs]?.title || 'thumb'}
-                          className={`${styles.galleryThumb} ${isActive ? styles.galleryThumbActive : ''}`}
-                          onClick={() => setActiveAbsImageIndex(abs)}
-                          loading="lazy"
-                        />
-                      );
-                    })}
+          // Якщо немає плейсхолдерів-індексів у nbody — повертаємось до дефолтного відображення: перше фото + весь текст
+          if (!imageBlocks.length) {
+            const firstImageUrl = article?.images_data?.[0]
+              ? getImageFromImageData(article.images_data[0], 'full')
+              : undefined;
+            return (
+              <>
+                {firstImageUrl && (
+                  <div key={`${index}-image`} className={styles.articleImage}>
+                    <SmartImage
+                      src={firstImageUrl ?? placeholderImage}
+                      alt={article?.images_data?.[0]?.title || 'Article image'}
+                      width={800}
+                      height={500}
+                      priority={true}
+                      onClick={() => {
+                        setStartIndex(0);
+                        setIsShowCarousel(true);
+                      }}
+                    />
+                    <div className={styles.imageCredits}>
+                      {article?.images_data?.[0]?.title && (
+                        <span className={styles.photoCredit}>
+                          {article?.images_data?.[0]?.title}
+                        </span>
+                      )}
+                    </div>
                   </div>
                 )}
-              </div>
+                <div
+                  key={`${index}-content`}
+                  className={styles.paragraph}
+                  dangerouslySetInnerHTML={{ __html: article?.nbody || '' }}
+                />
 
-              <div
-                key={`${index}-content`}
-                className={styles.paragraph}
-                dangerouslySetInnerHTML={{ __html: cleanedHtml }}
-              />
+                {isShowCarousel && (
+                  <div
+                    className={styles.backDrop}
+                    onClick={(e) => {
+                      if (e.target === e.currentTarget) {
+                        setIsShowCarousel(false);
+                      }
+                    }}
+                  >
+                    <div className={styles.carouselBox}>
+                      <Carousel ref={carouselRef} dots={false} initialSlide={startIndex}>
+                        {allImages.map((url, idx) => (
+                          <div key={idx} className={styles.carouselItem}>
+                            <img alt={'img'} src={url} loading="lazy" style={{ width: '100%', borderRadius: '8px' }} />
+                          </div>
+                        ))}
+                      </Carousel>
+                      <button onClick={() => carouselRef.current?.next()} className={styles.rightArrowButton}>
+                        <Image src={roundArrowRight} alt="Right arrow" width={44} height={44} />
+                      </button>
+                      <button onClick={() => carouselRef.current?.prev()} className={styles.leftArrowButton}>
+                        <Image src={roundArrowLeft} alt="Left arrow" width={44} height={44} />
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </>
+            );
+          }
+
+          // Є плейсхолдери — рендеримо контент послідовно: текстові блоки та групові галереї зображень
+          return (
+            <>
+              {blocks.map((b: any, bIdx: number) => {
+                if (b.type === 'text') {
+                  return (
+                    <div
+                      key={`${index}-text-${bIdx}`}
+                      className={styles.paragraph}
+                      dangerouslySetInnerHTML={{ __html: b.content as string }}
+                    />
+                  );
+                }
+                // images
+                const group = b.content as number[];
+                return (
+                  <ImageGroupGallery
+                    key={`${index}-imgs-${bIdx}`}
+                    zeroBasedIndexes={group}
+                    groupKey={`${index}-${bIdx}`}
+                  />
+                );
+              })}
 
               {isShowCarousel && (
                 <div
