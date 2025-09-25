@@ -42,6 +42,7 @@ import { getImageUrl, ensureFullImageUrl } from "@/app/lib/imageUtils";
 import ImagePickerModal from "./ImagePickerModal";
 import { useRouter } from "next/navigation";
 import { MenuData } from "@/app/api/homepage/services/menuService";
+import TimeButtons from "./TimeButtons";
 
 const { TextArea } = Input;
 
@@ -549,11 +550,10 @@ export default function NewsEditorSidebar({ newsId, articleData, menuData, onEdi
             format="HH:mm DD.MM.YYYY"
             className={styles.fullWidth}
           />
-          <div className={styles.timeHints}>
-            <a>» Час останньої новини</a>
-            <a>♥ Час останньої опублікованої</a>
-            <a>» Час на сервері</a>
-          </div>
+          <TimeButtons 
+            publishAt={publishAt} 
+            setPublishAt={setPublishAt} 
+          />
         </div>
 
         {/* Плашки публікації */}
