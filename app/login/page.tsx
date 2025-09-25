@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useAdminAuth } from '@/app/contexts/AdminAuthContext';
 import styles from './login.module.css';
 
-export default function AdminLoginPage() {
+export default function LoginPage() {
   const [login, setLogin] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);

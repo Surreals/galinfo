@@ -18,7 +18,7 @@ export default function ProtectedAdminRoute({
 
   useEffect(() => {
     if (!isLoading && !isAuthenticated) {
-      router.push('/admin');
+      router.push('/login');
     }
   }, [isAuthenticated, isLoading, router]);
 

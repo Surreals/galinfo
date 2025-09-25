@@ -3,7 +3,6 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import dynamic from 'next/dynamic';
-import ProtectedAdminRoute from '@/app/components/ProtectedAdminRoute';
 import { useAdminAuth } from '@/app/contexts/AdminAuthContext';
 import styles from './dashboard.module.css';
 
@@ -212,8 +211,7 @@ export default function AdminDashboard() {
 
   if (showEditor) {
     return (
-      <ProtectedAdminRoute>
-        <div className={styles.container}>
+      <div className={styles.container}>
           <header className={styles.header}>
             <div className={styles.headerContent}>
               <h1>GalInfo Admin Dashboard</h1>
@@ -232,13 +230,11 @@ export default function AdminDashboard() {
             />
           </main>
         </div>
-      </ProtectedAdminRoute>
     );
   }
 
   return (
-    <ProtectedAdminRoute>
-      <div className={styles.container}>
+    <div className={styles.container}>
         {/* Header */}
         <header className={styles.header}>
           <div className={styles.headerContent}>
@@ -413,6 +409,5 @@ export default function AdminDashboard() {
         </div>
       </main>
     </div>
-    </ProtectedAdminRoute>
   );
 }

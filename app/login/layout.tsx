@@ -1,8 +1,7 @@
 import { AdminAuthProvider } from '@/app/contexts/AdminAuthContext';
-import ProtectedAdminRoute from '@/app/components/ProtectedAdminRoute';
 import { App } from 'antd';
 
-export default function AdminLayout({
+export default function LoginLayout({
   children,
 }: {
   children: React.ReactNode;
@@ -10,9 +9,7 @@ export default function AdminLayout({
   return (
     <AdminAuthProvider>
       <App>
-        <ProtectedAdminRoute>
-          {children}
-        </ProtectedAdminRoute>
+        {children}
       </App>
     </AdminAuthProvider>
   );
