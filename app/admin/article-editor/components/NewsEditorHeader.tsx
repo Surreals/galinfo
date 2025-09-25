@@ -3,6 +3,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import { Tabs, Input } from "antd";
+import dynamic from "next/dynamic";
 import { ArticleData } from "@/app/hooks/useArticleData";
 import { EditorJSClientRef } from "@/app/admin/article-editor/components/EditorJSClient";
 const EditorJSClient = dynamic(
@@ -11,7 +12,6 @@ const EditorJSClient = dynamic(
 );
 
 import styles from "../NewsEditor.module.css";
-import dynamic from "next/dynamic";
 
 const { TextArea } = Input;
 

@@ -9,14 +9,14 @@ export interface UseArticleSaveOptions {
 
 export interface UseArticleSaveReturn {
   saving: boolean;
-  saveArticle: (data: Partial<ArticleData>) => Promise<boolean>;
+  saveArticle: (data: Partial<ArticleData>) => Promise<{ success: boolean; id?: number }>; 
   deleteArticle: () => Promise<boolean>;
 }
 
 export function useArticleSave({ articleData, newsId }: UseArticleSaveOptions = {}): UseArticleSaveReturn {
   const [saving, setSaving] = useState(false);
 
-  const saveArticle = async (data: Partial<ArticleData>): Promise<boolean> => {
+  const saveArticle = async (data: Partial<ArticleData>): Promise<{ success: boolean; id?: number }> => {
     try {
       setSaving(true);
 
@@ -43,7 +43,9 @@ export function useArticleSave({ articleData, newsId }: UseArticleSaveOptions = 
           description: newsId ? 'Новину оновлено' : 'Новину створено',
           placement: 'topRight',
         });
-        return true;
+        // Повертаємо ідентифікатор створеної/оновленої новини, якщо доступний
+        const createdId = result.id || result.data?.id;
+        return { success: true, id: createdId };
       } else {
         throw new Error(result.error || 'Unknown error');
       }
@@ -54,7 +56,7 @@ export function useArticleSave({ articleData, newsId }: UseArticleSaveOptions = 
         description: error instanceof Error ? error.message : 'Помилка збереження',
         placement: 'topRight',
       });
-      return false;
+      return { success: false };
     } finally {
       setSaving(false);
     }

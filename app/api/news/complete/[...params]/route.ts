@@ -129,7 +129,7 @@ export async function GET(
     // Отримання рубрик з повною інформацією
     let rubrics: any[] = [];
     if (news.rubric) {
-      const rubricIds = news.rubric.split(',').map(id => id.trim());
+      const rubricIds = news.rubric.split(',').map((id: string) => id.trim());
       if (rubricIds.length > 0) {
         const rubricsQuery = `
           SELECT id, param, title, cattype, description
@@ -155,7 +155,7 @@ export async function GET(
     // Отримання зображень з повною інформацією
     let images: any[] = [];
     if (news.images) {
-      const imageIds = news.images.split(',').map(id => id.trim());
+      const imageIds = news.images.split(',').map((id: string) => id.trim());
       if (imageIds.length > 0) {
         const imagesQuery = `
           SELECT id, filename, title_ua
@@ -174,10 +174,9 @@ export async function GET(
         SELECT 
           a_powerusers.id,
           a_powerusers.uname_ua as name,
-          a_powerusers.twowords,
-          a_pics_users.filename as avatar
+          a_picsu.filename as avatar
         FROM a_powerusers
-        LEFT JOIN a_pics_users ON a_powerusers.id = a_pics_users.userid
+        LEFT JOIN a_picsu ON a_powerusers.id = a_picsu.userid
         WHERE a_powerusers.id = ?
       `;
       const [authorData] = await executeQuery(authorQuery, [news.userid]);
@@ -186,8 +185,10 @@ export async function GET(
         author = {
           id: authorInfo.id,
           name: authorInfo.name,
-          twowords: authorInfo.twowords,
-          avatar: authorInfo.avatar ? `/media/avatars/tmb/${authorInfo.avatar}` : '/im/user.gif',
+          twowords: '', // Поле не існує в базі даних
+          avatar: authorInfo.avatar ? 
+            `/media/avatars/tmb/${authorInfo.avatar.charAt(0)}/${authorInfo.avatar.charAt(1)}/${authorInfo.avatar}` : 
+            '/im/user.gif',
           link: news.ntype === 20 ? `/bloggers/${authorInfo.id}/` : `/editor/${authorInfo.id}/`
         };
       }

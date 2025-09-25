@@ -14,7 +14,7 @@ export interface ImageItem {
 }
 
 export interface ImagePickerModalProps {
-  isOpen: boolean;
+  open: boolean;
   onClose: () => void;
   onSelect: (image: ImageItem) => void;
   currentImage?: ImageItem | null;

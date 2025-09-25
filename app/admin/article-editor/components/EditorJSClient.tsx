@@ -77,7 +77,7 @@ const EditorJSClient = forwardRef<EditorJSClientRef, Props>(({
       const { default: Raw } = await import("@editorjs/raw");
 
       const editor = new Editor({
-        holder: 'editorjs',
+        holder: holderRef.current!,
         placeholder,
         tools: {
           paragraph: { class: Paragraph },
@@ -89,11 +89,9 @@ const EditorJSClient = forwardRef<EditorJSClientRef, Props>(({
 
       await editor.isReady;
 
-      // Рендеримо htmlContent тільки під час ініціалізації
       if (htmlContent) {
         const data = htmlToEditorJS(htmlContent);
-        editor.blocks.clear();
-        editor.render(data);
+        await editor.render(data);
       }
     };
 
@@ -110,7 +108,6 @@ const EditorJSClient = forwardRef<EditorJSClientRef, Props>(({
     if (!editorRef.current) return;
     const saved = await editorRef.current.save();
     const html = editorJSToHtml(saved);
-    console.log(3, html)
     onHtmlChange?.(html);
   };
 

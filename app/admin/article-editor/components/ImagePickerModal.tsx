@@ -12,7 +12,7 @@ const { Search } = Input;
 const { TabPane } = Tabs;
 
 export default function ImagePickerModal({ 
-  isOpen, 
+  open,
   onClose, 
   onSelect, 
   currentImage 
@@ -89,15 +89,15 @@ export default function ImagePickerModal({
 
   // Завантаження зображень при відкритті модалки
   useEffect(() => {
-    if (isOpen) {
+    if (open) {
       fetchImages();
     }
-  }, [isOpen]);
+  }, [open]);
 
   return (
     <Modal
       title="Вибір зображення"
-      open={isOpen}
+      open={open}
       onCancel={onClose}
       footer={null}
       width={900}
