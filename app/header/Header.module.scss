@@ -207,6 +207,63 @@
     .radioLogo:hover {
       background-color: var(--color-accent-hover);
     }
+
+    .mobileAdminSection {
+      margin-top: 24px;
+      padding: 16px;
+      background-color: #f8f9fa;
+      border-radius: 8px;
+      border: 1px solid #e9ecef;
+    }
+
+    .mobileAdminInfo {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      margin-bottom: 12px;
+    }
+
+    .mobileAdminUserName {
+      font-size: 16px;
+      font-weight: 600;
+      color: #495057;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .mobileAdminEmail {
+      font-size: 14px;
+      color: #6c757d;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .mobileAdminLogoutButton {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      width: 100%;
+      padding: 12px 16px;
+      background-color: #c7084f;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background-color 0.2s ease;
+      font-size: 14px;
+      font-weight: 500;
+
+      &:hover {
+        background-color: #a70641;
+      }
+
+      img {
+        filter: brightness(0) invert(1);
+      }
+    }
   }
 
   .fadeIn {
@@ -550,6 +607,52 @@
     justify-content: center;
     gap: 10px;
   }
+
+  .adminSection {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    justify-content: end;
+    padding: 4px 12px;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    border: 1px solid #e9ecef;
+  }
+
+  .adminUserName {
+    color: #495057;
+    font-weight: 600;
+    font-size: 14px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 120px;
+  }
+
+  .adminLogoutButton {
+    padding: 8px 16px;
+    background: #c7084f;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+
+    &:hover {
+      background: #a70641;
+      transform: translateY(-1px);
+    }
+
+    img {
+      filter: brightness(0) invert(1);
+    }
+  }
 }
 
 .secondaryHeader {
@@ -788,6 +891,10 @@
 
   .header {
     .svgBox {
+      display: none;
+    }
+
+    .adminSection {
       display: none;
     }
   }

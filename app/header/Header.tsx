@@ -13,7 +13,9 @@ import radioLogo from "@/assets/logos/radioLogo.svg"
 import searchIcon from "@/assets/icons/searchIcon.svg"
 import dotIcon from "@/assets/icons/dotIcon.svg"
 import burgerMenu from "@/assets/icons/burgerMenu.svg"
+import logoutIcon from "@/assets/icons/logoutIcon.svg"
 import { useMenuContext } from "@/app/contexts/MenuContext";
+import { useAdminAuth } from "@/app/contexts/AdminAuthContext";
 import SearchBox from "@/app/header/components/SearchBox";
 import {useImportantNewsByLevel} from "@/app/hooks/useImportantNews";
 import {RateRow, useCurrencyRates} from "@/app/hooks/UseCurrencyRatesResult";
@@ -76,10 +78,15 @@ export default function Header() {
   const pathname = usePathname();
 
   const { menuData } = useMenuContext();
+  const { user, logout } = useAdminAuth();
+  
   const { weather, loading: weatherLoading, refetch: refetchWeather } = useWeather("Lviv");
   const { importantNews, loading, refetch: refetchRates } = useImportantNewsByLevel(1)
   const currencies = useMemo(() => ['USD', 'EUR'], []);
   const { rates } = useCurrencyRates(currencies);
+
+  // Check if user is on admin page
+  const isAdminPage = pathname.startsWith('/admin');
 
   // debounced search handler
   const handleSearch = useCallback(
@@ -297,6 +304,26 @@ export default function Header() {
                 height={40}
               />
             </a>
+            {/* Admin logout button - only show if admin is authenticated and on admin page */}
+            {user && isAdminPage && (
+              <div className={styles.adminSection}>
+                <span className={styles.adminUserName} title={user.name}>
+                  {user.name}
+                </span>
+                <button 
+                  className={styles.adminLogoutButton} 
+                  onClick={logout}
+                  title="Вийти"
+                >
+                  <Image
+                    src={logoutIcon}
+                    alt="Вийти"
+                    width={20}
+                    height={20}
+                  />
+                </button>
+              </div>
+            )}
           </div>
         </div>
       </div>
@@ -660,6 +687,31 @@ export default function Header() {
                 />
               </a>
             </div>
+
+            {/* Admin section in mobile menu */}
+            {user && isAdminPage && (
+              <div className={styles.mobileAdminSection}>
+                <div className={styles.mobileAdminInfo}>
+                  <span className={styles.mobileAdminUserName} title={user.name}>
+                    {user.name}
+                  </span>
+                  <span className={styles.mobileAdminEmail}>{user.email}</span>
+                </div>
+                <button 
+                  className={styles.mobileAdminLogoutButton} 
+                  onClick={logout}
+                  title="Вийти"
+                >
+                  <Image
+                    src={logoutIcon}
+                    alt="Вийти"
+                    width={20}
+                    height={20}
+                  />
+                  <span>Вийти</span>
+                </button>
+              </div>
+            )}
 
           </aside>
         </div>

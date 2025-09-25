@@ -9,6 +9,7 @@ import Footer from "@/app/footer/Footer";
 import Header from "@/app/header/Header";
 import {MobileProvider} from "@/app/contexts/MobileContext";
 import {MenuProvider} from "@/app/contexts/MenuContext";
+import {AdminAuthProvider} from "@/app/contexts/AdminAuthContext";
 import BytcdConsole from "@/app/components/BytcdConsole";
 
 import "./globals.css";
@@ -192,14 +193,16 @@ export default function RootLayout({
           theme={customTheme}
           locale={locale}
         >
-          <MobileProvider>
-            <MenuProvider>
-              <Header/>
-              {children}
-              <Footer/>
-              <BytcdConsole />
-            </MenuProvider>
-          </MobileProvider>
+          <AdminAuthProvider>
+            <MobileProvider>
+              <MenuProvider>
+                <Header/>
+                {children}
+                <Footer/>
+                <BytcdConsole />
+              </MenuProvider>
+            </MobileProvider>
+          </AdminAuthProvider>
         </ConfigProvider>
       </body>
     </html>
