@@ -151,6 +151,7 @@ const ArticlePageRenderer: React.FC<ArticlePageRendererProps> = ({ article, load
     imageUrl: getNewsImage(item as any),
     imageAlt: item.nheader,
     isImportant: item.ntype === 1 || (item as any).nweight > 0,
+    important: (item as any).nweight > 0, // Додаємо поле important для ColumnNews
     nweight: (item as any).nweight || 0,
     summary: (item as any).nteaser || (item as any).nsubheader || ''
   })) || [];
@@ -164,6 +165,7 @@ const ArticlePageRenderer: React.FC<ArticlePageRendererProps> = ({ article, load
     imageUrl: getNewsImage(item as any),
     imageAlt: item.nheader,
     isImportant: item.ntype === 1 || (item as any).nweight > 0,
+    important: (item as any).nweight > 0, // Додаємо поле important для ColumnNews
     nweight: (item as any).nweight || 0,
     summary: (item as any).nteaser || (item as any).nsubheader || ''
   })) || [];
