@@ -3,8 +3,8 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { useAdminAuth } from '@/app/contexts/AdminAuthContext';
-import styles from './AdminNavigation.module.css';
+// import { useAdminAuth } from '@/app/contexts/AdminAuthContext';
+// import styles from './AdminNavigation.module.css';
 
 interface AdminNavigationProps {
   onClose?: () => void;
@@ -12,8 +12,8 @@ interface AdminNavigationProps {
 
 export default function AdminNavigation({ onClose }: AdminNavigationProps) {
   const pathname = usePathname();
-  const [activeMainTab, setActiveMainTab] = useState('site');
-  const { user, logout } = useAdminAuth();
+  // const [activeMainTab, setActiveMainTab] = useState('site');
+  // const { user, logout } = useAdminAuth();
 
   const mainTabs = [
     { id: 'news', label: 'Новини / Статті', href: '/admin/news' },
@@ -54,8 +54,8 @@ export default function AdminNavigation({ onClose }: AdminNavigationProps) {
       {/* Main Navigation Bar */}
       <div className="mainNavBar">
 
-        {/* User Menu */}
-        {user && (
+        {/* User Menu - ЗАКОМЕНТОВАНО, тепер кнопка виходу в хедері */}
+        {/* {user && (
           <div className={styles.userMenu}>
             <div className={styles.userInfo}>
               <span className={styles.userName}>{user.name}</span>
@@ -65,7 +65,7 @@ export default function AdminNavigation({ onClose }: AdminNavigationProps) {
               Вийти
             </button>
           </div>
-        )}
+        )} */}
 
         {onClose && (
           <button className="closeButton" onClick={onClose}>

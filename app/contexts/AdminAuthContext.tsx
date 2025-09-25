@@ -90,6 +90,11 @@ export function AdminAuthProvider({ children }: AdminAuthProviderProps) {
         localStorage.setItem('adminUser', JSON.stringify(data.user));
         localStorage.setItem('adminToken', data.token);
         
+        // Reload page to update UI state
+        if (typeof window !== 'undefined') {
+          window.location.reload();
+        }
+        
         return true;
       } else {
         throw new Error(data.error || 'Login failed');
@@ -105,9 +110,14 @@ export function AdminAuthProvider({ children }: AdminAuthProviderProps) {
   const logout = () => {
     setUser(null);
     setToken(null);
-    localStorage.removeItem('adminUser');
-    localStorage.removeItem('adminToken');
-    router.push('/admin');
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem('adminUser');
+      localStorage.removeItem('adminToken');
+      // Reload page to update UI state
+      window.location.reload();
+    }
+    // Navigate to login page
+    router.push('/login');
   };
 
   const isAuthenticated = !!user && !!token;
