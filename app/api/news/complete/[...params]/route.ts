@@ -228,10 +228,19 @@ export async function GET(
     // Оновлення статистики переглядів
     if (includeStatistics) {
       try {
-        await executeQuery(
+        // Спочатку намагаємося оновити існуючий запис
+        const [updateResult] = await executeQuery(
           'UPDATE a_statview SET qty = qty + 1 WHERE id = ?',
           [id]
         );
+        
+        // Якщо жоден рядок не був оновлений, створюємо новий запис
+        if (updateResult.affectedRows === 0) {
+          await executeQuery(
+            'INSERT INTO a_statview (id, qty) VALUES (?, 2)',
+            [id]
+          );
+        }
       } catch (error) {
         console.warn('Failed to update view count:', error);
       }
@@ -332,3 +341,4 @@ export async function GET(
     );
   }
 }
+
