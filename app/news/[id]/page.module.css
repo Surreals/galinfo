@@ -138,7 +138,7 @@
 .carouselItem {
   width: 100%;
   height: auto;
-  min-height: 400px;
+  min-height: 500px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -148,14 +148,12 @@
 }
 
 .carouselItem img {
-  max-width: 100%;
-  max-height: 80vh;
-  width: auto;
+  width: 100%;
   height: auto;
+  max-height: 85vh;
   object-fit: contain;
   border-radius: 8px;
   display: block;
-  margin: 0 auto;
 }
 
 .carouselItem:hover .rightArrowButton,
@@ -178,9 +176,9 @@
 }
 
 .carouselBox {
-  width: 90vw;
-  max-width: 1200px;
-  max-height: 80vh;
+  width: 95vw;
+  max-width: 1400px;
+  max-height: 85vh;
   cursor: pointer;
   position: relative;
   display: flex;
@@ -189,33 +187,33 @@
   background: rgba(0, 0, 0, 0.1);
   border-radius: 12px;
   overflow: hidden;
-  min-height: 400px;
+  min-height: 500px;
 }
 
 .carouselBox :global(.ant-carousel) {
   width: 100%;
   height: auto;
-  min-height: 400px;
+  min-height: 500px;
 }
 
 .carouselBox :global(.ant-carousel .slick-list) {
   height: auto;
-  min-height: 400px;
+  min-height: 500px;
 }
 
 .carouselBox :global(.ant-carousel .slick-track) {
   height: auto;
-  min-height: 400px;
+  min-height: 500px;
 }
 
 .carouselBox :global(.ant-carousel .slick-slide) {
   height: auto;
-  min-height: 400px;
+  min-height: 500px;
 }
 
 .carouselBox :global(.ant-carousel .slick-slide > div) {
   height: auto;
-  min-height: 400px;
+  min-height: 500px;
 }
 
 
@@ -699,13 +697,13 @@
   }
   
   .carouselBox {
-    width: 95vw;
-    max-height: 70vh;
-    min-height: 300px;
+    width: 98vw;
+    max-height: 75vh;
+    min-height: 400px;
   }
   
   .carouselItem img {
-    max-height: 70vh;
+    max-height: 75vh;
   }
   
   .rightArrowButton,
@@ -775,13 +773,13 @@
   }
   
   .carouselBox {
-    width: 98vw;
-    max-height: 60vh;
-    min-height: 250px;
+    width: 100vw;
+    max-height: 70vh;
+    min-height: 350px;
   }
   
   .carouselItem img {
-    max-height: 60vh;
+    max-height: 70vh;
   }
   
   .rightArrowButton,
