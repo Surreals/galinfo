@@ -59,6 +59,7 @@ export async function GET(
         a_news.id,
         a_news.ndate,
         a_news.ntime,
+        a_news.udate,
         a_news.ntype,
         a_news.images,
         a_news.urlkey,
@@ -121,9 +122,46 @@ export async function GET(
       imagesData = imagesDataResult;
     }
     
+    // Додаткове сортування на випадок, якщо udate не працює правильно
+    const sortedNewsData = newsData.sort((a, b) => {
+      // Завжди використовуємо комбінацію ndate + ntime для точного сортування
+      // Перетворюємо ndate з ISO формату та додаємо час
+      let dateA, dateB;
+      
+      try {
+        // Парсимо ndate (ISO формат: 2025-09-24T21:00:00.000Z) та додаємо час
+        const ndateA = new Date(a.ndate);
+        const ntimeA = a.ntime || '00:00:00';
+        const [hoursA, minutesA, secondsA] = ntimeA.split(':');
+        dateA = new Date(ndateA.getFullYear(), ndateA.getMonth(), ndateA.getDate(), 
+                        parseInt(hoursA), parseInt(minutesA), parseInt(secondsA));
+      } catch (e) {
+        dateA = new Date(a.ndate);
+      }
+      
+      try {
+        const ndateB = new Date(b.ndate);
+        const ntimeB = b.ntime || '00:00:00';
+        const [hoursB, minutesB, secondsB] = ntimeB.split(':');
+        dateB = new Date(ndateB.getFullYear(), ndateB.getMonth(), ndateB.getDate(), 
+                        parseInt(hoursB), parseInt(minutesB), parseInt(secondsB));
+      } catch (e) {
+        dateB = new Date(b.ndate);
+      }
+      
+      // Debug logging for first few items
+      if (newsData.indexOf(a) < 3 && newsData.indexOf(b) < 3) {
+        console.log(`Sorting: ${a.nheader} (${a.ndate} ${a.ntime}) vs ${b.nheader} (${b.ndate} ${b.ntime})`);
+        console.log(`Dates: ${dateA.toISOString()} vs ${dateB.toISOString()}`);
+      }
+      
+      // Сортуємо від найновіших до найстаріших
+      return dateB.getTime() - dateA.getTime();
+    });
+
     // Формування відповіді
     const response = {
-      news: newsData.map(news => ({
+      news: sortedNewsData.map(news => ({
         ...news,
         images: news.images ? formatNewsImages(imagesData, news.images.split(',').map((id: string) => parseInt(id.trim())).filter((id: number) => !isNaN(id)), lang) : []
       })),

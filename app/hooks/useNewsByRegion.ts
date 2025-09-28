@@ -7,6 +7,7 @@ export interface NewsByRegionItem {
   id: number;
   ndate: string;
   ntime: string;
+  udate: number;
   ntype: number;
   images: any[];
   urlkey: string;
