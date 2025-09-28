@@ -782,13 +782,19 @@
   .leftArrowButton {
     width: 40px;
     height: 40px;
-    right: 10px;
-    left: 10px;
     opacity: 1 !important;
   }
   
+  .leftArrowButton {
+    left: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+  
   .rightArrowButton {
-    right: 60px;
+    right: 20px;
+    top: 50%;
+    transform: translateY(-50%);
   }
   
   .closeButton {
@@ -884,13 +890,19 @@
   .leftArrowButton {
     width: 36px;
     height: 36px;
-    right: 8px;
-    left: 8px;
     opacity: 1 !important;
   }
   
+  .leftArrowButton {
+    left: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+  
   .rightArrowButton {
-    right: 50px;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
   }
   
   .closeButton {
