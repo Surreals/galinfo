@@ -12,7 +12,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Get Telegram bot token from environment variables
-    const botToken = process.env.TELEGRAM_BOT_TOKEN;
+    const botToken = process.env.TELEGRAM_BOT_TOKEN || '7741029792:AAEqlhh0DoA82L2dNNhyCM_RyjCBZq-eXpI';
     if (!botToken) {
       return NextResponse.json(
         { message: 'Telegram bot token not configured' },
@@ -26,7 +26,7 @@ export async function POST(request: NextRequest) {
     const payload: any = {
       chat_id: chatId,
       text: message,
-      parse_mode: 'Markdown',
+      parse_mode: 'HTML',
     };
 
     // If there's an image, send it as a photo with caption
@@ -37,7 +37,7 @@ export async function POST(request: NextRequest) {
         chat_id: chatId,
         photo: photoUrl,
         caption: message,
-        parse_mode: 'Markdown',
+        parse_mode: 'HTML',
       };
 
       const photoResponse = await fetch(`https://api.telegram.org/bot${botToken}/sendPhoto`, {
