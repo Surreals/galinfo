@@ -56,7 +56,7 @@ interface NewsEditorSidebarProps {
   articleData?: ArticleData | null;
   menuData: MenuData | null;
   onEditorSave?: (() => Promise<string>) | null;
-  fetchArticle?: (() => void)
+  fetchArticle?: (() => void) | undefined
 }
 
 export default function NewsEditorSidebar({ newsId, articleData, menuData, onEditorSave, fetchArticle }: NewsEditorSidebarProps) {
@@ -196,7 +196,9 @@ export default function NewsEditorSidebar({ newsId, articleData, menuData, onEdi
       setFavBlock(articleData.suggest);
       setMarkPhoto(articleData.photo);
       setMarkVideo(articleData.video);
-      setPublishAt(dayjs(`${articleData.ndate} ${articleData.ntime}`));
+      const base = dayjs(articleData.ndate);
+      const [h, m, s] = articleData.ntime.split(':').map(Number);
+      setPublishAt(base.hour(h).minute(m).second(s));
       setPublishOnSite(articleData.approved);
       setPublishOnTwitter(articleData.to_twitter);
       
