@@ -55,6 +55,57 @@
 /* Основне зображення статті */
 .articleImage {
   margin-bottom: 24px;
+  position: relative;
+}
+
+.imageContainer {
+  position: relative;
+  display: inline-block;
+  width: 100%;
+}
+
+.imageNavButtonLeft,
+.imageNavButtonRight {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(199, 8, 79, 0.8);
+  border: none;
+  border-radius: 50%;
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.3s ease, background-color 0.3s ease, transform 0.2s ease;
+  z-index: 10;
+}
+
+.imageNavButtonLeft {
+  left: 16px;
+}
+
+.imageNavButtonRight {
+  right: 16px;
+}
+
+.imageContainer:hover .imageNavButtonLeft,
+.imageContainer:hover .imageNavButtonRight {
+  opacity: 1;
+}
+
+.imageNavButtonLeft:hover,
+.imageNavButtonRight:hover {
+  background: rgba(199, 8, 79, 1);
+  transform: translateY(-50%) scale(1.1);
+}
+
+.imageNavButtonLeft:focus-visible,
+.imageNavButtonRight:focus-visible {
+  outline: 2px solid white;
+  outline-offset: 2px;
 }
 
 /* Галерея з мініатюрами під головним фото */
@@ -171,7 +222,7 @@
 
 .rightArrowButton:hover,
 .leftArrowButton:hover {
-  background: rgba(0, 0, 0, 0.8);
+  background: rgba(199, 8, 79, 1);
   transform: translateY(-50%) scale(1.1);
 }
 
@@ -225,13 +276,13 @@
   cursor: pointer;
   position: absolute;
   top: 50%;
-  transition: opacity 0.3s ease, filter 0.3s ease;
+  transition: opacity 0.3s ease, background-color 0.3s ease, transform 0.2s ease;
   transform: translateY(-50%);
   right: 20px;
-  background: rgba(0, 0, 0, 0.5);
+  background: rgba(199, 8, 79, 0.8);
   border-radius: 50%;
-  width: 48px;
-  height: 48px;
+  width: 44px;
+  height: 44px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -246,13 +297,13 @@
   cursor: pointer;
   position: absolute;
   top: 50%;
-  transition: opacity 0.3s ease, filter 0.3s ease;
+  transition: opacity 0.3s ease, background-color 0.3s ease, transform 0.2s ease;
   transform: translateY(-50%);
   left: 20px;
-  background: rgba(0, 0, 0, 0.5);
+  background: rgba(199, 8, 79, 0.8);
   border-radius: 50%;
-  width: 48px;
-  height: 48px;
+  width: 44px;
+  height: 44px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -264,7 +315,7 @@
   position: absolute;
   top: 20px;
   right: 20px;
-  background: rgba(0, 0, 0, 0.7);
+  background: rgba(199, 8, 79, 0.8);
   border: none;
   border-radius: 50%;
   width: 44px;
@@ -278,7 +329,7 @@
 }
 
 .closeButton:hover {
-  background: rgba(0, 0, 0, 0.9);
+  background: rgba(199, 8, 79, 1);
   transform: scale(1.1);
 }
 
@@ -688,6 +739,26 @@
     height: 56px;
   }
   
+  .imageNavButtonLeft,
+  .imageNavButtonRight {
+    width: 40px;
+    height: 40px;
+  }
+  
+  .rightArrowButton,
+  .leftArrowButton {
+    width: 40px;
+    height: 40px;
+  }
+  
+  .imageNavButtonLeft {
+    left: 8px;
+  }
+  
+  .imageNavButtonRight {
+    right: 8px;
+  }
+  
   .mainImageVertical {
     max-height: 400px;
   }
@@ -762,6 +833,26 @@
   .galleryThumb {
     width: 68px;
     height: 48px;
+  }
+  
+  .imageNavButtonLeft,
+  .imageNavButtonRight {
+    width: 36px;
+    height: 36px;
+  }
+  
+  .rightArrowButton,
+  .leftArrowButton {
+    width: 36px;
+    height: 36px;
+  }
+  
+  .imageNavButtonLeft {
+    left: 6px;
+  }
+  
+  .imageNavButtonRight {
+    right: 6px;
   }
   
   .mainImageVertical {

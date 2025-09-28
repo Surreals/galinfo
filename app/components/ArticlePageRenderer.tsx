@@ -116,6 +116,7 @@ const ArticlePageRenderer: React.FC<ArticlePageRendererProps> = ({ article, load
   const [startIndex, setStartIndex] = useState<number>(0);
   const [modalImages, setModalImages] = useState<string[] | null>(null);
   const [activeAbsImageIndex, setActiveAbsImageIndex] = useState<number>(0);
+  const [currentMainImageIndex, setCurrentMainImageIndex] = useState<number>(0);
 
   const carouselRef = useRef<any>(null);
   const { isMobile } = useMobileContext();
@@ -222,23 +223,49 @@ const ArticlePageRenderer: React.FC<ArticlePageRendererProps> = ({ article, load
 
     return (
       <div key={`${groupKey}-gallery`} className={styles.articleImage}>
-        <SmartImage
-          src={activeUrl}
-          alt={activeTitle || 'Image'}
-          width={800}
-          height={500}
-          priority={true}
-          onClick={() => {
-            // Відкриваємо модалку з фото ТІЛЬКИ цієї групи у порядку з nbody
-            const groupUrls = zeroBasedIndexes
-              .map((z) => getUrlByZeroBased(z))
-              .filter((u): u is string => Boolean(u));
-            setModalImages(groupUrls);
-            const posInGroup = Math.max(0, zeroBasedIndexes.indexOf(activeZeroBasedIndex));
-            setStartIndex(posInGroup);
-            setIsShowCarousel(true);
-          }}
-        />
+        <div className={styles.imageContainer}>
+          <SmartImage
+            src={activeUrl}
+            alt={activeTitle || 'Image'}
+            width={800}
+            height={500}
+            priority={true}
+            onClick={() => {
+              // Відкриваємо модалку з фото ТІЛЬКИ цієї групи у порядку з nbody
+              const groupUrls = zeroBasedIndexes
+                .map((z) => getUrlByZeroBased(z))
+                .filter((u): u is string => Boolean(u));
+              setModalImages(groupUrls);
+              const posInGroup = Math.max(0, zeroBasedIndexes.indexOf(activeZeroBasedIndex));
+              setStartIndex(posInGroup);
+              setIsShowCarousel(true);
+            }}
+          />
+          {zeroBasedIndexes.length > 1 && (
+            <>
+              <button 
+                onClick={() => {
+                  const currentIndex = zeroBasedIndexes.indexOf(activeZeroBasedIndex);
+                  const prevIndex = currentIndex > 0 ? currentIndex - 1 : zeroBasedIndexes.length - 1;
+                  setActiveZeroBasedIndex(zeroBasedIndexes[prevIndex]);
+                }}
+                className={styles.imageNavButtonLeft}
+              >
+                <Image src={roundArrowLeft} alt="Previous" width={24} height={24} />
+              </button>
+              <button 
+                onClick={() => {
+                  const currentIndex = zeroBasedIndexes.indexOf(activeZeroBasedIndex);
+                  const nextIndex = currentIndex < zeroBasedIndexes.length - 1 ? currentIndex + 1 : 0;
+                  setActiveZeroBasedIndex(zeroBasedIndexes[nextIndex]);
+                }}
+                className={styles.imageNavButtonRight}
+              >
+                <Image src={roundArrowRight} alt="Next" width={24} height={24} />
+              </button>
+            </>
+          )}
+        </div>
         {(activeTitle || null) && (
           <div className={styles.imageCredits}>{activeTitle}</div>
         )}
@@ -386,30 +413,57 @@ const ArticlePageRenderer: React.FC<ArticlePageRendererProps> = ({ article, load
 
           // Якщо немає плейсхолдерів-індексів у nbody — повертаємось до дефолтного відображення: перше фото + весь текст
           if (!imageBlocks.length) {
-            // Отримуємо перше зображення з article.images
+            // Отримуємо масив зображень з article.images
             const imageIds = article?.images ? article.images.split(',').map((id: string) => parseInt(id.trim())).filter((id: number) => !isNaN(id)) : [];
-            const firstImageId = imageIds[0];
-            const firstImg = firstImageId ? article?.images_data?.find((imgData: any) => imgData.id === firstImageId) : null;
-            const firstImageUrl = firstImg ? getImageFromImageData(firstImg, 'full') : undefined;
+            const currentImageId = imageIds[currentMainImageIndex];
+            const currentImg = currentImageId ? article?.images_data?.find((imgData: any) => imgData.id === currentImageId) : null;
+            const currentImageUrl = currentImg ? getImageFromImageData(currentImg, 'full') : undefined;
+            
             return (
               <>
-                {firstImageUrl && (
+                {currentImageUrl && (
                   <div key={`${index}-image`} className={styles.articleImage}>
-                    <SmartImage
-                      src={firstImageUrl ?? placeholderImage}
-                      alt={firstImg?.title || 'Article image'}
-                      width={800}
-                      height={500}
-                      priority={true}
-                      onClick={() => {
-                        setStartIndex(0);
-                        setIsShowCarousel(true);
-                      }}
-                    />
+                    <div className={styles.imageContainer}>
+                      <SmartImage
+                        src={currentImageUrl ?? placeholderImage}
+                        alt={currentImg?.title || 'Article image'}
+                        width={800}
+                        height={500}
+                        priority={true}
+                        onClick={() => {
+                          setStartIndex(currentMainImageIndex);
+                          setIsShowCarousel(true);
+                        }}
+                      />
+                      {imageIds.length > 1 && (
+                        <>
+                          <button 
+                            onClick={() => {
+                              setCurrentMainImageIndex(prev => 
+                                prev > 0 ? prev - 1 : imageIds.length - 1
+                              );
+                            }}
+                            className={styles.imageNavButtonLeft}
+                          >
+                            <Image src={roundArrowLeft} alt="Previous" width={24} height={24} />
+                          </button>
+                          <button 
+                            onClick={() => {
+                              setCurrentMainImageIndex(prev => 
+                                prev < imageIds.length - 1 ? prev + 1 : 0
+                              );
+                            }}
+                            className={styles.imageNavButtonRight}
+                          >
+                            <Image src={roundArrowRight} alt="Next" width={24} height={24} />
+                          </button>
+                        </>
+                      )}
+                    </div>
                     <div className={styles.imageCredits}>
-                      {firstImg?.title && (
+                      {currentImg?.title && (
                         <span className={styles.photoCredit}>
-                          {firstImg?.title}
+                          {currentImg?.title}
                         </span>
                       )}
                     </div>
@@ -449,10 +503,10 @@ const ArticlePageRenderer: React.FC<ArticlePageRendererProps> = ({ article, load
                         ))}
                       </Carousel>
                       <button onClick={() => carouselRef.current?.next()} className={styles.rightArrowButton}>
-                        <Image src={roundArrowRight} alt="Right arrow" width={44} height={44} />
+                        <Image src={roundArrowRight} alt="Right arrow" width={24} height={24} />
                       </button>
                       <button onClick={() => carouselRef.current?.prev()} className={styles.leftArrowButton}>
-                        <Image src={roundArrowLeft} alt="Left arrow" width={44} height={44} />
+                        <Image src={roundArrowLeft} alt="Left arrow" width={24} height={24} />
                       </button>
                     </div>
                   </div>
@@ -513,10 +567,10 @@ const ArticlePageRenderer: React.FC<ArticlePageRendererProps> = ({ article, load
                       ))}
                     </Carousel>
                     <button onClick={() => carouselRef.current?.next()} className={styles.rightArrowButton}>
-                      <Image src={roundArrowRight} alt="Right arrow" width={44} height={44} />
+                      <Image src={roundArrowRight} alt="Right arrow" width={24} height={24} />
                     </button>
                     <button onClick={() => carouselRef.current?.prev()} className={styles.leftArrowButton}>
-                      <Image src={roundArrowLeft} alt="Left arrow" width={44} height={44} />
+                      <Image src={roundArrowLeft} alt="Left arrow" width={24} height={24} />
                     </button>
                   </div>
                 </div>
