@@ -404,24 +404,27 @@ export default function NewsEditorSidebar({ newsId, articleData, menuData, onEdi
             fileList.length ? <div className={styles.sectionLabel}>{fileList.length}</div> : null
           }
           <div className={styles.sectionTitle}>Фото</div>
-          <Upload
-            listType="picture-card"
-            multiple
-            fileList={fileList}
-            onChange={({ fileList }) => setFileList(fileList as ExtendedUploadFile[])}
-            beforeUpload={() => false} // блокуємо реальний аплоад, лише превʼю
-          >
-            <div className={styles.uploadBtn}>
-              <PictureOutlined />
-              <div>Додати</div>
-            </div>
-          </Upload>
+          <div onClick={openImagePicker}>
+            <Upload
+              listType="picture-card"
+              multiple
+              fileList={fileList}
+              onChange={({fileList}) => setFileList(fileList as ExtendedUploadFile[])}
+              beforeUpload={() => false}
+              openFileDialogOnClick={false}
+            >
+              <div className={styles.uploadBtn}>
+                <PictureOutlined/>
+                <div>Додати</div>
+              </div>
+            </Upload>
+          </div>
           <Button
             type="default"
             size="small"
-            icon={<PictureOutlined />}
+            icon={<PictureOutlined/>}
             onClick={openImagePicker}
-            style={{ marginTop: '8px', width: '100%' }}
+            style={{marginTop: '8px', width: '100%'}}
           >
             Вибрати з галереї
           </Button>
