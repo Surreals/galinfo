@@ -1,7 +1,7 @@
 "use client";
 
 import {useEffect, useImperativeHandle, useRef, forwardRef} from "react";
-import type { OutputData } from "@editorjs/editorjs";
+import type {OutputData, ToolConstructable} from "@editorjs/editorjs";
 import type EditorJS from "@editorjs/editorjs";
 
 import styles from "../NewsEditor.module.css";
@@ -33,18 +33,39 @@ const EditorJSClient = forwardRef<EditorJSClientRef, Props>(({
     const doc = parser.parseFromString(html || "", "text/html");
     const blocks: any[] = [];
 
-    doc.body.childNodes.forEach((node) => {
+    const walk = (node: ChildNode) => {
       if (node.nodeType === Node.TEXT_NODE) {
         const text = node.textContent?.trim();
         if (text) blocks.push({ type: "paragraph", data: { text } });
-      } else if (node.nodeName === "P") {
-        // Залишаємо innerHTML всередині <p> (щоб зберегти <strong>, <a> і т.д.)
-        blocks.push({ type: "paragraph", data: { text: (node as HTMLElement).innerHTML } });
-      } else {
-        // fallback — вбудовуємо як raw блок
-        blocks.push({ type: "raw", data: { html: (node as HTMLElement).outerHTML } });
+        return;
       }
-    });
+
+      if (node.nodeName === "P") {
+        blocks.push({
+          type: "paragraph",
+          data: { text: (node as HTMLElement).innerHTML },
+        });
+        return;
+      }
+
+      if (node.nodeName === "UL" || node.nodeName === "OL") {
+        const style = node.nodeName === "UL" ? "unordered" : "ordered";
+        const items: string[] = [];
+        node.childNodes.forEach((li) => {
+          if (li.nodeName === "LI") {
+            const inner = (li as HTMLElement).innerHTML.trim();
+            items.push(inner);
+          }
+        });
+        blocks.push({ type: "list", data: { style, items } });
+        return;
+      }
+
+      // fallback
+      blocks.push({ type: "raw", data: { html: (node as HTMLElement).outerHTML } });
+    };
+
+    doc.body.childNodes.forEach(walk);
 
     if (blocks.length === 0) {
       blocks.push({ type: "paragraph", data: { text: "" } });
@@ -75,6 +96,7 @@ const EditorJSClient = forwardRef<EditorJSClientRef, Props>(({
       const { default: Editor } = await import("@editorjs/editorjs");
       const { default: Paragraph } = await import("@editorjs/paragraph");
       const { default: Raw } = await import("@editorjs/raw");
+      const { default: List } = await import("@editorjs/list");
 
       const editor = new Editor({
         holder: holderRef.current!,
@@ -82,6 +104,7 @@ const EditorJSClient = forwardRef<EditorJSClientRef, Props>(({
         tools: {
           paragraph: { class: Paragraph },
           raw: { class: Raw },
+          list: { class: List as unknown as ToolConstructable, inlineToolbar: true },
         },
       });
 

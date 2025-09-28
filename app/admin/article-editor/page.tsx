@@ -70,7 +70,6 @@ function ArticleEditorContent() {
           articleData={articleData}
           onEditorSave={editorSaveFn}
         />
-        {/* <NewsFullEditor/> */}
       </div>
       
       {/* Floating action buttons and modals */}

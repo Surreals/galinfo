@@ -113,18 +113,14 @@ export default function NewsEditorSidebar({ newsId, articleData, menuData, onEdi
     articleData?.ntype || ARTICLE_TYPE_OPTIONS[0].value
   );
 
-  // Рубрика / Регіон (можна обрати кілька)
-  const [selectedRubrics, setSelectedRubrics] = useState<number[]>(
-    articleData?.rubric.filter(id => id) || []
+  const [selectedRubrics, setSelectedRubrics] = useState<string[]>(
+    (articleData?.rubric || []).map(String)
   );
-
-  const [selectedRegions, setSelectedRegions] = useState<number[]>(
-    articleData?.region || []
+  const [selectedRegions, setSelectedRegions] = useState<string[]>(
+    (articleData?.region || []).map(String)
   );
-
-  // Тема
-  const [selectedTheme, setSelectedTheme] = useState<number | null>(
-    articleData?.theme || null
+  const [selectedTheme, setSelectedTheme] = useState<string | null>(
+    articleData?.theme != null ? String(articleData.theme) : null
   );
 
   // Теги
@@ -181,9 +177,11 @@ export default function NewsEditorSidebar({ newsId, articleData, menuData, onEdi
   useEffect(() => {
     if (articleData && !loading) {
       setArticleType(articleData.ntype);
-      setSelectedRubrics(articleData.rubric.filter(id => id));
-      setSelectedRegions(articleData.region);
-      setSelectedTheme(articleData.theme || null);
+      setSelectedRubrics((articleData.rubric || []).map(String)); // [2]
+      setSelectedRegions((articleData.region || []).map(String)); // [2]
+      setSelectedTheme(
+        articleData.theme != null ? String(articleData.theme) : null
+      ); // [2]
       setTags(articleData.tags.join(', '));
       setEditor(articleData.nauthor || null);
       setAuthor(articleData.userid || null);
@@ -263,9 +261,9 @@ export default function NewsEditorSidebar({ newsId, articleData, menuData, onEdi
       
       // Тип та категорії
       ntype: articleType,
-      rubric: selectedRubrics,
-      region: selectedRegions,
-      theme: selectedTheme,
+      rubric: selectedRubrics.map(Number),
+      region: selectedRegions.map(Number),
+      theme: selectedTheme ? Number(selectedTheme) : null,
       tags: tags.split(',').map(tag => tag.trim()).filter(tag => tag),
       
       // Автори
@@ -342,10 +340,10 @@ export default function NewsEditorSidebar({ newsId, articleData, menuData, onEdi
     });
   };
 
-  if (loading) {
+  if (true) {
     return (
       <aside className={styles.sidebar}>
-        <div style={{ display: 'flex', justifyContent: 'center', padding: '2rem' }}>
+        <div style={{ display: 'flex', justifyContent: 'center', padding: '2rem', marginTop: '150px', width: '100%' }}>
           <Spin size="large" />
         </div>
       </aside>
@@ -417,9 +415,9 @@ export default function NewsEditorSidebar({ newsId, articleData, menuData, onEdi
                 placeholder="Оберіть рубрики"
                 value={selectedRubrics}
                 onChange={setSelectedRubrics}
-                options={rubrics.map((r: any) => ({
+                options={mainCategoriesResponse.map((r) => ({
                   label: r.title,
-                  value: r.id.toString()
+                  value: r.id.toString(),
                 }))}
                 className={styles.fullWidth}
                 size="middle"
@@ -438,9 +436,9 @@ export default function NewsEditorSidebar({ newsId, articleData, menuData, onEdi
                 placeholder="Оберіть регіони"
                 value={selectedRegions}
                 onChange={setSelectedRegions}
-                options={regions.map((r: any) => ({
+                options={regionsResponse.map((r) => ({
                   label: r.title,
-                  value: r.id.toString()
+                  value: r.id.toString(),
                 }))}
                 className={styles.fullWidth}
                 size="middle"
@@ -456,7 +454,10 @@ export default function NewsEditorSidebar({ newsId, articleData, menuData, onEdi
                 placeholder="Оберіть тему"
                 value={selectedTheme}
                 onChange={setSelectedTheme}
-                options={themes.map((t: any) => ({ label: t.title, value: t.id.toString()}))}
+                options={specialThemesResponse.map((t) => ({
+                  label: t.title,
+                  value: t.id.toString(),
+                }))}
                 className={styles.fullWidth}
                 size="middle"
                 allowClear

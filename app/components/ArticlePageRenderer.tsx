@@ -115,7 +115,6 @@ const ArticlePageRenderer: React.FC<ArticlePageRendererProps> = ({ article, load
   const [isShowCarousel, setIsShowCarousel] = useState<boolean>(false);
   const [startIndex, setStartIndex] = useState<number>(0);
   const [modalImages, setModalImages] = useState<string[] | null>(null);
-  const [activeAbsImageIndex, setActiveAbsImageIndex] = useState<number>(0);
   const [currentMainImageIndex, setCurrentMainImageIndex] = useState<number>(0);
 
   const carouselRef = useRef<any>(null);
