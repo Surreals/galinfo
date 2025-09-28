@@ -2,7 +2,8 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { Tabs, Input } from "antd";
+import { Tabs, Input, Button } from "antd";
+import { LinkOutlined } from "@ant-design/icons";
 import dynamic from "next/dynamic";
 import { ArticleData } from "@/app/hooks/useArticleData";
 import { EditorJSClientRef } from "@/app/admin/article-editor/components/EditorJSClient";
@@ -161,9 +162,32 @@ export default function NewsEditorHeader({ isEditing, articleData, onNbodyChange
     },
   ]
 
+  // Функція для відкриття статті в новій вкладці
+  const handleViewArticle = () => {
+    if (articleData?.urlkey && articleData?.id) {
+      const articleUrl = `/news/${articleData.urlkey}_${articleData.id}`;
+      window.open(articleUrl, '_blank');
+    }
+  };
+
   return (
     <div className={styles.editorWrapper}>
-      <h2 className={styles.header}>{isEditing ? 'Редагувати новину' : 'Створити новину'}</h2>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+        <h2 className={styles.header}>{isEditing ? 'Редагувати новину' : 'Створити новину'}</h2>
+        {isEditing && articleData?.urlkey && articleData?.id && (
+          <Button
+            type="text"
+            icon={<LinkOutlined />}
+            onClick={handleViewArticle}
+            title="Переглянути статтю"
+            style={{ 
+              color: '#1890ff',
+              padding: '4px 8px',
+              height: 'auto'
+            }}
+          />
+        )}
+      </div>
       <Tabs
         defaultActiveKey="1"
         items={items}

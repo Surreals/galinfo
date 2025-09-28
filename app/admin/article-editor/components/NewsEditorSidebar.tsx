@@ -16,6 +16,11 @@ import {
   App,
 } from "antd";
 import type { UploadFile } from "antd";
+
+// Розширюємо тип UploadFile для збереження ID зображення
+interface ExtendedUploadFile extends UploadFile {
+  imageId?: number;
+}
 import {
   PictureOutlined,
   DeleteOutlined,
@@ -86,11 +91,12 @@ export default function NewsEditorSidebar({ newsId, articleData, menuData, onEdi
   const handleImageSelect = (image: any) => {
     // Додаємо вибране зображення до списку файлів
     const newFile = {
-      uid: `image-${Date.now()}`,
+      uid: `image-${image.id}`,
       name: image.filename,
       status: 'done' as const,
       url: image.url,
       thumbnail_url: image.thumbnail_url,
+      imageId: image.id, // Зберігаємо ID зображення
     };
     
     setFileList(prev => [...prev, newFile]);
@@ -101,7 +107,7 @@ export default function NewsEditorSidebar({ newsId, articleData, menuData, onEdi
   const bloggers = getBloggers(users);
 
   // Фото
-  const [fileList, setFileList] = useState<UploadFile[]>([]);
+  const [fileList, setFileList] = useState<ExtendedUploadFile[]>([]);
 
   // Тип статті
   const [articleType, setArticleType] = useState<number>(
@@ -195,13 +201,33 @@ export default function NewsEditorSidebar({ newsId, articleData, menuData, onEdi
       setPublishOnTwitter(articleData.to_twitter);
       
       // Оновлюємо файли зображень
-      if (articleData.image_filenames) {
-        const imageFiles = articleData.image_filenames.split(',').map((filename: string, index: number) => ({
-          uid: `image-${index}`,
-          name: filename.trim(),
-          status: 'done' as const,
-          url: getImageUrl(filename.trim(), 'tmb'),
-        }));
+      if (articleData.images && articleData.image_filenames) {
+        const imageIds = articleData.images.split(',').map((id: string) => id.trim()).filter(id => id);
+        const imageFilenames = articleData.image_filenames.split(',').map((filename: string) => filename.trim()).filter(filename => filename);
+        
+        // Створюємо мапу ID -> filename для правильного співставлення
+        const imageMap = new Map<string, string>();
+        
+        // Якщо кількість ID та filename однакова, співставляємо по індексу
+        if (imageIds.length === imageFilenames.length) {
+          imageIds.forEach((id, index) => {
+            imageMap.set(id, imageFilenames[index]);
+          });
+        } else {
+          // Якщо кількість не співпадає, використовуємо тільки ID
+          console.warn('Image IDs and filenames count mismatch:', imageIds.length, imageFilenames.length);
+        }
+        
+        const imageFiles = imageIds.map((id: string) => {
+          const filename = imageMap.get(id) || '';
+          return {
+            uid: `image-${id}`,
+            name: filename,
+            status: 'done' as const,
+            url: filename ? getImageUrl(filename, 'tmb') : '',
+            imageId: parseInt(id), // Зберігаємо ID зображення
+          };
+        });
         setFileList(imageFiles);
       }
     } else if (!articleData && !loading) {
@@ -300,8 +326,21 @@ export default function NewsEditorSidebar({ newsId, articleData, menuData, onEdi
       approved: publishOnSite,
       to_twitter: publishOnTwitter,
       
-      // Зображення
-      images: fileList.map((f) => f.name).join(','),
+      // Зображення - зберігаємо ID зображень, а не назви файлів
+      images: fileList
+        .map((f) => {
+          // Пріоритет: imageId, потім uid (якщо це ID), потім name (якщо це ID)
+          if (f.imageId) return f.imageId.toString();
+          const uidId = f.uid.replace('image-', '');
+          if (uidId && !isNaN(parseInt(uidId))) return uidId;
+          // Якщо name - це ID (тільки цифри), використовуємо його
+          if (f.name && /^\d+$/.test(f.name)) return f.name;
+          return null;
+        })
+        .filter(id => id !== null)
+        .join(','),
+      // Додатково зберігаємо назви файлів для зручності
+      image_filenames: fileList.map((f) => f.name).join(','),
       
       // Мова
       lang: articleData?.lang || 'ua',
@@ -315,7 +354,7 @@ export default function NewsEditorSidebar({ newsId, articleData, menuData, onEdi
       }
     }
 
-    fetchArticle();
+    fetchArticle?.();
   };
 
   const onDelete = async () => {
@@ -367,7 +406,7 @@ export default function NewsEditorSidebar({ newsId, articleData, menuData, onEdi
             listType="picture-card"
             multiple
             fileList={fileList}
-            onChange={({ fileList }) => setFileList(fileList)}
+            onChange={({ fileList }) => setFileList(fileList as ExtendedUploadFile[])}
             beforeUpload={() => false} // блокуємо реальний аплоад, лише превʼю
           >
             <div className={styles.uploadBtn}>

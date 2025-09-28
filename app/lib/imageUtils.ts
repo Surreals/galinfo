@@ -54,24 +54,45 @@ export interface ImageSize {
   tmb: string;
 }
 
-// Базовий URL для зображень (можна змінити через змінну середовища)
-// Для зміни додайте в .env.local: NEXT_PUBLIC_IMAGE_BASE_URL=https://your-domain.com
-const IMAGE_BASE_URL = process.env.NEXT_PUBLIC_IMAGE_BASE_URL || 'https://galinfo.com.ua';
+// Базові URL для зображень
+const OLD_IMAGE_BASE_URL = 'https://galinfo.com.ua';
+const NEW_IMAGE_BASE_URL = process.env.NEXT_PUBLIC_IMAGE_BASE_URL || '';
+
+// Функція для визначення, чи є зображення старим (з старого сайту)
+function isOldImage(filename: string): boolean {
+  // Старі зображення мають прості імена без timestamp
+  // Нові зображення мають формат: timestamp_randomstring.extension
+  return !/^\d+_[a-zA-Z0-9]+\./.test(filename);
+}
 
 // Генерація URL для різних розмірів зображень
 export function getImageUrl(filename: string, size: keyof ImageSize = 'intxt'): string {
   if (!filename) return '';
   
-  // Генеруємо правильний шлях з підпапками
-  const imagePath = generateImagePath(filename);
+  const isOld = isOldImage(filename);
+  const baseUrl = isOld ? OLD_IMAGE_BASE_URL : NEW_IMAGE_BASE_URL;
   const basePath = '/media/gallery';
-  const sizes: ImageSize = {
-    full: `${IMAGE_BASE_URL}${basePath}/full/${imagePath}`,
-    intxt: `${IMAGE_BASE_URL}${basePath}/intxt/${imagePath}`,
-    tmb: `${IMAGE_BASE_URL}${basePath}/tmb/${imagePath}`
-  };
   
-  return sizes[size] || sizes.intxt;
+  if (isOld) {
+    // Для старих зображень використовуємо стару структуру папок
+    // Приклад: volgnpz.jpg -> /media/gallery/tmb/v/o/volgnpz.jpg
+    const imagePath = generateImagePath(filename);
+    const sizes: ImageSize = {
+      full: `${baseUrl}${basePath}/full/${imagePath}`,
+      intxt: `${baseUrl}${basePath}/intxt/${imagePath}`,
+      tmb: `${baseUrl}${basePath}/tmb/${imagePath}`
+    };
+    return sizes[size] || sizes.intxt;
+  } else {
+    // Для нових зображень використовуємо локальну структуру
+    const imagePath = generateImagePath(filename);
+    const sizes: ImageSize = {
+      full: `${basePath}/full/${imagePath}`,
+      intxt: `${basePath}/intxt/${imagePath}`,
+      tmb: `${basePath}/tmb/${imagePath}`
+    };
+    return sizes[size] || sizes.intxt;
+  }
 }
 
 // Отримання alt тексту для зображення по мові
@@ -166,9 +187,13 @@ export function getImageUrlFromApi(apiImage: ApiNewsImage | null, size: keyof Im
       // Генеруємо правильний шлях з підпапками
       const basePath = url.substring(0, url.lastIndexOf('/'));
       const correctPath = `${basePath}/${generateImagePath(filename)}`;
-      return `${IMAGE_BASE_URL}${correctPath}`;
+      const isOld = isOldImage(filename);
+      const baseUrl = isOld ? OLD_IMAGE_BASE_URL : NEW_IMAGE_BASE_URL;
+      return `${baseUrl}${correctPath}`;
     }
-    return `${IMAGE_BASE_URL}${url}`;
+    const isOld = filename ? isOldImage(filename) : true; // Default to old if no filename
+    const baseUrl = isOld ? OLD_IMAGE_BASE_URL : NEW_IMAGE_BASE_URL;
+    return `${baseUrl}${url}`;
   }
   
   return url;
@@ -202,12 +227,22 @@ export function convertApiImageToNewsImage(apiImage: ApiNewsImage, id: number = 
 
 // Функції для роботи з базовим URL
 export function getImageBaseUrl(): string {
-  return IMAGE_BASE_URL;
+  return OLD_IMAGE_BASE_URL;
 }
 
 // Функція для отримання базового URL з можливістю перевизначення
 export function getImageBaseUrlWithFallback(customUrl?: string): string {
-  return customUrl || IMAGE_BASE_URL;
+  return customUrl || OLD_IMAGE_BASE_URL;
+}
+
+// Функція для отримання базового URL для старих зображень
+export function getOldImageBaseUrl(): string {
+  return OLD_IMAGE_BASE_URL;
+}
+
+// Функція для отримання базового URL для нових зображень
+export function getNewImageBaseUrl(): string {
+  return NEW_IMAGE_BASE_URL;
 }
 
 // Функція для перевірки, чи потрібно додавати базовий URL
@@ -220,6 +255,6 @@ export function ensureFullImageUrl(url: string, customBaseUrl?: string): string 
   }
   
   // Якщо URL відносний, додаємо базовий домен
-  const baseUrl = customBaseUrl || IMAGE_BASE_URL;
+  const baseUrl = customBaseUrl || OLD_IMAGE_BASE_URL;
   return `${baseUrl}${url}`;
 }

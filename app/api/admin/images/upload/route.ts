@@ -69,31 +69,40 @@ export async function POST(request: NextRequest) {
 
     // Зберігаємо інформацію в базу даних
     const insertQuery = `
-      INSERT INTO PICS (filename, title, pic_type, description, created_at, updated_at)
-      VALUES (?, ?, ?, ?, NOW(), NOW())
+      INSERT INTO a_pics (filename, title_ua, title_deflang, pic_type)
+      VALUES (?, ?, ?, ?)
     `;
     
+    // Convert pic_type string to integer
+    const getPicTypeId = (type: string): number => {
+      const typeMap: { [key: string]: number } = {
+        'news': 1,
+        'gallery': 2,
+        'avatar': 3,
+        'banner': 4
+      };
+      return typeMap[type] || 2; // Default to gallery (2) if type not found
+    };
+
     const [result] = await executeQuery(insertQuery, [
       filename,
       title || file.name,
-      picType || 'gallery',
-      description || ''
+      title || file.name, // title_deflang - using same value as title_ua
+      getPicTypeId(picType || 'gallery')
     ]);
 
     // Отримуємо ID вставленого запису
-    const imageId = result.insertId;
+    const imageId = (result as any).insertId;
 
     // Отримуємо повну інформацію про зображення
     const selectQuery = `
       SELECT 
         id,
         filename,
-        title,
-        pic_type,
-        description,
-        created_at,
-        updated_at
-      FROM PICS 
+        title_ua,
+        title_deflang,
+        pic_type
+      FROM a_pics 
       WHERE id = ?
     `;
     
@@ -105,7 +114,7 @@ export async function POST(request: NextRequest) {
 
     const image = imageData[0];
 
-    // Додаємо URL для зображення
+    // Додаємо URL для зображення (нові зображення використовують локальні шляхи)
     const imageWithUrl = {
       ...image,
       url: `/media/gallery/full/${firstChar}/${secondChar}/${filename}`,

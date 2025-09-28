@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { executeQuery } from '@/app/lib/db';
+import { getImageUrl } from '@/app/lib/imageUtils';
 
 export async function GET(request: NextRequest) {
   try {
@@ -16,11 +17,10 @@ export async function GET(request: NextRequest) {
       SELECT 
         id,
         filename,
-        title,
-        pic_type,
-        created_at,
-        updated_at
-      FROM PICS 
+        title_ua,
+        title_deflang,
+        pic_type
+      FROM a_pics 
       WHERE 1=1
     `;
     
@@ -28,44 +28,76 @@ export async function GET(request: NextRequest) {
     
     // Додаємо пошук по назві
     if (search) {
-      queryText += ` AND (title LIKE ? OR filename LIKE ?)`;
+      queryText += ` AND (title_ua LIKE ? OR filename LIKE ?)`;
       queryParams.push(`%${search}%`, `%${search}%`);
     }
     
     // Додаємо фільтр по типу
     if (picType) {
+      const getPicTypeId = (type: string): number => {
+        const typeMap: { [key: string]: number } = {
+          'news': 1,
+          'gallery': 2,
+          'avatar': 3,
+          'banner': 4
+        };
+        return typeMap[type] || 2;
+      };
+      
       queryText += ` AND pic_type = ?`;
-      queryParams.push(picType);
+      queryParams.push(getPicTypeId(picType));
     }
     
     // Додаємо сортування та пагінацію
-    queryText += ` ORDER BY created_at DESC LIMIT ? OFFSET ?`;
+    queryText += ` ORDER BY id DESC LIMIT ? OFFSET ?`;
     queryParams.push(limit, offset);
     
     const [images] = await executeQuery(queryText, queryParams);
     
     // Отримуємо загальну кількість для пагінації
-    let countQuery = `SELECT COUNT(*) as total FROM PICS WHERE 1=1`;
+    let countQuery = `SELECT COUNT(*) as total FROM a_pics WHERE 1=1`;
     const countParams: any[] = [];
     
     if (search) {
-      countQuery += ` AND (title LIKE ? OR filename LIKE ?)`;
+      countQuery += ` AND (title_ua LIKE ? OR filename LIKE ?)`;
       countParams.push(`%${search}%`, `%${search}%`);
     }
     
     if (picType) {
+      const getPicTypeId = (type: string): number => {
+        const typeMap: { [key: string]: number } = {
+          'news': 1,
+          'gallery': 2,
+          'avatar': 3,
+          'banner': 4
+        };
+        return typeMap[type] || 2;
+      };
+      
       countQuery += ` AND pic_type = ?`;
-      countParams.push(picType);
+      countParams.push(getPicTypeId(picType));
     }
     
     const [countResult] = await executeQuery(countQuery, countParams);
     const total = countResult[0]?.total || 0;
     
-    // Додаємо URL для зображень
+    // Convert pic_type integer back to string for API response
+    const getPicTypeString = (typeId: number): string => {
+      const typeMap: { [key: number]: string } = {
+        1: 'news',
+        2: 'gallery',
+        3: 'avatar',
+        4: 'banner'
+      };
+      return typeMap[typeId] || 'gallery';
+    };
+
+    // Додаємо URL для зображень (підтримуємо як старі, так і нові зображення)
     const imagesWithUrls = images.map((image: any) => ({
       ...image,
-      url: generateImageUrl(image.filename, 'full'),
-      thumbnail_url: generateImageUrl(image.filename, 'tmb')
+      pic_type: getPicTypeString(image.pic_type), // Convert integer back to string
+      url: getImageUrl(image.filename, 'full'),
+      thumbnail_url: getImageUrl(image.filename, 'tmb')
     }));
     
     return NextResponse.json({

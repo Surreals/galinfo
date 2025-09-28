@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from 'react';
 export interface ArticleData {
   // Основні поля
   id?: number;
+  urlkey?: string;
   nheader: string;
   nsubheader: string;
   nteaser: string;
