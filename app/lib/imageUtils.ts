@@ -61,8 +61,10 @@ const NEW_IMAGE_BASE_URL = process.env.NEXT_PUBLIC_IMAGE_BASE_URL || '';
 // Функція для визначення, чи є зображення старим (з старого сайту)
 function isOldImage(filename: string): boolean {
   // Старі зображення мають прості імена без timestamp
-  // Нові зображення мають формат: timestamp_randomstring.extension
-  return !/^\d+_[a-zA-Z0-9]+\./.test(filename);
+  // Нові зображення мають формат: timestamp_randomstring.extension (13+ digits)
+  // Старі зображення можуть мати формат: number_shortstring.extension (менше 13 цифр)
+  const timestampPattern = /^\d{13,}_[a-zA-Z0-9]+\./;
+  return !timestampPattern.test(filename);
 }
 
 // Генерація URL для різних розмірів зображень
