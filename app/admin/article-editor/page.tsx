@@ -30,7 +30,7 @@ function ArticleEditorContent() {
   const [editorSaveFn, setEditorSaveFn] = useState<(() => Promise<string>) | null>(null);
 
   // Завантажуємо дані новини
-  const { data: articleData, loading, error, updateData } = useArticleData({ id: newsId });
+  const { data: articleData, loading, error, updateData, refetch: fetchArticle, } = useArticleData({ id: newsId });
   const { menuData } = useMenuContext();
 
   useEffect(() => {
@@ -65,6 +65,7 @@ function ArticleEditorContent() {
           onEditorSaveRef={handleEditorSaveRef}
         />
         <NewsEditorSidebar
+          fetchArticle={fetchArticle}
           menuData={menuData}
           newsId={newsId} 
           articleData={articleData}

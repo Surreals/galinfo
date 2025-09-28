@@ -171,6 +171,7 @@ export default function NewsEditorHeader({ isEditing, articleData, onNbodyChange
 
       <h2 className={styles.header}>Повний текст новини</h2>
       <EditorJSClient
+        id={'editorjs'}
         ref={editorRef}
         htmlContent={articleData?.nbody}
         onHtmlChange={onNbodyChange}

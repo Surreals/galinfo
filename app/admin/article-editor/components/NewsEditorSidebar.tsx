@@ -51,9 +51,10 @@ interface NewsEditorSidebarProps {
   articleData?: ArticleData | null;
   menuData: MenuData | null;
   onEditorSave?: (() => Promise<string>) | null;
+  fetchArticle?: (() => void)
 }
 
-export default function NewsEditorSidebar({ newsId, articleData, menuData, onEditorSave }: NewsEditorSidebarProps) {
+export default function NewsEditorSidebar({ newsId, articleData, menuData, onEditorSave, fetchArticle }: NewsEditorSidebarProps) {
   const router = useRouter();
   const { modal } = App.useApp();
   
@@ -96,12 +97,6 @@ export default function NewsEditorSidebar({ newsId, articleData, menuData, onEdi
     closeImagePicker();
   };
 
-  // Фільтруємо дані
-  const rubrics = mainCategoriesResponse;
-  const regions = regionsResponse;
-  const themes  = specialThemesResponse;
-
-  const editors = getEditors(users);
   const journalists = getJournalists(users);
   const bloggers = getBloggers(users);
 
@@ -179,9 +174,7 @@ export default function NewsEditorSidebar({ newsId, articleData, menuData, onEdi
       setArticleType(articleData.ntype);
       setSelectedRubrics((articleData.rubric || []).map(String)); // [2]
       setSelectedRegions((articleData.region || []).map(String)); // [2]
-      setSelectedTheme(
-        articleData.theme != null ? String(articleData.theme) : null
-      ); // [2]
+      setSelectedTheme(articleData.theme != null ? String(articleData.theme) : null);
       setTags(articleData.tags.join(', '));
       setEditor(articleData.nauthor || null);
       setAuthor(articleData.userid || null);
@@ -321,6 +314,8 @@ export default function NewsEditorSidebar({ newsId, articleData, menuData, onEdi
         return;
       }
     }
+
+    fetchArticle();
   };
 
   const onDelete = async () => {
