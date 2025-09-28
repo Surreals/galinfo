@@ -1,11 +1,29 @@
 'use client';
 
 import Link from 'next/link';
+import { useState } from 'react';
 import AdminNavigation from './components/AdminNavigation';
+import ImagePickerModal from './article-editor/components/ImagePickerModal';
+import { ImageItem } from './article-editor/components/types';
 import styles from './admin.module.css';
 
 export default function AdminPage() {
   const DISABLE = true;
+  const [isGalleryModalOpen, setIsGalleryModalOpen] = useState(false);
+
+  const handleGalleryClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    setIsGalleryModalOpen(true);
+  };
+
+  const handleGalleryModalClose = () => {
+    setIsGalleryModalOpen(false);
+  };
+
+  const handleImageSelect = (image: ImageItem) => {
+    // Тут можна додати логіку для обробки вибраного зображення
+    console.log('Selected image:', image);
+  };
 
 
   const adminSections = [
@@ -24,7 +42,7 @@ export default function AdminPage() {
       description: 'Управління зображеннями та медіа',
       href: '/admin/gallery',
       icon: '🖼️',
-      disabled: true,
+      disabled: false,
       color: '#28a745'
     },
     {
@@ -91,6 +109,9 @@ export default function AdminPage() {
               href={section.href}
               onClick={(e) => {
                 if (section.disabled) e.preventDefault(); // блокуємо перехід
+                if (section.id === 'gallery') {
+                  handleGalleryClick(e);
+                }
               }}
               className={`${styles.sectionCard} ${section.disabled ? styles.disabledCard : ''}`}
             >
@@ -106,7 +127,7 @@ export default function AdminPage() {
           ))}
         </div>
 
-        <div className={styles.quickActions}>
+        {/* <div className={styles.quickActions}>
           <h2>Швидкі дії</h2>
           <div className={styles.quickActionsGrid}>
             <Link href="/admin/article-editor" className={styles.quickActionActive}>
@@ -114,7 +135,7 @@ export default function AdminPage() {
               <span>Додати новину</span>
             </Link>
           </div>
-        </div>
+        </div> */}
 
         <div className={styles.bytcdCorner}>
           <a 
@@ -140,6 +161,13 @@ export default function AdminPage() {
             </div>
           </div>
         </div>
+
+        {/* Модалка галереї */}
+        <ImagePickerModal
+          open={isGalleryModalOpen}
+          onClose={handleGalleryModalClose}
+          onSelect={handleImageSelect}
+        />
       </div>
     </div>
   );
