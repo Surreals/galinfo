@@ -444,7 +444,7 @@ const ArticlePageRenderer: React.FC<ArticlePageRendererProps> = ({ article, load
                       <Carousel ref={carouselRef} dots={false} initialSlide={startIndex}>
                         {(modalImages ?? allImages).map((url, idx) => (
                           <div key={idx} className={styles.carouselItem}>
-                            <img alt={'img'} src={url} loading="lazy" style={{ width: '100%', borderRadius: '8px' }} />
+                            <img alt={'img'} src={url} loading="lazy" />
                           </div>
                         ))}
                       </Carousel>
@@ -508,7 +508,7 @@ const ArticlePageRenderer: React.FC<ArticlePageRendererProps> = ({ article, load
                     <Carousel ref={carouselRef} dots={false} initialSlide={startIndex}>
                       {(modalImages ?? allImages).map((url, idx) => (
                         <div key={idx} className={styles.carouselItem}>
-                          <img alt={'img'} src={url} loading="lazy" style={{ width: '100%', borderRadius: '8px' }} />
+                          <img alt={'img'} src={url} loading="lazy" />
                         </div>
                       ))}
                     </Carousel>

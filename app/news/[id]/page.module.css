@@ -136,11 +136,26 @@
 
 
 .carouselItem {
-  width: fit-content;
+  width: 100%;
+  height: auto;
+  min-height: 400px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   background-size: cover;
   background-position: center;
   position: relative;
+}
 
+.carouselItem img {
+  max-width: 100%;
+  max-height: 80vh;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  border-radius: 8px;
+  display: block;
+  margin: 0 auto;
 }
 
 .carouselItem:hover .rightArrowButton,
@@ -156,10 +171,51 @@
   pointer-events: auto;
 }
 
+.rightArrowButton:hover,
+.leftArrowButton:hover {
+  background: rgba(0, 0, 0, 0.8);
+  transform: translateY(-50%) scale(1.1);
+}
+
 .carouselBox {
-  width: 75%;
+  width: 90vw;
+  max-width: 1200px;
+  max-height: 80vh;
   cursor: pointer;
   position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 12px;
+  overflow: hidden;
+  min-height: 400px;
+}
+
+.carouselBox :global(.ant-carousel) {
+  width: 100%;
+  height: auto;
+  min-height: 400px;
+}
+
+.carouselBox :global(.ant-carousel .slick-list) {
+  height: auto;
+  min-height: 400px;
+}
+
+.carouselBox :global(.ant-carousel .slick-track) {
+  height: auto;
+  min-height: 400px;
+}
+
+.carouselBox :global(.ant-carousel .slick-slide) {
+  height: auto;
+  min-height: 400px;
+}
+
+.carouselBox :global(.ant-carousel .slick-slide > div) {
+  height: auto;
+  min-height: 400px;
 }
 
 
@@ -167,13 +223,21 @@
   opacity: 0;
   padding: 0;
   margin: 0;
-  /*border: none;*/
+  border: none;
   cursor: pointer;
   position: absolute;
   top: 50%;
   transition: opacity 0.3s ease, filter 0.3s ease;
   transform: translateY(-50%);
-  right: 40px;
+  right: 20px;
+  background: rgba(0, 0, 0, 0.5);
+  border-radius: 50%;
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
 }
 
 .leftArrowButton {
@@ -186,13 +250,17 @@
   top: 50%;
   transition: opacity 0.3s ease, filter 0.3s ease;
   transform: translateY(-50%);
-  left: 40px;
+  left: 20px;
+  background: rgba(0, 0, 0, 0.5);
+  border-radius: 50%;
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
 }
 
-.leftArrowButton:hover,
-.rightArrowButton:hover {
-  filter: contrast(0.5);
-}
 
 .closeButton {
   position: absolute;
@@ -630,6 +698,24 @@
     max-height: 400px;
   }
   
+  .carouselBox {
+    width: 95vw;
+    max-height: 70vh;
+    min-height: 300px;
+  }
+  
+  .carouselItem img {
+    max-height: 70vh;
+  }
+  
+  .rightArrowButton,
+  .leftArrowButton {
+    width: 40px;
+    height: 40px;
+    right: 10px;
+    left: 10px;
+  }
+  
   .closeButton {
     top: 10px;
     right: 10px;
@@ -686,6 +772,24 @@
   
   .mainImageHorizontal {
     max-height: 300px;
+  }
+  
+  .carouselBox {
+    width: 98vw;
+    max-height: 60vh;
+    min-height: 250px;
+  }
+  
+  .carouselItem img {
+    max-height: 60vh;
+  }
+  
+  .rightArrowButton,
+  .leftArrowButton {
+    width: 36px;
+    height: 36px;
+    right: 8px;
+    left: 8px;
   }
   
   .closeButton {
