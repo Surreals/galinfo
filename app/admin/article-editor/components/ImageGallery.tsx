@@ -86,12 +86,6 @@ export default function ImageGallery({
               <div className={styles.imageTitle} title={image.title}>
                 {image.title || image.filename}
               </div>
-              <div className={styles.imageMeta}>
-                <span className={styles.imageType}>{image.pic_type}</span>
-                <span className={styles.imageDate}>
-                  {new Date(image.created_at).toLocaleDateString('uk-UA')}
-                </span>
-              </div>
             </div>
           </Card>
         ))}
