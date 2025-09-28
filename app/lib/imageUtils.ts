@@ -254,7 +254,18 @@ export function ensureFullImageUrl(url: string, customBaseUrl?: string): string 
     return url;
   }
   
-  // Якщо URL відносний, додаємо базовий домен
-  const baseUrl = customBaseUrl || OLD_IMAGE_BASE_URL;
+  // Якщо URL відносний, визначаємо правильний базовий URL на основі типу зображення
+  let baseUrl = customBaseUrl;
+  
+  if (!baseUrl) {
+    // Визначаємо тип зображення на основі URL
+    const filename = url.split('/').pop() || '';
+    if (isOldImage(filename)) {
+      baseUrl = OLD_IMAGE_BASE_URL;
+    } else {
+      baseUrl = NEW_IMAGE_BASE_URL;
+    }
+  }
+  
   return `${baseUrl}${url}`;
 }

@@ -1,6 +1,6 @@
 import dayjs from 'dayjs';
 import { config } from './config';
-import { ensureFullImageUrl, generateImagePath } from './imageUtils';
+import { ensureFullImageUrl, generateImagePath, getImageUrl } from './imageUtils';
 
 interface NewsItem {
   id: string;
@@ -267,39 +267,12 @@ export function getImageFromImageData(
   image: any,
   size: keyof ApiImageUrls = 'intxt'
 ): string | null {
-  if (!image || !image.urls) {
+  if (!image || !image.filename) {
     return null;
   }
 
-  // Якщо є потрібний розмір
-  if (image.urls[size]) {
-    const url = image.urls[size];
-    if (url && !url.startsWith('http')) {
-      const filename = url.split('/').pop();
-      if (filename && !url.includes('/' + filename.charAt(0) + '/')) {
-        const basePath = url.substring(0, url.lastIndexOf('/'));
-        const correctPath = `${basePath}/${generateImagePath(filename)}`;
-        return ensureFullImageUrl(correctPath);
-      }
-    }
-    return ensureFullImageUrl(url);
-  }
-
-  // fallback (якщо немає потрібного size)
-  const fallbackUrl = image.urls.full || image.urls.intxt || image.urls.tmb;
-  if (fallbackUrl) {
-    if (!fallbackUrl.startsWith('http')) {
-      const filename = fallbackUrl.split('/').pop();
-      if (filename && !fallbackUrl.includes('/' + filename.charAt(0) + '/')) {
-        const basePath = fallbackUrl.substring(0, fallbackUrl.lastIndexOf('/'));
-        const correctPath = `${basePath}/${generateImagePath(filename)}`;
-        return ensureFullImageUrl(correctPath);
-      }
-    }
-    return ensureFullImageUrl(fallbackUrl);
-  }
-
-  return null;
+  // Використовуємо нову функцію getImageUrl для правильного визначення URL
+  return getImageUrl(image.filename, size);
 }
 
 // Універсальні функції для роботи з зображеннями будь-яких новин
