@@ -314,7 +314,6 @@ export default function NewsEditorSidebar({ newsId, articleData, menuData, onEdi
       lang: articleData?.lang || 'ua',
     };
 
-    console.log('payload',payload)
     const result = await saveArticle(payload);
     if (result.success) {
       if (!newsId && result.id) {
@@ -340,7 +339,7 @@ export default function NewsEditorSidebar({ newsId, articleData, menuData, onEdi
     });
   };
 
-  if (true) {
+  if (loading) {
     return (
       <aside className={styles.sidebar}>
         <div style={{ display: 'flex', justifyContent: 'center', padding: '2rem', marginTop: '150px', width: '100%' }}>
