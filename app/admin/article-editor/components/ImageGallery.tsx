@@ -12,10 +12,10 @@ export default function ImageGallery({
   loading 
 }: ImageGalleryProps) {
   const [previewVisible, setPreviewVisible] = useState(false);
-  const [previewImage, setPreviewImage] = useState('');
+  const [previewImage, setPreviewImage] = useState<string | null>(null);
 
   const handlePreview = (image: ImageItem) => {
-    setPreviewImage(image.url || '');
+    setPreviewImage(image.url || null);
     setPreviewVisible(true);
   };
 
@@ -86,26 +86,22 @@ export default function ImageGallery({
               <div className={styles.imageTitle} title={image.title}>
                 {image.title || image.filename}
               </div>
-              <div className={styles.imageMeta}>
-                <span className={styles.imageType}>{image.pic_type}</span>
-                <span className={styles.imageDate}>
-                  {new Date(image.created_at).toLocaleDateString('uk-UA')}
-                </span>
-              </div>
             </div>
           </Card>
         ))}
       </div>
 
       {/* Модалка для перегляду зображення */}
-      <Image
-        style={{ display: 'none' }}
-        src={previewImage}
-        preview={{
-          visible: previewVisible,
-          onVisibleChange: setPreviewVisible,
-        }}
-      />
+      {previewImage && (
+        <Image
+          style={{ display: 'none' }}
+          src={previewImage}
+          preview={{
+            visible: previewVisible,
+            onVisibleChange: setPreviewVisible,
+          }}
+        />
+      )}
     </div>
   );
 }

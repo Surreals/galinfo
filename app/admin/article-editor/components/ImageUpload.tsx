@@ -9,8 +9,7 @@ import styles from './ImageUpload.module.css';
 const { Dragger } = Upload;
 const { TextArea } = Input;
 
-export default function ImageUpload({ 
-  onUpload, 
+export default function ImageUpload({
   onSuccess, 
   onError 
 }: ImageUploadProps) {
