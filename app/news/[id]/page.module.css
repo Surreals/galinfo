@@ -286,7 +286,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 10;
+  z-index: 1000001;
 }
 
 .leftArrowButton {
@@ -307,7 +307,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 10;
+  z-index: 1000001;
 }
 
 
@@ -743,6 +743,7 @@
   .imageNavButtonRight {
     width: 40px;
     height: 40px;
+    opacity: 1 !important;
   }
   
   .rightArrowButton,
@@ -783,6 +784,11 @@
     height: 40px;
     right: 10px;
     left: 10px;
+    opacity: 1 !important;
+  }
+  
+  .rightArrowButton {
+    right: 60px;
   }
   
   .closeButton {
@@ -839,6 +845,7 @@
   .imageNavButtonRight {
     width: 36px;
     height: 36px;
+    opacity: 1 !important;
   }
   
   .rightArrowButton,
@@ -879,6 +886,11 @@
     height: 36px;
     right: 8px;
     left: 8px;
+    opacity: 1 !important;
+  }
+  
+  .rightArrowButton {
+    right: 50px;
   }
   
   .closeButton {

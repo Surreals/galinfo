@@ -251,7 +251,7 @@ const ArticlePageRenderer: React.FC<ArticlePageRendererProps> = ({ article, load
                 }}
                 className={styles.imageNavButtonLeft}
               >
-                <Image src={roundArrowLeft} alt="Previous" width={24} height={24} />
+                <Image src={roundArrowLeft} alt="Previous" width={28} height={28} />
               </button>
               <button 
                 onClick={() => {
@@ -261,7 +261,7 @@ const ArticlePageRenderer: React.FC<ArticlePageRendererProps> = ({ article, load
                 }}
                 className={styles.imageNavButtonRight}
               >
-                <Image src={roundArrowRight} alt="Next" width={24} height={24} />
+                <Image src={roundArrowRight} alt="Next" width={28} height={28} />
               </button>
             </>
           )}
@@ -445,7 +445,7 @@ const ArticlePageRenderer: React.FC<ArticlePageRendererProps> = ({ article, load
                             }}
                             className={styles.imageNavButtonLeft}
                           >
-                            <Image src={roundArrowLeft} alt="Previous" width={24} height={24} />
+                            <Image src={roundArrowLeft} alt="Previous" width={28} height={28} />
                           </button>
                           <button 
                             onClick={() => {
@@ -455,7 +455,7 @@ const ArticlePageRenderer: React.FC<ArticlePageRendererProps> = ({ article, load
                             }}
                             className={styles.imageNavButtonRight}
                           >
-                            <Image src={roundArrowRight} alt="Next" width={24} height={24} />
+                            <Image src={roundArrowRight} alt="Next" width={28} height={28} />
                           </button>
                         </>
                       )}
@@ -493,7 +493,7 @@ const ArticlePageRenderer: React.FC<ArticlePageRendererProps> = ({ article, load
                         }} 
                         className={styles.closeButton}
                       >
-                        <Image src={closeIcon} alt="Close" width={24} height={24} />
+                        <Image src={closeIcon} alt="Close" width={28} height={28} />
                       </button>
                       <Carousel ref={carouselRef} dots={false} initialSlide={startIndex}>
                         {(modalImages ?? allImages).map((url, idx) => (
@@ -503,10 +503,10 @@ const ArticlePageRenderer: React.FC<ArticlePageRendererProps> = ({ article, load
                         ))}
                       </Carousel>
                       <button onClick={() => carouselRef.current?.next()} className={styles.rightArrowButton}>
-                        <Image src={roundArrowRight} alt="Right arrow" width={24} height={24} />
+                        <Image src={roundArrowRight} alt="Right arrow" width={28} height={28} />
                       </button>
                       <button onClick={() => carouselRef.current?.prev()} className={styles.leftArrowButton}>
-                        <Image src={roundArrowLeft} alt="Left arrow" width={24} height={24} />
+                        <Image src={roundArrowLeft} alt="Left arrow" width={28} height={28} />
                       </button>
                     </div>
                   </div>
@@ -557,7 +557,7 @@ const ArticlePageRenderer: React.FC<ArticlePageRendererProps> = ({ article, load
                       }} 
                       className={styles.closeButton}
                     >
-                      <Image src={closeIcon} alt="Close" width={24} height={24} />
+                      <Image src={closeIcon} alt="Close" width={28} height={28} />
                     </button>
                     <Carousel ref={carouselRef} dots={false} initialSlide={startIndex}>
                       {(modalImages ?? allImages).map((url, idx) => (
@@ -567,10 +567,10 @@ const ArticlePageRenderer: React.FC<ArticlePageRendererProps> = ({ article, load
                       ))}
                     </Carousel>
                     <button onClick={() => carouselRef.current?.next()} className={styles.rightArrowButton}>
-                      <Image src={roundArrowRight} alt="Right arrow" width={24} height={24} />
+                      <Image src={roundArrowRight} alt="Right arrow" width={28} height={28} />
                     </button>
                     <button onClick={() => carouselRef.current?.prev()} className={styles.leftArrowButton}>
-                      <Image src={roundArrowLeft} alt="Left arrow" width={24} height={24} />
+                      <Image src={roundArrowLeft} alt="Left arrow" width={28} height={28} />
                     </button>
                   </div>
                 </div>
