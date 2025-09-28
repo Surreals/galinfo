@@ -34,6 +34,7 @@ import banner3 from '@/assets/images/banner3.png';
 import adBannerIndfomo from '@/assets/images/Ad Banner black.png';
 import roundArrowRight from "@/assets/icons/roundArrowRight.svg";
 import roundArrowLeft from "@/assets/icons/roundArrowLeft.svg";
+import closeIcon from "@/assets/icons/closeIcon.svg";
 
 interface ArticlePageRendererProps {
   article: any;
@@ -118,6 +119,27 @@ const ArticlePageRenderer: React.FC<ArticlePageRendererProps> = ({ article, load
 
   const carouselRef = useRef<any>(null);
   const { isMobile } = useMobileContext();
+
+  // Handle Escape key to close modal
+  React.useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape' && isShowCarousel) {
+        setIsShowCarousel(false);
+        setModalImages(null);
+      }
+    };
+
+    if (isShowCarousel) {
+      document.addEventListener('keydown', handleKeyDown);
+      // Prevent body scroll when modal is open
+      document.body.style.overflow = 'hidden';
+    }
+
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+      document.body.style.overflow = 'unset';
+    };
+  }, [isShowCarousel]);
 
   React.useEffect(() => {
     if (!article?.images_data) return;
@@ -410,6 +432,15 @@ const ArticlePageRenderer: React.FC<ArticlePageRendererProps> = ({ article, load
                     }}
                   >
                     <div className={styles.carouselBox}>
+                      <button 
+                        onClick={() => {
+                          setIsShowCarousel(false);
+                          setModalImages(null);
+                        }} 
+                        className={styles.closeButton}
+                      >
+                        <Image src={closeIcon} alt="Close" width={24} height={24} />
+                      </button>
                       <Carousel ref={carouselRef} dots={false} initialSlide={startIndex}>
                         {(modalImages ?? allImages).map((url, idx) => (
                           <div key={idx} className={styles.carouselItem}>
@@ -465,6 +496,15 @@ const ArticlePageRenderer: React.FC<ArticlePageRendererProps> = ({ article, load
                   }}
                 >
                   <div className={styles.carouselBox}>
+                    <button 
+                      onClick={() => {
+                        setIsShowCarousel(false);
+                        setModalImages(null);
+                      }} 
+                      className={styles.closeButton}
+                    >
+                      <Image src={closeIcon} alt="Close" width={24} height={24} />
+                    </button>
                     <Carousel ref={carouselRef} dots={false} initialSlide={startIndex}>
                       {(modalImages ?? allImages).map((url, idx) => (
                         <div key={idx} className={styles.carouselItem}>
