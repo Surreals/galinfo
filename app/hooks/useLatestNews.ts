@@ -8,6 +8,7 @@ export interface LatestNewsItem {
   id: number;
   ndate: string;
   ntime: string;
+  udate: number;
   ntype: number;
   images: NewsImage[];
   urlkey: string;

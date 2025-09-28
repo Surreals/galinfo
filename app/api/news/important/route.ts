@@ -14,6 +14,7 @@ export async function GET(request: NextRequest) {
         a_news.id,
         a_news.ndate,
         a_news.ntime,
+        a_news.udate,
         a_news.ntype,
         a_news.images,
         a_news.urlkey,
@@ -61,13 +62,42 @@ export async function GET(request: NextRequest) {
       imagesData = imagesDataResult;
     }
     
+    // Додаткове сортування на випадок, якщо udate не працює правильно
+    const sortedImportantNews = newsData.sort((a, b) => {
+      // Завжди використовуємо комбінацію ndate + ntime для точного сортування
+      let dateA, dateB;
+      
+      try {
+        const ndateA = new Date(a.ndate);
+        const ntimeA = a.ntime || '00:00:00';
+        const [hoursA, minutesA, secondsA] = ntimeA.split(':');
+        dateA = new Date(ndateA.getFullYear(), ndateA.getMonth(), ndateA.getDate(), 
+                        parseInt(hoursA), parseInt(minutesA), parseInt(secondsA));
+      } catch (e) {
+        dateA = new Date(a.ndate);
+      }
+      
+      try {
+        const ndateB = new Date(b.ndate);
+        const ntimeB = b.ntime || '00:00:00';
+        const [hoursB, minutesB, secondsB] = ntimeB.split(':');
+        dateB = new Date(ndateB.getFullYear(), ndateB.getMonth(), ndateB.getDate(), 
+                        parseInt(hoursB), parseInt(minutesB), parseInt(secondsB));
+      } catch (e) {
+        dateB = new Date(b.ndate);
+      }
+      
+      // Сортуємо від найновіших до найстаріших
+      return dateB.getTime() - dateA.getTime();
+    });
+
     // Формування відповіді
     const response = {
-      importantNews: newsData.map(news => ({
+      importantNews: sortedImportantNews.map(news => ({
         ...news,
         images: news.images ? formatNewsImages(imagesData, news.images.split(',').map((id: string) => parseInt(id.trim())).filter((id: number) => !isNaN(id)), lang) : []
       })),
-      total: newsData.length,
+      total: sortedImportantNews.length,
       filters: {
         lang,
         limit
