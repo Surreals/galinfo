@@ -49,15 +49,15 @@ global._mysqlPool = global._mysqlPool || mysql.createPool(config);
 // Add pool event handlers for debugging (only once)
 if (!global._mysqlPool.listenerCount('connection')) {
   global._mysqlPool.on('connection', (connection) => {
-    console.log('🔗 New connection established as id ' + connection.threadId);
+    // console.log('🔗 New connection established as id ' + connection.threadId);
   });
 
   global._mysqlPool.on('acquire', (connection) => {
-    console.log('🔓 Connection %d acquired', connection.threadId);
+    // console.log('🔓 Connection %d acquired', connection.threadId);
   });
 
   global._mysqlPool.on('release', (connection) => {
-    console.log('🔒 Connection %d released', connection.threadId);
+    // console.log('🔒 Connection %d released', connection.threadId);
   });
 }
 
@@ -71,7 +71,7 @@ export async function checkConnectionHealth(): Promise<boolean> {
     await connection.ping();
     return true;
   } catch (error) {
-    console.error('Connection health check failed:', error);
+     console.error('Connection health check failed:', error);
     return false;
   } finally {
     if (connection) {
@@ -85,7 +85,7 @@ export async function testConnection() {
   try {
     const isHealthy = await checkConnectionHealth();
     if (isHealthy) {
-      console.log('✅ Database connected successfully!');
+      // console.log('✅ Database connected successfully!');
       return true;
     } else {
       console.error('❌ Database connection health check failed');
@@ -103,7 +103,7 @@ export async function testConnection() {
         const nonSslConfig = { ...config, ssl: undefined };
         const connection = await mysql.createConnection(nonSslConfig);
         await connection.ping();
-        console.log('✅ Database connected successfully without SSL!');
+        // console.log('✅ Database connected successfully without SSL!');
         await connection.end();
         return true;
       } catch (sslError) {
@@ -123,11 +123,11 @@ export async function executeQuery<T = any>(query: string, params?: any[]): Prom
   
   for (let attempt = 1; attempt <= maxRetries; attempt++) {
     try {
-      console.log(`🔗 Executing query (attempt ${attempt})`);
+      // console.log(`🔗 Executing query (attempt ${attempt})`);
       
       // Use pool.query() for automatic connection management
       const result = await pool.query(query, params);
-      console.log(`✅ Query executed successfully (attempt ${attempt})`);
+      // console.log(`✅ Query executed successfully (attempt ${attempt})`);
       
       // mysql2 query returns [rows, fields] where rows is the actual data array
       return result as [T[], any];
@@ -157,7 +157,7 @@ export async function executeQuery<T = any>(query: string, params?: any[]): Prom
         
         // Special handling for "Too many connections" error
         if ((error as any).code === 'ER_CON_COUNT_ERROR' || (error as any).errno === 1040) {
-          console.log('⚠️ Too many connections error detected, waiting longer before retry...');
+           console.log('⚠️ Too many connections error detected, waiting longer before retry...');
           // Wait longer for connections to clear
           const waitTime = Math.min(2000 * Math.pow(2, attempt - 1), 10000); // Longer backoff for connection limit errors
           await new Promise(resolve => setTimeout(resolve, waitTime));
