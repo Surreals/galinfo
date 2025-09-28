@@ -11,12 +11,12 @@ function processHeroNewsImages(newsItem: any) {
     const filenames = newsItem.image_filenames.split(',').map((f: string) => f.trim());
     filenames.forEach((filename: string) => {
       if (filename) {
-        const imagePath = generateImagePath(filename);
+        // const imagePath = generateImagePath(filename);
         images.push({
           urls: {
-            full: `/media/gallery/full/${imagePath}`,
-            intxt: `/media/gallery/intxt/${imagePath}`,
-            tmb: `/media/gallery/tmb/${imagePath}`
+            full: `/media/gallery/full/${filename}`,
+            intxt: `/media/gallery/intxt/${filename}`,
+            tmb: `/media/gallery/tmb/${filename}`
           }
         });
       }
@@ -28,12 +28,12 @@ function processHeroNewsImages(newsItem: any) {
     const photoStr = newsItem.photo.toString();
     if (!photoStr.startsWith('http') && !photoStr.startsWith('/')) {
       // Якщо це filename, генеруємо шлях
-      const imagePath = generateImagePath(photoStr);
+      // const imagePath = generateImagePath(photoStr);
       images.push({
         urls: {
-          full: `/media/gallery/full/${imagePath}`,
-          intxt: `/media/gallery/intxt/${imagePath}`,
-          tmb: `/media/gallery/tmb/${imagePath}`
+          full: `/media/gallery/full/${photoStr}`,
+          intxt: `/media/gallery/intxt/${photoStr}`,
+          tmb: `/media/gallery/tmb/${photoStr}`
         }
       });
     } else {
