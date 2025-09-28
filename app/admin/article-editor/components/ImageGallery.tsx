@@ -12,10 +12,10 @@ export default function ImageGallery({
   loading 
 }: ImageGalleryProps) {
   const [previewVisible, setPreviewVisible] = useState(false);
-  const [previewImage, setPreviewImage] = useState('');
+  const [previewImage, setPreviewImage] = useState<string | null>(null);
 
   const handlePreview = (image: ImageItem) => {
-    setPreviewImage(image.url || '');
+    setPreviewImage(image.url || null);
     setPreviewVisible(true);
   };
 
@@ -92,14 +92,16 @@ export default function ImageGallery({
       </div>
 
       {/* Модалка для перегляду зображення */}
-      <Image
-        style={{ display: 'none' }}
-        src={previewImage}
-        preview={{
-          visible: previewVisible,
-          onVisibleChange: setPreviewVisible,
-        }}
-      />
+      {previewImage && (
+        <Image
+          style={{ display: 'none' }}
+          src={previewImage}
+          preview={{
+            visible: previewVisible,
+            onVisibleChange: setPreviewVisible,
+          }}
+        />
+      )}
     </div>
   );
 }
