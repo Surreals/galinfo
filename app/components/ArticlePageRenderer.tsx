@@ -143,13 +143,20 @@ const ArticlePageRenderer: React.FC<ArticlePageRendererProps> = ({ article, load
   }, [isShowCarousel]);
 
   React.useEffect(() => {
-    if (!article?.images_data) return;
+    if (!article?.images_data || !article?.images) return;
 
-    const urls: string[] = article.images_data
-      .map((img: any) => getImageFromImageData(img, 'full'))
-      .filter((u: string): u is string => Boolean(u));
+    // Отримуємо масив ID зображень з article.images (comma-separated string)
+    const imageIds = article.images.split(',').map((id: string) => parseInt(id.trim())).filter((id: number) => !isNaN(id));
+    
+    // Створюємо масив URL в правильному порядку
+    const urls: string[] = imageIds
+      .map((imageId: number) => {
+        const img = article.images_data.find((imgData: any) => imgData.id === imageId);
+        return img ? getImageFromImageData(img, 'full') : null;
+      })
+      .filter((u: string | null): u is string => Boolean(u));
 
-    setAllImages(Array.from(new Set<string>(urls)));
+    setAllImages(urls);
   }, [article]);
 
   // Хук для свіжих новин (СВІЖІ НОВИНИ)
@@ -231,13 +238,12 @@ const ArticlePageRenderer: React.FC<ArticlePageRendererProps> = ({ article, load
             height={500}
             priority={true}
             onClick={() => {
-              // Відкриваємо модалку з фото ТІЛЬКИ цієї групи у порядку з nbody
-              const groupUrls = zeroBasedIndexes
-                .map((z) => getUrlByZeroBased(z))
-                .filter((u): u is string => Boolean(u));
-              setModalImages(groupUrls);
-              const posInGroup = Math.max(0, zeroBasedIndexes.indexOf(activeZeroBasedIndex));
-              setStartIndex(posInGroup);
+              // Відкриваємо модалку з ВСІМА фото статті
+              setModalImages(null); // null означає використовувати allImages
+              // Знаходимо позицію поточного зображення в загальному масиві
+              const imageIds = article?.images ? article.images.split(',').map((id: string) => parseInt(id.trim())).filter((id: number) => !isNaN(id)) : [];
+              const globalIndex = imageIds.indexOf(imageIds[activeZeroBasedIndex]);
+              setStartIndex(Math.max(0, globalIndex));
               setIsShowCarousel(true);
             }}
           />
@@ -431,6 +437,7 @@ const ArticlePageRenderer: React.FC<ArticlePageRendererProps> = ({ article, load
                         height={500}
                         priority={true}
                         onClick={() => {
+                          setModalImages(null); // null означає використовувати allImages
                           setStartIndex(currentMainImageIndex);
                           setIsShowCarousel(true);
                         }}
