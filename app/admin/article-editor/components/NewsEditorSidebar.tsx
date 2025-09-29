@@ -65,6 +65,7 @@ interface NewsEditorSidebarProps {
 export default function NewsEditorSidebar({ newsId, articleData, menuData, onEditorSave, fetchArticle }: NewsEditorSidebarProps) {
   const router = useRouter();
   const { modal } = App.useApp();
+  const [savingProcess, setSavingProcess] = useState(false);
   
   // Завантажуємо дані через хук
   const {
@@ -217,7 +218,7 @@ export default function NewsEditorSidebar({ newsId, articleData, menuData, onEdi
 
   // Оновлюємо стан при зміні даних новини
   useEffect(() => {
-    if (articleData && !loading) {
+    if (articleData && !loading && !savingProcess) {
       setArticleType(articleData.ntype);
       setSelectedRubrics((articleData.rubric || []).map(String)); // [2]
       setSelectedRegions((articleData.region || []).map(String)); // [2]
@@ -313,6 +314,7 @@ export default function NewsEditorSidebar({ newsId, articleData, menuData, onEdi
 
   // handlers
   const onSave = async () => {
+    setSavingProcess(true);
     // Спочатку зберігаємо контент редактора та отримуємо актуальний HTML
     let currentNbody = articleData?.nbody || '';
     if (onEditorSave) {
@@ -411,7 +413,9 @@ export default function NewsEditorSidebar({ newsId, articleData, menuData, onEdi
       }
     }
 
+
     fetchArticle?.();
+    setSavingProcess(false);
   };
 
   const onDelete = async () => {
