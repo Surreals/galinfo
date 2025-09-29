@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Modal, Input, Button, Spin, message, Upload, Tabs, Select } from 'antd';
+import { Modal, Input, Button, Spin, message, Upload, Tabs, Select, Pagination } from 'antd';
 import { SearchOutlined, UploadOutlined, PictureOutlined } from '@ant-design/icons';
 import { ImageItem, ImagePickerModalProps } from './types';
 import ImageGallery from './ImageGallery';
@@ -100,7 +100,7 @@ export default function ImagePickerModal({
       open={open}
       onCancel={onClose}
       footer={null}
-      width={900}
+      width={1200}
       className={styles.modal}
     >
       <Tabs 
@@ -152,21 +152,17 @@ export default function ImagePickerModal({
             {/* Пагінація */}
             {totalPages > 1 && (
               <div className={styles.pagination}>
-                <Button
-                  disabled={currentPage === 1}
-                  onClick={() => handlePageChange(currentPage - 1)}
-                >
-                  Попередня
-                </Button>
-                <span className={styles.pageInfo}>
-                  Сторінка {currentPage} з {totalPages}
-                </span>
-                <Button
-                  disabled={currentPage === totalPages}
-                  onClick={() => handlePageChange(currentPage + 1)}
-                >
-                  Наступна
-                </Button>
+                <Pagination
+                  current={currentPage}
+                  total={totalPages * 20} // 20 items per page
+                  pageSize={20}
+                  showSizeChanger={false}
+                  
+                  showTotal={(total, range) => 
+                    `${range[0]}-${range[1]} з ${total} зображень`
+                  }
+                  onChange={handlePageChange}
+                />
               </div>
             )}
           </div>
