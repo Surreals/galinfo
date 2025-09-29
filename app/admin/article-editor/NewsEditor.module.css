@@ -368,3 +368,8 @@
     width: 80px;
     height: 80px;
 }
+
+.imageScrollContainer :global(.ant-upload-list-item-image) {
+
+    object-fit: cover !important;
+}

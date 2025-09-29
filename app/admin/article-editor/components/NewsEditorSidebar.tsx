@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import {
   Upload,
   Select,
@@ -78,6 +78,9 @@ export default function NewsEditorSidebar({ newsId, articleData, menuData, onEdi
 
   // Стан для модалки зображень
   const [isImageModalOpen, setIsImageModalOpen] = useState(false);
+  
+  // Ref для контейнера зображень для автоскролу
+  const imageScrollRef = useRef<HTMLDivElement>(null);
 
   // Функції для роботи з модалкою зображень
   const openImagePicker = () => {
@@ -101,6 +104,18 @@ export default function NewsEditorSidebar({ newsId, articleData, menuData, onEdi
     
     setFileList(prev => [...prev, newFile]);
     closeImagePicker();
+    
+    // Автоскрол до кінця списку зображень
+    setTimeout(() => {
+      if (imageScrollRef.current) {
+        const container = imageScrollRef.current;
+        // Використовуємо smooth scroll для кращого UX
+        container.scrollTo({
+          left: container.scrollWidth,
+          behavior: 'smooth'
+        });
+      }
+    }, 400);
   };
 
   const journalists = getJournalists(users);
@@ -270,6 +285,8 @@ export default function NewsEditorSidebar({ newsId, articleData, menuData, onEdi
 
   console.log('fileList', fileList);
 
+
+
   // handlers
   const onSave = async () => {
     // Спочатку зберігаємо контент редактора та отримуємо актуальний HTML
@@ -419,14 +436,40 @@ export default function NewsEditorSidebar({ newsId, articleData, menuData, onEdi
             fileList.length ? <div className={styles.sectionLabel}>{fileList.length}</div> : null
           }
           <div className={styles.sectionTitle}>Фото</div>
-          <div className={styles.imageScrollContainer}>
+          <div className={styles.imageScrollContainer} ref={imageScrollRef}>
             <Upload
               listType="picture-card"
               multiple
               fileList={fileList}
               onChange={({fileList}) => setFileList(fileList as ExtendedUploadFile[])}
               beforeUpload={() => false}
-              openFileDialogOnClick={false}
+              // openFileDialogOnClick={false}
+              itemRender={(originNode, file, fileList, actions) => {
+                const index = fileList.indexOf(file) + 1;
+                return (
+                  <div style={{ position: 'relative', height: '100%' }}>
+                    {originNode}
+                    <div style={{
+                      position: 'absolute',
+                      bottom: '4px',
+                      left: '4px',
+                      background: 'rgba(0, 0, 0, 0.7)',
+                      color: 'white',
+                      borderRadius: '50%',
+                      width: '20px',
+                      height: '20px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      fontSize: '12px',
+                      fontWeight: 'bold',
+                      zIndex: 1
+                    }}>
+                      {index}
+                    </div>
+                  </div>
+                );
+              }}
             >
               
             </Upload>
