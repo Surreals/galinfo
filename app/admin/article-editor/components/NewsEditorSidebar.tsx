@@ -207,19 +207,27 @@ export default function NewsEditorSidebar({ newsId, articleData, menuData, onEdi
         const imageIds = articleData.images.split(',').map((id: string) => id.trim()).filter(id => id);
         const imageFilenames = articleData.image_filenames.split(',').map((filename: string) => filename.trim()).filter(filename => filename);
         
+        console.log('Loading images - IDs:', imageIds);
+        console.log('Loading images - Filenames:', imageFilenames);
+        
         // Створюємо мапу ID -> filename для правильного співставлення
         const imageMap = new Map<string, string>();
         
         // Якщо кількість ID та filename однакова, співставляємо по індексу
         if (imageIds.length === imageFilenames.length) {
+          // Якщо image_filenames в зворотному порядку, повертаємо його
+          const correctedFilenames = [...imageFilenames].reverse();
+          console.log('Corrected filenames:', correctedFilenames);
+          
           imageIds.forEach((id, index) => {
-            imageMap.set(id, imageFilenames[index]);
+            imageMap.set(id, correctedFilenames[index]);
           });
         } else {
           // Якщо кількість не співпадає, використовуємо тільки ID
           console.warn('Image IDs and filenames count mismatch:', imageIds.length, imageFilenames.length);
         }
         
+        // Створюємо imageFiles в тому ж порядку що й imageIds (правильний порядок)
         const imageFiles = imageIds.map((id: string) => {
           const filename = imageMap.get(id) || '';
           return {
@@ -329,6 +337,7 @@ export default function NewsEditorSidebar({ newsId, articleData, menuData, onEdi
       to_twitter: publishOnTwitter,
       
       // Зображення - зберігаємо ID зображень, а не назви файлів
+      // Використовуємо оригінальний порядок fileList для збереження
       images: fileList
         .map((f) => {
           // Пріоритет: imageId, потім uid (якщо це ID), потім name (якщо це ID)
@@ -342,6 +351,7 @@ export default function NewsEditorSidebar({ newsId, articleData, menuData, onEdi
         .filter(id => id !== null)
         .join(','),
       // Додатково зберігаємо назви файлів для зручності
+      // Використовуємо той самий порядок що й для images
       image_filenames: fileList.map((f) => f.name).join(','),
       
       // Мова
@@ -399,12 +409,12 @@ export default function NewsEditorSidebar({ newsId, articleData, menuData, onEdi
     <aside className={styles.sidebar}>
       <div className={styles.sidebarBox}>
         {/* Фото */}
-        <div className={styles.section}>
+        <div className={styles.section} style={{maxWidth: 350}}>
           {
             fileList.length ? <div className={styles.sectionLabel}>{fileList.length}</div> : null
           }
           <div className={styles.sectionTitle}>Фото</div>
-          <div onClick={openImagePicker}>
+          <div className={styles.imageScrollContainer}>
             <Upload
               listType="picture-card"
               multiple
@@ -413,10 +423,7 @@ export default function NewsEditorSidebar({ newsId, articleData, menuData, onEdi
               beforeUpload={() => false}
               openFileDialogOnClick={false}
             >
-              <div className={styles.uploadBtn}>
-                <PictureOutlined/>
-                <div>Додати</div>
-              </div>
+              
             </Upload>
           </div>
           <Button
