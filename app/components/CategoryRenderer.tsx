@@ -302,8 +302,6 @@ const CategoryRenderer: React.FC<CategoryRendererProps> = ({ category }) => {
       }
     }
 
-    console.log('mainNewsItem', mainNewsItem);
-
     return mainNewsItem;
   };
 
