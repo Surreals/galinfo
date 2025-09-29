@@ -315,6 +315,28 @@ const CategoryRenderer: React.FC<CategoryRendererProps> = ({ category }) => {
     return sortedCurrentCategoryData.filter(news => news.id !== mainNewsId);
   };
 
+  // Функція для перевірки, чи є новини в блоці перед банером
+  const hasNewsInPreviousBlocks = (currentIndex: number, blocks: any[]) => {
+    const filteredNews = getNewsWithoutMain();
+    
+    for (let i = 0; i < currentIndex; i++) {
+      const block = blocks[i];
+      if (!block.config?.show) continue;
+      
+      // Перевіряємо тільки блоки з новинами
+      if (block.type === 'CATEGORY_NEWS' || block.type === 'COLUMN_NEWS') {
+        const newsRange = block.config.newsRange;
+        if (newsRange) {
+          const blockNews = filteredNews.slice(newsRange.start - 1, newsRange.end);
+          if (blockNews.length > 0) {
+            return true; // Знайшли блок з новинами перед банером
+          }
+        }
+      }
+    }
+    return false; // Не знайшли блоків з новинами перед банером
+  };
+
   // Функція для рендерингу блоку
   const renderBlock = (block: any, index: number) => {
     const config = block.config;
@@ -458,6 +480,16 @@ const CategoryRenderer: React.FC<CategoryRendererProps> = ({ category }) => {
         );
 
       case 'AD_BANNER':
+        // Знаходимо індекс першого банеру в схемі
+        const firstBannerIndex = schema.blocks.findIndex((block: any) => block.type === 'AD_BANNER');
+        const isFirstBanner = index === firstBannerIndex;
+        
+        // Перший банер завжди рендеримо (якщо не завантажується)
+        // Інші банери рендеримо тільки якщо є новини перед ними
+        if (currentCategoryLoading || (!isFirstBanner && !hasNewsInPreviousBlocks(index, schema.blocks))) {
+          return null;
+        }
+        
         return (
           <AdBanner 
             key={index}
