@@ -2,6 +2,7 @@
 
 import {useEffect, useImperativeHandle, useRef, forwardRef} from "react";
 import YoutubeEmbed from 'editorjs-youtube-embed';
+import VideoTool from './VideoTool';
 import type {OutputData, ToolConstructable} from "@editorjs/editorjs";
 import type EditorJS from "@editorjs/editorjs";
 
@@ -71,6 +72,25 @@ const EditorJSClient = forwardRef<EditorJSClientRef, Props>(({
         }
       }
 
+      // Handle video blocks
+      if (node.nodeName === "DIV" && (node as HTMLElement).classList.contains("video-block")) {
+        const url = (node as HTMLElement).getAttribute("data-url");
+        const caption = (node as HTMLElement).getAttribute("data-caption");
+        if (url) {
+          blocks.push({ 
+            type: "video", 
+            data: { 
+              file: { url },
+              caption: caption || "",
+              withBorder: false,
+              withBackground: false,
+              stretched: false
+            } 
+          });
+          return;
+        }
+      }
+
       // fallback
       blocks.push({ type: "raw", data: { html: (node as HTMLElement).outerHTML } });
     };
@@ -97,6 +117,11 @@ const EditorJSClient = forwardRef<EditorJSClientRef, Props>(({
         if (b.type === "youtubeEmbed" && b.data?.url) {
           // YouTube блок - поки що не передаємо на бекенд
           return `<div class="youtube-embed" data-url="${b.data.url}">YouTube Video: ${b.data.url}</div>`;
+        }
+        if (b.type === "video" && b.data?.file?.url) {
+          // Video блок
+          const caption = b.data.caption ? `<div class="video-caption">${b.data.caption}</div>` : '';
+          return `<div class="video-block" data-url="${b.data.file.url}" data-caption="${b.data.caption || ''}"><video controls><source src="${b.data.file.url}" type="video/mp4">Your browser does not support the video tag.</video>${caption}</div>`;
         }
         if (b.type === "list" && b.data?.items) {
           const tag = b.data.style === "ordered" ? "ol" : "ul";
@@ -127,6 +152,19 @@ const EditorJSClient = forwardRef<EditorJSClientRef, Props>(({
           raw: { class: Raw },
           list: { class: List as unknown as ToolConstructable, inlineToolbar: true },
           youtubeEmbed: YoutubeEmbed,
+          video: {
+            class: VideoTool,
+            config: {
+              endpoints: {
+                byFile: '/api/admin/videos/upload',
+                byUrl: '/api/admin/videos/upload', // We'll handle URL uploads the same way for now
+              },
+              field: 'file',
+              types: 'video/*',
+              captionPlaceholder: 'Введіть підпис до відео',
+              buttonContent: 'Вибрати відео',
+            }
+          },
         },
       });
 
