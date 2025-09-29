@@ -125,6 +125,13 @@
   padding: 40px 0 40px 0 !important; /* Повертаємо стандартний верхній відступ */
 }
 
+.paginationContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 16px 0 32px 0;
+}
+
 /* Адаптивність для різних розмірів екрану */
 @media (max-width: 1200px) {
   .container {

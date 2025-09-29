@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import { useSearchParams, usePathname, useRouter } from 'next/navigation';
 import { useMobileContext } from '@/app/contexts/MobileContext';
 import { getCategoryIdFromUrl, isRegionCategory as isRegionCategoryFromMapper, isSpecialThemeCategory } from '@/app/lib/categoryMapper';
 import { useNewsByRubric } from '@/app/hooks/useNewsByRubric';
@@ -28,6 +29,7 @@ import CurrencyRates from "@/app/components/hero/CurrencyRates";
 import WeatherWidget from "@/app/components/hero/WeatherWidget";
 import Image from "next/image";
 import styles from "../[category]/page.module.css";
+import { Pagination } from 'antd';
 import banner3 from '@/assets/images/banner3.png';
 import adBannerIndfomo from '@/assets/images/Ad Banner black.png';
 
@@ -37,6 +39,12 @@ interface CategoryRendererProps {
 
 const CategoryRenderer: React.FC<CategoryRendererProps> = ({ category }) => {
   const { isMobile } = useMobileContext();
+  const searchParams = useSearchParams();
+  const pathname = usePathname();
+  const router = useRouter();
+
+  const pageParam = searchParams.get('page');
+  const currentPage = Math.max(1, Number(pageParam) || 1);
   
   // Стан для тегу
   const [tagData, setTagData] = React.useState<{ id: number; tag: string } | null>(null);
@@ -81,7 +89,7 @@ const CategoryRenderer: React.FC<CategoryRendererProps> = ({ category }) => {
   // Використовуємо відповідний хук для поточної категорії (запитуємо на 1 новину більше для вибору головної)
   const rubricHook = useNewsByRubric({
     rubric: categoryId?.toString() || '',
-    page: 1,
+    page: currentPage,
     limit: 38, // Було 37: +1 для головної новини
     lang: '1',
     approved: true,
@@ -91,7 +99,7 @@ const CategoryRenderer: React.FC<CategoryRendererProps> = ({ category }) => {
 
   // Хук для спеціальних тем (коли categoryId є одним із зазначених спеціальних ID)
   const specialThemeHook = useSpecialThemesNewsById(categoryId ?? 0, {
-    page: 1,
+    page: currentPage,
     limit: 38, // Було 37: +1 для головної новини
     lang: '1',
     approved: true,
@@ -100,7 +108,7 @@ const CategoryRenderer: React.FC<CategoryRendererProps> = ({ category }) => {
 
   const regionHook = useNewsByRegion({
     region: categoryId?.toString() || '',
-    page: 1,
+    page: currentPage,
     limit: 38, // Було 37: +1 для головної новини
     lang: '1',
     approved: true,
@@ -110,7 +118,7 @@ const CategoryRenderer: React.FC<CategoryRendererProps> = ({ category }) => {
 
   // Хук для всіх новин (коли categoryId = 0) - завантажуємо на 1 більше (58)
   const allNewsHook = useLatestNews({
-    page: 1,
+    page: currentPage,
     limit: 58, // Було 57: +1 для головної новини
     lang: '1',
     autoFetch: isAllCategory
@@ -127,7 +135,7 @@ const CategoryRenderer: React.FC<CategoryRendererProps> = ({ category }) => {
   const tagNewsHook = useNewsByTag({
     tagId: isTag ? undefined : undefined, // Не передаємо tagId
     tagName: isTag ? category : 'dummy', // Для звичайних категорій передаємо dummy значення
-    page: 1,
+    page: currentPage,
     limit: 38, // Було 37: +1 для головної новини
     lang: '1',
     autoFetch: isTag && Boolean(category) // Автозавантаження тільки для тегів
@@ -165,6 +173,26 @@ const CategoryRenderer: React.FC<CategoryRendererProps> = ({ category }) => {
 
   // Використовуємо оригінальний порядок новин (за датою)
   const sortedCurrentCategoryData = transformedCurrentCategoryData;
+
+  // Дані пагінації (якщо доступні з API)
+  const paginationData = isTag ? tagNewsHook.data?.pagination :
+                        isAllCategory ? allNewsHook.data?.pagination :
+                        isImportantCategory ? undefined :
+                        (isRegion ? regionHook.data?.pagination : (isSpecialTheme ? specialThemeHook.data?.pagination : rubricHook.data?.pagination));
+
+  const totalItems = paginationData?.total || 0;
+  const pageSize = paginationData?.limit || (isAllCategory ? 58 : 38);
+  const totalPages = paginationData?.totalPages || 0;
+
+  const handlePageChange = (page: number) => {
+    const params = new URLSearchParams(searchParams.toString());
+    if (page <= 1) {
+      params.delete('page');
+    } else {
+      params.set('page', String(page));
+    }
+    router.push(`${pathname}${params.toString() ? `?${params.toString()}` : ''}`);
+  };
 
   // Функція для отримання головної новини (пріоритет: nweight > 0 з фото → будь-яка з фото)
   const getMainNewsItem = () => {
@@ -478,20 +506,50 @@ const CategoryRenderer: React.FC<CategoryRendererProps> = ({ category }) => {
           const filteredAllNews = getNewsWithoutMain();
           const allNewsData = filteredAllNews.slice(37, 57); // Останні 20 новин з 57
           return (
-            <AllNews
-              key={index}
-              customTitle={config.customTitle || "Більше новин"}
-              news={allNewsData}
-              hideHeader={false}
-            />
+            <>
+              <AllNews
+                key={index}
+                customTitle={config.customTitle || "Більше новин"}
+                news={allNewsData}
+                hideHeader={false}
+              />
+              {(totalPages > 1) && (
+                <div className={styles.paginationContainer}>
+                  <Pagination
+                    current={currentPage}
+                    total={totalItems}
+                    pageSize={pageSize}
+                    onChange={handlePageChange}
+                    showSizeChanger={false}
+                    hideOnSinglePage
+                    showLessItems
+                  />
+                </div>
+              )}
+            </>
           );
         }
         // Для інших категорій використовуємо стандартну логіку
         return (
-          <AllNews
-            key={index}
-            customTitle={config.customTitle}
-          />
+          <>
+            <AllNews
+              key={index}
+              customTitle={config.customTitle}
+            />
+            {(totalPages > 1) && (
+              <div className={styles.paginationContainer}>
+                <Pagination
+                  current={currentPage}
+                  total={totalItems}
+                  pageSize={pageSize}
+                  onChange={handlePageChange}
+                  showSizeChanger={false}
+                  hideOnSinglePage
+                  showLessItems
+                />
+              </div>
+            )}
+          </>
         );
 
       case 'SEPARATOR':
