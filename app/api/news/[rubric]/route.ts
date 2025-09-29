@@ -149,11 +149,11 @@ export async function GET(
         dateB = new Date(b.ndate);
       }
       
-      // Debug logging for first few items
-      if (newsData.indexOf(a) < 3 && newsData.indexOf(b) < 3) {
-        console.log(`Sorting: ${a.nheader} (${a.ndate} ${a.ntime}) vs ${b.nheader} (${b.ndate} ${b.ntime})`);
-        console.log(`Dates: ${dateA.toISOString()} vs ${dateB.toISOString()}`);
-      }
+      // // Debug logging for first few items
+      // if (newsData.indexOf(a) < 3 && newsData.indexOf(b) < 3) {
+      //   console.log(`Sorting: ${a.nheader} (${a.ndate} ${a.ntime}) vs ${b.nheader} (${b.ndate} ${b.ntime})`);
+      //   console.log(`Dates: ${dateA.toISOString()} vs ${dateB.toISOString()}`);
+      // }
       
       // Сортуємо від найновіших до найстаріших
       return dateB.getTime() - dateA.getTime();

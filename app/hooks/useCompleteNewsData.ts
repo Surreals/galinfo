@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from 'react';
+import { apiGetWithParams, ApiError } from '@/app/lib/apiClient';
 
 // Розширені типи для повної інформації новини
 export interface NewsImage {
@@ -201,28 +202,34 @@ export function useCompleteNewsData(options: UseCompleteNewsDataOptions): UseCom
     setError(null);
 
     try {
-      const params = new URLSearchParams({
+      const response = await apiGetWithParams<CompleteNewsResponse>(`/api/news/complete/${articleType}/${urlkey}_${id}`, {
         lang,
         includeRelated: includeRelated.toString(),
         includeAuthor: includeAuthor.toString(),
         includeStatistics: includeStatistics.toString()
       });
 
-      const response = await fetch(`/api/news/complete/${articleType}/${urlkey}_${id}?${params}`);
-      
-      if (!response.ok) {
-        if (response.status === 404) {
-          throw new Error('Article not found');
-        }
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const result = await response.json();
-      setData(result);
+      setData(response.data);
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to fetch complete article data';
+      let errorMessage = 'Failed to fetch complete article data';
+      
+      if (err instanceof ApiError) {
+        if (err.status === 404) {
+          errorMessage = 'Article not found';
+        } else {
+          errorMessage = err.message;
+        }
+        console.error('API Error fetching complete news data:', {
+          message: err.message,
+          status: err.status,
+          statusText: err.statusText
+        });
+      } else {
+        console.error('Error fetching complete news data:', err);
+        errorMessage = err instanceof Error ? err.message : 'Failed to fetch complete article data';
+      }
+      
       setError(errorMessage);
-      console.error('Error fetching complete news data:', err);
     } finally {
       setLoading(false);
     }

@@ -94,7 +94,7 @@ export async function getNewsById(id: number): Promise<NewsData | null> {
         nm.nkeywords,
         u.uname_ua as editor_name,
         fu.name as author_name,
-        GROUP_CONCAT(a_pics.filename ORDER BY FIND_IN_SET(a_pics.id, n.images)) as image_filenames
+        GROUP_CONCAT(a_pics.filename) as image_filenames
       FROM ${TABLES.NEWS} n
       LEFT JOIN ${TABLES.NEWS_BODY} nb ON n.id = nb.id
       LEFT JOIN ${TABLES.NEWS_HEADERS} nh ON n.id = nh.id

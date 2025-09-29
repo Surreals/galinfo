@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { notification } from 'antd';
 import { ArticleData } from './useArticleData';
+import { apiPost, apiPut, apiDelete, ApiError } from '@/app/lib/apiClient';
 
 export interface UseArticleSaveOptions {
   articleData?: ArticleData | null;
@@ -20,22 +21,14 @@ export function useArticleSave({ articleData, newsId }: UseArticleSaveOptions = 
     try {
       setSaving(true);
 
-      const url = newsId ? `/api/admin/articles/${newsId}` : '/api/admin/articles';
-      const method = newsId ? 'PUT' : 'POST';
-
-      const response = await fetch(url, {
-        method,
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(data),
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to save article');
+      let response;
+      if (newsId) {
+        response = await apiPut(`/api/admin/articles/${newsId}`, data);
+      } else {
+        response = await apiPost('/api/admin/articles', data);
       }
 
-      const result = await response.json();
+      const result = response.data;
       
       if (result.success) {
         notification.success({
@@ -50,10 +43,23 @@ export function useArticleSave({ articleData, newsId }: UseArticleSaveOptions = 
         throw new Error(result.error || 'Unknown error');
       }
     } catch (error) {
-      console.error('Error saving article:', error);
+      let errorMessage = 'Помилка збереження';
+      
+      if (error instanceof ApiError) {
+        errorMessage = error.message;
+        console.error('API Error saving article:', {
+          message: error.message,
+          status: error.status,
+          statusText: error.statusText
+        });
+      } else {
+        console.error('Error saving article:', error);
+        errorMessage = error instanceof Error ? error.message : 'Помилка збереження';
+      }
+      
       notification.error({
         message: 'Помилка',
-        description: error instanceof Error ? error.message : 'Помилка збереження',
+        description: errorMessage,
         placement: 'topRight',
       });
       return { success: false };
@@ -75,15 +81,8 @@ export function useArticleSave({ articleData, newsId }: UseArticleSaveOptions = 
     try {
       setSaving(true);
 
-      const response = await fetch(`/api/admin/articles/${newsId}`, {
-        method: 'DELETE',
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to delete article');
-      }
-
-      const result = await response.json();
+      const response = await apiDelete(`/api/admin/articles/${newsId}`);
+      const result = response.data;
       
       if (result.success) {
         notification.success({
@@ -96,10 +95,23 @@ export function useArticleSave({ articleData, newsId }: UseArticleSaveOptions = 
         throw new Error(result.error || 'Unknown error');
       }
     } catch (error) {
-      console.error('Error deleting article:', error);
+      let errorMessage = 'Помилка видалення';
+      
+      if (error instanceof ApiError) {
+        errorMessage = error.message;
+        console.error('API Error deleting article:', {
+          message: error.message,
+          status: error.status,
+          statusText: error.statusText
+        });
+      } else {
+        console.error('Error deleting article:', error);
+        errorMessage = error instanceof Error ? error.message : 'Помилка видалення';
+      }
+      
       notification.error({
         message: 'Помилка',
-        description: error instanceof Error ? error.message : 'Помилка видалення',
+        description: errorMessage,
         placement: 'topRight',
       });
       return false;

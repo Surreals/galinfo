@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from 'react';
+import { apiGetWithParams, ApiError } from '@/app/lib/apiClient';
 
 interface ImportantNewsItem {
   id: number;
@@ -62,23 +63,28 @@ export function useImportantNews(options: UseImportantNewsOptions = {}): UseImpo
     setError(null);
 
     try {
-      const params = new URLSearchParams({
+      const response = await apiGetWithParams<ImportantNewsResponse>('/api/news/important', {
         limit: (customLimit || limit).toString(),
         lang: customLang || lang
       });
 
-      const response = await fetch(`/api/news/important?${params}`);
-      const data: ImportantNewsResponse = await response.json();
-
-      if (response.ok) {
-        setImportantNews(data.importantNews);
-        setTotal(data.total);
-      } else {
-        setError(data.error || 'Помилка завантаження важливих новин');
-      }
+      setImportantNews(response.data.importantNews);
+      setTotal(response.data.total);
     } catch (err) {
-      console.error('Error fetching important news:', err);
-      setError('Помилка з\'єднання з сервером');
+      let errorMessage = 'Помилка з\'єднання з сервером';
+      
+      if (err instanceof ApiError) {
+        errorMessage = err.message;
+        console.error('API Error fetching important news:', {
+          message: err.message,
+          status: err.status,
+          statusText: err.statusText
+        });
+      } else {
+        console.error('Error fetching important news:', err);
+      }
+      
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -89,23 +95,28 @@ export function useImportantNews(options: UseImportantNewsOptions = {}): UseImpo
     setError(null);
 
     try {
-      const params = new URLSearchParams({
+      const response = await apiGetWithParams<ImportantNewsResponse>(`/api/news/important/${level}`, {
         limit: limit.toString(),
         lang: lang
       });
 
-      const response = await fetch(`/api/news/important/${level}?${params}`);
-      const data: ImportantNewsResponse = await response.json();
-
-      if (response.ok) {
-        setImportantNews(data.importantNews);
-        setTotal(data.total);
-      } else {
-        setError(data.error || 'Помилка завантаження новин за рівнем важливості');
-      }
+      setImportantNews(response.data.importantNews);
+      setTotal(response.data.total);
     } catch (err) {
-      console.error('Error fetching news by level:', err);
-      setError('Помилка з\'єднання з сервером');
+      let errorMessage = 'Помилка з\'єднання з сервером';
+      
+      if (err instanceof ApiError) {
+        errorMessage = err.message;
+        console.error('API Error fetching news by level:', {
+          message: err.message,
+          status: err.status,
+          statusText: err.statusText
+        });
+      } else {
+        console.error('Error fetching news by level:', err);
+      }
+      
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -156,23 +167,28 @@ export function useImportantNewsByLevel(level: number, options: UseImportantNews
     setError(null);
 
     try {
-      const params = new URLSearchParams({
+      const response = await apiGetWithParams<ImportantNewsResponse>(`/api/news/important/${level}`, {
         limit: limit.toString(),
         lang: lang
       });
 
-      const response = await fetch(`/api/news/important/${level}?${params}`);
-      const data: ImportantNewsResponse = await response.json();
-
-      if (response.ok) {
-        setImportantNews(data.importantNews);
-        setTotal(data.total);
-      } else {
-        setError(data.error || 'Помилка завантаження новин за рівнем важливості');
-      }
+      setImportantNews(response.data.importantNews);
+      setTotal(response.data.total);
     } catch (err) {
-      console.error('Error fetching news by level:', err);
-      setError('Помилка з\'єднання з сервером');
+      let errorMessage = 'Помилка з\'єднання з сервером';
+      
+      if (err instanceof ApiError) {
+        errorMessage = err.message;
+        console.error('API Error fetching news by level:', {
+          message: err.message,
+          status: err.status,
+          statusText: err.statusText
+        });
+      } else {
+        console.error('Error fetching news by level:', err);
+      }
+      
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }

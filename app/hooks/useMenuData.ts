@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { MenuData, MenuItem } from '@/app/api/homepage/services/menuService';
+import { apiGet, ApiError } from '@/app/lib/apiClient';
 
 export function useMenuData() {
   const [menuData, setMenuData] = useState<MenuData | null>(null);
@@ -12,18 +13,26 @@ export function useMenuData() {
     const fetchMenuData = async () => {
       try {
         setLoading(true);
-        const response = await fetch('/api/menu');
+        const response = await apiGet<MenuData>('/api/menu');
         
-        if (!response.ok) {
-          throw new Error('Failed to fetch menu data');
-        }
-        
-        const data = await response.json();
-        setMenuData(data);
+        setMenuData(response.data);
         setError(null);
       } catch (err) {
-        setError(err instanceof Error ? err.message : 'Unknown error occurred');
-        console.error('Error fetching menu data:', err);
+        let errorMessage = 'Unknown error occurred';
+        
+        if (err instanceof ApiError) {
+          errorMessage = err.message;
+          console.error('API Error fetching menu data:', {
+            message: err.message,
+            status: err.status,
+            statusText: err.statusText
+          });
+        } else {
+          console.error('Error fetching menu data:', err);
+          errorMessage = err instanceof Error ? err.message : 'Unknown error occurred';
+        }
+        
+        setError(errorMessage);
       } finally {
         setLoading(false);
       }

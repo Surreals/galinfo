@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
+import { apiGet, ApiError } from '@/app/lib/apiClient';
 
 // Типи для даних новини
 export interface ArticleData {
@@ -121,17 +122,24 @@ export function useArticleData(options: UseArticleDataOptions = {}): UseArticleD
       setLoading(true);
       setError(null);
 
-      const response = await fetch(`/api/admin/articles/${options.id}`);
-      
-      if (!response.ok) {
-        throw new Error('Failed to fetch article');
-      }
-
-      const result = await response.json();
-      setData(result.data);
+      const response = await apiGet<{ data: ArticleData }>(`/api/admin/articles/${options.id}`);
+      setData(response.data.data);
     } catch (err) {
-      console.error('Error fetching article:', err);
-      setError(err instanceof Error ? err.message : 'Unknown error');
+      let errorMessage = 'Unknown error';
+      
+      if (err instanceof ApiError) {
+        errorMessage = err.message;
+        console.error('API Error fetching article:', {
+          message: err.message,
+          status: err.status,
+          statusText: err.statusText
+        });
+      } else {
+        console.error('Error fetching article:', err);
+        errorMessage = err instanceof Error ? err.message : 'Unknown error';
+      }
+      
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }

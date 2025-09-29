@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { apiGet, ApiError } from '@/app/lib/apiClient';
 
 export interface HomePageData {
   enviro: any[];
@@ -58,18 +59,26 @@ export const useHomePageData = () => {
     const fetchData = async () => {
       try {
         setLoading(true);
-        const response = await fetch('/api/homepage');
+        const response = await apiGet<HomePageData>('/api/homepage');
         
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        
-        const result = await response.json();
-        setData(result);
+        setData(response.data);
         setError(null);
       } catch (err) {
-        console.error('Error fetching home page data:', err);
-        setError(err instanceof Error ? err.message : 'Failed to fetch data');
+        let errorMessage = 'Failed to fetch data';
+        
+        if (err instanceof ApiError) {
+          errorMessage = err.message;
+          console.error('API Error fetching home page data:', {
+            message: err.message,
+            status: err.status,
+            statusText: err.statusText
+          });
+        } else {
+          console.error('Error fetching home page data:', err);
+          errorMessage = err instanceof Error ? err.message : 'Failed to fetch data';
+        }
+        
+        setError(errorMessage);
       } finally {
         setLoading(false);
       }

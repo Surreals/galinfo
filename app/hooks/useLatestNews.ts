@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { NewsImage, getMainImage, hasImages, getImagesCount } from '@/app/lib/imageUtils';
+import { apiGetWithParams, ApiError } from '@/app/lib/apiClient';
 
 // Типи для новин
 export interface LatestNewsItem {
@@ -87,23 +88,27 @@ export function useLatestNews(options: UseLatestNewsOptions = {}): UseLatestNews
     setError(null);
 
     try {
-      const params = new URLSearchParams({
+      const response = await apiGetWithParams<LatestNewsResponse>('/api/news/latest', {
         page: page.toString(),
         limit: limit.toString(),
         lang
       });
 
-      const response = await fetch(`/api/news/latest?${params}`);
-      
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const result = await response.json();
-      setData(result);
+      setData(response.data);
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to fetch latest news';
-      console.error('Error in useLatestNews:', err);
+      let errorMessage = 'Failed to fetch latest news';
+      
+      if (err instanceof ApiError) {
+        errorMessage = err.message;
+        console.error('API Error in useLatestNews:', {
+          message: err.message,
+          status: err.status,
+          statusText: err.statusText
+        });
+      } else {
+        console.error('Error in useLatestNews:', err);
+      }
+      
       setError(errorMessage);
     } finally {
       setLoading(false);

@@ -1,77 +1,7 @@
 import { NextResponse } from 'next/server';
 import { executeQuery } from '@/app/lib/db';
-import { generateImagePath, getImageUrl } from '@/app/lib/imageUtils';
+import { formatNewsImages } from '@/app/lib/imageUtils';
 
-// Функція для обробки зображень в новій структурі
-async function processHeroNewsImages(newsItem: any) {
-  const images = [];
-  
-  // Обробляємо image_filenames (якщо є)
-  if (newsItem.image_filenames && newsItem.image_filenames.trim() !== '') {
-    const filenames = newsItem.image_filenames.split(',').map((f: string) => f.trim());
-    filenames.forEach((filename: string) => {
-      if (filename) {
-        images.push({
-          urls: {
-            full: getImageUrl(filename, 'full'),
-            intxt: getImageUrl(filename, 'intxt'),
-            tmb: getImageUrl(filename, 'tmb')
-          }
-        });
-      }
-    });
-  }
-  
-  // Якщо немає зображень з image_filenames, перевіряємо images поле
-  if (images.length === 0 && newsItem.images && newsItem.images.toString().trim() !== '') {
-    try {
-      // Get actual filenames from database
-      const imageIds = newsItem.images.split(',').map((id: string) => id.trim());
-      const [picData] = await executeQuery(`
-        SELECT filename FROM a_pics 
-        WHERE id IN (${imageIds.map(() => '?').join(',')})
-      `, imageIds);
-      
-      picData.forEach((pic: any) => {
-        if (pic.filename) {
-          images.push({
-            urls: {
-              full: getImageUrl(pic.filename, 'full'),
-              intxt: getImageUrl(pic.filename, 'intxt'),
-              tmb: getImageUrl(pic.filename, 'tmb')
-            }
-          });
-        }
-      });
-    } catch (error) {
-      console.error('Error fetching image filenames:', error);
-    }
-  }
-  
-  // Якщо все ще немає зображень, перевіряємо photo поле
-  if (images.length === 0 && newsItem.photo && newsItem.photo.toString().trim() !== '') {
-    const photoStr = newsItem.photo.toString();
-    if (!photoStr.startsWith('http') && !photoStr.startsWith('/')) {
-      images.push({
-        urls: {
-          full: getImageUrl(photoStr, 'full'),
-          intxt: getImageUrl(photoStr, 'intxt'),
-          tmb: getImageUrl(photoStr, 'tmb')
-        }
-      });
-    } else {
-      images.push({
-        urls: {
-          full: photoStr,
-          intxt: photoStr,
-          tmb: photoStr
-        }
-      });
-    }
-  }
-  
-  return images;
-}
 
 export async function GET() {
   try {
@@ -101,18 +31,32 @@ export async function GET() {
         AND a_news.nweight = 2
         AND a_news.approved = 1
         AND a_news.udate < ?
-      ORDER BY a_news.udate DESC
+      ORDER BY a_news.ndate DESC, a_news.ntime DESC
       LIMIT 4
     `, [currentTimestamp]);
 
     // If we have important news, use them
     if (importantNews && importantNews.length > 0) {
-      const processedImportantNews = await Promise.all(
-        importantNews.map(async (item: any) => ({
-          ...item,
-          images: await processHeroNewsImages(item)
-        }))
-      );
+      // Fetch image data for all news items
+      const allImageIds = importantNews
+        .filter(item => item.images)
+        .flatMap(item => item.images.split(',').map((id: string) => parseInt(id.trim())).filter((id: number) => !isNaN(id)));
+      
+      let imagesData = [];
+      if (allImageIds.length > 0) {
+        const [imageData] = await executeQuery(`
+          SELECT id, filename, title_ua
+          FROM a_pics 
+          WHERE id IN (${allImageIds.map(() => '?').join(',')})
+        `, allImageIds);
+        imagesData = imageData || [];
+      }
+      
+      const processedImportantNews = importantNews.map((item: any) => ({
+        ...item,
+        imageids: item.images,
+        images: item.images ? formatNewsImages(imagesData, item.images.split(',').map((id: string) => parseInt(id.trim())).filter((id: number) => !isNaN(id)), '1') : []
+      }));
       
       return NextResponse.json({ heroNews: processedImportantNews });
     }
@@ -133,30 +77,42 @@ export async function GET() {
         a_news_headers.nteaser,
         a_news_slideheaders.sheader,
         a_news_slideheaders.steaser,
-        a_statcomm.qty,
-        GROUP_CONCAT(a_pics.filename) as image_filenames
+        a_statcomm.qty
       FROM a_news USE KEY (PRIMARY)
       LEFT JOIN a_news_headers USE KEY (PRIMARY) ON a_news.id = a_news_headers.id
       LEFT JOIN a_news_slideheaders USE KEY (PRIMARY) ON a_news.id = a_news_slideheaders.id
       LEFT JOIN a_news_specialids ON a_news.id = a_news_specialids.newsid
       LEFT JOIN a_statcomm USE KEY (PRIMARY) ON a_news.id = a_statcomm.id
-      LEFT JOIN a_pics ON FIND_IN_SET(a_pics.id, a_news.images)
       WHERE a_news_specialids.section = 1 
         AND a_news_specialids.newsid <> 0 
         AND a_news.approved = 1 
         AND a_news.udate < ?
       GROUP BY a_news.id
-      ORDER BY a_news_specialids.id 
+      ORDER BY a_news.ndate DESC, a_news.ntime DESC 
       LIMIT 4
     `, [currentTimestamp]);
     
     // Обробляємо special новини як fallback
-    const processedSpecialNews = await Promise.all(
-      specialNews.map(async (item: any) => ({
-        ...item,
-        images: await processHeroNewsImages(item)
-      }))
-    );
+    // Fetch image data for all special news items
+    const allSpecialImageIds = specialNews
+      .filter(item => item.images)
+      .flatMap(item => item.images.split(',').map((id: string) => parseInt(id.trim())).filter((id: number) => !isNaN(id)));
+    
+    let specialImagesData = [];
+    if (allSpecialImageIds.length > 0) {
+      const [specialImageData] = await executeQuery(`
+        SELECT id, filename, title_ua
+        FROM a_pics 
+        WHERE id IN (${allSpecialImageIds.map(() => '?').join(',')})
+      `, allSpecialImageIds);
+      specialImagesData = specialImageData || [];
+    }
+    
+    const processedSpecialNews = specialNews.map((item: any) => ({
+      ...item,
+      imageids: item.images,
+      images: item.images ? formatNewsImages(specialImagesData, item.images.split(',').map((id: string) => parseInt(id.trim())).filter((id: number) => !isNaN(id)), '1') : []
+    }));
 
     return NextResponse.json({ heroNews: processedSpecialNews });
     

@@ -21,6 +21,13 @@ export const config = {
     baseUrl: process.env.NODE_ENV === 'production' 
       ? 'https://galinfo.com.ua' 
       : 'http://localhost:3000',
+    // Request timeout in milliseconds (60 seconds)
+    timeout: 60000,
+    // Retry configuration
+    retries: {
+      maxAttempts: 2,
+      delay: 1000, // 1 second delay between retries
+    },
   },
   
   // Database configuration
