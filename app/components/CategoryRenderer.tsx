@@ -506,38 +506,12 @@ const CategoryRenderer: React.FC<CategoryRendererProps> = ({ category }) => {
           const filteredAllNews = getNewsWithoutMain();
           const allNewsData = filteredAllNews.slice(37, 57); // Останні 20 новин з 57
           return (
-            <>
-              <AllNews
-                key={index}
-                customTitle={config.customTitle || "Більше новин"}
-                news={allNewsData}
-                hideHeader={false}
-              />
-              {(totalPages > 1) && (
-                <div className={styles.paginationContainer}>
-                  <Pagination
-                    current={currentPage}
-                    total={totalItems}
-                    pageSize={pageSize}
-                    onChange={handlePageChange}
-                    showSizeChanger={false}
-                    hideOnSinglePage
-                    showLessItems
-                  />
-                </div>
-              )}
-            </>
-          );
-        }
-        // Для інших категорій використовуємо стандартну логіку
-        return (
-          <>
             <AllNews
               key={index}
-              customTitle={config.customTitle}
-            />
-            {(totalPages > 1) && (
-              <div className={styles.paginationContainer}>
+              customTitle={config.customTitle || "Більше новин"}
+              news={allNewsData}
+              hideHeader={false}
+              footer={(totalPages > 1) ? (
                 <Pagination
                   current={currentPage}
                   total={totalItems}
@@ -547,9 +521,27 @@ const CategoryRenderer: React.FC<CategoryRendererProps> = ({ category }) => {
                   hideOnSinglePage
                   showLessItems
                 />
-              </div>
-            )}
-          </>
+              ) : null}
+            />
+          );
+        }
+        // Для інших категорій використовуємо стандартну логіку
+        return (
+          <AllNews
+            key={index}
+            customTitle={config.customTitle}
+            footer={(totalPages > 1) ? (
+              <Pagination
+                current={currentPage}
+                total={totalItems}
+                pageSize={pageSize}
+                onChange={handlePageChange}
+                showSizeChanger={false}
+                hideOnSinglePage
+                showLessItems
+              />
+            ) : null}
+          />
         );
 
       case 'SEPARATOR':
