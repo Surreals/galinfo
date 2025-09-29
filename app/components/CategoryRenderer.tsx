@@ -384,6 +384,11 @@ const CategoryRenderer: React.FC<CategoryRendererProps> = ({ category }) => {
           : filteredCategoryNews.slice(0, 8); // fallback до перших 8 новин
         const isCategoryNewsLoading = currentCategoryLoading;
 
+        // Не рендеримо компонент, якщо новин менше 1 (не завантажуємо)
+        if (!isCategoryNewsLoading && categoryNewsData.length < 1) {
+          return null;
+        }
+
         return (
           <CategoryNews
             key={index}
@@ -408,6 +413,11 @@ const CategoryRenderer: React.FC<CategoryRendererProps> = ({ category }) => {
         const columnNewsData = columnNewsRange 
           ? filteredColumnNews.slice(columnNewsRange.start - 1, columnNewsRange.end)
           : filteredColumnNews.slice(0, config.newsQuantity || 5); // fallback
+        
+        // Не рендеримо компонент, якщо новин менше 1 (не завантажуємо)
+        if (!currentCategoryLoading && columnNewsData.length < 1) {
+          return null;
+        }
         
         return (
           <ColumnNews 
@@ -503,6 +513,12 @@ const CategoryRenderer: React.FC<CategoryRendererProps> = ({ category }) => {
         if (isAllCategory || isImportantCategory) {
           const filteredAllNews = getNewsWithoutMain();
           const allNewsData = filteredAllNews.slice(37, 57); // Останні 20 новин з 57
+          
+          // Не рендеримо компонент, якщо новин менше 1 (не завантажуємо)
+          if (!currentCategoryLoading && allNewsData.length < 1) {
+            return null;
+          }
+          
           return (
             <AllNews
               key={index}
