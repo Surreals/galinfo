@@ -4,6 +4,128 @@ import { Metadata } from 'next';
 // Отримання метаданих для категорії
 export async function getCategoryMetadata(categorySlug: string, lang: string = '1'): Promise<Metadata> {
   try {
+    // Обробляємо спеціальні категорії, які не мають записів в базі даних
+    if (categorySlug === 'all') {
+      return {
+        title: 'Всі новини | Гал-Інфо',
+        description: 'Всі останні новини від агенції інформації та аналітики "Гал-інфо"',
+        keywords: ['всі новини', 'новини', 'Львів', 'Гал-Інфо'],
+        openGraph: {
+          title: 'Всі новини | Гал-Інфо',
+          description: 'Всі останні новини від агенції інформації та аналітики "Гал-інфо"',
+          url: `https://galinfo.com.ua/${categorySlug}`,
+          siteName: 'Гал-Інфо',
+          locale: 'uk_UA',
+          type: 'website',
+        },
+        twitter: {
+          card: 'summary_large_image',
+          title: 'Всі новини | Гал-Інфо',
+          description: 'Всі останні новини від агенції інформації та аналітики "Гал-інфо"',
+        },
+        alternates: {
+          canonical: `https://galinfo.com.ua/${categorySlug}`,
+        },
+      };
+    }
+
+    if (categorySlug === 'important') {
+      return {
+        title: 'Топ новини | Гал-Інфо',
+        description: 'Найважливіші новини від агенції інформації та аналітики "Гал-інфо"',
+        keywords: ['топ новини', 'важливі новини', 'новини', 'Львів', 'Гал-Інфо'],
+        openGraph: {
+          title: 'Топ новини | Гал-Інфо',
+          description: 'Найважливіші новини від агенції інформації та аналітики "Гал-інфо"',
+          url: `https://galinfo.com.ua/${categorySlug}`,
+          siteName: 'Гал-Інфо',
+          locale: 'uk_UA',
+          type: 'website',
+        },
+        twitter: {
+          card: 'summary_large_image',
+          title: 'Топ новини | Гал-Інфо',
+          description: 'Найважливіші новини від агенції інформації та аналітики "Гал-інфо"',
+        },
+        alternates: {
+          canonical: `https://galinfo.com.ua/${categorySlug}`,
+        },
+      };
+    }
+
+    // Обробляємо спеціальні теми (topthemes)
+    if (categorySlug === 'vidverta-rozmova') {
+      return {
+        title: 'Відверта розмова | Гал-Інфо',
+        description: 'Відверта розмова - спеціальна тема від агенції інформації та аналітики "Гал-інфо"',
+        keywords: ['відверта розмова', 'спеціальна тема', 'новини', 'Львів', 'Гал-Інфо'],
+        openGraph: {
+          title: 'Відверта розмова | Гал-Інфо',
+          description: 'Відверта розмова - спеціальна тема від агенції інформації та аналітики "Гал-інфо"',
+          url: `https://galinfo.com.ua/topthemes/${categorySlug}`,
+          siteName: 'Гал-Інфо',
+          locale: 'uk_UA',
+          type: 'website',
+        },
+        twitter: {
+          card: 'summary_large_image',
+          title: 'Відверта розмова | Гал-Інфо',
+          description: 'Відверта розмова - спеціальна тема від агенції інформації та аналітики "Гал-інфо"',
+        },
+        alternates: {
+          canonical: `https://galinfo.com.ua/topthemes/${categorySlug}`,
+        },
+      };
+    }
+
+    if (categorySlug === 'rayony-lvova') {
+      return {
+        title: 'Райони Львова | Гал-Інфо',
+        description: 'Райони Львова - спеціальна тема від агенції інформації та аналітики "Гал-інфо"',
+        keywords: ['райони львова', 'спеціальна тема', 'новини', 'Львів', 'Гал-Інфо'],
+        openGraph: {
+          title: 'Райони Львова | Гал-Інфо',
+          description: 'Райони Львова - спеціальна тема від агенції інформації та аналітики "Гал-інфо"',
+          url: `https://galinfo.com.ua/topthemes/${categorySlug}`,
+          siteName: 'Гал-Інфо',
+          locale: 'uk_UA',
+          type: 'website',
+        },
+        twitter: {
+          card: 'summary_large_image',
+          title: 'Райони Львова | Гал-Інфо',
+          description: 'Райони Львова - спеціальна тема від агенції інформації та аналітики "Гал-інфо"',
+        },
+        alternates: {
+          canonical: `https://galinfo.com.ua/topthemes/${categorySlug}`,
+        },
+      };
+    }
+
+    if (categorySlug === 'pressluzhba') {
+      return {
+        title: 'Пресслужба | Гал-Інфо',
+        description: 'Пресслужба - спеціальна тема від агенції інформації та аналітики "Гал-інфо"',
+        keywords: ['пресслужба', 'спеціальна тема', 'новини', 'Львів', 'Гал-Інфо'],
+        openGraph: {
+          title: 'Пресслужба | Гал-Інфо',
+          description: 'Пресслужба - спеціальна тема від агенції інформації та аналітики "Гал-інфо"',
+          url: `https://galinfo.com.ua/topthemes/${categorySlug}`,
+          siteName: 'Гал-Інфо',
+          locale: 'uk_UA',
+          type: 'website',
+        },
+        twitter: {
+          card: 'summary_large_image',
+          title: 'Пресслужба | Гал-Інфо',
+          description: 'Пресслужба - спеціальна тема від агенції інформації та аналітики "Гал-інфо"',
+        },
+        alternates: {
+          canonical: `https://galinfo.com.ua/topthemes/${categorySlug}`,
+        },
+      };
+    }
+
     const [category] = await executeQuery(`
       SELECT id, param, title, description
       FROM a_cats 
