@@ -13,7 +13,7 @@ export async function GET() {
       FROM a_news 
       LEFT JOIN a_news_headers ON a_news.id = a_news_headers.id
       WHERE a_news.lang = '1'
-      ORDER BY a_news.udate DESC 
+      ORDER BY a_news.ndate DESC, a_news.ntime DESC 
       LIMIT 1
     `);
 

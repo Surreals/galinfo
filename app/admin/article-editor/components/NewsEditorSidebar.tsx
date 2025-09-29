@@ -121,7 +121,7 @@ export default function NewsEditorSidebar({ newsId, articleData, menuData, onEdi
     (articleData?.region || []).map(String)
   );
   const [selectedTheme, setSelectedTheme] = useState<string | null>(
-    articleData?.theme != null ? String(articleData.theme) : null
+    !!articleData?.theme ? String(articleData.theme) : null
   );
 
   // Теги
@@ -180,7 +180,7 @@ export default function NewsEditorSidebar({ newsId, articleData, menuData, onEdi
       setArticleType(articleData.ntype);
       setSelectedRubrics((articleData.rubric || []).map(String)); // [2]
       setSelectedRegions((articleData.region || []).map(String)); // [2]
-      setSelectedTheme(articleData.theme != null ? String(articleData.theme) : null);
+      setSelectedTheme(!!articleData.theme ? String(articleData.theme) : null);
       setTags(articleData.tags.join(', '));
       setEditor(articleData.nauthor || null);
       setAuthor(articleData.userid || null);
