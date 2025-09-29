@@ -201,6 +201,11 @@ export default function ColumnNews({
     displayNews = [];
   }
 
+  // Не рендеримо компонент, якщо новин менше 1 (не завантажуємо)
+  if (!displayLoading && displayNews.length < 1) {
+    return null;
+  }
+
   return (
     <section className={`${styles.columnNewsSection} ${className}`}>
       <div className={styles.container}>

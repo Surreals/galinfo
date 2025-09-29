@@ -323,6 +323,11 @@ function NewsListRenderer({ block, isMobile }: { block: any; isMobile: boolean }
     };
   }) || [];
 
+  // Не рендеримо компонент, якщо новин менше 1 (не завантажуємо)
+  if (!apiLoading && newsData.length < 1) {
+    return null;
+  }
+
 
   return (
     <NewsList

@@ -163,6 +163,11 @@ export default function CategoryNews({
     );
   }
 
+  // Не рендеримо компонент, якщо новин менше 1 (не завантажуємо)
+  if (!displayLoading && displayNews.length < 1) {
+    return null;
+  }
+
   return (
     <section className={`${styles.categoryNewsSection} ${className}`}>
       <div className={styles.container}>
