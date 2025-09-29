@@ -258,7 +258,6 @@ export default function NewsEditorSidebar({ newsId, articleData, menuData, onEdi
         if (imageIds.length === imageFilenames.length) {
           // Якщо image_filenames в зворотному порядку, повертаємо його
           const correctedFilenames = [...imageFilenames];
-          console.log('Corrected filenames:', correctedFilenames);
           
           imageIds.forEach((id, index) => {
             imageMap.set(id, correctedFilenames[index]);
