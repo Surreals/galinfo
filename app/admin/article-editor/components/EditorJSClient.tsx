@@ -1,6 +1,7 @@
 "use client";
 
 import {useEffect, useImperativeHandle, useRef, forwardRef} from "react";
+import YoutubeEmbed from 'editorjs-youtube-embed';
 import type {OutputData, ToolConstructable} from "@editorjs/editorjs";
 import type EditorJS from "@editorjs/editorjs";
 
@@ -61,6 +62,15 @@ const EditorJSClient = forwardRef<EditorJSClientRef, Props>(({
         return;
       }
 
+      // Handle YouTube embed blocks
+      if (node.nodeName === "DIV" && (node as HTMLElement).classList.contains("youtube-embed")) {
+        const url = (node as HTMLElement).getAttribute("data-url");
+        if (url) {
+          blocks.push({ type: "youtubeEmbed", data: { url } });
+          return;
+        }
+      }
+
       // fallback
       blocks.push({ type: "raw", data: { html: (node as HTMLElement).outerHTML } });
     };
@@ -77,13 +87,24 @@ const EditorJSClient = forwardRef<EditorJSClientRef, Props>(({
   // Збираємо HTML назад з блоків
   const editorJSToHtml = (data: OutputData): string =>
     (data.blocks ?? [])
-      .map((b) =>
-        b.type === "raw" && b.data?.html
-          ? b.data.html
-          : b.type === "paragraph"
-            ? `<p>${b.data?.text ?? ""}</p>`
-            : ""
-      )
+      .map((b) => {
+        if (b.type === "raw" && b.data?.html) {
+          return b.data.html;
+        }
+        if (b.type === "paragraph") {
+          return `<p>${b.data?.text ?? ""}</p>`;
+        }
+        if (b.type === "youtubeEmbed" && b.data?.url) {
+          // YouTube блок - поки що не передаємо на бекенд
+          return `<div class="youtube-embed" data-url="${b.data.url}">YouTube Video: ${b.data.url}</div>`;
+        }
+        if (b.type === "list" && b.data?.items) {
+          const tag = b.data.style === "ordered" ? "ol" : "ul";
+          const items = b.data.items.map((item: string) => `<li>${item}</li>`).join("");
+          return `<${tag}>${items}</${tag}>`;
+        }
+        return "";
+      })
       .join("");
 
 
@@ -105,6 +126,7 @@ const EditorJSClient = forwardRef<EditorJSClientRef, Props>(({
           paragraph: { class: Paragraph },
           raw: { class: Raw },
           list: { class: List as unknown as ToolConstructable, inlineToolbar: true },
+          youtubeEmbed: YoutubeEmbed,
         },
       });
 

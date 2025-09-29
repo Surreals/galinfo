@@ -65,6 +65,7 @@
     "editorjs-mermaid": "^1.0.0",
     "editorjs-text-alignment-tool": "^1.0.12",
     "editorjs-text-color-plugin": "^2.0.4",
+    "editorjs-youtube-embed": "^1.0.3",
     "lodash.throttle": "^4.1.1",
     "mysql2": "^3.14.3",
     "next": "15.4.5",

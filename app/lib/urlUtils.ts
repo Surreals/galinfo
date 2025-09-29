@@ -44,8 +44,11 @@ export function highlightUrlsInHtml(html: string): string {
     return html || '';
   }
 
+  // Спочатку обробляємо YouTube embeds
+  let processedHtml = processYouTubeEmbeds(html);
+
   // Розбиваємо HTML на частини, зберігаючи теги
-  const parts = html.split(/(<[^>]*>)/);
+  const parts = processedHtml.split(/(<[^>]*>)/);
   
   return parts.map(part => {
     // Якщо це HTML тег, залишаємо без змін
@@ -56,6 +59,63 @@ export function highlightUrlsInHtml(html: string): string {
     // Якщо це текст, обробляємо URL
     return highlightUrlsInText(part);
   }).join('');
+}
+
+/**
+ * Обробляє YouTube embed блоки в HTML
+ * @param html - HTML контент для обробки
+ * @returns HTML з обробленими YouTube embeds
+ */
+export function processYouTubeEmbeds(html: string): string {
+  if (!html || typeof html !== 'string') {
+    return html || '';
+  }
+
+  // Регулярний вираз для знаходження YouTube embed divs
+  const youtubeEmbedRegex = /<div class="youtube-embed" data-url="([^"]+)">[^<]*<\/div>/gi;
+  
+  return html.replace(youtubeEmbedRegex, (match, url) => {
+    // Витягуємо video ID з YouTube URL
+    const videoId = extractYouTubeVideoId(url);
+    if (!videoId) {
+      return match; // Якщо не вдалося витягти ID, повертаємо оригінальний div
+    }
+
+    // Створюємо YouTube iframe embed
+    return `
+      <div class="youtube-embed-container" style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%; background: #000; margin: 20px 0;">
+        <iframe 
+          src="https://www.youtube.com/embed/${videoId}" 
+          style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0;" 
+          allowfullscreen
+          title="YouTube video player"
+        ></iframe>
+      </div>
+    `;
+  });
+}
+
+/**
+ * Витягує video ID з YouTube URL
+ * @param url - YouTube URL
+ * @returns video ID або null
+ */
+export function extractYouTubeVideoId(url: string): string | null {
+  if (!url) return null;
+
+  const patterns = [
+    /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([^&\n?#]+)/,
+    /youtube\.com\/watch\?.*v=([^&\n?#]+)/
+  ];
+
+  for (const pattern of patterns) {
+    const match = url.match(pattern);
+    if (match) {
+      return match[1];
+    }
+  }
+
+  return null;
 }
 
 /**
