@@ -1,38 +1,38 @@
 import { NextResponse } from 'next/server';
 import { executeQuery } from '@/app/lib/db';
+import crypto from 'crypto';
 
-export interface User {
+export interface AdminUser {
   id: number;
-  name: string;
-  type: 'editor' | 'journalist' | 'blogger';
-  services?: string;
-  email?: string;
-  phone?: string;
-  avatar?: string;
-  isActive?: boolean;
+  uname_ua: string;
+  uname: string;
+  uagency: string;
+  active: number;
+  perm: string;
+}
+
+export interface UserFormData {
+  uname_ua: string;
+  uname: string;
+  uagency: string;
+  upass: string;
+  active: boolean;
+  permissions: Record<string, boolean>;
 }
 
 export async function GET() {
   try {
-    // Завантажуємо користувачів з бази даних
-    const [users] = await executeQuery<User>(`
+    // Завантажуємо адміністративних користувачів з бази даних
+    const [users] = await executeQuery<AdminUser>(`
       SELECT 
         id, 
-        name, 
-        services,
-        CASE 
-          WHEN services LIKE '%1%' THEN 'editor'
-          WHEN services LIKE '%2%' THEN 'journalist' 
-          WHEN services LIKE '%3%' THEN 'blogger'
-          ELSE 'journalist'
-        END as type,
-        CASE 
-          WHEN services != '' AND services IS NOT NULL THEN 1
-          ELSE 0
-        END as isActive
-      FROM a_users 
-      WHERE services != '' AND services IS NOT NULL
-      ORDER BY name
+        uname_ua,
+        uname,
+        uagency,
+        active,
+        perm
+      FROM a_powerusers 
+      ORDER BY uname_ua
     `);
 
     return NextResponse.json({
@@ -40,9 +40,67 @@ export async function GET() {
       data: users,
     });
   } catch (error) {
-    console.error('Error fetching users:', error);
+    console.error('Error fetching admin users:', error);
     return NextResponse.json(
-      { success: false, error: 'Failed to fetch users' },
+      { success: false, error: 'Failed to fetch admin users' },
+      { status: 500 }
+    );
+  }
+}
+
+export async function POST(request: Request) {
+  try {
+    const body: UserFormData = await request.json();
+    
+    // Validate required fields
+    if (!body.uname_ua || !body.uname || !body.upass) {
+      return NextResponse.json(
+        { success: false, error: 'Missing required fields' },
+        { status: 400 }
+      );
+    }
+
+    // Check if username already exists
+    const [existingUsers] = await executeQuery<{ count: number }>(`
+      SELECT COUNT(*) as count FROM a_powerusers WHERE uname = ?
+    `, [body.uname]);
+
+    if (existingUsers[0].count > 0) {
+      return NextResponse.json(
+        { success: false, error: 'Username already exists' },
+        { status: 400 }
+      );
+    }
+
+    // Hash password
+    const hashedPassword = crypto.createHash('md5').update(body.upass).digest('hex');
+    
+    // Serialize permissions
+    const serializedPermissions = JSON.stringify(body.permissions);
+
+    // Insert new user
+    const [result] = await executeQuery(`
+      INSERT INTO a_powerusers 
+      (uname_ua, uname, uagency, upass, perm, active) 
+      VALUES (?, ?, ?, ?, ?, ?)
+    `, [
+      body.uname_ua,
+      body.uname,
+      body.uagency || '',
+      hashedPassword,
+      serializedPermissions,
+      body.active ? 1 : 0
+    ]);
+
+    return NextResponse.json({
+      success: true,
+      message: 'User created successfully',
+      data: { id: (result as any).insertId }
+    });
+  } catch (error) {
+    console.error('Error creating user:', error);
+    return NextResponse.json(
+      { success: false, error: 'Failed to create user' },
       { status: 500 }
     );
   }

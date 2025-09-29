@@ -16,21 +16,20 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Query user from database
-    const users = await executeQuery(
-      'SELECT * FROM a_users WHERE uname = ? AND approved IS NOT NULL',
+    // Query admin user from database (a_powerusers table)
+    const [users] = await executeQuery(
+      'SELECT * FROM a_powerusers WHERE uname = ? AND active = 1',
       [userLogin]
     );
 
-    if (users.length === 0) {
+    if (!users || users.length === 0) {
       return NextResponse.json(
         { error: 'Invalid login or password' },
         { status: 401 }
       );
     }
 
-    // Handle case where executeQuery returns nested arrays
-    const user = Array.isArray(users[0]) ? users[0][0] : users[0];
+    const user = users[0];
 
     // Check if password matches (assuming MD5 hash)
     const hashedPassword = crypto.createHash('md5').update(password).digest('hex');
@@ -42,34 +41,20 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Check if user is approved
-    if (!user.approved) {
-      return NextResponse.json(
-        { error: 'Account not approved' },
-        { status: 403 }
-      );
-    }
-
     // Generate a simple token (in production, use JWT)
     const token = crypto.randomBytes(32).toString('hex');
 
-    // Update last login time
-    await executeQuery(
-      'UPDATE a_users SET logged = NOW(), logqty = logqty + 1 WHERE id = ?',
-      [user.id]
-    );
+    // Note: IP tracking removed as lastip column doesn't exist in a_powerusers table
+    // In a production environment, you might want to add this column or use a separate logging table
 
     // Return user data (excluding sensitive information)
     const userData = {
       id: user.id,
-      name: user.name,
+      name: user.uname_ua,
       email: user.uname,
-      services: user.services,
-      blogs: user.blogs,
-      regdate: user.regdate,
-      shortinfo: user.shortinfo,
-      avatar: user.avatar,
-      ulang: user.ulang
+      agency: user.uagency,
+      permissions: user.perm,
+      active: user.active
     };
 
     return NextResponse.json({

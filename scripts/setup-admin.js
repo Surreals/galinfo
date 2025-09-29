@@ -4,6 +4,7 @@
  * Admin Setup Script
  * 
  * This script creates a default admin user for the GalInfo admin panel.
+ * Uses the a_powerusers table for admin authentication.
  * 
  * Usage:
  *   node scripts/setup-admin.js
@@ -40,7 +41,7 @@ async function setupAdmin() {
     // Check if admin user already exists
     console.log('🔍 Checking for existing admin user...');
     const [existingAdmin] = await connection.execute(
-      'SELECT * FROM a_users WHERE uname = ?',
+      'SELECT * FROM a_powerusers WHERE uname = ?',
       ['admin']
     );
 
@@ -58,25 +59,29 @@ async function setupAdmin() {
 
     console.log('👤 Creating admin user...');
     
-    // Insert admin user with all required fields
+    // Create default permissions for admin user (all permissions enabled)
+    const defaultPermissions = {
+      ac_usermanage: true,
+      ac_newsmanage: true,
+      ac_articlemanage: true,
+      ac_commentmanage: true,
+      ac_sitemanage: true,
+      ac_admanage: true,
+      ac_telegrammanage: true
+    };
+    
+    // Insert admin user with all required fields for a_powerusers table
     await connection.execute(
-      `INSERT INTO a_users (
-        uname, upass, name, approved, regdate, services, blogs, 
-        logqty, shortinfo, avatar, ulang, twowords, humancheck
-      ) VALUES (?, ?, ?, ?, NOW(), ?, ?, ?, ?, ?, ?, ?, ?)`,
+      `INSERT INTO a_powerusers (
+        uname, upass, uname_ua, uagency, perm, active
+      ) VALUES (?, ?, ?, ?, ?, ?)`,
       [
-        adminLogin,           // uname (username/email)
-        hashedPassword,       // upass (MD5 hashed password)
-        'Administrator',      // name (display name)
-        '1',                  // approved (approval status)
-        'admin',              // services
-        0,                    // blogs
-        0,                    // logqty (login count)
-        'Default admin user', // shortinfo
-        '',                   // avatar
-        1,                    // ulang (Ukrainian language)
-        '',                   // twowords (empty string)
-        ''                    // humancheck (empty string)
+        adminLogin,                    // uname (username)
+        hashedPassword,                // upass (MD5 hashed password)
+        'Адміністратор',               // uname_ua (Ukrainian name)
+        'Гал-Інфо',                    // uagency (agency)
+        JSON.stringify(defaultPermissions), // perm (permissions as JSON)
+        1                              // active (active status)
       ]
     );
 
@@ -95,7 +100,7 @@ async function setupAdmin() {
     
     if (error.code === 'ER_NO_SUCH_TABLE') {
       console.log('');
-      console.log('💡 The a_users table does not exist. You may need to:');
+      console.log('💡 The a_powerusers table does not exist. You may need to:');
       console.log('   1. Run database migrations');
       console.log('   2. Create the table manually using the SQL schema in docs/');
     } else if (error.code === 'ECONNREFUSED') {
@@ -113,33 +118,29 @@ async function setupAdmin() {
   }
 }
 
-// Create the a_users table if it doesn't exist
-async function createUsersTable() {
+// Create the a_powerusers table if it doesn't exist
+async function createPowerUsersTable() {
   let connection;
   
   try {
-    console.log('📊 Creating a_users table...');
+    console.log('📊 Creating a_powerusers table...');
     connection = await mysql.createConnection(config);
     
     await connection.execute(`
-      CREATE TABLE IF NOT EXISTS a_users (
+      CREATE TABLE IF NOT EXISTS a_powerusers (
         id INT AUTO_INCREMENT PRIMARY KEY,
-        uname VARCHAR(255),
-        upass VARCHAR(255),
-        name VARCHAR(255),
-        approved VARCHAR(255),
-        logged DATETIME,
-        logqty INT DEFAULT 0,
-        services VARCHAR(255),
-        blogs INT DEFAULT 0,
-        regdate DATETIME,
-        shortinfo TEXT,
-        avatar VARCHAR(255),
-        ulang INT DEFAULT 1
+        uname VARCHAR(255) NOT NULL UNIQUE,
+        upass VARCHAR(255) NOT NULL,
+        uname_ua VARCHAR(255),
+        uagency VARCHAR(255),
+        perm TEXT,
+        active TINYINT(1) DEFAULT 1,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
       )
     `);
     
-    console.log('✅ a_users table created/verified.');
+    console.log('✅ a_powerusers table created/verified.');
     
   } catch (error) {
     console.error('❌ Error creating table:', error.message);
@@ -157,7 +158,7 @@ async function main() {
   
   try {
     // First try to create the table if it doesn't exist
-    await createUsersTable();
+    await createPowerUsersTable();
     
     // Then setup the admin user
     await setupAdmin();
@@ -173,4 +174,4 @@ if (require.main === module) {
   main();
 }
 
-module.exports = { setupAdmin, createUsersTable };
+module.exports = { setupAdmin, createPowerUsersTable };

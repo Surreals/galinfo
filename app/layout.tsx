@@ -4,6 +4,7 @@ import { ConfigProvider } from "antd";
 import dayjs from 'dayjs';
 import 'dayjs/locale/uk';
 import locale from 'antd/locale/uk_UA';
+import '@ant-design/v5-patch-for-react-19';
 
 import Footer from "@/app/footer/Footer";
 import Header from "@/app/header/Header";

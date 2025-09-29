@@ -78,7 +78,7 @@ export default function AdminPage() {
       description: 'Управління користувачами та правами доступу',
       href: '/admin/users',
       icon: '👥',
-      disabled: true,
+      disabled: false,
       color: '#e83e8c'
     },
     {

@@ -7,12 +7,9 @@ interface AdminUser {
   id: number;
   name: string;
   email: string;
-  services: string;
-  blogs: number;
-  regdate: string;
-  shortinfo: string;
-  avatar: string;
-  ulang: number;
+  agency: string;
+  permissions: string;
+  active: number;
 }
 
 interface AdminAuthContextType {
