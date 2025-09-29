@@ -19,7 +19,7 @@ This guide explains how to set up and use the Telegram bot integration for the G
 The bot token has been configured in your environment. Make sure your `.env.local` file contains:
 
 ```env
-TELEGRAM_BOT_TOKEN=7741029792:AAEqlhh0DoA82L2dNNhyCM_RyjCBZq-eXpI
+TELEGRAM_BOT_TOKEN=
 NEXT_PUBLIC_BASE_URL=http://localhost:3000
 ```
 

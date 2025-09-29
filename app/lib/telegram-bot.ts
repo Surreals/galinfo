@@ -12,17 +12,18 @@ export class TelegramBotService {
   private token: string;
 
   constructor() {
-    this.token = process.env.TELEGRAM_BOT_TOKEN || '7741029792:AAEqlhh0DoA82L2dNNhyCM_RyjCBZq-eXpI';
-    if (!this.token) {
+    const token = process.env.TELEGRAM_BOT_TOKEN;
+    if (!token) {
       throw new Error('TELEGRAM_BOT_TOKEN is not configured');
     }
+    this.token = token;
     this.bot = new TelegramBot(this.token, { polling: false });
   }
 
   /**
    * Send a text message to a Telegram chat
    */
-  async sendMessage(message: TelegramMessage): Promise<boolean> {
+  async sendMessage(message: TelegramMessage): Promise<{ success: boolean; error?: string }> {
     try {
       const options: TelegramBot.SendMessageOptions = {
         parse_mode: message.parseMode || 'HTML',
@@ -30,17 +31,35 @@ export class TelegramBotService {
       };
 
       await this.bot.sendMessage(message.chatId, message.message, options);
-      return true;
-    } catch (error) {
+      return { success: true };
+    } catch (error: any) {
       console.error('Error sending Telegram message:', error);
-      return false;
+      
+      let errorMessage = 'Невідома помилка';
+      
+      if (error.response?.body?.description) {
+        const description = error.response.body.description;
+        if (description.includes('chat not found')) {
+          errorMessage = 'Чат не знайдено. Перевірте Chat ID та переконайтеся, що бот доданий до чату.';
+        } else if (description.includes('bot was blocked')) {
+          errorMessage = 'Бот заблокований користувачем.';
+        } else if (description.includes('bot is not a member')) {
+          errorMessage = 'Бот не є учасником цього чату. Додайте бота до чату спочатку.';
+        } else if (description.includes('forbidden')) {
+          errorMessage = 'Немає дозволу на відправку повідомлень. Перевірте права бота.';
+        } else {
+          errorMessage = description;
+        }
+      }
+      
+      return { success: false, error: errorMessage };
     }
   }
 
   /**
    * Send a photo with caption to a Telegram chat
    */
-  async sendPhoto(message: TelegramMessage): Promise<boolean> {
+  async sendPhoto(message: TelegramMessage): Promise<{ success: boolean; error?: string }> {
     try {
       if (!message.imageUrl) {
         throw new Error('Image URL is required for sendPhoto');
@@ -52,21 +71,39 @@ export class TelegramBotService {
       };
 
       await this.bot.sendPhoto(message.chatId, message.imageUrl, options);
-      return true;
-    } catch (error) {
+      return { success: true };
+    } catch (error: any) {
       console.error('Error sending Telegram photo:', error);
-      return false;
+      
+      let errorMessage = 'Невідома помилка';
+      
+      if (error.response?.body?.description) {
+        const description = error.response.body.description;
+        if (description.includes('chat not found')) {
+          errorMessage = 'Чат не знайдено. Перевірте Chat ID та переконайтеся, що бот доданий до чату.';
+        } else if (description.includes('bot was blocked')) {
+          errorMessage = 'Бот заблокований користувачем.';
+        } else if (description.includes('bot is not a member')) {
+          errorMessage = 'Бот не є учасником цього чату. Додайте бота до чату спочатку.';
+        } else if (description.includes('forbidden')) {
+          errorMessage = 'Немає дозволу на відправку повідомлень. Перевірте права бота.';
+        } else {
+          errorMessage = description;
+        }
+      }
+      
+      return { success: false, error: errorMessage };
     }
   }
 
   /**
    * Send a message with or without photo
    */
-  async sendMessageWithPhoto(message: TelegramMessage): Promise<boolean> {
+  async sendMessageWithPhoto(message: TelegramMessage): Promise<{ success: boolean; error?: string }> {
     if (message.imageUrl) {
-      const photoSuccess = await this.sendPhoto(message);
-      if (photoSuccess) {
-        return true;
+      const photoResult = await this.sendPhoto(message);
+      if (photoResult.success) {
+        return photoResult;
       }
       // If photo fails, fall back to text message
       console.warn('Failed to send photo, falling back to text message');

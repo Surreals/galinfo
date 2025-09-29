@@ -5,7 +5,7 @@ require('dotenv').config({ path: '.env.local' });
 require('dotenv').config({ path: '.env' });
 
 // Set the bot token directly for testing
-const BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN || '7741029792:AAEqlhh0DoA82L2dNNhyCM_RyjCBZq-eXpI';
+const BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
 
 if (!BOT_TOKEN) {
   console.error('❌ TELEGRAM_BOT_TOKEN не налаштовано в .env.local');

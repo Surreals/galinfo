@@ -89,6 +89,15 @@ export default function AdminPage() {
       icon: '📢',
       disabled: true,
       color: '#ffc107'
+    },
+    {
+      id: 'telegram-settings',
+      title: 'Telegram',
+      description: 'Управління ботом та каналами для публікації новин',
+      href: '/admin/telegram-settings',
+      icon: '🤖',
+      disabled: false,
+      color: '#0088cc'
     }
   ];
 
