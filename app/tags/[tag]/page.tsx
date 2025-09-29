@@ -1,5 +1,4 @@
 import { CategoryPageClient } from "@/app/[category]/CategoryPageClient";
-import { getCategoryMetadata } from "@/lib/seo-utils";
 import { Metadata } from "next";
 
 interface TagPageProps {
@@ -12,7 +11,36 @@ interface TagPageProps {
 // Генерація метаданих для тегу
 export async function generateMetadata({ params }: TagPageProps): Promise<Metadata> {
   const { tag } = await params;
-  return await getCategoryMetadata(tag);
+  const decodedTag = decodeURIComponent(tag || '').trim();
+
+  const title = decodedTag ? `${decodedTag} | Гал-Інфо` : 'Тег | Гал-Інфо';
+  const description = decodedTag
+    ? `Новини за тегом "${decodedTag}" від агенції інформації та аналітики "Гал-Інфо".`
+    : 'Новини за тегами від агенції інформації та аналітики "Гал-Інфо".';
+  const canonical = decodedTag
+    ? `https://galinfo.com.ua/tags/${encodeURIComponent(decodedTag)}`
+    : `https://galinfo.com.ua/tags`;
+
+  return {
+    title,
+    description,
+    openGraph: {
+      title,
+      description,
+      url: canonical,
+      siteName: 'Гал-Інфо',
+      locale: 'uk_UA',
+      type: 'website',
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title,
+      description,
+    },
+    alternates: {
+      canonical,
+    },
+  };
 }
 
 export default async function TagPage({ params, searchParams }: TagPageProps) {

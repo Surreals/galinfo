@@ -155,19 +155,21 @@
 .mainImage {
   cursor: pointer;
   width: 100%;
-  height: auto;
+  height: 600px;
   border-radius: 8px;
   margin-bottom: 12px;
+  object-fit: contain;
+  object-position: center;
+  display: block;
 }
 
-/* Для вертикальних зображень - використовуємо contain */
 .mainImageVertical {
   object-fit: contain;
 }
 
 /* Для горизонтальних зображень - використовуємо cover */
 .mainImageHorizontal {
-  object-fit: cover;
+  object-fit: contain;
 }
 
 .backDrop {
@@ -727,7 +729,7 @@
   }
   
   .mainImage {
-    max-height: 400px;
+    height: 300px;
   }
 
   .galleryThumb {
@@ -835,7 +837,7 @@
   }
   
   .mainImage {
-    max-height: 300px;
+    height: 220px;
   }
 
   .galleryThumb {
