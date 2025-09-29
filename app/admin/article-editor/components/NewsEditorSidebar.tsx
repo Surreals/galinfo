@@ -14,13 +14,16 @@ import {
   message,
   Spin,
   App,
+  Image,
 } from "antd";
-import type { UploadFile } from "antd";
+import type { UploadFile, GetProp, UploadProps } from "antd";
 
 // Розширюємо тип UploadFile для збереження ID зображення
 interface ExtendedUploadFile extends UploadFile {
   imageId?: number;
 }
+
+type FileType = Parameters<GetProp<UploadProps, 'beforeUpload'>>[0];
 import {
   PictureOutlined,
   DeleteOutlined,
@@ -81,6 +84,29 @@ export default function NewsEditorSidebar({ newsId, articleData, menuData, onEdi
   
   // Ref для контейнера зображень для автоскролу
   const imageScrollRef = useRef<HTMLDivElement>(null);
+
+  // Стан для превью зображень
+  const [previewOpen, setPreviewOpen] = useState(false);
+  const [previewImage, setPreviewImage] = useState('');
+
+  // Функція для отримання base64 зображення
+  const getBase64 = (file: FileType): Promise<string> =>
+    new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => resolve(reader.result as string);
+      reader.onerror = (error) => reject(error);
+    });
+
+  // Функція для обробки превью зображення
+  const handlePreview = async (file: UploadFile) => {
+    if (!file.url && !file.preview) {
+      file.preview = await getBase64(file.originFileObj as FileType);
+    }
+
+    setPreviewImage(file.url || (file.preview as string));
+    setPreviewOpen(true);
+  };
 
   // Функції для роботи з модалкою зображень
   const openImagePicker = () => {
@@ -222,8 +248,7 @@ export default function NewsEditorSidebar({ newsId, articleData, menuData, onEdi
         const imageIds = articleData.images.split(',').map((id: string) => id.trim()).filter(id => id);
         const imageFilenames = articleData.image_filenames.split(',').map((filename: string) => filename.trim()).filter(filename => filename);
         
-        console.log('Loading images - IDs:', imageIds);
-        console.log('Loading images - Filenames:', imageFilenames);
+     
         
         // Створюємо мапу ID -> filename для правильного співставлення
         const imageMap = new Map<string, string>();
@@ -249,7 +274,8 @@ export default function NewsEditorSidebar({ newsId, articleData, menuData, onEdi
             uid: `image-${id}`,
             name: filename,
             status: 'done' as const,
-            url: filename ? getImageUrl(filename, 'tmb') : '',
+            url: filename ? getImageUrl(filename, 'full') : '',
+            thumbUrl: filename ? getImageUrl(filename, 'tmb') : '',
             imageId: parseInt(id), // Зберігаємо ID зображення
           };
         });
@@ -283,8 +309,6 @@ export default function NewsEditorSidebar({ newsId, articleData, menuData, onEdi
     }
   }, [articleData, loading]);
 
-  console.log('fileList', fileList);
-
 
 
   // handlers
@@ -296,7 +320,6 @@ export default function NewsEditorSidebar({ newsId, articleData, menuData, onEdi
     }
 
     
-  console.log('fileList', fileList);
 
     const payload = {
       // Основні поля
@@ -443,6 +466,7 @@ export default function NewsEditorSidebar({ newsId, articleData, menuData, onEdi
               fileList={fileList}
               onChange={({fileList}) => setFileList(fileList as ExtendedUploadFile[])}
               beforeUpload={() => false}
+              onPreview={handlePreview}
               // openFileDialogOnClick={false}
               itemRender={(originNode, file, fileList, actions) => {
                 const index = fileList.indexOf(file) + 1;
@@ -713,6 +737,19 @@ export default function NewsEditorSidebar({ newsId, articleData, menuData, onEdi
         onSelect={handleImageSelect}
         currentImage={null}
       />
+
+      {/* Превью зображення */}
+      {previewImage && (
+        <Image
+          wrapperStyle={{ display: 'none' }}
+          preview={{
+            visible: previewOpen,
+            onVisibleChange: (visible) => setPreviewOpen(visible),
+            afterOpenChange: (visible) => !visible && setPreviewImage(''),
+          }}
+          src={previewImage}
+        />
+      )}
     </aside>
 );
 }
