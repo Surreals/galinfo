@@ -46,6 +46,15 @@ export default function AdminPage() {
       color: '#28a745'
     },
     {
+      id: 'videos',
+      title: 'Відео',
+      description: 'Управління відео файлами та медіа',
+      href: '/admin/videos',
+      icon: '🎥',
+      disabled: false,
+      color: '#dc3545'
+    },
+    {
       id: 'site',
       title: 'Сайт',
       description: 'Управління структурою та налаштуваннями сайту',

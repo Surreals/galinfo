@@ -44,8 +44,9 @@ export function highlightUrlsInHtml(html: string): string {
     return html || '';
   }
 
-  // Спочатку обробляємо YouTube embeds
+  // Спочатку обробляємо YouTube embeds та video блоки
   let processedHtml = processYouTubeEmbeds(html);
+  processedHtml = processVideoBlocks(processedHtml);
 
   // Розбиваємо HTML на частини, зберігаючи теги
   const parts = processedHtml.split(/(<[^>]*>)/);
@@ -90,6 +91,41 @@ export function processYouTubeEmbeds(html: string): string {
           allowfullscreen
           title="YouTube video player"
         ></iframe>
+      </div>
+    `;
+  });
+}
+
+/**
+ * Обробляє video блоки в HTML
+ * @param html - HTML контент для обробки
+ * @returns HTML з обробленими video блоками
+ */
+export function processVideoBlocks(html: string): string {
+  if (!html || typeof html !== 'string') {
+    return html || '';
+  }
+
+  // Регулярний вираз для знаходження video блоків
+  const videoBlockRegex = /<div class="video-block" data-url="([^"]+)"(?: data-caption="([^"]*)")?[^>]*>.*?<\/div>/gi;
+  
+  return html.replace(videoBlockRegex, (match, url, caption) => {
+    // Створюємо video елемент з підтримкою різних форматів
+    const captionHtml = caption ? `<div class="video-caption" style="text-align: center; margin-top: 8px; font-style: italic; color: #666;">${caption}</div>` : '';
+    
+    return `
+      <div class="video-container" style="margin: 20px 0; text-align: center;">
+        <video 
+          controls 
+          style="max-width: 100%; height: auto; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);"
+          preload="metadata"
+        >
+          <source src="${url}" type="video/mp4">
+          <source src="${url}" type="video/webm">
+          <source src="${url}" type="video/ogg">
+          Ваш браузер не підтримує відео тег.
+        </video>
+        ${captionHtml}
       </div>
     `;
   });
