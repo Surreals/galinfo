@@ -85,7 +85,7 @@ export default function NewsPage() {
     newsId: '',
     dateFrom: '',
     dateTo: '',
-    sortBy: 'udate',
+    sortBy: 'ndate',
     sortOrder: 'DESC'
   });
 
@@ -242,7 +242,7 @@ export default function NewsPage() {
       newsId: '',
       dateFrom: '',
       dateTo: '',
-      sortBy: 'udate',
+      sortBy: 'ndate',
       sortOrder: 'DESC'
     });
   };
@@ -334,8 +334,10 @@ export default function NewsPage() {
                   handleFilterChange('sortOrder', sortOrder);
                 }}
               >
-                <option value="udate-DESC">Дата (новіші)</option>
-                <option value="udate-ASC">Дата (старіші)</option>
+                <option value="ndate-DESC">Дата публікації (новіші)</option>
+                <option value="ndate-ASC">Дата публікації (старіші)</option>
+                <option value="udate-DESC">Дата оновлення (новіші)</option>
+                <option value="udate-ASC">Дата оновлення (старіші)</option>
                 <option value="nheader-ASC">Заголовок (А-Я)</option>
                 <option value="nheader-DESC">Заголовок (Я-А)</option>
                 <option value="views_count-DESC">Перегляди (більше)</option>

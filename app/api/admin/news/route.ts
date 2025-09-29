@@ -40,7 +40,7 @@ export async function GET(request: NextRequest) {
     const newsId = searchParams.get('newsId') || '';
     const dateFrom = searchParams.get('dateFrom') || '';
     const dateTo = searchParams.get('dateTo') || '';
-    const sortBy = searchParams.get('sortBy') || 'udate';
+    const sortBy = searchParams.get('sortBy') || 'ndate';
     const sortOrder = searchParams.get('sortOrder') || 'DESC';
     
     // Базові умови WHERE
@@ -110,6 +110,16 @@ export async function GET(request: NextRequest) {
     
     const whereClause = whereConditions.join(' AND ');
     
+    // Визначаємо порядок сортування
+    let orderByClause = '';
+    if (sortBy === 'udate' || sortBy === 'ndate') {
+      // Для сортування за датою використовуємо комбінацію ndate та ntime
+      orderByClause = `ORDER BY a_news.ndate ${sortOrder}, a_news.ntime ${sortOrder}`;
+    } else {
+      // Для інших полів використовуємо стандартне сортування
+      orderByClause = `ORDER BY a_news.${sortBy} ${sortOrder}`;
+    }
+    
     // Основний запит для отримання новин
     const newsQuery = `
       SELECT 
@@ -147,7 +157,7 @@ export async function GET(request: NextRequest) {
       LEFT JOIN a_statcomm ON a_news.id = a_statcomm.id
       LEFT JOIN a_statview ON a_news.id = a_statview.id
       WHERE ${whereClause}
-      ORDER BY a_news.${sortBy} ${sortOrder}
+      ${orderByClause}
       LIMIT ? OFFSET ?
     `;
     
