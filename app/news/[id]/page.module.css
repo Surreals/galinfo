@@ -200,8 +200,8 @@
 
 .carouselItem img {
   width: 100%;
-  height: auto;
-  max-height: 85vh;
+  height: 700px;
+  
   object-fit: contain;
   border-radius: 8px;
   display: block;
