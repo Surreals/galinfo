@@ -235,7 +235,7 @@ export async function GET(
         );
         
         // Якщо жоден рядок не був оновлений, створюємо новий запис
-        if (updateResult.affectedRows === 0) {
+        if ((updateResult as any).affectedRows === 0) {
           await executeQuery(
             'INSERT INTO a_statview (id, qty) VALUES (?, 2)',
             [id]
@@ -297,6 +297,7 @@ export async function GET(
     const response = {
       article: {
         ...news,
+        images: news.images || '', // Ensure images field is included as string
         images_data: images.map(image => ({
           id: image.id,
           filename: image.filename,

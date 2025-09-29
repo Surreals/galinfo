@@ -216,7 +216,7 @@ export default function NewsEditorSidebar({ newsId, articleData, menuData, onEdi
         // Якщо кількість ID та filename однакова, співставляємо по індексу
         if (imageIds.length === imageFilenames.length) {
           // Якщо image_filenames в зворотному порядку, повертаємо його
-          const correctedFilenames = [...imageFilenames].reverse();
+          const correctedFilenames = [...imageFilenames];
           console.log('Corrected filenames:', correctedFilenames);
           
           imageIds.forEach((id, index) => {
@@ -268,6 +268,8 @@ export default function NewsEditorSidebar({ newsId, articleData, menuData, onEdi
     }
   }, [articleData, loading]);
 
+  console.log('fileList', fileList);
+
   // handlers
   const onSave = async () => {
     // Спочатку зберігаємо контент редактора та отримуємо актуальний HTML
@@ -275,6 +277,9 @@ export default function NewsEditorSidebar({ newsId, articleData, menuData, onEdi
     if (onEditorSave) {
       currentNbody = await onEditorSave();
     }
+
+    
+  console.log('fileList', fileList);
 
     const payload = {
       // Основні поля

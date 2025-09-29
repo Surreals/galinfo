@@ -10,7 +10,6 @@
 }
 
 .dragger {
-  border: 2px dashed #d9d9d9;
   border-radius: 8px;
   background: #fafafa;
   transition: all 0.3s ease;
