@@ -92,7 +92,7 @@ export async function GET() {
         a_news_headers.nteaser,
         a_news_slideheaders.sheader,
         a_news_slideheaders.steaser,
-        a_statcomm.qty,
+        a_statcomm.qty
       FROM a_news USE KEY (nweight)
       LEFT JOIN a_news_headers USE KEY (PRIMARY) ON a_news.id = a_news_headers.id
       LEFT JOIN a_news_slideheaders USE KEY (PRIMARY) ON a_news.id = a_news_slideheaders.id
@@ -101,8 +101,7 @@ export async function GET() {
         AND a_news.nweight = 2
         AND a_news.approved = 1
         AND a_news.udate < ?
-      GROUP BY a_news.id
-      ORDER BY a_news.ndate DESC
+      ORDER BY a_news.udate DESC
       LIMIT 4
     `, [currentTimestamp]);
 
