@@ -73,7 +73,7 @@ export function useArticleEditorData(options: UseArticleEditorDataOptions = {}):
       ] = await Promise.all([
         fetch('/api/admin/article-types'),
         fetch(`/api/admin/categories?lang=${options.lang || 'ua'}`),
-        fetch('/api/admin/users'),
+        fetch('/api/admin/all-users'),
         fetch('/api/admin/languages'),
         fetch('/api/admin/tags')
       ]);

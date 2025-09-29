@@ -47,6 +47,7 @@ import {
 import { ArticleData } from "@/app/hooks/useArticleData";
 import { useArticleSave } from "@/app/hooks/useArticleSave";
 import { getImageUrl, ensureFullImageUrl } from "@/app/lib/imageUtils";
+import { useAdminAuth } from "@/app/contexts/AdminAuthContext";
 import ImagePickerModal from "./ImagePickerModal";
 import { useRouter } from "next/navigation";
 import { MenuData } from "@/app/api/homepage/services/menuService";
@@ -66,6 +67,7 @@ export default function NewsEditorSidebar({ newsId, articleData, menuData, onEdi
   const router = useRouter();
   const { modal } = App.useApp();
   const [savingProcess, setSavingProcess] = useState(false);
+  const { user } = useAdminAuth();
   
   // Завантажуємо дані через хук
   const {
@@ -145,6 +147,7 @@ export default function NewsEditorSidebar({ newsId, articleData, menuData, onEdi
     }, 400);
   };
 
+  const editors = getEditors(users);
   const journalists = getJournalists(users);
   const bloggers = getBloggers(users);
 
@@ -225,7 +228,7 @@ export default function NewsEditorSidebar({ newsId, articleData, menuData, onEdi
       setSelectedTheme(!!articleData.theme ? String(articleData.theme) : null);
       setTags(articleData.tags.join(', '));
       setEditor(articleData.nauthor || null);
-      setAuthor(articleData.userid || null);
+      setAuthor(articleData.nauthor || null); // Use same value as editor for consistency
       setShowAuthorInfo(articleData.showauthor);
       setPriority(articleData.nweight);
       setTemplate(articleData.layout);
@@ -343,7 +346,7 @@ export default function NewsEditorSidebar({ newsId, articleData, menuData, onEdi
       
       // Автори
       nauthor: editor,
-      userid: author,
+      userid: editor, // Use same value as nauthor for consistency
       showauthor: showAuthorInfo,
       
       // Налаштування
@@ -612,9 +615,10 @@ export default function NewsEditorSidebar({ newsId, articleData, menuData, onEdi
               <div className={styles.subLabel}>Автор / журналіст:</div>
               <Select
                 placeholder="Оберіть автора"
-                value={author}
-                onChange={setAuthor}
+                value={editor}
+                onChange={setEditor}
                 options={[
+                  ...editors.map(e => ({ label: e.name, value: e.id })),
                   ...journalists.map(j => ({ label: j.name, value: j.id })),
                   ...bloggers.map(b => ({ label: `******* ${b.name}`, value: b.id }))
                 ]}

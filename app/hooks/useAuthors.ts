@@ -46,7 +46,7 @@ export function useAuthors(options: UseAuthorsOptions = {}): UseAuthorsReturn {
   // Функція для завантаження авторів
   const fetchAuthors = async (): Promise<Author[]> => {
     try {
-      const response = await fetch('/api/admin/users');
+      const response = await fetch('/api/admin/all-users');
       if (!response.ok) {
         throw new Error('Failed to fetch authors');
       }

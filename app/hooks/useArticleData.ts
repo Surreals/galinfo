@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { apiGet, ApiError } from '@/app/lib/apiClient';
+import { useAdminAuth } from '@/app/contexts/AdminAuthContext';
 
 // Типи для даних новини
 export interface ArticleData {
@@ -110,10 +111,17 @@ export function useArticleData(options: UseArticleDataOptions = {}): UseArticleD
   const [data, setData] = useState<ArticleData | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const { user } = useAdminAuth();
 
   const fetchArticle = useCallback(async () => {
     if (!options.id) {
-      setData(defaultArticleData);
+      // When creating a new article, set the current user as the author
+      const newArticleData = {
+        ...defaultArticleData,
+        nauthor: user?.id || null,
+        userid: user?.id || null, // Set both fields to current user for consistency
+      };
+      setData(newArticleData);
       setLoading(false);
       return;
     }
@@ -143,7 +151,7 @@ export function useArticleData(options: UseArticleDataOptions = {}): UseArticleD
     } finally {
       setLoading(false);
     }
-  }, [options.id]);
+  }, [options.id, user]);
 
   const updateData = (updates: Partial<ArticleData>) => {
     setData(prev => prev ? { ...prev, ...updates } : null);
