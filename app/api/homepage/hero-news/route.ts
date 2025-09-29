@@ -5,16 +5,13 @@ import { generateImagePath, getImageUrl } from '@/app/lib/imageUtils';
 // Функція для обробки зображень в новій структурі
 async function processHeroNewsImages(newsItem: any) {
   const images = [];
-  const imageIds = newsItem.images ? newsItem.images.split(',').map((id: string) => id.trim()) : [];
   
   // Обробляємо image_filenames (якщо є)
   if (newsItem.image_filenames && newsItem.image_filenames.trim() !== '') {
     const filenames = newsItem.image_filenames.split(',').map((f: string) => f.trim());
-    filenames.forEach((filename: string, index: number) => {
+    filenames.forEach((filename: string) => {
       if (filename) {
         images.push({
-          id: imageIds[index] || null, // Додаємо ID для сортування
-          filename: filename,
           urls: {
             full: getImageUrl(filename, 'full'),
             intxt: getImageUrl(filename, 'intxt'),
@@ -28,19 +25,16 @@ async function processHeroNewsImages(newsItem: any) {
   // Якщо немає зображень з image_filenames, перевіряємо images поле
   if (images.length === 0 && newsItem.images && newsItem.images.toString().trim() !== '') {
     try {
-      // Get actual filenames from database with proper ordering
+      // Get actual filenames from database
       const imageIds = newsItem.images.split(',').map((id: string) => id.trim());
       const [picData] = await executeQuery(`
-        SELECT id, filename FROM a_pics 
+        SELECT filename FROM a_pics 
         WHERE id IN (${imageIds.map(() => '?').join(',')})
-        ORDER BY FIND_IN_SET(id, ?)
-      `, [...imageIds, newsItem.images]);
+      `, imageIds);
       
       picData.forEach((pic: any) => {
         if (pic.filename) {
           images.push({
-            id: pic.id, // Додаємо ID для сортування
-            filename: pic.filename,
             urls: {
               full: getImageUrl(pic.filename, 'full'),
               intxt: getImageUrl(pic.filename, 'intxt'),
@@ -76,17 +70,6 @@ async function processHeroNewsImages(newsItem: any) {
     }
   }
   
-  // Сортуємо зображення відповідно до порядку в images рядку
-  if (images.length > 0 && imageIds.length > 0) {
-    images.sort((a, b) => {
-      const aId = (a as any).id?.toString() || '';
-      const bId = (b as any).id?.toString() || '';
-      const indexA = imageIds.indexOf(aId);
-      const indexB = imageIds.indexOf(bId);
-      return indexA - indexB;
-    });
-  }
-  
   return images;
 }
 
@@ -110,12 +93,10 @@ export async function GET() {
         a_news_slideheaders.sheader,
         a_news_slideheaders.steaser,
         a_statcomm.qty,
-        GROUP_CONCAT(a_pics.filename ORDER BY FIND_IN_SET(a_pics.id, a_news.images)) as image_filenames
       FROM a_news USE KEY (nweight)
       LEFT JOIN a_news_headers USE KEY (PRIMARY) ON a_news.id = a_news_headers.id
       LEFT JOIN a_news_slideheaders USE KEY (PRIMARY) ON a_news.id = a_news_slideheaders.id
       LEFT JOIN a_statcomm USE KEY (PRIMARY) ON a_news.id = a_statcomm.id
-      LEFT JOIN a_pics ON FIND_IN_SET(a_pics.id, a_news.images)
       WHERE a_news.lang = "1"
         AND a_news.nweight = 2
         AND a_news.approved = 1
@@ -130,8 +111,7 @@ export async function GET() {
       const processedImportantNews = await Promise.all(
         importantNews.map(async (item: any) => ({
           ...item,
-          images: item.images || '', // Keep original images field as string with IDs
-          images_data: await processHeroNewsImages(item) // Add processed images as separate field
+          images: await processHeroNewsImages(item)
         }))
       );
       
@@ -155,7 +135,7 @@ export async function GET() {
         a_news_slideheaders.sheader,
         a_news_slideheaders.steaser,
         a_statcomm.qty,
-        GROUP_CONCAT(a_pics.filename ORDER BY FIND_IN_SET(a_pics.id, a_news.images)) as image_filenames
+        GROUP_CONCAT(a_pics.filename) as image_filenames
       FROM a_news USE KEY (PRIMARY)
       LEFT JOIN a_news_headers USE KEY (PRIMARY) ON a_news.id = a_news_headers.id
       LEFT JOIN a_news_slideheaders USE KEY (PRIMARY) ON a_news.id = a_news_slideheaders.id
@@ -167,7 +147,7 @@ export async function GET() {
         AND a_news.approved = 1 
         AND a_news.udate < ?
       GROUP BY a_news.id
-      ORDER BY a_news.ndate DESC 
+      ORDER BY a_news_specialids.id 
       LIMIT 4
     `, [currentTimestamp]);
     
@@ -175,8 +155,7 @@ export async function GET() {
     const processedSpecialNews = await Promise.all(
       specialNews.map(async (item: any) => ({
         ...item,
-        images: item.images || '', // Keep original images field as string with IDs
-        images_data: await processHeroNewsImages(item) // Add processed images as separate field
+        images: await processHeroNewsImages(item)
       }))
     );
 
