@@ -117,7 +117,7 @@ export function processVideoBlocks(html: string): string {
       <div class="video-container" style="margin: 20px 0; text-align: center;">
         <video 
           controls 
-          style="max-width: 100%; height: auto; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);"
+          style="max-width: 100%; width: 100%; height: auto; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);"
           preload="metadata"
         >
           <source src="${url}" type="video/mp4">
