@@ -337,16 +337,16 @@
 }
 
 .bytcdCircle {
-  width: 40px;
-  height: 40px;
-  background: linear-gradient(135deg, #c7084f 0%, #a70641 100%);
-  border-radius: 50%;
+  width: 55px;
+  height: 35px;
+  background: linear-gradient(135deg,#c7084f,#a70641);
+  border-radius: 5px;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  box-shadow: 0 2px 8px rgba(199, 8, 79, 0.3);
-  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(199,8,79,.3);
+  transition: all .3s ease;
   position: relative;
   text-decoration: none;
   color: inherit;
