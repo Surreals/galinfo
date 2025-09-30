@@ -19,6 +19,7 @@ import {
   articlePageDesktopSchema, 
   articlePageMobileSchema 
 } from '@/app/lib/articlePageSchema';
+import { templateDocumentation } from './documentation';
 
 interface SchemaTemplate {
   id: string;
@@ -26,6 +27,7 @@ interface SchemaTemplate {
   description: string;
   schema: any;
   defaultSchema: any;
+  documentation: string;
 }
 
 export default function TemplatesPage() {
@@ -34,6 +36,7 @@ export default function TemplatesPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [jsonErrors, setJsonErrors] = useState<Record<string, string>>({});
   const [jsonValues, setJsonValues] = useState<Record<string, string>>({});
+  const [expandedDocs, setExpandedDocs] = useState<Set<string>>(new Set());
 
   // Ініціалізація шаблонів
   useEffect(() => {
@@ -43,63 +46,72 @@ export default function TemplatesPage() {
         name: 'Головна сторінка (Десктоп)',
         description: 'Схема для десктопної версії головної сторінки',
         schema: desktopSchema,
-        defaultSchema: desktopSchema
+        defaultSchema: desktopSchema,
+        documentation: templateDocumentation['main-desktop']
       },
       {
         id: 'main-mobile',
         name: 'Головна сторінка (Мобільна)',
         description: 'Схема для мобільної версії головної сторінки',
         schema: mobileSchema,
-        defaultSchema: mobileSchema
+        defaultSchema: mobileSchema,
+        documentation: templateDocumentation['main-mobile']
       },
       {
         id: 'category-desktop',
         name: 'Сторінка категорії (Десктоп)',
         description: 'Схема для десктопної версії сторінки категорії',
         schema: categoryDesktopSchema,
-        defaultSchema: categoryDesktopSchema
+        defaultSchema: categoryDesktopSchema,
+        documentation: templateDocumentation['category-desktop']
       },
       {
         id: 'category-mobile',
         name: 'Сторінка категорії (Мобільна)',
         description: 'Схема для мобільної версії сторінки категорії',
         schema: categoryMobileSchema,
-        defaultSchema: categoryMobileSchema
+        defaultSchema: categoryMobileSchema,
+        documentation: templateDocumentation['category-mobile']
       },
       {
         id: 'hero',
         name: 'Hero секція',
         description: 'Схема для Hero секції з каруселлю',
         schema: heroSchema,
-        defaultSchema: heroSchema
+        defaultSchema: heroSchema,
+        documentation: templateDocumentation['hero']
       },
       {
         id: 'hero-info-desktop',
         name: 'Hero Info (Десктоп)',
         description: 'Схема для Hero Info секції (десктоп)',
         schema: heroInfoSchema,
-        defaultSchema: heroInfoSchema
+        defaultSchema: heroInfoSchema,
+        documentation: templateDocumentation['hero-info-desktop']
       },
       {
         id: 'hero-info-mobile',
         name: 'Hero Info (Мобільна)',
         description: 'Схема для Hero Info секції (мобільна)',
         schema: heroInfoMobileSchema,
-        defaultSchema: heroInfoMobileSchema
+        defaultSchema: heroInfoMobileSchema,
+        documentation: templateDocumentation['hero-info-mobile']
       },
       {
         id: 'article-desktop',
         name: 'Сторінка статті (Десктоп)',
         description: 'Схема для десктопної версії сторінки статті',
         schema: articlePageDesktopSchema,
-        defaultSchema: articlePageDesktopSchema
+        defaultSchema: articlePageDesktopSchema,
+        documentation: templateDocumentation['article-desktop']
       },
       {
         id: 'article-mobile',
         name: 'Сторінка статті (Мобільна)',
         description: 'Схема для мобільної версії сторінки статті',
         schema: articlePageMobileSchema,
-        defaultSchema: articlePageMobileSchema
+        defaultSchema: articlePageMobileSchema,
+        documentation: templateDocumentation['article-mobile']
       }
     ];
 
@@ -255,6 +267,18 @@ export default function TemplatesPage() {
     }
   };
 
+  const toggleDocumentation = (templateId: string) => {
+    setExpandedDocs(prev => {
+      const newExpanded = new Set(prev);
+      if (newExpanded.has(templateId)) {
+        newExpanded.delete(templateId);
+      } else {
+        newExpanded.add(templateId);
+      }
+      return newExpanded;
+    });
+  };
+
   return (
     <div className={styles.adminPage}>
       <div className={styles.mainContent}>
@@ -267,8 +291,25 @@ export default function TemplatesPage() {
           {templates.map((template) => (
             <div key={template.id} className={styles.templateCard}>
               <div className={styles.templateHeader}>
-                <h3>{template.name}</h3>
+                <div className={styles.templateTitle}>
+                  <h3>{template.name}</h3>
+                  <button
+                    className={styles.docsButton}
+                    onClick={() => toggleDocumentation(template.id)}
+                    title="Показати документацію"
+                  >
+                    📖
+                  </button>
+                </div>
                 <p>{template.description}</p>
+                
+                {expandedDocs.has(template.id) && (
+                  <div className={styles.documentation}>
+                    <div className={styles.documentationContent}>
+                      <pre>{template.documentation}</pre>
+                    </div>
+                  </div>
+                )}
               </div>
 
               <div className={styles.templateContent}>

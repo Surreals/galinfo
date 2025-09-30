@@ -20,7 +20,6 @@ export default function AdminNavigation({ onClose }: AdminNavigationProps) {
     { id: 'gallery', label: 'Галерея', href: '/admin/gallery' },
     { id: 'site', label: 'Сайт', href: '/admin/site' },
     { id: 'templates', label: 'JSON Шаблони', href: '/admin/templates' },
-    { id: 'languages', label: 'Мови', href: '/admin/languages' },
     { id: 'properties', label: 'Властивості', href: '/admin/properties' },
     { id: 'users', label: 'Користувачі', href: '/admin/users' },
     { id: 'advertising', label: 'Реклама', href: '/admin/advertising' },

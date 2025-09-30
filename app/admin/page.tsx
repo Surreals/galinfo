@@ -64,15 +64,6 @@ export default function AdminPage() {
       color: '#6f42c1'
     },
     {
-      id: 'languages',
-      title: 'Мови',
-      description: 'Управління мовними налаштуваннями',
-      href: '/admin/languages',
-      icon: '🌍',
-      disabled: true,
-      color: '#fd7e14'
-    },
-    {
       id: 'properties',
       title: 'Властивості',
       description: 'Управління системними властивостями',
