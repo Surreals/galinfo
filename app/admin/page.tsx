@@ -107,6 +107,15 @@ export default function AdminPage() {
       icon: '🤖',
       disabled: false,
       color: '#0088cc'
+    },
+    {
+      id: 'templates',
+      title: 'Шаблони',
+      description: 'Управління шаблонами статей та контенту',
+      href: '/admin/templates',
+      icon: '📄',
+      disabled: false,
+      color: '#17a2b8'
     }
   ];
 

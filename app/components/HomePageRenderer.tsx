@@ -3,7 +3,6 @@
 import { CategoryNews, ColumnNews, Hero, AllNews, HeroRenderer, AdBanner } from '@/app/components';
 import { desktopSchema, mobileSchema } from '@/app/lib/schema';
 import { heroSchema, heroInfoSchema, heroInfoMobileSchema } from '@/app/lib/heroSchema';
-import { CATEGORY_IDS } from '@/app/lib/categoryUtils';
 import { useMenuContext } from '@/app/contexts/MenuContext';
 import { useIsMobile } from '@/app/hooks/useIsMobile';
 

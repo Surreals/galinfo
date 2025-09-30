@@ -14,10 +14,7 @@ interface CategoryPageClientProps {
 }
 
 export const CategoryPageClient: React.FC<CategoryPageClientProps> = ({ 
-  category,
-  newsData1,
-  newsData2,
-  newsData3
+  category
 }) => {
   const [tagData, setTagData] = useState<{ id: number; tag: string } | null>(null);
   const [loading, setLoading] = useState(false);
