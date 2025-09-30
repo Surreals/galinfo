@@ -222,6 +222,7 @@ const VideosPage: React.FC = () => {
       title: 'Назва',
       dataIndex: 'title_ua',
       key: 'title',
+      width: 300,
       ellipsis: true,
     },
     {
@@ -263,7 +264,7 @@ const VideosPage: React.FC = () => {
       title: 'Дії',
       key: 'actions',
       width: 150,
-      render: (_, record: Video) => (
+      render: (_: unknown, record: Video) => (
         <Space>
           <Button
             type="link"
