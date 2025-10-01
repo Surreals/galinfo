@@ -107,7 +107,7 @@ export async function GET(
 
     // Build WHERE conditions
     let whereConditions = [
-      'a_news.udate < UNIX_TIMESTAMP()',
+      'CONCAT(a_news.ndate, " ", a_news.ntime) < NOW()',
       'a_news.approved = 1',
       'a_news.lang = ?'
     ];

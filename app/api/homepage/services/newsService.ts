@@ -4,12 +4,12 @@ export async function getNewsData() {
   try {
     // Fetch news count
     const newsCount = await executeQuery(
-      'SELECT COUNT(*) as count FROM a_news WHERE a_news.udate < UNIX_TIMESTAMP() AND approved = 1 AND udate > "1755163680"'
+      'SELECT COUNT(*) as count FROM a_news WHERE CONCAT(a_news.ndate, " ", a_news.ntime) < NOW() AND approved = 1 AND udate > "1755163680"'
     );
     
     // Fetch latest news date
     const latestNewsDate = await executeQuery(
-      'SELECT udate FROM a_news USE KEY(udate) WHERE lang = "1" AND a_news.udate < UNIX_TIMESTAMP() AND approved = 1 ORDER BY udate DESC LIMIT 1'
+      'SELECT udate FROM a_news USE KEY(udate) WHERE lang = "1" AND CONCAT(a_news.ndate, " ", a_news.ntime) < NOW() AND approved = 1 ORDER BY udate DESC LIMIT 1'
     );
     
     // Fetch special news (section 1)
@@ -21,7 +21,7 @@ export async function getNewsData() {
       LEFT JOIN a_news_slideheaders USE KEY (PRIMARY) ON a_news.id = a_news_slideheaders.id
       LEFT JOIN a_news_specialids ON a_news.id = a_news_specialids.newsid
       WHERE a_news_specialids.section = 1 AND a_news_specialids.newsid <> 0 
-            AND approved=1 AND a_news.udate < UNIX_TIMESTAMP()
+            AND approved=1 AND CONCAT(a_news.ndate, " ", a_news.ntime) < NOW()
       ORDER BY a_news_specialids.id LIMIT 4
     `);
     
@@ -34,7 +34,7 @@ export async function getNewsData() {
       FROM a_news USE KEY(udate)
       LEFT JOIN a_news_headers USE KEY (PRIMARY) USING (id)
       LEFT JOIN a_statcomm USE KEY (PRIMARY) USING (id)
-      WHERE lang = "1" AND a_news.udate < UNIX_TIMESTAMP() 
+      WHERE lang = "1" AND CONCAT(a_news.ndate, " ", a_news.ntime) < NOW() 
             AND approved = 1 AND rated = 1
       ORDER BY udate DESC LIMIT 48
     `);
@@ -49,7 +49,7 @@ export async function getNewsData() {
       LEFT JOIN a_news USE KEY (datetype) ON a_news_headers.id = a_news.id
       LEFT JOIN a_statcomm USE KEY (PRIMARY) ON a_news.id = a_statcomm.id
       LEFT JOIN a_news_slideheaders ON a_news.id = a_news_slideheaders.id
-      WHERE a_news.udate < UNIX_TIMESTAMP() AND approved = 1 
+      WHERE CONCAT(a_news.ndate, " ", a_news.ntime) < NOW() AND approved = 1 
             AND a_news.ntype=2 AND nweight > 0
       ORDER BY udate DESC LIMIT 8
     `);
@@ -62,7 +62,7 @@ export async function getNewsData() {
       FROM a_news_headers USE KEY (PRIMARY)
       LEFT JOIN a_news ON a_news_headers.id = a_news.id
       LEFT JOIN a_statcomm USE KEY (PRIMARY) ON a_news.id = a_statcomm.id
-      WHERE a_news.udate < UNIX_TIMESTAMP() AND approved = 1 
+      WHERE CONCAT(a_news.ndate, " ", a_news.ntime) < NOW() AND approved = 1 
             AND a_news.headlineblock = 1
       ORDER BY udate DESC LIMIT 7
     `);
@@ -75,7 +75,7 @@ export async function getNewsData() {
         SELECT a_news.id, ndate, ntime, nweight, ntype, urlkey, photo, video
         FROM a_news RIGHT JOIN a_statview USING (id)
         WHERE lang = "1" AND ndate >= DATE(DATE_SUB(NOW(), INTERVAL 2 DAY))
-              AND a_news.udate < UNIX_TIMESTAMP() AND approved=1
+              AND CONCAT(a_news.ndate, " ", a_news.ntime) < NOW() AND approved=1
         ORDER BY a_statview.qty DESC, udate DESC LIMIT 10
       ) AS subnews
       LEFT JOIN a_news_headers USING (id)
@@ -88,7 +88,7 @@ export async function getNewsData() {
       FROM (
         SELECT a_news.id, ndate, ntime, nweight, ntype, urlkey, photo, video
         FROM a_news WHERE lang = "1" AND suggest=1 AND approved=1 
-              AND a_news.udate < UNIX_TIMESTAMP()
+              AND CONCAT(a_news.ndate, " ", a_news.ntime) < NOW()
         ORDER BY udate DESC LIMIT 10
       ) AS subnews
       LEFT JOIN a_news_headers USING (id)
@@ -104,7 +104,7 @@ export async function getNewsData() {
                a_news.printsubheader, a_news.photo, a_news.video
         FROM a_news USE KEY (ntype)
         WHERE lang = "1" AND ntype=20 AND a_news.approved=1 AND userid <> 0
-              AND a_news.udate < UNIX_TIMESTAMP()
+              AND CONCAT(a_news.ndate, " ", a_news.ntime) < NOW()
         ORDER BY udate DESC LIMIT 0
       ) AS N1
       LEFT JOIN a_news_headers USING (id)

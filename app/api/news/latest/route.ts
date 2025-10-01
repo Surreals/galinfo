@@ -36,7 +36,7 @@ export async function GET(request: Request) {
       LEFT JOIN a_statcomm USE KEY (PRIMARY) ON a_news.id = a_statcomm.id
       LEFT JOIN a_statview USE KEY (PRIMARY) ON a_news.id = a_statview.id
       WHERE a_news.lang = ?
-        AND a_news.udate < UNIX_TIMESTAMP() 
+        AND CONCAT(a_news.ndate, " ", a_news.ntime) < NOW() 
         AND a_news.approved = 1
       ORDER BY a_news.udate DESC
       LIMIT ? OFFSET ?
@@ -47,7 +47,7 @@ export async function GET(request: Request) {
       SELECT COUNT(*) as total
       FROM a_news USE KEY(udate)
       WHERE a_news.lang = ?
-        AND a_news.udate < UNIX_TIMESTAMP() 
+        AND CONCAT(a_news.ndate, " ", a_news.ntime) < NOW() 
         AND a_news.approved = 1
     `, [lang]);
 

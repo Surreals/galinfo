@@ -59,11 +59,11 @@ export async function GET(request: NextRequest) {
 
     // Base WHERE conditions for important news with photos
     let whereConditions = [
-      'a_news.udate < UNIX_TIMESTAMP()', // Only published
+      'CONCAT(a_news.ndate, " ", a_news.ntime) < NOW()', // Only published
       'a_news.approved = 1',             // Only approved
       'a_news.lang = ?',                 // Language
       'a_news.nweight > 0',              // Important news only
-      'a_news.udate > UNIX_TIMESTAMP(DATE_SUB(NOW(), INTERVAL 1 YEAR))' // Only news from last year
+      'a_news.udate > UNIX_TIMESTAMP(DATE_SUB(NOW(), INTERVAL 1 YEAR))' // Only news from last year (keeping udate for this filter)
     ];
     
     let queryParams: any[] = [lang];

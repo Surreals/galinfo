@@ -137,7 +137,7 @@ export async function GET(
        WHERE FIND_IN_SET(?, a_news.rubric) > 0
          AND a_news.approved = 1
          AND a_news.lang = ?
-         AND a_news.udate < UNIX_TIMESTAMP()
+         AND CONCAT(a_news.ndate, " ", a_news.ntime) < NOW()
        ORDER BY a_news.udate DESC
        LIMIT ? OFFSET ?`,
       [specialTheme.id, lang, limit, offset]
@@ -150,7 +150,7 @@ export async function GET(
        WHERE FIND_IN_SET(?, a_news.rubric) > 0
          AND a_news.approved = 1
          AND a_news.lang = ?
-         AND a_news.udate < UNIX_TIMESTAMP()`,
+         AND CONCAT(a_news.ndate, " ", a_news.ntime) < NOW()`,
       [specialTheme.id, lang]
     );
 

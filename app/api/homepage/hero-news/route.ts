@@ -6,7 +6,6 @@ import { formatNewsImages } from '@/app/lib/imageUtils';
 export async function GET() {
   try {
     // Priority 1: Fetch last 4 important news (nweight=2) - NEW PRIORITY
-    const currentTimestamp = Math.floor(Date.now() / 1000);
     const [importantNews] = await executeQuery(`
       SELECT 
         a_news.id,
@@ -30,10 +29,10 @@ export async function GET() {
       WHERE a_news.lang = "1"
         AND a_news.nweight = 2
         AND a_news.approved = 1
-        AND a_news.udate < ?
+        AND CONCAT(a_news.ndate, " ", a_news.ntime) < NOW()
       ORDER BY a_news.ndate DESC, a_news.ntime DESC
       LIMIT 4
-    `, [currentTimestamp]);
+    `);
 
     // If we have important news, use them
     if (importantNews && importantNews.length > 0) {
@@ -86,11 +85,11 @@ export async function GET() {
       WHERE a_news_specialids.section = 1 
         AND a_news_specialids.newsid <> 0 
         AND a_news.approved = 1 
-        AND a_news.udate < ?
+        AND CONCAT(a_news.ndate, " ", a_news.ntime) < NOW()
       GROUP BY a_news.id
       ORDER BY a_news.ndate DESC, a_news.ntime DESC 
       LIMIT 4
-    `, [currentTimestamp]);
+    `);
     
     // Обробляємо special новини як fallback
     // Fetch image data for all special news items

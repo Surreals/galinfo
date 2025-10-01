@@ -25,7 +25,7 @@ export async function GET(request: NextRequest) {
     
     // Базові умови WHERE
     let whereConditions = [
-      'a_news.udate < UNIX_TIMESTAMP()', // Тільки опубліковані
+      'CONCAT(a_news.ndate, " ", a_news.ntime) < NOW()', // Тільки опубліковані
       'a_news.approved = 1',             // Тільки схвалені
       'a_news.lang = ?',                 // Мова
       '(a_news_headers.nheader LIKE ? OR a_news_headers.nsubheader LIKE ? OR a_news_headers.nteaser LIKE ?)' // Пошук в заголовках

@@ -93,7 +93,7 @@ export default async function TopThemesCategoryPage({ params, searchParams }: To
          WHERE FIND_IN_SET(?, a_news.rubric) > 0
            AND a_news.approved = 1
            AND a_news.lang = "1"
-           AND a_news.udate < UNIX_TIMESTAMP()
+           AND CONCAT(a_news.ndate, " ", a_news.ntime) < NOW()
          ORDER BY a_news.udate DESC
          LIMIT 24`,
         [currentTheme.id]

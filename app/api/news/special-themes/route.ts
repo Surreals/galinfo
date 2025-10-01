@@ -129,7 +129,7 @@ export async function GET(request: NextRequest) {
        WHERE a_cats.id IN (${specialThemeIds.map(() => '?').join(',')})
          AND a_news.approved = 1
          AND a_news.lang = ?
-         AND a_news.udate < UNIX_TIMESTAMP()
+         AND CONCAT(a_news.ndate, " ", a_news.ntime) < NOW()
        ORDER BY a_news.udate DESC
        LIMIT ? OFFSET ?`,
       [...specialThemeIds, lang, limit, offset]
@@ -143,7 +143,7 @@ export async function GET(request: NextRequest) {
        WHERE a_cats.id IN (${specialThemeIds.map(() => '?').join(',')})
          AND a_news.approved = 1
          AND a_news.lang = ?
-         AND a_news.udate < UNIX_TIMESTAMP()`,
+         AND CONCAT(a_news.ndate, " ", a_news.ntime) < NOW()`,
       [...specialThemeIds, lang]
     );
 
@@ -158,7 +158,7 @@ export async function GET(request: NextRequest) {
        WHERE a_cats.id IN (${specialThemeIds.map(() => '?').join(',')})
          AND a_news.approved = 1
          AND a_news.lang = ?
-         AND a_news.udate < UNIX_TIMESTAMP()
+         AND CONCAT(a_news.ndate, " ", a_news.ntime) < NOW()
        GROUP BY a_cats.id`,
       [...specialThemeIds, lang]
     );

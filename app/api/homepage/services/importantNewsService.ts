@@ -26,7 +26,7 @@ export async function getImportantNewsData(limit: number = 5, lang: string = '1'
       LEFT JOIN a_news_headers ON a_news.id = a_news_headers.id
       LEFT JOIN a_statcomm ON a_news.id = a_statcomm.id
       LEFT JOIN a_statview ON a_news.id = a_statview.id
-      WHERE a_news.udate < UNIX_TIMESTAMP() 
+      WHERE CONCAT(a_news.ndate, " ", a_news.ntime) < NOW() 
         AND a_news.approved = 1 
         AND a_news.lang = ?
         AND a_news.nweight > 0
@@ -78,7 +78,7 @@ export async function getImportantNewsByLevel(level: number, limit: number = 5, 
       LEFT JOIN a_news_headers ON a_news.id = a_news_headers.id
       LEFT JOIN a_statcomm ON a_news.id = a_statcomm.id
       LEFT JOIN a_statview ON a_news.id = a_statview.id
-      WHERE a_news.udate < UNIX_TIMESTAMP() 
+      WHERE CONCAT(a_news.ndate, " ", a_news.ntime) < NOW() 
         AND a_news.approved = 1 
         AND a_news.lang = ?
         AND a_news.nweight = ?
@@ -126,7 +126,7 @@ export async function getTopImportantNews(limit: number = 5, lang: string = '1')
       LEFT JOIN a_news_headers ON a_news.id = a_news_headers.id
       LEFT JOIN a_statcomm ON a_news.id = a_statcomm.id
       LEFT JOIN a_statview ON a_news.id = a_statview.id
-      WHERE a_news.udate < UNIX_TIMESTAMP() 
+      WHERE CONCAT(a_news.ndate, " ", a_news.ntime) < NOW() 
         AND a_news.approved = 1 
         AND a_news.lang = ?
         AND a_news.nweight = 2

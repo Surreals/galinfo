@@ -88,7 +88,7 @@ export async function GET(
         AND a_news.ntype = ? 
         AND a_news.lang = ?
         AND a_news.approved = 1
-        AND a_news.udate < UNIX_TIMESTAMP()
+        AND CONCAT(a_news.ndate, " ", a_news.ntime) < NOW()
     `;
     
     const [newsData] = await executeQuery(newsQuery, [id, urlkey, newsType, lang]);
@@ -162,7 +162,7 @@ export async function GET(
           AND FIND_IN_SET(?, a_news.rubric) > 0
           AND a_news.lang = ?
           AND a_news.approved = 1
-          AND a_news.udate < UNIX_TIMESTAMP()
+          AND CONCAT(a_news.ndate, " ", a_news.ntime) < NOW()
         ORDER BY a_news.udate DESC
         LIMIT 5
       `;

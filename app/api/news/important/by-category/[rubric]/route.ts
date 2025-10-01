@@ -15,7 +15,7 @@ export async function GET(
     
     // Базові умови для важливих новин
     let whereConditions = [
-      'a_news.udate < UNIX_TIMESTAMP()', // Тільки опубліковані
+      'CONCAT(a_news.ndate, " ", a_news.ntime) < NOW()', // Тільки опубліковані
       'a_news.approved = 1',             // Тільки схвалені
       'a_news.lang = ?',                 // Мова
       'a_news.nweight > 0',              // Важливі новини

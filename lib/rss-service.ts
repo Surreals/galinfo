@@ -42,7 +42,7 @@ export async function getLatestNewsForRSS(limit: number = 20, lang: string = '1'
       LEFT JOIN a_news_body USE KEY (PRIMARY) ON a_news.id = a_news_body.id
       LEFT JOIN a_cats ON FIND_IN_SET(a_cats.id, a_news.rubric) AND a_cats.cattype = 1
       WHERE a_news.lang = ?
-        AND a_news.udate < UNIX_TIMESTAMP() 
+        AND CONCAT(a_news.ndate, " ", a_news.ntime) < NOW() 
         AND a_news.approved = 1
         AND a_news.hiderss = 0
       ORDER BY a_news.udate DESC
@@ -188,7 +188,7 @@ export async function getNewsByCategoryForRSS(
       LEFT JOIN a_news_body USE KEY (PRIMARY) ON a_news.id = a_news_body.id
       LEFT JOIN a_cats ON FIND_IN_SET(a_cats.id, a_news.rubric) AND a_cats.cattype = 1
       WHERE a_news.lang = ?
-        AND a_news.udate < UNIX_TIMESTAMP() 
+        AND CONCAT(a_news.ndate, " ", a_news.ntime) < NOW() 
         AND a_news.approved = 1
         AND a_news.hiderss = 0
         ${categoryCondition}
@@ -296,7 +296,7 @@ export async function getNewsForGoogleNews(limit: number = 100, lang: string = '
       LEFT JOIN a_news_headers USE KEY (PRIMARY) ON a_news.id = a_news_headers.id
       LEFT JOIN a_cats ON FIND_IN_SET(a_cats.id, a_news.rubric) AND a_cats.cattype = 1
       WHERE a_news.lang = ?
-        AND a_news.udate < UNIX_TIMESTAMP() 
+        AND CONCAT(a_news.ndate, " ", a_news.ntime) < NOW() 
         AND a_news.udate > ?
         AND a_news.approved = 1
         AND a_news.hiderss = 0
@@ -393,7 +393,7 @@ export async function getNewsForSitemap(lang: string = '1', limit: number = 1000
       LEFT JOIN a_news_headers USE KEY (PRIMARY) ON a_news.id = a_news_headers.id
       LEFT JOIN a_cats ON FIND_IN_SET(a_cats.id, a_news.rubric) AND a_cats.cattype = 1
       WHERE a_news.lang = ?
-        AND a_news.udate < UNIX_TIMESTAMP() 
+        AND CONCAT(a_news.ndate, " ", a_news.ntime) < NOW() 
         AND a_news.udate > ?
         AND a_news.approved = 1
       ORDER BY a_news.udate DESC

@@ -31,7 +31,7 @@ export async function GET(
     
     // Базовий WHERE для фільтрації
     let whereConditions = [
-      'a_news.udate < UNIX_TIMESTAMP()', // Тільки опубліковані
+      'CONCAT(a_news.ndate, " ", a_news.ntime) < NOW()', // Тільки опубліковані
       'a_news.approved = 1',             // Тільки схвалені
       'a_news.lang = ?',                 // Мова
       'a_news.region = ?'                // Регіон
