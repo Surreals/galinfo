@@ -43,6 +43,7 @@ async function createVideosTable() {
         title_deflang VARCHAR(500),
         description_ua TEXT,
         description_deflang TEXT,
+        thumburl VARCHAR(500),
         duration INT DEFAULT 0,
         file_size BIGINT DEFAULT 0,
         mime_type VARCHAR(100),

@@ -124,33 +124,6 @@ class VideoTool {
       videoContainer.appendChild(caption);
     }
 
-    // Add controls for non-readonly mode
-    if (!this.readOnly) {
-      const controls = document.createElement('div');
-      controls.className = 'video-controls';
-      controls.style.cssText = 'margin-top: 8px; display: flex; gap: 8px; justify-content: center;';
-
-      const editButton = document.createElement('button');
-      editButton.textContent = 'Редагувати підпис';
-      editButton.style.cssText = 'padding: 4px 8px; border: 1px solid #d9d9d9; background: white; border-radius: 4px; cursor: pointer;';
-      editButton.onclick = () => this.editCaption();
-
-      const changeButton = document.createElement('button');
-      changeButton.textContent = 'Змінити відео';
-      changeButton.style.cssText = 'padding: 4px 8px; border: 1px solid #d9d9d9; background: white; border-radius: 4px; cursor: pointer;';
-      changeButton.onclick = () => this.showUploadModal();
-
-      const deleteButton = document.createElement('button');
-      deleteButton.textContent = 'Видалити';
-      deleteButton.style.cssText = 'padding: 4px 8px; border: 1px solid #ff4d4f; background: white; color: #ff4d4f; border-radius: 4px; cursor: pointer;';
-      deleteButton.onclick = () => this.deleteVideo();
-
-      controls.appendChild(editButton);
-      controls.appendChild(changeButton);
-      controls.appendChild(deleteButton);
-      videoContainer.appendChild(controls);
-    }
-
     this.wrapper.innerHTML = '';
     this.wrapper.appendChild(videoContainer);
   }

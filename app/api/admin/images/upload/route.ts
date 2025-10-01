@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { writeFile, mkdir } from 'fs/promises';
 import { join } from 'path';
 import { executeQuery } from '@/app/lib/db';
+import { config } from '@/app/lib/config';
 
 export async function POST(request: NextRequest) {
   try {
@@ -44,10 +45,25 @@ export async function POST(request: NextRequest) {
     const secondChar = filename.charAt(1);
     
     // Шляхи для різних розмірів зображень
-    const basePath = join(process.cwd(), 'public', 'media', 'gallery');
-    const fullPath = join(basePath, 'full', firstChar, secondChar);
-    const tmbPath = join(basePath, 'tmb', firstChar, secondChar);
-    const intxtPath = join(basePath, 'intxt', firstChar, secondChar);
+    // Use external storage path if configured, otherwise fallback to public directory
+    const mediaPath = process.env.MEDIA_STORAGE_PATH;
+    const basePath = mediaPath 
+      ? mediaPath 
+      : join(process.cwd(), 'public', 'media');
+    
+    // Debug logging to verify configuration
+    console.log('🔍 Image Upload Configuration:');
+    console.log('  MEDIA_STORAGE_PATH env:', process.env.MEDIA_STORAGE_PATH);
+    console.log('  Using base path:', basePath);
+    console.log('  Is external storage:', !!mediaPath);
+    
+    const fullPath = join(basePath, 'gallery', 'full', firstChar, secondChar);
+    const tmbPath = join(basePath, 'gallery', 'tmb', firstChar, secondChar);
+    const intxtPath = join(basePath, 'gallery', 'intxt', firstChar, secondChar);
+    
+    console.log('  Full path:', fullPath);
+    console.log('  Thumbnail path:', tmbPath);
+    console.log('  In-text path:', intxtPath);
 
     // Створюємо директорії якщо вони не існують
     await mkdir(fullPath, { recursive: true });

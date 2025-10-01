@@ -35,8 +35,13 @@ const VideosPage: React.FC = () => {
   const [searchText, setSearchText] = useState('');
   const [videoTypeFilter, setVideoTypeFilter] = useState('');
   const [isModalVisible, setIsModalVisible] = useState(false);
+  const [isUploadModalVisible, setIsUploadModalVisible] = useState(false);
   const [editingVideo, setEditingVideo] = useState<Video | null>(null);
   const [form] = Form.useForm();
+  const [uploadForm] = Form.useForm();
+  const [videoFile, setVideoFile] = useState<File | null>(null);
+  const [thumbnailFile, setThumbnailFile] = useState<File | null>(null);
+  const [uploading, setUploading] = useState(false);
 
   // Завантаження списку відео
   const fetchVideos = async (page = 1, limit = 20, search = '', videoType = '') => {
@@ -75,14 +80,26 @@ const VideosPage: React.FC = () => {
   }, []);
 
   // Обробка завантаження файлу
-  const handleUpload = async (file: File) => {
-    const formData = new FormData();
-    formData.append('file', file);
-    formData.append('title', file.name);
-    formData.append('video_type', 'news');
-    formData.append('description', '');
-
+  const handleUpload = async () => {
     try {
+      const values = await uploadForm.validateFields();
+      
+      if (!videoFile) {
+        message.error('Будь ласка, виберіть відео файл');
+        return;
+      }
+
+      setUploading(true);
+
+      const formData = new FormData();
+      formData.append('file', videoFile);
+      if (thumbnailFile) {
+        formData.append('thumbnail', thumbnailFile);
+      }
+      formData.append('title', values.title || videoFile.name);
+      formData.append('video_type', values.video_type || 'news');
+      formData.append('description', values.description || '');
+
       const response = await fetch('/api/admin/videos/upload', {
         method: 'POST',
         body: formData,
@@ -92,6 +109,10 @@ const VideosPage: React.FC = () => {
 
       if (response.ok) {
         message.success('Відео успішно завантажено');
+        setIsUploadModalVisible(false);
+        uploadForm.resetFields();
+        setVideoFile(null);
+        setThumbnailFile(null);
         fetchVideos(pagination.current, pagination.pageSize, searchText, videoTypeFilter);
       } else {
         message.error(data.error || 'Помилка завантаження відео');
@@ -99,9 +120,9 @@ const VideosPage: React.FC = () => {
     } catch (error) {
       console.error('Error uploading video:', error);
       message.error('Помилка завантаження відео');
+    } finally {
+      setUploading(false);
     }
-
-    return false; // Prevent default upload behavior
   };
 
   // Обробка редагування відео
@@ -322,15 +343,13 @@ const VideosPage: React.FC = () => {
             <Option value="gallery">Галерея</Option>
             <Option value="advertisement">Реклама</Option>
           </Select>
-          <Upload
-            beforeUpload={handleUpload}
-            showUploadList={false}
-            accept="video/*"
+          <Button 
+            type="primary" 
+            icon={<UploadOutlined />}
+            onClick={() => setIsUploadModalVisible(true)}
           >
-            <Button type="primary" icon={<UploadOutlined />}>
-              Завантажити відео
-            </Button>
-          </Upload>
+            Завантажити відео
+          </Button>
         </div>
       </div>
 
@@ -352,6 +371,119 @@ const VideosPage: React.FC = () => {
         scroll={{ x: 800 }}
       />
 
+      {/* Upload Modal */}
+      <Modal
+        title="Завантажити відео"
+        open={isUploadModalVisible}
+        onOk={handleUpload}
+        onCancel={() => {
+          setIsUploadModalVisible(false);
+          uploadForm.resetFields();
+          setVideoFile(null);
+          setThumbnailFile(null);
+        }}
+        confirmLoading={uploading}
+        width={600}
+        okText="Завантажити"
+        cancelText="Скасувати"
+      >
+        <Form form={uploadForm} layout="vertical">
+          <Form.Item
+            label="Відео файл"
+            required
+          >
+            <Upload
+              beforeUpload={(file) => {
+                if (!file.type.startsWith('video/')) {
+                  message.error('Будь ласка, виберіть відео файл');
+                  return false;
+                }
+                if (file.size > 100 * 1024 * 1024) {
+                  message.error('Розмір файлу не повинен перевищувати 100MB');
+                  return false;
+                }
+                setVideoFile(file);
+                return false;
+              }}
+              onRemove={() => setVideoFile(null)}
+              fileList={videoFile ? [{
+                uid: '-1',
+                name: videoFile.name,
+                status: 'done',
+                url: '',
+              }] : []}
+              maxCount={1}
+              accept="video/*"
+            >
+              <Button icon={<UploadOutlined />}>Вибрати відео</Button>
+            </Upload>
+          </Form.Item>
+
+          <Form.Item
+            label="Мініатюра (thumbnail)"
+          >
+            <Upload
+              beforeUpload={(file) => {
+                if (!file.type.startsWith('image/')) {
+                  message.error('Будь ласка, виберіть зображення');
+                  return false;
+                }
+                if (file.size > 5 * 1024 * 1024) {
+                  message.error('Розмір файлу не повинен перевищувати 5MB');
+                  return false;
+                }
+                setThumbnailFile(file);
+                return false;
+              }}
+              onRemove={() => setThumbnailFile(null)}
+              fileList={thumbnailFile ? [{
+                uid: '-2',
+                name: thumbnailFile.name,
+                status: 'done',
+                url: '',
+              }] : []}
+              maxCount={1}
+              accept="image/*"
+              listType="picture"
+            >
+              <Button icon={<UploadOutlined />}>Вибрати мініатюру (необов'язково)</Button>
+            </Upload>
+            <div style={{ marginTop: 8, color: '#666', fontSize: 12 }}>
+              Рекомендовано: JPG, PNG (максимум 5MB)
+            </div>
+          </Form.Item>
+
+          <Form.Item
+            name="title"
+            label="Назва"
+            rules={[{ required: true, message: 'Будь ласка, введіть назву' }]}
+          >
+            <Input placeholder="Назва відео" />
+          </Form.Item>
+
+          <Form.Item
+            name="description"
+            label="Опис"
+          >
+            <Input.TextArea rows={3} placeholder="Опис відео (необов'язково)" />
+          </Form.Item>
+
+          <Form.Item
+            name="video_type"
+            label="Тип відео"
+            initialValue="news"
+            rules={[{ required: true, message: 'Будь ласка, виберіть тип' }]}
+          >
+            <Select>
+              <Option value="news">Новини</Option>
+              <Option value="gallery">Галерея</Option>
+              <Option value="advertisement">Реклама</Option>
+            </Select>
+          </Form.Item>
+        </Form>
+      </Modal>
+
+      {/* Edit Modal */}
       <Modal
         title="Редагувати відео"
         open={isModalVisible}

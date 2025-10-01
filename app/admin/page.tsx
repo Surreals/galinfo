@@ -159,7 +159,7 @@ export default function AdminPage() {
           <a 
             href="https://bytcd.com" 
             target="_blank" 
-            rel="noopener noreferrer" 
+            // rel="noopener noreferrer" 
             className={styles.bytcdCircle}
           >
             <span className={styles.bytcdInitials}>BYTCD</span>
@@ -172,7 +172,7 @@ export default function AdminPage() {
               </div>
               <div className={styles.bytcdPopoverBody}>
                 {/* <p>Веб-розробка та технічна підтримка</p> */}
-                <a href="https://bytcd.com" target="_blank" rel="noopener noreferrer" className={styles.bytcdPopoverLink}>
+                <a href="https://bytcd.com" target="_blank"  className={styles.bytcdPopoverLink}>
                   bytcd.com
                 </a>
               </div>

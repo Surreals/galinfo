@@ -21,6 +21,7 @@ export async function GET(request: NextRequest) {
         title_deflang,
         description_ua,
         description_deflang,
+        thumburl,
         duration,
         file_size,
         mime_type,
@@ -100,7 +101,7 @@ export async function GET(request: NextRequest) {
       ...video,
       video_type: getVideoTypeString(video.video_type),
       url: getVideoUrl(video.filename),
-      thumbnail_url: getVideoThumbnailUrl(video.filename)
+      thumbnail_url: video.thumburl || getVideoThumbnailUrl(video.filename)
     }));
     
     return NextResponse.json({

@@ -3,11 +3,13 @@ import { writeFile, mkdir } from 'fs/promises';
 import { join } from 'path';
 import { executeQuery } from '@/app/lib/db';
 import { getVideoUrl, getVideoThumbnailUrl } from '@/app/lib/videoUtils';
+import { config } from '@/app/lib/config';
 
 export async function POST(request: NextRequest) {
   try {
     const formData = await request.formData();
     const file = formData.get('file') as File;
+    const thumbnail = formData.get('thumbnail') as File | null;
     const title = formData.get('title') as string;
     const videoType = formData.get('video_type') as string;
     const description = formData.get('description') as string;
@@ -45,9 +47,23 @@ export async function POST(request: NextRequest) {
     const secondChar = filename.charAt(1);
     
     // Шляхи для відео файлів
-    const basePath = join(process.cwd(), 'public', 'media', 'videos');
-    const videoPath = join(basePath, firstChar, secondChar);
-    const thumbnailPath = join(basePath, 'thumbnails', firstChar, secondChar);
+    // Use external storage path if configured, otherwise fallback to public directory
+    const mediaPath = process.env.MEDIA_STORAGE_PATH;
+    const basePath = mediaPath 
+      ? mediaPath 
+      : join(process.cwd(), 'public', 'media');
+    
+    // Debug logging to verify configuration
+    console.log('🔍 Video Upload Configuration:');
+    console.log('  MEDIA_STORAGE_PATH env:', process.env.MEDIA_STORAGE_PATH);
+    console.log('  Using base path:', basePath);
+    console.log('  Is external storage:', !!mediaPath);
+    
+    const videoPath = join(basePath, 'videos', firstChar, secondChar);
+    const thumbnailPath = join(basePath, 'videos', 'thumbnails', firstChar, secondChar);
+    
+    console.log('  Video path:', videoPath);
+    console.log('  Thumbnail path:', thumbnailPath);
 
     // Створюємо директорії якщо вони не існують
     await mkdir(videoPath, { recursive: true });
@@ -61,9 +77,32 @@ export async function POST(request: NextRequest) {
     const videoFilePath = join(videoPath, filename);
     await writeFile(videoFilePath, buffer);
 
-    // TODO: Тут можна додати логіку для створення мініатюр відео
-    // Поки що копіюємо перший кадр як мініатюру (потребує ffmpeg)
-    // await writeFile(join(thumbnailPath, filename), buffer);
+    // Зберігаємо thumbnail якщо він був завантажений
+    let thumbnailUrl: string | null = null;
+    if (thumbnail && thumbnail.size > 0) {
+      // Перевіряємо що це зображення
+      if (!thumbnail.type.startsWith('image/')) {
+        return NextResponse.json(
+          { error: 'Thumbnail must be an image file' },
+          { status: 400 }
+        );
+      }
+
+      // Генеруємо ім'я для thumbnail (можна використати те ж саме ім'я але з іншим розширенням)
+      const thumbnailExtension = thumbnail.name.split('.').pop();
+      const thumbnailFilename = `${timestamp}_${Math.random().toString(36).substring(2)}.${thumbnailExtension}`;
+      
+      // Конвертуємо thumbnail в буфер
+      const thumbnailBytes = await thumbnail.arrayBuffer();
+      const thumbnailBuffer = Buffer.from(thumbnailBytes);
+      
+      // Зберігаємо thumbnail файл
+      const thumbnailFilePath = join(thumbnailPath, thumbnailFilename);
+      await writeFile(thumbnailFilePath, thumbnailBuffer);
+      
+      // Генеруємо URL для thumbnail
+      thumbnailUrl = getVideoThumbnailUrl(thumbnailFilename);
+    }
 
     // Зберігаємо інформацію в базу даних
     const insertQuery = `
@@ -73,12 +112,13 @@ export async function POST(request: NextRequest) {
         title_deflang, 
         description_ua, 
         description_deflang, 
+        thumburl,
         duration, 
         file_size, 
         mime_type, 
         video_type
       )
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `;
     
     // Convert video_type string to integer
@@ -97,6 +137,7 @@ export async function POST(request: NextRequest) {
       title || file.name, // title_deflang - using same value as title_ua
       description || '',
       description || '', // description_deflang - using same value as description_ua
+      thumbnailUrl || null,
       0, // duration - will be updated later if needed
       file.size,
       file.type,
@@ -115,6 +156,7 @@ export async function POST(request: NextRequest) {
         title_deflang,
         description_ua,
         description_deflang,
+        thumburl,
         duration,
         file_size,
         mime_type,
@@ -137,7 +179,7 @@ export async function POST(request: NextRequest) {
       ...video,
       video_type: getVideoTypeString(video.video_type),
       url: getVideoUrl(video.filename),
-      thumbnail_url: getVideoThumbnailUrl(video.filename)
+      thumbnail_url: video.thumburl || getVideoThumbnailUrl(video.filename)
     };
 
     return NextResponse.json({

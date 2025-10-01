@@ -219,7 +219,7 @@ export default function Footer() {
             {/* Container for both buttons and 'and' text */}
             <div className={styles.buttonGroup}>
               {/* IN-FOMO button (now a Link) */}
-              <Link href={paths.inFomo} target="_blank" rel="noopener noreferrer" className={styles.fomoButton}>
+              <Link href={paths.inFomo} target="_blank"  className={styles.fomoButton}>
                 <span className={styles.fomoText}>САЙТ СТВОРЕНИЙ</span>
                 <Image
                   src={inFomoLogoWhite}

@@ -19,7 +19,7 @@ export async function DELETE(
 
     // Get video information before deleting
     const selectQuery = `
-      SELECT filename, video_type
+      SELECT filename, video_type, thumburl
       FROM a_videos 
       WHERE id = ?
     `;
@@ -41,11 +41,14 @@ export async function DELETE(
       const firstChar = filename.charAt(0);
       const secondChar = filename.charAt(1);
       
-      // Video file path
-      const videoPath = join(process.cwd(), 'public', 'media', 'videos', firstChar, secondChar, filename);
+      // Use external storage path if configured, otherwise fallback to public directory
+      const mediaPath = process.env.MEDIA_STORAGE_PATH;
+      const basePath = mediaPath 
+        ? mediaPath 
+        : join(process.cwd(), 'public', 'media');
       
-      // Thumbnail file path (if exists)
-      const thumbnailPath = join(process.cwd(), 'public', 'media', 'videos', 'thumbnails', firstChar, secondChar, filename);
+      // Video file path
+      const videoPath = join(basePath, 'videos', firstChar, secondChar, filename);
       
       // Delete video file
       try {
@@ -55,12 +58,21 @@ export async function DELETE(
         console.warn('Video file not found or already deleted:', videoPath);
       }
       
-      // Delete thumbnail file (if exists)
-      try {
-        await unlink(thumbnailPath);
-        console.log('Deleted thumbnail file:', thumbnailPath);
-      } catch (fileError) {
-        console.warn('Thumbnail file not found or already deleted:', thumbnailPath);
+      // Delete thumbnail file if thumburl exists
+      if (video.thumburl) {
+        try {
+          // Extract filename from thumburl
+          const thumbFilename = video.thumburl.split('/').pop();
+          if (thumbFilename) {
+            const thumbFirstChar = thumbFilename.charAt(0);
+            const thumbSecondChar = thumbFilename.charAt(1);
+            const thumbnailPath = join(basePath, 'videos', 'thumbnails', thumbFirstChar, thumbSecondChar, thumbFilename);
+            await unlink(thumbnailPath);
+            console.log('Deleted thumbnail file:', thumbnailPath);
+          }
+        } catch (fileError) {
+          console.warn('Thumbnail file not found or already deleted:', video.thumburl);
+        }
       }
       
     } catch (fileError) {
@@ -154,6 +166,7 @@ export async function PUT(
         title_deflang,
         description_ua,
         description_deflang,
+        thumburl,
         duration,
         file_size,
         mime_type,
@@ -188,13 +201,13 @@ export async function PUT(
     const firstChar = video.filename.charAt(0);
     const secondChar = video.filename.charAt(1);
     const videoUrl = `/media/videos/${firstChar}/${secondChar}/${video.filename}`;
-    const thumbnailUrl = `/media/videos/thumbnails/${firstChar}/${secondChar}/${video.filename}`;
+    const fallbackThumbnailUrl = `/media/videos/thumbnails/${firstChar}/${secondChar}/${video.filename}`;
 
     const videoWithUrl = {
       ...video,
       video_type: getVideoTypeString(video.video_type),
       url: videoUrl,
-      thumbnail_url: thumbnailUrl
+      thumbnail_url: video.thumburl || fallbackThumbnailUrl
     };
 
     return NextResponse.json({

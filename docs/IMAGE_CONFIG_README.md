@@ -3,6 +3,14 @@
 ## Overview
 The HeroSection now fetches real news images from your database and displays them using the main server URL (`https://galinfo.com.ua`) as a temporary solution.
 
+## 📦 New: External Media Storage
+
+You can now store uploaded photos and videos in a separate folder outside the project directory. This is recommended for production environments.
+
+**Quick Setup:** See [MEDIA_STORAGE_QUICKSTART.md](MEDIA_STORAGE_QUICKSTART.md) for a 5-minute setup guide.
+
+**Full Documentation:** See [docs/MEDIA_STORAGE_SETUP.md](docs/MEDIA_STORAGE_SETUP.md) for complete details.
+
 ## Current Configuration
 - **Base URL**: `https://galinfo.com.ua`
 - **Image Path**: `/media/gallery/intxt/`
