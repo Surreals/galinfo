@@ -3,8 +3,9 @@
 
 import { useState, useEffect, useRef } from "react";
 import { Tabs, Input, Button } from "antd";
-import { LinkOutlined } from "@ant-design/icons";
+import { LinkOutlined, ArrowLeftOutlined } from "@ant-design/icons";
 import dynamic from "next/dynamic";
+import { useRouter } from "next/navigation";
 import { ArticleData } from "@/app/hooks/useArticleData";
 import { EditorJSClientRef } from "@/app/admin/article-editor/components/EditorJSClient";
 const EditorJSClient = dynamic(
@@ -25,6 +26,7 @@ interface NewsEditorHeaderProps {
 }
 
 export default function NewsEditorHeader({ isEditing, articleData, onNbodyChange, onDataChange, onEditorSaveRef }: NewsEditorHeaderProps) {
+  const router = useRouter();
   const editorRef = useRef<EditorJSClientRef>(null);
   
   // --- стейти для всіх текстерій ---
@@ -170,9 +172,25 @@ export default function NewsEditorHeader({ isEditing, articleData, onNbodyChange
     }
   };
 
+  // Функція для повернення до списку новин
+  const handleBackToNews = () => {
+    router.push('/admin/news');
+  };
+
   return (
     <div className={styles.editorWrapper}>
       <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+        <Button
+          type="text"
+          icon={<ArrowLeftOutlined />}
+          onClick={handleBackToNews}
+          title="Повернутися до списку новин"
+          style={{ 
+            color: '#595959',
+            padding: '4px 8px',
+            height: 'auto'
+          }}
+        />
         <h2 className={styles.header}>{isEditing ? 'Редагувати новину' : 'Створити новину'}</h2>
         {isEditing && articleData?.urlkey && articleData?.id && (
           <Button
