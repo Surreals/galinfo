@@ -10,11 +10,14 @@ import { existsSync, createReadStream } from 'fs';
  */
 export async function GET(
   request: NextRequest,
-  { params }: { params: { path: string[] } }
+  { params }: { params: Promise<{ path: string[] }> }
 ) {
   try {
+    // Await params as required by Next.js
+    const resolvedParams = await params;
+    
     // Get the file path from the URL
-    const filePath = params.path.join('/');
+    const filePath = resolvedParams.path.join('/');
     
     // Determine the base path (external storage or public directory)
     const mediaPath = process.env.MEDIA_STORAGE_PATH;
@@ -78,6 +81,8 @@ export async function GET(
           'Content-Range': `bytes ${start}-${end}/${fileSize}`,
           'Accept-Ranges': 'bytes',
           'Content-Length': chunkSize.toString(),
+          'Content-Disposition': 'inline',
+          'X-Content-Type-Options': 'nosniff',
           'Cache-Control': 'public, max-age=31536000, immutable',
         },
       });
@@ -92,6 +97,8 @@ export async function GET(
         'Content-Type': contentType,
         'Content-Length': fileSize.toString(),
         'Accept-Ranges': isVideo ? 'bytes' : 'none',
+        'Content-Disposition': 'inline',
+        'X-Content-Type-Options': 'nosniff',
         'Cache-Control': 'public, max-age=31536000, immutable',
       },
     });
