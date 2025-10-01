@@ -86,13 +86,16 @@ class VideoTool {
       this.data.file = { url: '' };
     }
 
+    console.log('🎬 VideoTool: Rendering video with URL:', this.data.file.url);
+    console.log('🎬 VideoTool: Full data:', JSON.stringify(this.data, null, 2));
+
     const videoContainer = document.createElement('div');
     videoContainer.className = 'video-container';
     videoContainer.style.cssText = 'margin: 20px 0; text-align: center;';
 
     const video = document.createElement('video');
     video.controls = true;
-    video.style.cssText = 'max-width: 100%; height: auto; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);';
+    video.style.cssText = 'max-width: 100%; width: 100%; height: auto; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);';
     video.preload = 'metadata';
 
     // Add multiple source formats
@@ -118,7 +121,35 @@ class VideoTool {
     const fallbackText = document.createTextNode('Ваш браузер не підтримує відео тег.');
     video.appendChild(fallbackText);
 
+    // Add error handler
+    video.addEventListener('error', (e) => {
+      console.error('❌ Video loading error:', e);
+      console.error('Video URL:', this.data.file.url);
+      console.error('Video type:', source.type);
+      
+      // Show error message in the video container
+      const errorMsg = document.createElement('div');
+      errorMsg.style.cssText = 'padding: 20px; background: #fff3cd; border: 1px solid #ffc107; border-radius: 8px; color: #856404; margin-top: 10px;';
+      errorMsg.innerHTML = `
+        <strong>⚠️ Відео не вдалося завантажити</strong><br>
+        <small>Формат: ${fileExtension?.toUpperCase()}<br>
+        Браузер може не підтримувати цей формат відео.<br>
+        Рекомендується використовувати MP4 формат.</small>
+      `;
+      videoContainer.appendChild(errorMsg);
+    });
+
+    // Add loadedmetadata event to confirm video is loading
+    video.addEventListener('loadedmetadata', () => {
+      console.log('✅ Video metadata loaded successfully');
+      console.log('Duration:', video.duration, 'seconds');
+      console.log('Video dimensions:', video.videoWidth, 'x', video.videoHeight);
+    });
+
     videoContainer.appendChild(video);
+    
+    // Trigger video load
+    video.load();
 
     // Add caption if exists
     if (this.data.caption) {
