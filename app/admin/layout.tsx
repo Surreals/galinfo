@@ -1,4 +1,5 @@
 import { AdminAuthProvider } from '@/app/contexts/AdminAuthContext';
+import { MenuProvider } from '@/app/contexts/MenuContext';
 import ProtectedAdminRoute from '@/app/components/ProtectedAdminRoute';
 import { App } from 'antd';
 
@@ -9,11 +10,13 @@ export default function AdminLayout({
 }) {
   return (
     <AdminAuthProvider>
-      <App>
-        <ProtectedAdminRoute>
-          {children}
-        </ProtectedAdminRoute>
-      </App>
+      <MenuProvider>
+        <App>
+          <ProtectedAdminRoute>
+            {children}
+          </ProtectedAdminRoute>
+        </App>
+      </MenuProvider>
     </AdminAuthProvider>
   );
 }
