@@ -40,89 +40,156 @@ export default function TemplatesPage() {
 
   // Ініціалізація шаблонів
   useEffect(() => {
-    const initialTemplates: SchemaTemplate[] = [
-      {
-        id: 'main-desktop',
-        name: 'Головна сторінка (Десктоп)',
-        description: 'Схема для десктопної версії головної сторінки',
-        schema: desktopSchema,
-        defaultSchema: desktopSchema,
-        documentation: templateDocumentation['main-desktop']
-      },
-      {
-        id: 'main-mobile',
-        name: 'Головна сторінка (Мобільна)',
-        description: 'Схема для мобільної версії головної сторінки',
-        schema: mobileSchema,
-        defaultSchema: mobileSchema,
-        documentation: templateDocumentation['main-mobile']
-      },
-      {
-        id: 'category-desktop',
-        name: 'Сторінка категорії (Десктоп)',
-        description: 'Схема для десктопної версії сторінки категорії',
-        schema: categoryDesktopSchema,
-        defaultSchema: categoryDesktopSchema,
-        documentation: templateDocumentation['category-desktop']
-      },
-      {
-        id: 'category-mobile',
-        name: 'Сторінка категорії (Мобільна)',
-        description: 'Схема для мобільної версії сторінки категорії',
-        schema: categoryMobileSchema,
-        defaultSchema: categoryMobileSchema,
-        documentation: templateDocumentation['category-mobile']
-      },
-      {
-        id: 'hero',
-        name: 'Hero секція',
-        description: 'Схема для Hero секції з каруселлю',
-        schema: heroSchema,
-        defaultSchema: heroSchema,
-        documentation: templateDocumentation['hero']
-      },
-      {
-        id: 'hero-info-desktop',
-        name: 'Hero Info (Десктоп)',
-        description: 'Схема для Hero Info секції (десктоп)',
-        schema: heroInfoSchema,
-        defaultSchema: heroInfoSchema,
-        documentation: templateDocumentation['hero-info-desktop']
-      },
-      {
-        id: 'hero-info-mobile',
-        name: 'Hero Info (Мобільна)',
-        description: 'Схема для Hero Info секції (мобільна)',
-        schema: heroInfoMobileSchema,
-        defaultSchema: heroInfoMobileSchema,
-        documentation: templateDocumentation['hero-info-mobile']
-      },
-      {
-        id: 'article-desktop',
-        name: 'Сторінка статті (Десктоп)',
-        description: 'Схема для десктопної версії сторінки статті',
-        schema: articlePageDesktopSchema,
-        defaultSchema: articlePageDesktopSchema,
-        documentation: templateDocumentation['article-desktop']
-      },
-      {
-        id: 'article-mobile',
-        name: 'Сторінка статті (Мобільна)',
-        description: 'Схема для мобільної версії сторінки статті',
-        schema: articlePageMobileSchema,
-        defaultSchema: articlePageMobileSchema,
-        documentation: templateDocumentation['article-mobile']
-      }
-    ];
+    const loadTemplates = async () => {
+      try {
+        // Завантажуємо шаблони з бази даних
+        const response = await fetch('/api/admin/templates');
+        const result = await response.json();
 
-    setTemplates(initialTemplates);
-    
-    // Ініціалізуємо JSON значення для кожного шаблону
-    const initialJsonValues: Record<string, string> = {};
-    initialTemplates.forEach(template => {
-      initialJsonValues[template.id] = formatJson(template.schema);
-    });
-    setJsonValues(initialJsonValues);
+        if (result.success && result.data) {
+          // Створюємо мапінг дефолтних схем
+          const defaultSchemas: Record<string, any> = {
+            'main-desktop': desktopSchema,
+            'main-mobile': mobileSchema,
+            'category-desktop': categoryDesktopSchema,
+            'category-mobile': categoryMobileSchema,
+            'hero': heroSchema,
+            'hero-info-desktop': heroInfoSchema,
+            'hero-info-mobile': heroInfoMobileSchema,
+            'article-desktop': articlePageDesktopSchema,
+            'article-mobile': articlePageMobileSchema
+          };
+
+          // Конвертуємо дані з БД в формат компонента
+          const templatesFromDb: SchemaTemplate[] = result.data.map((dbTemplate: any) => {
+            // Parse JSON string from database into JavaScript object
+            let parsedSchema;
+            try {
+              parsedSchema = typeof dbTemplate.schema_json === 'string' 
+                ? JSON.parse(dbTemplate.schema_json) 
+                : dbTemplate.schema_json;
+            } catch (error) {
+              console.error('Error parsing schema JSON:', error);
+              parsedSchema = defaultSchemas[dbTemplate.template_id];
+            }
+
+            return {
+              id: dbTemplate.template_id,
+              name: dbTemplate.name,
+              description: dbTemplate.description,
+              schema: parsedSchema || defaultSchemas[dbTemplate.template_id],
+              defaultSchema: defaultSchemas[dbTemplate.template_id] || parsedSchema,
+              documentation: templateDocumentation[dbTemplate.template_id] || 'Немає документації'
+            };
+          });
+
+          setTemplates(templatesFromDb);
+          
+          // Ініціалізуємо JSON значення для кожного шаблону
+          const initialJsonValues: Record<string, string> = {};
+          templatesFromDb.forEach(template => {
+            initialJsonValues[template.id] = formatJson(template.schema);
+          });
+          setJsonValues(initialJsonValues);
+        } else {
+          // Якщо БД недоступна, використовуємо дефолтні шаблони
+          console.warn('Database not available, using default templates');
+          loadDefaultTemplates();
+        }
+      } catch (error) {
+        console.error('Error loading templates from database:', error);
+        // Використовуємо дефолтні шаблони як fallback
+        loadDefaultTemplates();
+      }
+    };
+
+    const loadDefaultTemplates = () => {
+      const initialTemplates: SchemaTemplate[] = [
+        {
+          id: 'main-desktop',
+          name: 'Головна сторінка (Десктоп)',
+          description: 'Схема для десктопної версії головної сторінки',
+          schema: desktopSchema,
+          defaultSchema: desktopSchema,
+          documentation: templateDocumentation['main-desktop']
+        },
+        {
+          id: 'main-mobile',
+          name: 'Головна сторінка (Мобільна)',
+          description: 'Схема для мобільної версії головної сторінки',
+          schema: mobileSchema,
+          defaultSchema: mobileSchema,
+          documentation: templateDocumentation['main-mobile']
+        },
+        {
+          id: 'category-desktop',
+          name: 'Сторінка категорії (Десктоп)',
+          description: 'Схема для десктопної версії сторінки категорії',
+          schema: categoryDesktopSchema,
+          defaultSchema: categoryDesktopSchema,
+          documentation: templateDocumentation['category-desktop']
+        },
+        {
+          id: 'category-mobile',
+          name: 'Сторінка категорії (Мобільна)',
+          description: 'Схема для мобільної версії сторінки категорії',
+          schema: categoryMobileSchema,
+          defaultSchema: categoryMobileSchema,
+          documentation: templateDocumentation['category-mobile']
+        },
+        {
+          id: 'hero',
+          name: 'Hero секція',
+          description: 'Схема для Hero секції з каруселлю',
+          schema: heroSchema,
+          defaultSchema: heroSchema,
+          documentation: templateDocumentation['hero']
+        },
+        {
+          id: 'hero-info-desktop',
+          name: 'Hero Info (Десктоп)',
+          description: 'Схема для Hero Info секції (десктоп)',
+          schema: heroInfoSchema,
+          defaultSchema: heroInfoSchema,
+          documentation: templateDocumentation['hero-info-desktop']
+        },
+        {
+          id: 'hero-info-mobile',
+          name: 'Hero Info (Мобільна)',
+          description: 'Схема для Hero Info секції (мобільна)',
+          schema: heroInfoMobileSchema,
+          defaultSchema: heroInfoMobileSchema,
+          documentation: templateDocumentation['hero-info-mobile']
+        },
+        {
+          id: 'article-desktop',
+          name: 'Сторінка статті (Десктоп)',
+          description: 'Схема для десктопної версії сторінки статті',
+          schema: articlePageDesktopSchema,
+          defaultSchema: articlePageDesktopSchema,
+          documentation: templateDocumentation['article-desktop']
+        },
+        {
+          id: 'article-mobile',
+          name: 'Сторінка статті (Мобільна)',
+          description: 'Схема для мобільної версії сторінки статті',
+          schema: articlePageMobileSchema,
+          defaultSchema: articlePageMobileSchema,
+          documentation: templateDocumentation['article-mobile']
+        }
+      ];
+
+      setTemplates(initialTemplates);
+      
+      // Ініціалізуємо JSON значення для кожного шаблону
+      const initialJsonValues: Record<string, string> = {};
+      initialTemplates.forEach(template => {
+        initialJsonValues[template.id] = formatJson(template.schema);
+      });
+      setJsonValues(initialJsonValues);
+    };
+
+    loadTemplates();
   }, []);
 
   // Форматування JSON з табуляцією
@@ -214,22 +281,51 @@ export default function TemplatesPage() {
 
     setIsLoading(true);
     try {
-      // Тут буде логіка збереження в базу даних
-      console.log('Збереження шаблону:', templateId);
-      
-      // Симуляція збереження
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      setModifiedTemplates(prev => {
-        const newSet = new Set(prev);
-        newSet.delete(templateId);
-        return newSet;
+      const template = templates.find(t => t.id === templateId);
+      if (!template) {
+        throw new Error('Шаблон не знайдено');
+      }
+
+      // Парсимо JSON з форми
+      const schemaJson = parseJson(jsonValues[templateId]);
+
+      // Відправляємо дані на сервер
+      const response = await fetch('/api/admin/templates', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          template_id: templateId,
+          name: template.name,
+          description: template.description,
+          schema_json: schemaJson
+        }),
       });
-      
-      alert('Шаблон успішно збережено!');
+
+      const result = await response.json();
+
+      if (result.success) {
+        // Оновлюємо локальний стан
+        setTemplates(prev => prev.map(t => 
+          t.id === templateId 
+            ? { ...t, schema: schemaJson }
+            : t
+        ));
+
+        setModifiedTemplates(prev => {
+          const newSet = new Set(prev);
+          newSet.delete(templateId);
+          return newSet;
+        });
+        
+        alert('Шаблон успішно збережено!');
+      } else {
+        throw new Error(result.error || 'Помилка збереження');
+      }
     } catch (error) {
       console.error('Помилка збереження:', error);
-      alert('Помилка збереження шаблону');
+      alert(`Помилка збереження шаблону: ${error instanceof Error ? error.message : 'Невідома помилка'}`);
     } finally {
       setIsLoading(false);
     }
