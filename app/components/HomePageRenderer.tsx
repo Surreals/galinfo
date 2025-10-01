@@ -5,6 +5,7 @@ import { desktopSchema, mobileSchema } from '@/app/lib/schema';
 import { heroSchema, heroInfoSchema, heroInfoMobileSchema } from '@/app/lib/heroSchema';
 import { useMenuContext } from '@/app/contexts/MenuContext';
 import { useIsMobile } from '@/app/hooks/useIsMobile';
+import { useTemplateSchemas } from '@/app/hooks/useTemplateSchemas';
 
 interface HomePageRendererProps {
   schema?: typeof desktopSchema | typeof mobileSchema;
@@ -16,18 +17,37 @@ export default function HomePageRenderer({
 }: HomePageRendererProps) {
   const { getCategoryById } = useMenuContext();
   const isMobile = useIsMobile();
+  const { getSchema } = useTemplateSchemas();
 
+  // Отримуємо схему з API (якщо є)
+  const apiDesktopSchema = getSchema('main-desktop');
+  const apiMobileSchema = getSchema('main-mobile');
+  
   // Визначаємо, яку схему використовувати
-  const currentSchema = schema || (isMobile ? mobileSchema : desktopSchema);
+  // Пріоритет: переданий schema -> API schema -> дефолтний schema
+  const defaultSchema = isMobile ? mobileSchema : desktopSchema;
+  const apiSchema = isMobile ? apiMobileSchema : apiDesktopSchema;
+  const currentSchema = schema || apiSchema || defaultSchema;
 
   const renderBlock = (block: any, index: number) => {
     switch (block.type) {
       case 'Hero':
+        // Отримуємо схеми Hero з API (якщо є)
+        const apiHeroSchema = getSchema('hero');
+        const apiHeroInfoDesktopSchema = getSchema('hero-info-desktop');
+        const apiHeroInfoMobileSchema = getSchema('hero-info-mobile');
+        
+        // Використовуємо API схему або дефолтну
+        const heroSchemaToUse = apiHeroSchema || heroSchema;
+        const infoSchemaToUse = isMobile 
+          ? (apiHeroInfoMobileSchema || heroInfoMobileSchema)
+          : (apiHeroInfoDesktopSchema || heroInfoSchema);
+        
         return (
           <HeroRenderer
             key={`hero-${index}`}
-            schema={heroSchema}
-            infoSchema={isMobile ? heroInfoMobileSchema : heroInfoSchema}
+            schema={heroSchemaToUse}
+            infoSchema={infoSchemaToUse}
             isMobile={isMobile}
           />
         );
@@ -81,9 +101,14 @@ export default function HomePageRenderer({
     }
   };
 
+  // Перевіряємо наявність схеми та blocks
+  if (!currentSchema || !currentSchema.blocks) {
+    return null;
+  }
+
   return (
     <>
-      {currentSchema.blocks.map((block, index) => renderBlock(block, index))}
+      {currentSchema.blocks.map((block: any, index: number) => renderBlock(block, index))}
     </>
   );
 }

@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { CategoryRenderer } from "@/app/components";
 import { isValidCategoryUrl } from '@/app/lib/categoryMapper';
+import { useTemplateSchemas } from '@/app/hooks/useTemplateSchemas';
 import { Spin } from 'antd';
 import styles from "./page.module.css";
 
@@ -19,6 +20,7 @@ export const CategoryPageClient: React.FC<CategoryPageClientProps> = ({
   const [tagData, setTagData] = useState<{ id: number; tag: string } | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const { getSchema } = useTemplateSchemas();
 
   // Перевіряємо, чи є валідна категорія
   const isValidCategory = isValidCategoryUrl(category);
@@ -76,9 +78,19 @@ export const CategoryPageClient: React.FC<CategoryPageClientProps> = ({
     );
   }
 
+  // Отримуємо схему категорій з API (якщо є)
+  const apiCategoryDesktopSchema = getSchema('category-desktop');
+  const apiCategoryMobileSchema = getSchema('category-mobile');
+
   // Якщо це тег і дані завантажені, використовуємо CategoryRenderer з назвою тегу
   if (isTag && tagData) {
-    return <CategoryRenderer category={tagData.tag} />;
+    return (
+      <CategoryRenderer 
+        category={tagData.tag} 
+        apiDesktopSchema={apiCategoryDesktopSchema}
+        apiMobileSchema={apiCategoryMobileSchema}
+      />
+    );
   }
 
   // Якщо це не валідна категорія і не тег
@@ -94,5 +106,11 @@ export const CategoryPageClient: React.FC<CategoryPageClientProps> = ({
   }
 
   // Для валідних категорій
-  return <CategoryRenderer category={category} />;
+  return (
+    <CategoryRenderer 
+      category={category} 
+      apiDesktopSchema={apiCategoryDesktopSchema}
+      apiMobileSchema={apiCategoryMobileSchema}
+    />
+  );
 };

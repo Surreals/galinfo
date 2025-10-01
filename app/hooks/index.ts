@@ -1,6 +1,7 @@
 // Експорт всіх хуків для зручного імпорту
 export { useHeroNews } from './useHeroNews';
 export { useHomePageData } from './useHomePageData';
+export { useTemplateSchemas } from './useTemplateSchemas';
 export { useImportantNews, useImportantNewsByLevel, useTopImportantNews, useHighImportantNews, usePhotoNews, useIllustratedNews } from './useImportantNews';
 export { useIsMobile } from './useIsMobile';
 export { useMenuData } from './useMenuData';

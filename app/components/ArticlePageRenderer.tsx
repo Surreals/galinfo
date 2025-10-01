@@ -6,6 +6,7 @@ import { useState, useEffect } from "react";
 import { useMobileContext } from '@/app/contexts/MobileContext';
 import { useLatestNews } from '@/app/hooks/useLatestNews';
 import { useImportantNews } from '@/app/hooks/useImportantNews';
+import { useTemplateSchemas } from '@/app/hooks/useTemplateSchemas';
 import {
   formatFullNewsDate,
   generateArticleUrl,
@@ -119,6 +120,7 @@ const ArticlePageRenderer: React.FC<ArticlePageRendererProps> = ({ article, load
 
   const carouselRef = useRef<any>(null);
   const { isMobile } = useMobileContext();
+  const { getSchema } = useTemplateSchemas();
 
   // Handle Escape key to close modal
   React.useEffect(() => {
@@ -772,15 +774,27 @@ const ArticlePageRenderer: React.FC<ArticlePageRendererProps> = ({ article, load
     }
   };
 
+  // Отримуємо схему з API (якщо є)
+  const apiArticleDesktopSchema = getSchema('article-desktop');
+  const apiArticleMobileSchema = getSchema('article-mobile');
+  
   // Вибираємо схему залежно від пристрою
-  const schema = isMobile ? articlePageMobileSchema : articlePageDesktopSchema;
+  // Пріоритет: API schema -> дефолтний schema
+  const defaultSchema = isMobile ? articlePageMobileSchema : articlePageDesktopSchema;
+  const apiSchema = isMobile ? apiArticleMobileSchema : apiArticleDesktopSchema;
+  const schema = apiSchema || defaultSchema;
+
+  // Перевіряємо наявність схеми та blocks
+  if (!schema || !schema.blocks) {
+    return null;
+  }
 
   return (
     <>
       <div className={styles.container}>
         {/* Основний контент - ліва частина */}
         <div className={styles.mainContent}>
-          {schema.blocks.map((block, index) => (
+          {schema.blocks.map((block: any, index: number) => (
             <React.Fragment key={`main-${index}`}>
               {renderBlock(block, index)}
             </React.Fragment>

@@ -35,9 +35,15 @@ import adBannerIndfomo from '@/assets/images/Ad Banner black.png';
 
 interface CategoryRendererProps {
   category: string;
+  apiDesktopSchema?: any;
+  apiMobileSchema?: any;
 }
 
-const CategoryRenderer: React.FC<CategoryRendererProps> = ({ category }) => {
+const CategoryRenderer: React.FC<CategoryRendererProps> = ({ 
+  category,
+  apiDesktopSchema,
+  apiMobileSchema 
+}) => {
   const { isMobile } = useMobileContext();
   const searchParams = useSearchParams();
   const pathname = usePathname();
@@ -607,14 +613,22 @@ const CategoryRenderer: React.FC<CategoryRendererProps> = ({ category }) => {
 
 
   // Вибираємо схему залежно від пристрою
-  const schema = isMobile ? categoryMobileSchema : categoryDesktopSchema;
+  // Пріоритет: API schema -> дефолтний schema
+  const defaultSchema = isMobile ? categoryMobileSchema : categoryDesktopSchema;
+  const apiSchema = isMobile ? apiMobileSchema : apiDesktopSchema;
+  const schema = apiSchema || defaultSchema;
+
+  // Перевіряємо наявність схеми та blocks
+  if (!schema || !schema.blocks) {
+    return null;
+  }
 
   return (
     <>
       <div className={styles.container}>
         {/* Основний контент - ліва частина */}
         <div className={styles.mainContent}>
-          {schema.blocks.map((block, index) => renderBlock(block, index))}
+          {schema.blocks.map((block: any, index: number) => renderBlock(block, index))}
         </div>
 
         {/* Бокова панель для десктопу */}
