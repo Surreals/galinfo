@@ -20,6 +20,7 @@ import {
   articlePageMobileSchema 
 } from '@/app/lib/articlePageSchema';
 import { templateDocumentation } from './documentation';
+import { CATEGORY_IDS } from '@/app/lib/categoryUtils';
 
 interface SchemaTemplate {
   id: string;
@@ -37,6 +38,7 @@ export default function TemplatesPage() {
   const [jsonErrors, setJsonErrors] = useState<Record<string, string>>({});
   const [jsonValues, setJsonValues] = useState<Record<string, string>>({});
   const [expandedDocs, setExpandedDocs] = useState<Set<string>>(new Set());
+  const [isCategoryDrawerOpen, setIsCategoryDrawerOpen] = useState(false);
 
   // Ініціалізація шаблонів
   useEffect(() => {
@@ -381,6 +383,13 @@ export default function TemplatesPage() {
         <div className={styles.header}>
           <h1>Редактор шаблонів</h1>
           <p>Редагуйте JSON схеми для різних сторінок сайту</p>
+          <button 
+            className={styles.categoryInfoButton}
+            onClick={() => setIsCategoryDrawerOpen(true)}
+            title="Показати ID категорій"
+          >
+            📋 Довідник категорій
+          </button>
         </div>
 
         <div className={styles.templatesGrid}>
@@ -457,6 +466,165 @@ export default function TemplatesPage() {
           ))}
         </div>
       </div>
+
+      {/* Drawer з інформацією про категорії */}
+      {isCategoryDrawerOpen && (
+        <>
+          <div 
+            className={styles.drawerOverlay}
+            onClick={() => setIsCategoryDrawerOpen(false)}
+          />
+          <div className={styles.drawer}>
+            <div className={styles.drawerHeader}>
+              <h2>📋 Довідник ID категорій</h2>
+              <button 
+                className={styles.drawerCloseButton}
+                onClick={() => setIsCategoryDrawerOpen(false)}
+                title="Закрити"
+              >
+                ✕
+              </button>
+            </div>
+            <div className={styles.drawerContent}>
+              <div className={styles.categorySection}>
+                <h3>Спеціальна категорія</h3>
+                <div className={styles.categoryList}>
+                  <div className={styles.categoryItem}>
+                    <span className={styles.categoryName}>Всі новини</span>
+                    <span className={styles.categoryId}>ID: {CATEGORY_IDS.ALL}</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className={styles.categorySection}>
+                <h3>Основні категорії (cattype = 1)</h3>
+                <div className={styles.categoryList}>
+                  <div className={styles.categoryItem}>
+                    <span className={styles.categoryName}>Суспільство</span>
+                    <span className={styles.categoryId}>ID: {CATEGORY_IDS.SOCIETY}</span>
+                  </div>
+                  <div className={styles.categoryItem}>
+                    <span className={styles.categoryName}>Політика</span>
+                    <span className={styles.categoryId}>ID: {CATEGORY_IDS.POLITICS}</span>
+                  </div>
+                  <div className={styles.categoryItem}>
+                    <span className={styles.categoryName}>Економіка</span>
+                    <span className={styles.categoryId}>ID: {CATEGORY_IDS.ECONOMICS}</span>
+                  </div>
+                  <div className={styles.categoryItem}>
+                    <span className={styles.categoryName}>Культура</span>
+                    <span className={styles.categoryId}>ID: {CATEGORY_IDS.CULTURE}</span>
+                  </div>
+                  <div className={styles.categoryItem}>
+                    <span className={styles.categoryName}>Здоров'я</span>
+                    <span className={styles.categoryId}>ID: {CATEGORY_IDS.HEALTH}</span>
+                  </div>
+                  <div className={styles.categoryItem}>
+                    <span className={styles.categoryName}>Війна з Росією</span>
+                    <span className={styles.categoryId}>ID: {CATEGORY_IDS.ATO}</span>
+                  </div>
+                  <div className={styles.categoryItem}>
+                    <span className={styles.categoryName}>Спорт</span>
+                    <span className={styles.categoryId}>ID: {CATEGORY_IDS.SPORT}</span>
+                  </div>
+                  <div className={styles.categoryItem}>
+                    <span className={styles.categoryName}>Кримінал</span>
+                    <span className={styles.categoryId}>ID: {CATEGORY_IDS.CRIME}</span>
+                  </div>
+                  <div className={styles.categoryItem}>
+                    <span className={styles.categoryName}>Надзвичайні події</span>
+                    <span className={styles.categoryId}>ID: {CATEGORY_IDS.ACCIDENT}</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className={styles.categorySection}>
+                <h3>Регіони (cattype = 3)</h3>
+                <div className={styles.categoryList}>
+                  <div className={styles.categoryItem}>
+                    <span className={styles.categoryName}>Україна</span>
+                    <span className={styles.categoryId}>ID: {CATEGORY_IDS.UKRAINE}</span>
+                  </div>
+                  <div className={styles.categoryItem}>
+                    <span className={styles.categoryName}>Львів</span>
+                    <span className={styles.categoryId}>ID: {CATEGORY_IDS.LVIV}</span>
+                  </div>
+                  <div className={styles.categoryItem}>
+                    <span className={styles.categoryName}>Європа</span>
+                    <span className={styles.categoryId}>ID: {CATEGORY_IDS.EVROPA}</span>
+                  </div>
+                  <div className={styles.categoryItem}>
+                    <span className={styles.categoryName}>Світ</span>
+                    <span className={styles.categoryId}>ID: {CATEGORY_IDS.SVIT}</span>
+                  </div>
+                  <div className={styles.categoryItem}>
+                    <span className={styles.categoryName}>Волинь</span>
+                    <span className={styles.categoryId}>ID: {CATEGORY_IDS.VOLYN}</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className={styles.categorySection}>
+                <h3>Спеціальні теми (cattype = 2)</h3>
+                <div className={styles.categoryList}>
+                  <div className={styles.categoryItem}>
+                    <span className={styles.categoryName}>Голос народу</span>
+                    <span className={styles.categoryId}>ID: {CATEGORY_IDS.REPORTER}</span>
+                  </div>
+                  <div className={styles.categoryItem}>
+                    <span className={styles.categoryName}>Весняні мотиви</span>
+                    <span className={styles.categoryId}>ID: {CATEGORY_IDS.EURO_2012}</span>
+                  </div>
+                  <div className={styles.categoryItem}>
+                    <span className={styles.categoryName}>Львівська міська виборча комісія</span>
+                    <span className={styles.categoryId}>ID: {CATEGORY_IDS.LVIV_MISKA_VYBORCHA_KOMISIYA}</span>
+                  </div>
+                  <div className={styles.categoryItem}>
+                    <span className={styles.categoryName}>Львівська обласна виборча комісія</span>
+                    <span className={styles.categoryId}>ID: {CATEGORY_IDS.LVIV_OBLASNA_VYBORCHA_KOMISIYA}</span>
+                  </div>
+                  <div className={styles.categoryItem}>
+                    <span className={styles.categoryName}>Бліц-інтерв'ю</span>
+                    <span className={styles.categoryId}>ID: {CATEGORY_IDS.BLITS_INTERVYU}</span>
+                  </div>
+                  <div className={styles.categoryItem}>
+                    <span className={styles.categoryName}>Олімпійські ігри в Ріо 2016</span>
+                    <span className={styles.categoryId}>ID: {CATEGORY_IDS.OLIMPIYSKI_IGRY_RIO_2016}</span>
+                  </div>
+                  <div className={styles.categoryItem}>
+                    <span className={styles.categoryName}>Відверта Розмова_з</span>
+                    <span className={styles.categoryId}>ID: {CATEGORY_IDS.VIDVERTA_ROZMOVA}</span>
+                  </div>
+                  <div className={styles.categoryItem}>
+                    <span className={styles.categoryName}>ТВК</span>
+                    <span className={styles.categoryId}>ID: {CATEGORY_IDS.TVK}</span>
+                  </div>
+                  <div className={styles.categoryItem}>
+                    <span className={styles.categoryName}>Вибори</span>
+                    <span className={styles.categoryId}>ID: {CATEGORY_IDS.VYBORY_ZMIN}</span>
+                  </div>
+                  <div className={styles.categoryItem}>
+                    <span className={styles.categoryName}>Журналістика змін</span>
+                    <span className={styles.categoryId}>ID: {CATEGORY_IDS.ZHURNALISTYKA_ZMIN}</span>
+                  </div>
+                  <div className={styles.categoryItem}>
+                    <span className={styles.categoryName}>Пресслужба</span>
+                    <span className={styles.categoryId}>ID: {CATEGORY_IDS.PRESSLUZHBA}</span>
+                  </div>
+                  <div className={styles.categoryItem}>
+                    <span className={styles.categoryName}>Вибори ректора ЛНУ</span>
+                    <span className={styles.categoryId}>ID: {CATEGORY_IDS.VYBORY_REKTORA_LNU}</span>
+                  </div>
+                  <div className={styles.categoryItem}>
+                    <span className={styles.categoryName}>Райони Львова</span>
+                    <span className={styles.categoryId}>ID: {CATEGORY_IDS.RAYONY_LVOVA}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </>
+      )}
     </div>
   );
 }
