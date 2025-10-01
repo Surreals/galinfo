@@ -11,24 +11,8 @@ export interface AllUser {
 
 export async function GET() {
   try {
-    // Завантажуємо всіх користувачів з обох таблиць
-    const [regularUsers] = await executeQuery<{
-      id: number;
-      name: string;
-      uname: string;
-      _usertype: string | null;
-      approved: string;
-    }>(`
-      SELECT 
-        id, 
-        name,
-        uname,
-        _usertype,
-        approved
-      FROM a_users 
-      ORDER BY name
-    `);
-
+    // Завантажуємо тільки активних користувачів з a_powerusers (адміністраторів)
+    // Це ті самі користувачі, які показуються на сторінці /admin/users
     const [adminUsers] = await executeQuery<{
       id: number;
       uname_ua: string;
@@ -45,42 +29,14 @@ export async function GET() {
       ORDER BY uname_ua
     `);
 
-    // Об'єднуємо користувачів і визначаємо їх типи
-    const allUsers: AllUser[] = [
-      // Адміністратори (редактори)
-      ...adminUsers.map(user => ({
-        id: user.id,
-        name: user.name,
-        uname: user.uname,
-        type: 'editor' as const,
-        active: user.active
-      })),
-      // Звичайні користувачі
-      ...regularUsers.map(user => {
-        // Визначаємо тип користувача на основі _usertype або інших критеріїв
-        let userType: 'editor' | 'journalist' | 'blogger' = 'journalist';
-        
-        if (user._usertype === 'blogger' || user._usertype === 'блогер') {
-          userType = 'blogger';
-        } else if (user._usertype === 'editor' || user._usertype === 'редактор') {
-          userType = 'editor';
-        } else {
-          // За замовчуванням - журналіст
-          userType = 'journalist';
-        }
-
-        return {
-          id: user.id,
-          name: user.name,
-          uname: user.uname,
-          type: userType,
-          active: 1 // Всі схвалені користувачі вважаються активними
-        };
-      })
-    ];
-
-    // Сортуємо за іменем
-    allUsers.sort((a, b) => a.name.localeCompare(b.name, 'uk'));
+    // Всі користувачі з a_powerusers мають тип 'editor'
+    const allUsers: AllUser[] = adminUsers.map(user => ({
+      id: user.id,
+      name: user.uname_ua, // Використовуємо uname_ua як name
+      uname: user.uname,
+      type: 'editor' as const,
+      active: user.active
+    }));
 
     return NextResponse.json({
       success: true,

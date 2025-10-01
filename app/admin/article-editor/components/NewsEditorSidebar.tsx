@@ -36,9 +36,6 @@ import {
   getRubrics, 
   getThemes, 
   getRegions, 
-  getEditors, 
-  getJournalists, 
-  getBloggers,
   ARTICLE_TYPE_OPTIONS,
   PRIORITY_OPTIONS,
   LAYOUT_OPTIONS,
@@ -147,9 +144,8 @@ export default function NewsEditorSidebar({ newsId, articleData, menuData, onEdi
     }, 400);
   };
 
-  const editors = getEditors(users);
-  const journalists = getJournalists(users);
-  const bloggers = getBloggers(users);
+  // Всі користувачі з a_powerusers (адміністратори/редактори)
+  const allAuthors = users;
 
   // Фото
   const [fileList, setFileList] = useState<ExtendedUploadFile[]>([]);
@@ -613,11 +609,10 @@ export default function NewsEditorSidebar({ newsId, articleData, menuData, onEdi
                 placeholder="Оберіть автора"
                 value={editor}
                 onChange={setEditor}
-                options={[
-                  ...editors.map(e => ({ label: e.name, value: e.id })),
-                  ...journalists.map(j => ({ label: j.name, value: j.id })),
-                  ...bloggers.map(b => ({ label: `******* ${b.name}`, value: b.id }))
-                ]}
+                options={allAuthors.map(author => ({ 
+                  label: author.name, 
+                  value: author.id 
+                }))}
                 className={styles.fullWidth}
                 allowClear
                 showSearch

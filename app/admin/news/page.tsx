@@ -2,8 +2,8 @@
 
 import { useState, useEffect } from 'react';
 import dayjs from 'dayjs';
-import { DatePicker } from 'antd';
-import { EyeOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
+import { DatePicker, Button } from 'antd';
+import { EyeOutlined, EditOutlined, DeleteOutlined, ArrowLeftOutlined } from '@ant-design/icons';
 import { useRouter } from 'next/navigation';
 import AdminNavigation from '../components/AdminNavigation';
 import styles from './news.module.css';
@@ -145,6 +145,11 @@ export default function NewsPage() {
     router.push('/admin/article-editor');
   };
 
+  // Повернення на головну сторінку адмінки
+  const handleBackToAdmin = () => {
+    router.push('/admin');
+  };
+
   // Обробка оновлення URL ключів
   const handleUpdateUrlKeys = async () => {
     if (!confirm('Ви впевнені, що хочете оновити URL ключі для всіх новин без них? Це може зайняти деякий час.')) {
@@ -275,7 +280,20 @@ export default function NewsPage() {
       
       <div className={styles.mainContent}>
         <div className={styles.header}>
-          <h1>Новини / Статті</h1>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <Button
+              type="text"
+              icon={<ArrowLeftOutlined />}
+              onClick={handleBackToAdmin}
+              title="Повернутися до адмін-панелі"
+              style={{ 
+                color: '#595959',
+                padding: '4px 8px',
+                height: 'auto'
+              }}
+            />
+            <h1>Новини / Статті</h1>
+          </div>
           <div className={styles.headerActions}>
           <button 
               className={styles.updateUrlKeysButton}
