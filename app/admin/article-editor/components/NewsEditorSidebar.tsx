@@ -248,31 +248,21 @@ export default function NewsEditorSidebar({ newsId, articleData, menuData, onEdi
       setPublishOnTwitter(articleData.to_twitter);
       
       // Оновлюємо файли зображень
-      if (articleData.images && articleData.image_filenames) {
+      if (articleData.images && articleData.image_filenames && Array.isArray(articleData.image_filenames)) {
         const imageIds = articleData.images.split(',').map((id: string) => id.trim()).filter(id => id);
-        const imageFilenames = articleData.image_filenames.split(',').map((filename: string) => filename.trim()).filter(filename => filename);
         
-     
+        // Створюємо мапу ID -> imageData для правильного співставлення
+        const imageMap = new Map<string, typeof articleData.image_filenames[0]>();
         
-        // Створюємо мапу ID -> filename для правильного співставлення
-        const imageMap = new Map<string, string>();
-        
-        // Якщо кількість ID та filename однакова, співставляємо по індексу
-        if (imageIds.length === imageFilenames.length) {
-          // Якщо image_filenames в зворотному порядку, повертаємо його
-          const correctedFilenames = [...imageFilenames];
-          
-          imageIds.forEach((id, index) => {
-            imageMap.set(id, correctedFilenames[index]);
-          });
-        } else {
-          // Якщо кількість не співпадає, використовуємо тільки ID
-          console.warn('Image IDs and filenames count mismatch:', imageIds.length, imageFilenames.length);
-        }
+        // Заповнюємо мапу даними з image_filenames
+        articleData.image_filenames.forEach((imageData) => {
+          imageMap.set(imageData.id.toString(), imageData);
+        });
         
         // Створюємо imageFiles в тому ж порядку що й imageIds (правильний порядок)
         const imageFiles = imageIds.map((id: string) => {
-          const filename = imageMap.get(id) || '';
+          const imageData = imageMap.get(id);
+          const filename = imageData?.filename || '';
           return {
             uid: `image-${id}`,
             name: filename,
@@ -401,7 +391,13 @@ export default function NewsEditorSidebar({ newsId, articleData, menuData, onEdi
         .join(','),
       // Додатково зберігаємо назви файлів для зручності
       // Використовуємо той самий порядок що й для images
-      image_filenames: fileList.map((f) => f.name).join(','),
+      image_filenames: fileList.map((f) => ({
+        id: f.imageId || parseInt(f.uid.replace('image-', '')) || 0,
+        filename: f.name,
+        title_ua: '',
+        title_deflang: '',
+        pic_type: 1 // За замовчуванням news
+      })),
       
       // Мова
       lang: articleData?.lang || 'ua',

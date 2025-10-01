@@ -75,7 +75,18 @@ export interface NewsData {
   author_name: string;
   
   // Назви файлів зображень
-  image_filenames: string;
+  image_filenames: Array<{
+    id: number;
+    filename: string;
+    title_ua?: string;
+    title_deflang?: string;
+    pic_type?: number;
+  }>;
+}
+
+// Тимчасовий інтерфейс для SQL результату
+interface NewsDataWithJson extends NewsData {
+  image_filenames_json?: string;
 }
 
 export async function getNewsById(id: number): Promise<NewsData | null> {
@@ -94,7 +105,16 @@ export async function getNewsById(id: number): Promise<NewsData | null> {
         nm.nkeywords,
         u.uname_ua as editor_name,
         fu.name as author_name,
-        GROUP_CONCAT(a_pics.filename ORDER BY FIELD(a_pics.id, n.images) DESC) as image_filenames
+        GROUP_CONCAT(
+          JSON_OBJECT(
+            'id', a_pics.id,
+            'filename', a_pics.filename,
+            'title_ua', a_pics.title_ua,
+            'title_deflang', a_pics.title_deflang,
+            'pic_type', a_pics.pic_type
+          ) 
+          ORDER BY FIELD(a_pics.id, n.images)
+        ) as image_filenames_json
       FROM ${TABLES.NEWS} n
       LEFT JOIN ${TABLES.NEWS_BODY} nb ON n.id = nb.id
       LEFT JOIN ${TABLES.NEWS_HEADERS} nh ON n.id = nh.id
@@ -107,13 +127,28 @@ export async function getNewsById(id: number): Promise<NewsData | null> {
       GROUP BY n.id
     `;
     
-    const [results] = await executeQuery<NewsData>(query, [id]);
+    const [results] = await executeQuery<NewsDataWithJson>(query, [id]);
     
     if (results.length === 0) {
       return null;
     }
     
     const news = results[0];
+    
+    // Парсимо JSON дані зображень
+    if (news.image_filenames_json) {
+      try {
+        news.image_filenames = JSON.parse(`[${news.image_filenames_json}]`);
+      } catch (error) {
+        console.error('Error parsing image_filenames JSON:', error);
+        news.image_filenames = [];
+      }
+    } else {
+      news.image_filenames = [];
+    }
+    
+    // Видаляємо тимчасове поле
+    delete (news as any).image_filenames_json;
     
     // Отримуємо теги
     const tagsQuery = `

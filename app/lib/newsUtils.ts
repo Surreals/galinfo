@@ -17,7 +17,13 @@ interface NewsItem {
   sheader: string;
   steaser: string;
   qty: number;
-  image_filenames: string;
+  image_filenames: Array<{
+    id: number;
+    filename: string;
+    title_ua?: string;
+    title_deflang?: string;
+    pic_type?: number;
+  }>;
   nweight: number;
 }
 
@@ -120,12 +126,9 @@ export function getNewsImage(newsItem: NewsItem, size: keyof ApiImageUrls = 'int
   }
 
   // Check if we have image_filenames from the database join
-  if (newsItem.image_filenames && newsItem.image_filenames.trim() !== '') {
-    const filenames = newsItem.image_filenames.split(',').map((f: string) => f.trim());
-    if (filenames.length > 0) {
-      const imagePath = generateImagePath(filenames[0]);
-      return ensureFullImageUrl(config.images.getNewsImagePath(imagePath));
-    }
+  if (newsItem.image_filenames && Array.isArray(newsItem.image_filenames) && newsItem.image_filenames.length > 0) {
+    const imagePath = generateImagePath(newsItem.image_filenames[0].filename);
+    return ensureFullImageUrl(config.images.getNewsImagePath(imagePath));
   }
 
   // Check if there are images in the images field (стара структура - рядок)
@@ -193,7 +196,13 @@ type UniversalNewsItem = {
   id: number | string;
   images: any;
   photo?: string | number;
-  image_filenames?: string;
+  image_filenames?: Array<{
+    id: number;
+    filename: string;
+    title_ua?: string;
+    title_deflang?: string;
+    pic_type?: number;
+  }>;
   [key: string]: any; // Дозволяємо додаткові поля
 };
 
@@ -243,7 +252,7 @@ export function hasNewsPhoto(newsItem: any): boolean {
     return true;
   }
 
-  if (newsItem.image_filenames && newsItem.image_filenames.trim() !== '') {
+  if (newsItem.image_filenames && Array.isArray(newsItem.image_filenames) && newsItem.image_filenames.length > 0) {
     return true;
   }
 
@@ -334,12 +343,9 @@ export function getUniversalNewsImage(newsItem: any, size: keyof ApiImageUrls = 
   }
 
   // Check if we have image_filenames from the database join
-  if (newsItem.image_filenames && newsItem.image_filenames.trim() !== '') {
-    const filenames = newsItem.image_filenames.split(',').map((f: string) => f.trim());
-    if (filenames.length > 0) {
-      const imagePath = generateImagePath(filenames[0]);
-      return ensureFullImageUrl(config.images.getNewsImagePath(imagePath));
-    }
+  if (newsItem.image_filenames && Array.isArray(newsItem.image_filenames) && newsItem.image_filenames.length > 0) {
+    const imagePath = generateImagePath(newsItem.image_filenames[0].filename);
+    return ensureFullImageUrl(config.images.getNewsImagePath(imagePath));
   }
 
   // Check if there are images in the images field (стара структура - рядок)

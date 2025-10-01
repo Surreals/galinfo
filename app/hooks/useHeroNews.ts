@@ -24,7 +24,13 @@ interface HeroNewsItem {
   sheader: string;
   steaser: string;
   qty: number;
-  image_filenames: string;
+  image_filenames: Array<{
+    id: number;
+    filename: string;
+    title_ua?: string;
+    title_deflang?: string;
+    pic_type?: number;
+  }>;
 }
 
 interface HeroNewsResponse {

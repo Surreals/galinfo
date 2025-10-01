@@ -60,7 +60,13 @@ export interface ArticleData {
   images: string;
   
   // Назви файлів зображень
-  image_filenames: string;
+  image_filenames: Array<{
+    id: number;
+    filename: string;
+    title_ua?: string;
+    title_deflang?: string;
+    pic_type?: number;
+  }>;
   
   // Мова
   lang: string;
@@ -103,7 +109,7 @@ const defaultArticleData: ArticleData = {
   approved: false,
   to_twitter: false,
   images: '',
-  image_filenames: '',
+  image_filenames: [],
   lang: 'ua',
 };
 
