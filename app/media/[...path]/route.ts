@@ -1,11 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { readFile } from 'fs/promises';
+import { readFile, stat } from 'fs/promises';
 import { join } from 'path';
-import { existsSync } from 'fs';
+import { existsSync, createReadStream } from 'fs';
 
 /**
  * Serves media files from external storage
  * This route handles requests to /media/* and serves files from MEDIA_STORAGE_PATH
+ * Supports Range requests for video streaming
  */
 export async function GET(
   request: NextRequest,
@@ -37,23 +38,60 @@ export async function GET(
     
     // Check if file exists
     if (!existsSync(fullPath)) {
+      console.error('File not found:', fullPath);
       return NextResponse.json(
         { error: 'File not found' },
         { status: 404 }
       );
     }
     
-    // Read the file
-    const fileBuffer = await readFile(fullPath);
+    // Get file stats
+    const fileStats = await stat(fullPath);
+    const fileSize = fileStats.size;
     
     // Determine content type based on file extension
     const contentType = getContentType(filePath);
     
-    // Return the file with appropriate headers
-    return new NextResponse(fileBuffer, {
+    // Check if this is a video file
+    const isVideo = contentType.startsWith('video/');
+    
+    // Handle Range requests for video streaming
+    const range = request.headers.get('range');
+    
+    if (range && isVideo) {
+      // Parse Range header (e.g., "bytes=0-1023")
+      const parts = range.replace(/bytes=/, '').split('-');
+      const start = parseInt(parts[0], 10);
+      const end = parts[1] ? parseInt(parts[1], 10) : fileSize - 1;
+      
+      const chunkSize = (end - start) + 1;
+      
+      // Read the file chunk
+      const fileBuffer = await readFile(fullPath);
+      const chunk = fileBuffer.slice(start, end + 1);
+      
+      // Return partial content with Range headers
+      return new NextResponse(new Uint8Array(chunk), {
+        status: 206, // Partial Content
+        headers: {
+          'Content-Type': contentType,
+          'Content-Range': `bytes ${start}-${end}/${fileSize}`,
+          'Accept-Ranges': 'bytes',
+          'Content-Length': chunkSize.toString(),
+          'Cache-Control': 'public, max-age=31536000, immutable',
+        },
+      });
+    }
+    
+    // For non-range requests or non-video files, serve the entire file
+    const fileBuffer = await readFile(fullPath);
+    
+    return new NextResponse(new Uint8Array(fileBuffer), {
       status: 200,
       headers: {
         'Content-Type': contentType,
+        'Content-Length': fileSize.toString(),
+        'Accept-Ranges': isVideo ? 'bytes' : 'none',
         'Cache-Control': 'public, max-age=31536000, immutable',
       },
     });
@@ -87,6 +125,7 @@ function getContentType(filename: string): string {
     'mp4': 'video/mp4',
     'webm': 'video/webm',
     'ogg': 'video/ogg',
+    'ogv': 'video/ogg',
     'avi': 'video/x-msvideo',
     'mov': 'video/quicktime',
     'flv': 'video/x-flv',
@@ -94,7 +133,7 @@ function getContentType(filename: string): string {
     // Audio
     'mp3': 'audio/mpeg',
     'wav': 'audio/wav',
-    'ogg': 'audio/ogg',
+    'oga': 'audio/ogg',
   };
   
   return contentTypes[ext || ''] || 'application/octet-stream';

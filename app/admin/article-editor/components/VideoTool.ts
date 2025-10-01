@@ -96,22 +96,27 @@ class VideoTool {
     video.preload = 'metadata';
 
     // Add multiple source formats
-    const mp4Source = document.createElement('source');
-    mp4Source.src = this.data.file.url;
-    mp4Source.type = 'video/mp4';
-    video.appendChild(mp4Source);
+    // Only add source tag for the actual video file type
+    const source = document.createElement('source');
+    source.src = this.data.file.url;
+    
+    // Determine MIME type from file extension
+    const fileExtension = this.data.file.url.split('.').pop()?.toLowerCase();
+    const mimeTypes: { [key: string]: string } = {
+      'mp4': 'video/mp4',
+      'webm': 'video/webm',
+      'ogg': 'video/ogg',
+      'ogv': 'video/ogg',
+      'mov': 'video/quicktime',
+      'avi': 'video/x-msvideo',
+    };
+    
+    source.type = mimeTypes[fileExtension || ''] || 'video/mp4';
+    video.appendChild(source);
 
-    const webmSource = document.createElement('source');
-    webmSource.src = this.data.file.url;
-    webmSource.type = 'video/webm';
-    video.appendChild(webmSource);
-
-    const oggSource = document.createElement('source');
-    oggSource.src = this.data.file.url;
-    oggSource.type = 'video/ogg';
-    video.appendChild(oggSource);
-
-    video.textContent = 'Ваш браузер не підтримує відео тег.';
+    // Fallback text for unsupported browsers
+    const fallbackText = document.createTextNode('Ваш браузер не підтримує відео тег.');
+    video.appendChild(fallbackText);
 
     videoContainer.appendChild(video);
 
