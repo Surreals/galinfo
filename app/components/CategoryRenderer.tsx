@@ -69,6 +69,12 @@ const CategoryRenderer: React.FC<CategoryRendererProps> = ({
   
   // Визначаємо, чи це категорія "important" (важливі новини)
   const isImportantCategory = categoryId === -1;
+  
+  // Визначаємо, чи це категорія "news" (новини)
+  const isNewsCategory = categoryId === -2;
+  
+  // Визначаємо, чи це категорія "articles" (статті)
+  const isArticlesCategory = categoryId === -3;
 
   // Визначаємо, чи це спеціальна тема, яка має використовувати useSpecialThemesNews
   const isSpecialTheme = categoryId !== null && isSpecialThemeCategory(categoryId);
@@ -99,8 +105,8 @@ const CategoryRenderer: React.FC<CategoryRendererProps> = ({
     limit: 38, // Було 37: +1 для головної новини
     lang: '1',
     approved: true,
-    type: undefined,
-    autoFetch: categoryId !== null && !isRegion && !isAllCategory && !isSpecialTheme
+    type: isNewsCategory ? '1' : isArticlesCategory ? '2' : undefined,
+    autoFetch: categoryId !== null && !isRegion && !isAllCategory && !isSpecialTheme && !isNewsCategory && !isArticlesCategory
   });
 
   // Хук для спеціальних тем (коли categoryId є одним із зазначених спеціальних ID)
@@ -137,6 +143,24 @@ const CategoryRenderer: React.FC<CategoryRendererProps> = ({
     autoFetch: isImportantCategory
   });
 
+  // Хук для новин (коли categoryId = -2) - використовуємо useLatestNews з фільтром по типу
+  const newsCategoryHook = useLatestNews({
+    page: currentPage,
+    limit: 58, // +1 для головної новини (як для all)
+    lang: '1',
+    type: '1', // ntype = 1 для новин
+    autoFetch: isNewsCategory
+  });
+
+  // Хук для статей (коли categoryId = -3) - використовуємо useLatestNews з фільтром по типу
+  const articlesCategoryHook = useLatestNews({
+    page: currentPage,
+    limit: 58, // +1 для головної новини (як для all)
+    lang: '1',
+    type: '2', // ntype = 2 для статей
+    autoFetch: isArticlesCategory
+  });
+
   // Хуки для тегів - завжди викликаємо, але з умовною логікою
   const tagNewsHook = useNewsByTag({
     tagId: isTag ? undefined : undefined, // Не передаємо tagId
@@ -152,14 +176,20 @@ const CategoryRenderer: React.FC<CategoryRendererProps> = ({
   const currentCategoryData = isTag ? tagNewsHook.data :
                              isAllCategory ? allNewsHook.data : 
                              isImportantCategory ? { news: importantNewsCategoryHook.importantNews } : 
+                             isNewsCategory ? newsCategoryHook.data :
+                             isArticlesCategory ? articlesCategoryHook.data :
                              (isRegion ? regionHook.data : (isSpecialTheme ? specialThemeHook.data : rubricHook.data));
   const currentCategoryLoading = isTag ? tagNewsHook.loading :
                                 isAllCategory ? allNewsHook.loading : 
                                 isImportantCategory ? importantNewsCategoryHook.loading : 
+                                isNewsCategory ? newsCategoryHook.loading :
+                                isArticlesCategory ? articlesCategoryHook.loading :
                                 (isRegion ? regionHook.loading : (isSpecialTheme ? specialThemeHook.loading : rubricHook.loading));
   const currentCategoryError = isTag ? tagNewsHook.error :
                               isAllCategory ? allNewsHook.error : 
                               isImportantCategory ? importantNewsCategoryHook.error : 
+                              isNewsCategory ? newsCategoryHook.error :
+                              isArticlesCategory ? articlesCategoryHook.error :
                               (isRegion ? regionHook.error : (isSpecialTheme ? specialThemeHook.error : rubricHook.error));
 
   // Трансформуємо дані для поточної категорії (37 новин для звичайних категорій, 57 для "all" та "important")
@@ -184,10 +214,12 @@ const CategoryRenderer: React.FC<CategoryRendererProps> = ({
   const paginationData = isTag ? tagNewsHook.data?.pagination :
                         isAllCategory ? allNewsHook.data?.pagination :
                         isImportantCategory ? undefined :
+                        isNewsCategory ? newsCategoryHook.data?.pagination :
+                        isArticlesCategory ? articlesCategoryHook.data?.pagination :
                         (isRegion ? regionHook.data?.pagination : (isSpecialTheme ? specialThemeHook.data?.pagination : rubricHook.data?.pagination));
 
   const totalItems = paginationData?.total || 0;
-  const pageSize = paginationData?.limit || (isAllCategory ? 58 : 38);
+  const pageSize = paginationData?.limit || (isAllCategory || isImportantCategory ? 58 : 38);
   const totalPages = paginationData?.totalPages || 0;
 
   const handlePageChange = (page: number) => {
@@ -263,6 +295,66 @@ const CategoryRenderer: React.FC<CategoryRendererProps> = ({
           };
         }
       }
+    } else if (isNewsCategory && newsCategoryHook.data?.news && newsCategoryHook.data.news.length > 0) {
+      // Шукаємо першу новину з фото та nweight > 0 з оригінального масиву (за датою)
+      const importantNewsWithPhoto = newsCategoryHook.data.news.find(news =>
+        hasNewsPhoto(news) && (news as any).nweight > 0
+      );
+      if (importantNewsWithPhoto) {
+        mainNewsItem = {
+          id: importantNewsWithPhoto.id.toString(),
+          title: importantNewsWithPhoto.nheader,
+          date: formatFullNewsDate(importantNewsWithPhoto.ndate, importantNewsWithPhoto.ntime),
+          time: importantNewsWithPhoto.ntime,
+          url: generateArticleUrl(importantNewsWithPhoto as any),
+          imageUrl: getNewsImage(importantNewsWithPhoto as any, 'full'),
+          imageAlt: importantNewsWithPhoto.nheader
+        };
+      } else {
+        // Якщо немає важливих новин з фото, шукаємо будь-яку новину з фото
+        const newsWithPhoto = newsCategoryHook.data.news.find(news => hasNewsPhoto(news));
+        if (newsWithPhoto) {
+          mainNewsItem = {
+            id: newsWithPhoto.id.toString(),
+            title: newsWithPhoto.nheader,
+            date: formatFullNewsDate(newsWithPhoto.ndate, newsWithPhoto.ntime),
+            time: newsWithPhoto.ntime,
+            url: generateArticleUrl(newsWithPhoto as any),
+            imageUrl: getNewsImage(newsWithPhoto as any, 'full'),
+            imageAlt: newsWithPhoto.nheader
+          };
+        }
+      }
+    } else if (isArticlesCategory && articlesCategoryHook.data?.news && articlesCategoryHook.data.news.length > 0) {
+      // Шукаємо першу статтю з фото та nweight > 0 з оригінального масиву (за датою)
+      const importantArticleWithPhoto = articlesCategoryHook.data.news.find(news =>
+        hasNewsPhoto(news) && (news as any).nweight > 0
+      );
+      if (importantArticleWithPhoto) {
+        mainNewsItem = {
+          id: importantArticleWithPhoto.id.toString(),
+          title: importantArticleWithPhoto.nheader,
+          date: formatFullNewsDate(importantArticleWithPhoto.ndate, importantArticleWithPhoto.ntime),
+          time: importantArticleWithPhoto.ntime,
+          url: generateArticleUrl(importantArticleWithPhoto as any),
+          imageUrl: getNewsImage(importantArticleWithPhoto as any, 'full'),
+          imageAlt: importantArticleWithPhoto.nheader
+        };
+      } else {
+        // Якщо немає важливих статей з фото, шукаємо будь-яку статтю з фото
+        const articleWithPhoto = articlesCategoryHook.data.news.find(news => hasNewsPhoto(news));
+        if (articleWithPhoto) {
+          mainNewsItem = {
+            id: articleWithPhoto.id.toString(),
+            title: articleWithPhoto.nheader,
+            date: formatFullNewsDate(articleWithPhoto.ndate, articleWithPhoto.ntime),
+            time: articleWithPhoto.ntime,
+            url: generateArticleUrl(articleWithPhoto as any),
+            imageUrl: getNewsImage(articleWithPhoto as any, 'full'),
+            imageAlt: articleWithPhoto.nheader
+          };
+        }
+      }
     } else {
       // Для інших категорій: nweight > 0 → будь-яка з фото
       const importantNewsWithPhoto = sortedCurrentCategoryData.find(news => 
@@ -301,6 +393,28 @@ const CategoryRenderer: React.FC<CategoryRendererProps> = ({
           url: generateArticleUrl(firstNews as any),
           imageUrl: getNewsImage(firstNews as any, 'full'),
           imageAlt: firstNews.nheader
+        };
+      } else if (isNewsCategory && newsCategoryHook.data?.news && newsCategoryHook.data.news.length > 0) {
+        const firstNews = newsCategoryHook.data.news[0];
+        mainNewsItem = {
+          id: firstNews.id.toString(),
+          title: firstNews.nheader,
+          date: formatFullNewsDate(firstNews.ndate, firstNews.ntime),
+          time: firstNews.ntime,
+          url: generateArticleUrl(firstNews as any),
+          imageUrl: getNewsImage(firstNews as any, 'full'),
+          imageAlt: firstNews.nheader
+        };
+      } else if (isArticlesCategory && articlesCategoryHook.data?.news && articlesCategoryHook.data.news.length > 0) {
+        const firstArticle = articlesCategoryHook.data.news[0];
+        mainNewsItem = {
+          id: firstArticle.id.toString(),
+          title: firstArticle.nheader,
+          date: formatFullNewsDate(firstArticle.ndate, firstArticle.ntime),
+          time: firstArticle.ntime,
+          url: generateArticleUrl(firstArticle as any),
+          imageUrl: getNewsImage(firstArticle as any, 'full'),
+          imageAlt: firstArticle.nheader
         };
       } else if (sortedCurrentCategoryData.length > 0) {
         // Використовуємо першу новину з масиву
@@ -547,10 +661,10 @@ const CategoryRenderer: React.FC<CategoryRendererProps> = ({
           return null; // Не показуємо блок для інших категорій
         }
         
-        // Для категорії "all" та "important" передаємо останні 20 новин (виключаючи головну новину)
-        if (isAllCategory || isImportantCategory) {
+        // Для категорії "all", "important", "news" та "articles" передаємо останні 20 новин (виключаючи головну новину)
+        if (isAllCategory || isImportantCategory || isNewsCategory || isArticlesCategory) {
           const filteredAllNews = getNewsWithoutMain();
-          const allNewsData = filteredAllNews.slice(37, 57); // Останні 20 новин з 57
+          const allNewsData = filteredAllNews.slice(37, 57); // Останні 20 новин з 57 (для всіх цих категорій)
           
           // Не рендеримо компонент, якщо новин менше 1 (не завантажуємо)
           if (!currentCategoryLoading && allNewsData.length < 1) {

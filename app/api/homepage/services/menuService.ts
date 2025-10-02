@@ -52,14 +52,14 @@ export async function getMenuData(): Promise<MenuData> {
         id: 0,
         param: 'news',
         title: 'Новини',
-        link: '/news/',
+        link: '/news',
         cattype: 0
       },
       {
         id: 0,
-        param: 'subject',
+        param: 'articles',
         title: 'Статті',
-        link: '/subject/',
+        link: '/articles',
         cattype: 0
       },
       {

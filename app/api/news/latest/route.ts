@@ -8,7 +8,24 @@ export async function GET(request: Request) {
     const limit = parseInt(searchParams.get('limit') || '20');
     const lang = searchParams.get('lang') || '1';
     const page = parseInt(searchParams.get('page') || '1');
+    const type = searchParams.get('type'); // Фільтр по типу новини
     const offset = (page - 1) * limit;
+
+    // Формуємо умови WHERE
+    const whereConditions = [
+      'a_news.lang = ?',
+      'CONCAT(a_news.ndate, " ", a_news.ntime) < NOW()',
+      'a_news.approved = 1'
+    ];
+    const queryParams = [lang];
+
+    // Додаємо фільтр по типу, якщо вказано
+    if (type) {
+      whereConditions.push('a_news.ntype = ?');
+      queryParams.push(type);
+    }
+
+    const whereClause = whereConditions.join(' AND ');
 
     // Отримуємо останні новини з усіх категорій
     const [latestNews] = await executeQuery(`
@@ -35,21 +52,17 @@ export async function GET(request: Request) {
       LEFT JOIN a_news_headers USE KEY (PRIMARY) ON a_news.id = a_news_headers.id
       LEFT JOIN a_statcomm USE KEY (PRIMARY) ON a_news.id = a_statcomm.id
       LEFT JOIN a_statview USE KEY (PRIMARY) ON a_news.id = a_statview.id
-      WHERE a_news.lang = ?
-        AND CONCAT(a_news.ndate, " ", a_news.ntime) < NOW() 
-        AND a_news.approved = 1
+      WHERE ${whereClause}
       ORDER BY a_news.udate DESC
       LIMIT ? OFFSET ?
-    `, [lang, limit, offset]);
+    `, [...queryParams, limit, offset]);
 
     // Отримуємо загальну кількість новин для пагінації
     const [totalCount] = await executeQuery(`
       SELECT COUNT(*) as total
       FROM a_news USE KEY(udate)
-      WHERE a_news.lang = ?
-        AND CONCAT(a_news.ndate, " ", a_news.ntime) < NOW() 
-        AND a_news.approved = 1
-    `, [lang]);
+      WHERE ${whereClause}
+    `, queryParams);
 
     const total = totalCount[0]?.total || 0;
     const totalPages = Math.ceil(total / limit);
@@ -119,7 +132,8 @@ export async function GET(request: Request) {
       },
       filters: {
         lang,
-        approved: true
+        approved: true,
+        type: type || null
       }
     });
 

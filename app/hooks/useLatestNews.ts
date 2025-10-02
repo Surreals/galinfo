@@ -46,6 +46,7 @@ export interface UseLatestNewsOptions {
   page?: number;
   limit?: number;
   lang?: string;
+  type?: string; // Фільтр по типу новини (1 - новини, 2 - статті)
   autoFetch?: boolean;
 }
 
@@ -73,6 +74,7 @@ export function useLatestNews(options: UseLatestNewsOptions = {}): UseLatestNews
     page: initialPage = 1,
     limit: initialLimit = 20,
     lang: initialLang = '1',
+    type: initialType,
     autoFetch = true
   } = options;
 
@@ -82,17 +84,24 @@ export function useLatestNews(options: UseLatestNewsOptions = {}): UseLatestNews
   const [page, setPage] = useState<number>(initialPage);
   const [limit, setLimit] = useState<number>(initialLimit);
   const [lang, setLang] = useState<string>(initialLang);
+  const [type, setType] = useState<string | undefined>(initialType);
 
   const fetchLatestNews = useCallback(async () => {
     setLoading(true);
     setError(null);
 
     try {
-      const response = await apiGetWithParams<LatestNewsResponse>('/api/news/latest', {
+      const params: Record<string, string> = {
         page: page.toString(),
         limit: limit.toString(),
         lang
-      });
+      };
+      
+      if (type) {
+        params.type = type;
+      }
+
+      const response = await apiGetWithParams<LatestNewsResponse>('/api/news/latest', params);
 
       setData(response.data);
     } catch (err) {
@@ -113,7 +122,7 @@ export function useLatestNews(options: UseLatestNewsOptions = {}): UseLatestNews
     } finally {
       setLoading(false);
     }
-  }, [page, limit, lang]);
+  }, [page, limit, lang, type]);
 
   // Автоматичне завантаження при зміні параметрів
   useEffect(() => {
@@ -127,7 +136,8 @@ export function useLatestNews(options: UseLatestNewsOptions = {}): UseLatestNews
     setPage(initialPage);
     setLimit(initialLimit);
     setLang(initialLang);
-  }, [initialPage, initialLimit, initialLang]);
+    setType(initialType);
+  }, [initialPage, initialLimit, initialLang, initialType]);
 
   const refetch = useCallback(() => {
     fetchLatestNews();
@@ -144,6 +154,10 @@ export function useLatestNews(options: UseLatestNewsOptions = {}): UseLatestNews
 
   const handleSetLang = useCallback((newLang: string) => {
     setLang(newLang);
+  }, []);
+
+  const handleSetType = useCallback((newType: string | undefined) => {
+    setType(newType);
   }, []);
 
   // Додаткові методи для навігації
@@ -190,6 +204,7 @@ export function useLatestNews(options: UseLatestNewsOptions = {}): UseLatestNews
     setPage: handleSetPage,
     setLimit: handleSetLimit,
     setLang: handleSetLang,
+    setType: handleSetType,
     goToNextPage,
     goToPrevPage,
     goToFirstPage,

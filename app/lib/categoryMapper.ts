@@ -5,6 +5,10 @@ export const CATEGORY_URL_MAPPER: Record<string, number> = {
   // Спеціальні категорії
   'all': CATEGORY_IDS.ALL,                // 0 - Всі новини
   'important': -1,                        // -1 - Важливі новини (спеціальний ID)
+  
+  // Типи контенту
+  'news': -2,                             // -2 - Новини (спеціальний ID)
+  'articles': -3,                         // -3 - Статті (спеціальний ID)
 
   // Основні категорії
   'society': CATEGORY_IDS.SOCIETY,        // 4 - Суспільство

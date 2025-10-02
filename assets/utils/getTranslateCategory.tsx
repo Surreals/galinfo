@@ -47,6 +47,10 @@ export function getCategoryTitle(category: string): string {
       return "Відверта розмова";
     case "vidverta-rozmova-z":
       return "Відверта розмова";
+    case "news":
+      return "Новини";
+    case "articles":
+      return "Статті";
     default:
       return "Невідома категорія";
   }
