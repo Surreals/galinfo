@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import { CategoryRenderer } from "@/app/components";
 import { isValidCategoryUrl } from '@/app/lib/categoryMapper';
 import { useTemplateSchemas } from '@/app/hooks/useTemplateSchemas';
@@ -85,11 +85,22 @@ export const CategoryPageClient: React.FC<CategoryPageClientProps> = ({
   // Якщо це тег і дані завантажені, використовуємо CategoryRenderer з назвою тегу
   if (isTag && tagData) {
     return (
-      <CategoryRenderer 
-        category={tagData.tag} 
-        apiDesktopSchema={apiCategoryDesktopSchema}
-        apiMobileSchema={apiCategoryMobileSchema}
-      />
+      <Suspense fallback={
+        <div style={{ 
+          display: 'flex', 
+          justifyContent: 'center', 
+          alignItems: 'center', 
+          minHeight: '50vh' 
+        }}>
+          <Spin size="large" />
+        </div>
+      }>
+        <CategoryRenderer 
+          category={tagData.tag} 
+          apiDesktopSchema={apiCategoryDesktopSchema}
+          apiMobileSchema={apiCategoryMobileSchema}
+        />
+      </Suspense>
     );
   }
 
@@ -107,10 +118,21 @@ export const CategoryPageClient: React.FC<CategoryPageClientProps> = ({
 
   // Для валідних категорій
   return (
-    <CategoryRenderer 
-      category={category} 
-      apiDesktopSchema={apiCategoryDesktopSchema}
-      apiMobileSchema={apiCategoryMobileSchema}
-    />
+    <Suspense fallback={
+      <div style={{ 
+        display: 'flex', 
+        justifyContent: 'center', 
+        alignItems: 'center', 
+        minHeight: '50vh' 
+      }}>
+        <Spin size="large" />
+      </div>
+    }>
+      <CategoryRenderer 
+        category={category} 
+        apiDesktopSchema={apiCategoryDesktopSchema}
+        apiMobileSchema={apiCategoryMobileSchema}
+      />
+    </Suspense>
   );
 };
