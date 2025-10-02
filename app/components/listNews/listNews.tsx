@@ -32,6 +32,7 @@ type NewsListProps = {
   showImagesAt?: number[];
   widthPercent?: number;
   title?: string;
+  titleHref?: string;
   arrowRightIcon?: boolean;
   showMoreButton?: boolean;
   moreButtonUrl?: string;
@@ -59,6 +60,7 @@ export default function NewsList({
    showImagesAt = [],
    widthPercent = 100,
    title,
+   titleHref,
    arrowRightIcon = false,
    showMoreButton = false,
    moreButtonUrl = "#",
@@ -157,7 +159,11 @@ export default function NewsList({
               <div className={styles.header}>
                 <div className={styles.titleContainer}>
                   {isMobile ? <AccentSquare className={styles.titleAccent}/> : null}
-                  {categoryId ? (
+                  {titleHref ? (
+                    <Link href={titleHref} className={styles.titleLink}>
+                      <h2 className={isMobile ? styles.titleMobile : styles.title}>{title}</h2>
+                    </Link>
+                  ) : categoryId ? (
                     <Link href={`/${getUrlFromCategoryId(categoryId)}`} className={styles.titleLink}>
                       <h2 className={isMobile ? styles.titleMobile : styles.title}>{title}</h2>
                     </Link>
@@ -165,8 +171,8 @@ export default function NewsList({
                     <h2 className={isMobile ? styles.titleMobile : styles.title}>{title}</h2>
                   )}
                 </div>
-                {arrowRightIcon && categoryId && <span className={styles.titleIcon}>
-          <Link href={`/${getUrlFromCategoryId(categoryId)}`} className={styles.titleLink}>
+                {arrowRightIcon && (titleHref || categoryId) && <span className={styles.titleIcon}>
+          <Link href={titleHref || `/${getUrlFromCategoryId(categoryId!)}` } className={styles.titleLink}>
               <Image
                   src={arrowRight}
                   alt={'Arrow right'}

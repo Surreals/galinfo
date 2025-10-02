@@ -10,7 +10,7 @@ import WeatherWidget from './hero/WeatherWidget';
 import { useHeroNews } from '@/app/hooks/useHeroNews';
 import { useNewsByRubric, NewsItem as ApiNewsItem } from '@/app/hooks/useNewsByRubric';
 import { useNewsByRegion } from '@/app/hooks/useNewsByRegion';
-import { isRegionCategory } from '@/app/lib/categoryUtils';
+import { isRegionCategory, CATEGORY_IDS } from '@/app/lib/categoryUtils';
 import {
   formatFullNewsDate,
   generateArticleUrl,
@@ -333,7 +333,9 @@ function NewsListRenderer({ block, isMobile }: { block: any; isMobile: boolean }
     <NewsList
       loading={apiLoading}
       title={config.title}
-      moreButtonUrl={config.moreButtonUrl}
+      categoryId={categoryId}
+      titleHref={categoryId === CATEGORY_IDS.LVIV ? '/region/lviv' : undefined}
+      moreButtonUrl={categoryId === CATEGORY_IDS.LVIV ? '/region/lviv' : config.moreButtonUrl}
       data={newsData}
       showSeparator={config.showSeparator}
       showImagesAt={isMobile ? (config.showImagesAt || []) : (config.showImagesAt || [])}

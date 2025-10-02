@@ -175,7 +175,11 @@ export default function CategoryNews({
         {!hideHeader && (
           <div className={styles.header}>
             <AccentSquare className={styles.titleAccent} />
-            {categoryId && getUrlFromCategoryId(categoryId) ? (
+            {viewAllButtonHref ? (
+              <Link href={viewAllButtonHref} className={styles.titleLink}>
+                <h2 className={styles.title}>{category}</h2>
+              </Link>
+            ) : categoryId && getUrlFromCategoryId(categoryId) ? (
               <Link href={`/${getUrlFromCategoryId(categoryId)}`} className={styles.titleLink}>
                 <h2 className={styles.title}>{category}</h2>
               </Link>

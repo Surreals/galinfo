@@ -202,7 +202,9 @@ export default function AllNews({ news = [], isLoading = false, hideHeader = fal
         {!hideHeader && (
           <div className={styles.header}>
             <AccentSquare className={styles.titleAccent} />
-            <h2 className={styles.title}>{customTitle || 'ВСІ НОВИНИ'}</h2>
+            <Link href="/all" className={styles.titleLink}>
+              <h2 className={styles.title}>{customTitle || 'ВСІ НОВИНИ'}</h2>
+            </Link>
           </div>
         )}
 
