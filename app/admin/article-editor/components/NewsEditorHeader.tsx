@@ -70,7 +70,7 @@ export default function NewsEditorHeader({ isEditing, articleData, onNbodyChange
 
   // Функція валідації заголовка
   const validateTitle = (title: string): boolean => {
-    const trimmedTitle = title.trim();
+    const trimmedTitle = title?.trim();
     if (!trimmedTitle) {
       setTitleError("Заголовок є обов'язковим");
       return false;
