@@ -112,6 +112,13 @@
     flex-direction: column;
 }
 
+.errorMessage {
+    color: #ff4d4f;
+    font-size: 12px;
+    margin-top: 4px;
+    line-height: 1.4;
+}
+
 .label {
     font-weight: 500;
     margin-bottom: 6px;

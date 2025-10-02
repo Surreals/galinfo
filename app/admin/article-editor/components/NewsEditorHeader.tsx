@@ -23,15 +23,19 @@ interface NewsEditorHeaderProps {
   onNbodyChange?: (nbody: string) => void;
   onDataChange?: (updates: Partial<ArticleData>) => void;
   onEditorSaveRef?: (saveFn: () => Promise<string>) => void;
+  onValidationChange?: (isValid: boolean) => void;
 }
 
-export default function NewsEditorHeader({ isEditing, articleData, onNbodyChange, onDataChange, onEditorSaveRef }: NewsEditorHeaderProps) {
+export default function NewsEditorHeader({ isEditing, articleData, onNbodyChange, onDataChange, onEditorSaveRef, onValidationChange }: NewsEditorHeaderProps) {
   const router = useRouter();
   const editorRef = useRef<EditorJSClientRef>(null);
   
   // --- стейти для всіх текстерій ---
   const [mainTitle, setMainTitle] = useState(articleData?.nheader || "");
   const [mainLead, setMainLead] = useState(articleData?.nteaser || "");
+  
+  // --- стан для валідації ---
+  const [titleError, setTitleError] = useState<string>("");
 
 
   const [metaTitle, setMetaTitle] = useState(articleData?.ntitle || "");
@@ -46,20 +50,43 @@ export default function NewsEditorHeader({ isEditing, articleData, onNbodyChange
       setMetaTitle(articleData.ntitle || "");
       setMetaDescription(articleData.ndescription || "");
       setMetaKeywords(articleData.nkeywords || "");
+      
+      // Валідуємо заголовок при завантаженні
+      const isValid = validateTitle(articleData.nheader);
+      onValidationChange?.(isValid);
     } else {
-      // Скидаємо до значень за замовчуванням при створенні нової новини
+      // Sкидаємо до значень за замовчуванням при створенні нової новини
       setMainTitle("");
       setMainLead("");
       setMetaTitle("");
       setMetaDescription("");
       setMetaKeywords("");
+      
+      // Валідуємо порожній заголовок
+      const isValid = validateTitle("");
+      onValidationChange?.(isValid);
     }
   }, [articleData]);
+
+  // Функція валідації заголовка
+  const validateTitle = (title: string): boolean => {
+    const trimmedTitle = title.trim();
+    if (!trimmedTitle) {
+      setTitleError("Заголовок є обов'язковим");
+      return false;
+    }
+    setTitleError("");
+    return true;
+  };
 
   // Handlers для оновлення даних
   const handleMainTitleChange = (value: string) => {
     setMainTitle(value);
     onDataChange?.({ nheader: value });
+    
+    // Валідуємо заголовок
+    const isValid = validateTitle(value);
+    onValidationChange?.(isValid);
   };
 
   const handleMainLeadChange = (value: string) => {
@@ -112,7 +139,13 @@ export default function NewsEditorHeader({ isEditing, articleData, onNbodyChange
                 rows={2}
                 value={mainTitle}
                 onChange={(e) => handleMainTitleChange(e.target.value)}
+                status={titleError ? "error" : undefined}
               />
+              {titleError && (
+                <div className={styles.errorMessage}>
+                  {titleError}
+                </div>
+              )}
             </div>
             <div className={styles.field}>
               <label className={styles.label}>Лід</label>

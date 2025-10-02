@@ -57,10 +57,11 @@ interface NewsEditorSidebarProps {
   articleData?: ArticleData | null;
   menuData: MenuData | null;
   onEditorSave?: (() => Promise<string>) | null;
-  fetchArticle?: (() => void) | undefined
+  fetchArticle?: (() => void) | undefined;
+  isTitleValid?: boolean;
 }
 
-export default function NewsEditorSidebar({ newsId, articleData, menuData, onEditorSave, fetchArticle }: NewsEditorSidebarProps) {
+export default function NewsEditorSidebar({ newsId, articleData, menuData, onEditorSave, fetchArticle, isTitleValid }: NewsEditorSidebarProps) {
   const router = useRouter();
   const { modal } = App.useApp();
   const [savingProcess, setSavingProcess] = useState(false);
@@ -704,7 +705,7 @@ export default function NewsEditorSidebar({ newsId, articleData, menuData, onEdi
               onSave();
             }}
             loading={saving}
-            disabled={saving}
+            disabled={saving || !isTitleValid}
             className={styles.greenBtn}
           >
             ЗБЕРЕГТИ
