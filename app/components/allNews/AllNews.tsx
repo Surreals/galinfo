@@ -3,7 +3,6 @@ import { AccentSquare, ViewAllButton } from '@/app/shared';
 import { useLatestNews } from '@/app/hooks/useLatestNews';
 import { formatNewsDate, formatFullNewsDate, generateArticleUrl } from '@/app/lib/newsUtils';
 import { Skeleton } from 'antd';
-import type { ReactNode } from 'react';
 import styles from './AllNews.module.css';
 
 // Інтерфейси для типізації даних
@@ -22,10 +21,9 @@ export interface AllNewsProps {
   hideHeader?: boolean;
   className?: string; // Додаємо можливість передавати додатковий CSS клас
   customTitle?: string; // Додаємо можливість змінювати заголовок
-  footer?: ReactNode; // Додаємо слот під списком (пагінація)
 }
 
-export default function AllNews({ news = [], isLoading = false, hideHeader = false, className = "", customTitle, footer }: AllNewsProps) {
+export default function AllNews({ news = [], isLoading = false, hideHeader = false, className = "", customTitle }: AllNewsProps) {
   // Використовуємо хук для отримання останніх новин
   const {
     data: apiData,
@@ -239,13 +237,6 @@ export default function AllNews({ news = [], isLoading = false, hideHeader = fal
         {/* Кнопка "Всі новини з рубрики" */}
         {!hideHeader && (
           <ViewAllButton href="/all" />
-        )}
-
-        {/* Нижній слот: пагінація або інший контент */}
-        {footer && (
-          <div className={styles.paginationContainer}>
-            {footer}
-          </div>
         )}
       </div>
     </section>

@@ -661,6 +661,21 @@ const CategoryRenderer: React.FC<CategoryRendererProps> = ({
           return null; // Не показуємо блок для інших категорій
         }
         
+        // Рендеримо пагінацію над компонентом AllNews, якщо є більше однієї сторінки
+        const paginationElement = (totalPages > 1) ? (
+          <div className={styles.paginationContainer}>
+            <Pagination
+              current={currentPage}
+              total={totalItems}
+              pageSize={pageSize}
+              onChange={handlePageChange}
+              showSizeChanger={false}
+              hideOnSinglePage
+              showLessItems
+            />
+          </div>
+        ) : null;
+        
         // Для категорії "all", "important", "news" та "articles" передаємо останні 20 новин (виключаючи головну новину)
         if (isAllCategory || isImportantCategory || isNewsCategory || isArticlesCategory) {
           const filteredAllNews = getNewsWithoutMain();
@@ -672,42 +687,24 @@ const CategoryRenderer: React.FC<CategoryRendererProps> = ({
           }
           
           return (
-            <AllNews
-              key={index}
-              customTitle={config.customTitle || "Більше новин"}
-              news={allNewsData}
-              hideHeader={false}
-              footer={(totalPages > 1) ? (
-                <Pagination
-                  current={currentPage}
-                  total={totalItems}
-                  pageSize={pageSize}
-                  onChange={handlePageChange}
-                  showSizeChanger={false}
-                  hideOnSinglePage
-                  showLessItems
-                />
-              ) : null}
-            />
+            <div key={index}>
+              {paginationElement}
+              <AllNews
+                customTitle={config.customTitle || "Більше новин"}
+                news={allNewsData}
+                hideHeader={false}
+              />
+            </div>
           );
         }
         // Для інших категорій використовуємо стандартну логіку
         return (
-          <AllNews
-            key={index}
-            customTitle={config.customTitle}
-            footer={(totalPages > 1) ? (
-              <Pagination
-                current={currentPage}
-                total={totalItems}
-                pageSize={pageSize}
-                onChange={handlePageChange}
-                showSizeChanger={false}
-                hideOnSinglePage
-                showLessItems
-              />
-            ) : null}
-          />
+          <div key={index}>
+            {paginationElement}
+            <AllNews
+              customTitle={config.customTitle}
+            />
+          </div>
         );
 
       case 'SEPARATOR':
