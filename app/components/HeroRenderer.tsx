@@ -11,6 +11,7 @@ import { useHeroNews } from '@/app/hooks/useHeroNews';
 import { useNewsByRubric, NewsItem as ApiNewsItem } from '@/app/hooks/useNewsByRubric';
 import { useNewsByRegion } from '@/app/hooks/useNewsByRegion';
 import { isRegionCategory, CATEGORY_IDS } from '@/app/lib/categoryUtils';
+import { generateCategoryUrl } from '@/app/lib/categoryMapper';
 import {
   formatFullNewsDate,
   generateArticleUrl,
@@ -334,8 +335,8 @@ function NewsListRenderer({ block, isMobile }: { block: any; isMobile: boolean }
       loading={apiLoading}
       title={config.title}
       categoryId={categoryId}
-      titleHref={categoryId === CATEGORY_IDS.LVIV ? '/region/lviv' : undefined}
-      moreButtonUrl={categoryId === CATEGORY_IDS.LVIV ? '/region/lviv' : config.moreButtonUrl}
+      titleHref={generateCategoryUrl(categoryId)}
+      moreButtonUrl={generateCategoryUrl(categoryId) || config.moreButtonUrl}
       data={newsData}
       showSeparator={config.showSeparator}
       showImagesAt={isMobile ? (config.showImagesAt || []) : (config.showImagesAt || [])}

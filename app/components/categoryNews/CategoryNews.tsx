@@ -11,7 +11,7 @@ import { useNewsByRegion } from '@/app/hooks/useNewsByRegion';
 import { isRegionCategory } from '@/app/lib/categoryUtils';
 import { getImageUrlFromApi, getMainImageFromApi, hasApiImages, type ApiNewsImage } from '@/app/lib/imageUtils';
 import { getUniversalNewsImageIntxt, formatFullNewsDate } from '@/app/lib/newsUtils';
-import { getUrlFromCategoryId } from '@/app/lib/categoryMapper';
+import { getUrlFromCategoryId, generateCategoryUrl } from '@/app/lib/categoryMapper';
 import placeholderImage from '@/assets/images/Gal-info logo v13.png';
 
 // Інтерфейси для типізації даних
@@ -179,8 +179,8 @@ export default function CategoryNews({
               <Link href={viewAllButtonHref} className={styles.titleLink}>
                 <h2 className={styles.title}>{category}</h2>
               </Link>
-            ) : categoryId && getUrlFromCategoryId(categoryId) ? (
-              <Link href={`/${getUrlFromCategoryId(categoryId)}`} className={styles.titleLink}>
+            ) : categoryId ? (
+              <Link href={generateCategoryUrl(categoryId)} className={styles.titleLink}>
                 <h2 className={styles.title}>{category}</h2>
               </Link>
             ) : (
@@ -231,7 +231,7 @@ export default function CategoryNews({
         {/* Кнопка "Всі новини з рубрики" */}
         {!hideHeader && (
           <>
-            <ViewAllButton href={viewAllButtonHref || (categoryId && getUrlFromCategoryId(categoryId) ? `/${getUrlFromCategoryId(categoryId)}` : '/all-news')} />
+            <ViewAllButton href={viewAllButtonHref || (categoryId ? generateCategoryUrl(categoryId) : '/all-news')} />
           </>
         )}
         <div className={styles.separator}></div>

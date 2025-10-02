@@ -9,7 +9,7 @@ import arrowRight from "@/assets/icons/arrowRight.svg";
 import { useNewsByRubric } from '@/app/hooks/useNewsByRubric';
 import { getImageUrlFromApi, getMainImageFromApi, type ApiNewsImage } from '@/app/lib/imageUtils';
 import { getUniversalNewsImageThumbnail, formatFullNewsDate } from '@/app/lib/newsUtils';
-import { getUrlFromCategoryId } from '@/app/lib/categoryMapper';
+import { getUrlFromCategoryId, generateCategoryUrl } from '@/app/lib/categoryMapper';
 import placeholderImage from '@/assets/images/Gal-info logo v13.png';
 
 import styles from "./listNews.module.scss";
@@ -164,7 +164,7 @@ export default function NewsList({
                       <h2 className={isMobile ? styles.titleMobile : styles.title}>{title}</h2>
                     </Link>
                   ) : categoryId ? (
-                    <Link href={`/${getUrlFromCategoryId(categoryId)}`} className={styles.titleLink}>
+                    <Link href={generateCategoryUrl(categoryId)} className={styles.titleLink}>
                       <h2 className={isMobile ? styles.titleMobile : styles.title}>{title}</h2>
                     </Link>
                   ) : (
@@ -172,7 +172,7 @@ export default function NewsList({
                   )}
                 </div>
                 {arrowRightIcon && (titleHref || categoryId) && <span className={styles.titleIcon}>
-          <Link href={titleHref || `/${getUrlFromCategoryId(categoryId!)}` } className={styles.titleLink}>
+          <Link href={titleHref || generateCategoryUrl(categoryId!)} className={styles.titleLink}>
               <Image
                   src={arrowRight}
                   alt={'Arrow right'}
@@ -297,7 +297,7 @@ export default function NewsList({
             {showMoreButton && (
               <div className={styles.moreBtnWrapper}>
                 <ViewAllButton
-                  href={categoryId && getUrlFromCategoryId(categoryId) ? `/${getUrlFromCategoryId(categoryId)}` : (moreButtonUrl || '/all-news')}/>
+                  href={moreButtonUrl || (categoryId ? generateCategoryUrl(categoryId) : '/all-news')}/>
               </div>
             )}
             {isMobile && showSeparator && (
