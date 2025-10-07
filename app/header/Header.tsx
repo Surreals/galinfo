@@ -713,38 +713,47 @@ export default function Header() {
                       <span>Нічого не знайдено</span>
                     </div>
                   ) : (
-                    searchResults.map((item) => (
-                      <Link
-                        key={item.id}
-                        href={`/news/${item.urlkey}_${item.id}`}
-                        className={styles.searchResultItem}
-                        onClick={handleSearchResultClick}
-                      >
-                        <div className={styles.searchResultContent}>
-                          {item.images && item.images.length > 0 && (
-                            <div className={styles.searchResultImage}>
-                              <Image
-                                src={item.images[0].urls.tmb}
-                                alt={item.images[0].title || item.nheader}
-                                width={60}
-                                height={40}
-                                className={styles.searchImage}
-                              />
-                            </div>
-                          )}
-                          <div className={styles.searchResultText}>
-                            <div className={styles.searchResultTitle}>
-                              {item.nheader}
-                            </div>
-                            {item.nsubheader && (
-                              <div className={styles.searchResultSubtitle}>
-                                {item.nsubheader}
+                    <>
+                      {searchResults.map((item) => (
+                        <Link
+                          key={item.id}
+                          href={`/news/${item.urlkey}_${item.id}`}
+                          className={styles.searchResultItem}
+                          onClick={handleSearchResultClick}
+                        >
+                          <div className={styles.searchResultContent}>
+                            {item.images && item.images.length > 0 && (
+                              <div className={styles.searchResultImage}>
+                                <Image
+                                  src={item.images[0].urls.tmb}
+                                  alt={item.images[0].title || item.nheader}
+                                  width={60}
+                                  height={40}
+                                  className={styles.searchImage}
+                                />
                               </div>
                             )}
+                            <div className={styles.searchResultText}>
+                              <div className={styles.searchResultTitle}>
+                                {item.nheader}
+                              </div>
+                              {item.nsubheader && (
+                                <div className={styles.searchResultSubtitle}>
+                                  {item.nsubheader}
+                                </div>
+                              )}
+                            </div>
                           </div>
-                        </div>
+                        </Link>
+                      ))}
+                      <Link
+                        href={`/search?q=${encodeURIComponent(searchQuery)}`}
+                        className={styles.searchViewAllButton}
+                        onClick={handleSearchResultClick}
+                      >
+                        Всі результати
                       </Link>
-                    ))
+                    </>
                   )}
                 </div>
               )}
