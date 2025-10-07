@@ -176,7 +176,9 @@ export default function NewsEditorHeader({ isEditing, articleData, onNbodyChange
         <div className={styles.tabsBox}>
           <div className={styles.tabContent}>
             <div className={styles.field}>
-              <label className={styles.label}>Заголовок</label>
+              <label className={styles.label}>
+                Заголовок (<span style={{ color: '#ff4d4f' }}>{mainTitle.length}</span>)
+              </label>
               <TextArea
                 rows={2}
                 value={mainTitle}
@@ -190,7 +192,9 @@ export default function NewsEditorHeader({ isEditing, articleData, onNbodyChange
               )}
             </div>
             <div className={styles.field}>
-              <label className={styles.label}>Лід</label>
+              <label className={styles.label}>
+                Лід (<span style={{ color: '#ff4d4f' }}>{mainLead.length}</span>)
+              </label>
               <TextArea
                 rows={4}
                 value={mainLead}
