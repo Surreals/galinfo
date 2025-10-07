@@ -27,6 +27,8 @@ const CKEditorClient = forwardRef<CKEditorClientRef, Props>(
       editorUrl: 'https://cdn.ckeditor.com/4.22.1/standard-all/ckeditor.js',
       placeholder: placeholder,
       language: 'uk',
+      // Вимикаємо попередження про оновлення до LTS (комерційної) версії
+      versionCheck: false,
       // Toolbar конфігурація
       toolbar: [
         { name: 'document', items: ['Source', '-', 'NewPage', 'Preview', '-', 'Templates'] },
