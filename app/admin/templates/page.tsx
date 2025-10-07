@@ -355,9 +355,14 @@ export default function TemplatesPage() {
   };
 
   // Скидання до дефолтних значень
-  const handleReset = (templateId: string) => {
+  const handleReset = async (templateId: string) => {
     const template = templates.find(t => t.id === templateId);
-    if (template) {
+    if (!template) return;
+
+    try {
+      setIsLoading(true);
+      
+      // Відновлюємо дефолтні значення локально
       const defaultJson = formatJson(template.defaultSchema);
       
       setTemplates(prev => prev.map(t => 
@@ -383,6 +388,37 @@ export default function TemplatesPage() {
         delete newErrors[templateId];
         return newErrors;
       });
+
+      // Зберігаємо дефолтні значення в базу даних
+      const response = await fetch('/api/admin/templates', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          template_id: templateId,
+          name: template.name,
+          description: template.description,
+          schema_json: template.defaultSchema
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Помилка збереження дефолтних значень');
+      }
+
+      const result = await response.json();
+      if (result.success) {
+        alert('Дефолтні значення успішно відновлено та збережено!');
+      } else {
+        throw new Error(result.error || 'Помилка збереження');
+      }
+
+    } catch (error) {
+      console.error('Помилка відновлення дефолту:', error);
+      alert(`Помилка відновлення дефолтних значень: ${error instanceof Error ? error.message : 'Невідома помилка'}`);
+    } finally {
+      setIsLoading(false);
     }
   };
 

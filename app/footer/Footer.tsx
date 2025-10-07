@@ -11,6 +11,7 @@ import rssIcon from "@/assets/icons/rssIcon.svg";
 import { useMenuContext } from "@/app/contexts/MenuContext";
 import { generateCategoryUrl } from "@/app/lib/categoryMapper";
 import { useFooterSettings } from "@/app/hooks/useFooterSettings";
+import FooterSkeleton from "@/app/footer/components/FooterSkeleton";
 
 import styles from './Footer.module.css';
 
@@ -78,6 +79,11 @@ export default function Footer() {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  // Показуємо скелетон поки завантажуються налаштування
+  if (settingsLoading) {
+    return <FooterSkeleton />;
+  }
 
   return (
     <footer className={styles.footer}>

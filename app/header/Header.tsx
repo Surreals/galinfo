@@ -22,6 +22,7 @@ import {RateRow, useCurrencyRates} from "@/app/hooks/UseCurrencyRatesResult";
 import {useWeather} from "@/app/hooks/useWeather";
 import { generateCategoryUrl } from "@/app/lib/categoryMapper";
 import { useHeaderSettings } from "@/app/hooks/useHeaderSettings";
+import HeaderSkeleton from "@/app/header/components/HeaderSkeleton";
 
 import styles from "@/app/header/Header.module.scss";
 
@@ -272,6 +273,11 @@ export default function Header() {
     headerSettings?.mobileMenu?.categories?.mainCategoryIds || []
   );
 
+
+  // Показуємо скелетон поки завантажуються налаштування
+  if (settingsLoading) {
+    return <HeaderSkeleton />;
+  }
 
   return (
     <header className={styles.headerMain}>
