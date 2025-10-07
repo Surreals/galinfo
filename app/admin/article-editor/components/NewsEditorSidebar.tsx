@@ -59,13 +59,20 @@ interface NewsEditorSidebarProps {
   onEditorSave?: (() => Promise<string>) | null;
   fetchArticle?: (() => void) | undefined;
   isTitleValid?: boolean;
+  onSidebarValidationChange?: (isValid: boolean) => void;
 }
 
-export default function NewsEditorSidebar({ newsId, articleData, menuData, onEditorSave, fetchArticle, isTitleValid }: NewsEditorSidebarProps) {
+export default function NewsEditorSidebar({ newsId, articleData, menuData, onEditorSave, fetchArticle, isTitleValid, onSidebarValidationChange }: NewsEditorSidebarProps) {
   const router = useRouter();
   const { modal } = App.useApp();
   const [savingProcess, setSavingProcess] = useState(false);
   const { user } = useAdminAuth();
+  
+  // Стани для валідації
+  const [typeError, setTypeError] = useState<string>("");
+  const [rubricError, setRubricError] = useState<string>("");
+  const [regionError, setRegionError] = useState<string>("");
+  const [tagsError, setTagsError] = useState<string>("");
   
   // Завантажуємо дані через хук
   const {
@@ -216,6 +223,55 @@ export default function NewsEditorSidebar({ newsId, articleData, menuData, onEdi
     newsId 
   });
 
+  // Функції валідації
+  const validateType = (type: number): boolean => {
+    if (!type) {
+      setTypeError("Тип статті є обов'язковим");
+      return false;
+    }
+    setTypeError("");
+    return true;
+  };
+
+  const validateRubric = (rubrics: string[]): boolean => {
+    if (!rubrics || rubrics.length === 0) {
+      setRubricError("Оберіть хоча б одну рубрику");
+      return false;
+    }
+    setRubricError("");
+    return true;
+  };
+
+  const validateRegion = (regions: string[]): boolean => {
+    if (!regions || regions.length === 0) {
+      setRegionError("Оберіть хоча б один регіон");
+      return false;
+    }
+    setRegionError("");
+    return true;
+  };
+
+  const validateTags = (tagString: string): boolean => {
+    const trimmedTags = tagString?.trim();
+    if (!trimmedTags) {
+      setTagsError("Теги є обов'язковими");
+      return false;
+    }
+    setTagsError("");
+    return true;
+  };
+
+  // Функція для оновлення загальної валідації sidebar
+  const updateSidebarValidation = () => {
+    const isTypeValid = validateType(articleType);
+    const isRubricValid = validateRubric(selectedRubrics);
+    const isRegionValid = validateRegion(selectedRegions);
+    const isTagsValid = validateTags(tags);
+    
+    const overallValid = isTypeValid && isRubricValid && isRegionValid && isTagsValid;
+    onSidebarValidationChange?.(overallValid);
+  };
+
   // Оновлюємо стан при зміні даних новини
   useEffect(() => {
     if (articleData && !loading && !savingProcess) {
@@ -271,6 +327,13 @@ export default function NewsEditorSidebar({ newsId, articleData, menuData, onEdi
         });
         setFileList(imageFiles);
       }
+      
+      // Валідуємо всі поля після завантаження
+      validateType(articleData.ntype);
+      validateRubric((articleData.rubric || []).map(String));
+      validateRegion((articleData.region || []).map(String));
+      validateTags(articleData.tags.join(', '));
+      updateSidebarValidation();
     } else if (!articleData && !loading) {
       // Скидаємо до значень за замовчуванням при створенні нової новини
       setArticleType(ARTICLE_TYPE_OPTIONS[0].value);
@@ -296,6 +359,13 @@ export default function NewsEditorSidebar({ newsId, articleData, menuData, onEdi
       setPublishOnSite(false);
       setPublishOnTwitter(false);
       setFileList([]);
+      
+      // Валідуємо порожні поля
+      validateType(ARTICLE_TYPE_OPTIONS[0].value);
+      validateRubric([]);
+      validateRegion([]);
+      validateTags("");
+      updateSidebarValidation();
     }
   }, [articleData, loading]);
 
@@ -516,9 +586,19 @@ export default function NewsEditorSidebar({ newsId, articleData, menuData, onEdi
             size="large"
             options={ARTICLE_TYPE_OPTIONS}
             value={articleType}
-            onChange={setArticleType}
+            onChange={(value) => {
+              setArticleType(value);
+              validateType(value);
+              updateSidebarValidation();
+            }}
             className={styles.fullWidth}
+            status={typeError ? "error" : undefined}
           />
+          {typeError && (
+            <div className={styles.errorMessage} style={{ marginTop: '4px' }}>
+              {typeError}
+            </div>
+          )}
         </div>
 
         {/* Рубрики + Регіон + Тема */}
@@ -530,7 +610,11 @@ export default function NewsEditorSidebar({ newsId, articleData, menuData, onEdi
                 mode="multiple"
                 placeholder="Оберіть рубрики"
                 value={selectedRubrics}
-                onChange={setSelectedRubrics}
+                onChange={(value) => {
+                  setSelectedRubrics(value);
+                  validateRubric(value);
+                  updateSidebarValidation();
+                }}
                 options={mainCategoriesResponse.map((r) => ({
                   label: r.title,
                   value: r.id.toString(),
@@ -540,7 +624,13 @@ export default function NewsEditorSidebar({ newsId, articleData, menuData, onEdi
                 showSearch
                 notFoundContent="Рубрики не знайдені"
                 loading={loading}
+                status={rubricError ? "error" : undefined}
               />
+              {rubricError && (
+                <div className={styles.errorMessage} style={{ marginTop: '4px' }}>
+                  {rubricError}
+                </div>
+              )}
             </div>
           </div>
 
@@ -551,7 +641,11 @@ export default function NewsEditorSidebar({ newsId, articleData, menuData, onEdi
                 mode="multiple"
                 placeholder="Оберіть регіони"
                 value={selectedRegions}
-                onChange={setSelectedRegions}
+                onChange={(value) => {
+                  setSelectedRegions(value);
+                  validateRegion(value);
+                  updateSidebarValidation();
+                }}
                 options={regionsResponse.map((r) => ({
                   label: r.title,
                   value: r.id.toString(),
@@ -561,7 +655,13 @@ export default function NewsEditorSidebar({ newsId, articleData, menuData, onEdi
                 showSearch
                 notFoundContent="Регіони не знайдені"
                 loading={loading}
+                status={regionError ? "error" : undefined}
               />
+              {regionError && (
+                <div className={styles.errorMessage} style={{ marginTop: '4px' }}>
+                  {regionError}
+                </div>
+              )}
             </div>
 
             <div className={styles.subField}>
@@ -590,9 +690,19 @@ export default function NewsEditorSidebar({ newsId, articleData, menuData, onEdi
           <TextArea
             rows={2}
             value={tags}
-            onChange={(e) => setTags(e.target.value)}
+            onChange={(e) => {
+              setTags(e.target.value);
+              validateTags(e.target.value);
+              updateSidebarValidation();
+            }}
             placeholder="Львівщина, полювання, ... "
+            status={tagsError ? "error" : undefined}
           />
+          {tagsError && (
+            <div className={styles.errorMessage} style={{ marginTop: '4px' }}>
+              {tagsError}
+            </div>
+          )}
         </div>
 
       </div>

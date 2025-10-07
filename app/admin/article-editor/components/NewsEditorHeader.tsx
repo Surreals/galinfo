@@ -36,6 +36,8 @@ export default function NewsEditorHeader({ isEditing, articleData, onNbodyChange
   
   // --- стан для валідації ---
   const [titleError, setTitleError] = useState<string>("");
+  const [leadError, setLeadError] = useState<string>("");
+  const [bodyError, setBodyError] = useState<string>("");
 
 
   const [metaTitle, setMetaTitle] = useState(articleData?.ntitle || "");
@@ -51,9 +53,11 @@ export default function NewsEditorHeader({ isEditing, articleData, onNbodyChange
       setMetaDescription(articleData.ndescription || "");
       setMetaKeywords(articleData.nkeywords || "");
       
-      // Валідуємо заголовок при завантаженні
-      const isValid = validateTitle(articleData.nheader);
-      onValidationChange?.(isValid);
+      // Валідуємо всі поля при завантаженні
+      validateTitle(articleData.nheader);
+      validateLead(articleData.nteaser);
+      validateBody(articleData.nbody || "");
+      updateOverallValidation();
     } else {
       // Sкидаємо до значень за замовчуванням при створенні нової новини
       setMainTitle("");
@@ -62,9 +66,11 @@ export default function NewsEditorHeader({ isEditing, articleData, onNbodyChange
       setMetaDescription("");
       setMetaKeywords("");
       
-      // Валідуємо порожній заголовок
-      const isValid = validateTitle("");
-      onValidationChange?.(isValid);
+      // Валідуємо порожні поля
+      validateTitle("");
+      validateLead("");
+      validateBody("");
+      updateOverallValidation();
     }
   }, [articleData]);
 
@@ -79,19 +85,55 @@ export default function NewsEditorHeader({ isEditing, articleData, onNbodyChange
     return true;
   };
 
+  // Функція валідації ліду
+  const validateLead = (lead: string): boolean => {
+    const trimmedLead = lead?.trim();
+    if (!trimmedLead) {
+      setLeadError("Лід є обов'язковим");
+      return false;
+    }
+    setLeadError("");
+    return true;
+  };
+
+  // Функція валідації тексту новини
+  const validateBody = (body: string): boolean => {
+    const trimmedBody = body?.trim();
+    if (!trimmedBody || trimmedBody === '<p></p>' || trimmedBody === '<p><br></p>') {
+      setBodyError("Текст новини є обов'язковим");
+      return false;
+    }
+    setBodyError("");
+    return true;
+  };
+
+  // Функція для оновлення загальної валідації
+  const updateOverallValidation = () => {
+    const isTitleValid = validateTitle(mainTitle);
+    const isLeadValid = validateLead(mainLead);
+    const isBodyValid = validateBody(articleData?.nbody || "");
+    
+    const overallValid = isTitleValid && isLeadValid && isBodyValid;
+    onValidationChange?.(overallValid);
+  };
+
   // Handlers для оновлення даних
   const handleMainTitleChange = (value: string) => {
     setMainTitle(value);
     onDataChange?.({ nheader: value });
     
     // Валідуємо заголовок
-    const isValid = validateTitle(value);
-    onValidationChange?.(isValid);
+    validateTitle(value);
+    updateOverallValidation();
   };
 
   const handleMainLeadChange = (value: string) => {
     setMainLead(value);
     onDataChange?.({ nteaser: value });
+    
+    // Валідуємо лід
+    validateLead(value);
+    updateOverallValidation();
   };
 
   const handleMetaTitleChange = (value: string) => {
@@ -153,7 +195,13 @@ export default function NewsEditorHeader({ isEditing, articleData, onNbodyChange
                 rows={4}
                 value={mainLead}
                 onChange={(e) => handleMainLeadChange(e.target.value)}
+                status={leadError ? "error" : undefined}
               />
+              {leadError && (
+                <div className={styles.errorMessage}>
+                  {leadError}
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -249,9 +297,18 @@ export default function NewsEditorHeader({ isEditing, articleData, onNbodyChange
         id={'editorjs'}
         ref={editorRef}
         htmlContent={articleData?.nbody}
-        onHtmlChange={onNbodyChange}
+        onHtmlChange={(html) => {
+          onNbodyChange?.(html);
+          validateBody(html);
+          updateOverallValidation();
+        }}
         placeholder="Введіть повний текст новини..."
       />
+      {bodyError && (
+        <div className={styles.errorMessage} style={{ marginTop: '8px' }}>
+          {bodyError}
+        </div>
+      )}
     </div>
   );
 }

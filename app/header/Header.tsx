@@ -294,73 +294,118 @@ export default function Header() {
         <nav className={styles.headerNav}>
           <div className={styles.navListWrapper}>
             <ul className={styles.navList}>
-              {/* Dynamic main categories from database - ordered by settings */}
-              {(orderedMainNav.length > 0 ? orderedMainNav : mainCategories.slice(0, 8)).map((category) => (
-                <li key={category.id}>
-                  <Link href={generateCategoryUrl(category.id) || category.link} className={styles.link}>
-                    {category.title?.toUpperCase()}
-                  </Link>
-                </li>
-              ))}
-
-              {/* Fallback to static categories if no dynamic data */}
-              {mainCategories.length === 0 && (
+              {/* Admin navigation */}
+              {isAdminPage ? (
                 <>
                   <li>
-                    <Link href={paths.society} className={styles.link}>
-                      СУСПІЛЬСТВО
+                    <Link href="/admin" className={styles.link}>
+                      ПАНЕЛЬ
                     </Link>
                   </li>
                   <li>
-                    <Link href={paths.politics} className={styles.link}>
-                      ПОЛІТИКА
+                    <Link href="/admin/news" className={styles.link}>
+                      НОВИНИ
                     </Link>
                   </li>
                   <li>
-                    <Link href={paths.economy} className={styles.link}>
-                      ЕКОНОМІКА
+                    <Link href="/admin?gallery=true" className={styles.link}>
+                      ГАЛЕРЕЯ
                     </Link>
                   </li>
                   <li>
-                    <Link href={paths.culture} className={styles.link}>
-                      КУЛЬТУРА
+                    <Link href="/admin/videos" className={styles.link}>
+                      ВІДЕО
                     </Link>
                   </li>
                   <li>
-                    <Link href={paths.health} className={styles.link}>
-                      ЗДОРОВ'Я
+                    <Link href="/admin/users" className={styles.link}>
+                      КОРИСТУВАЧІ
                     </Link>
                   </li>
                   <li>
-                    <Link href={paths.health} className={styles.link}>
-                      ВІЙНА З РОСІЄЮ
+                    <Link href="/admin/telegram-settings" className={styles.link}>
+                      TELEGRAM
                     </Link>
                   </li>
                   <li>
-                    <Link href={paths.sport} className={styles.link}>
-                      СПОРТ
+                    <Link href="/admin/templates" className={styles.link}>
+                      ШАБЛОНИ
                     </Link>
                   </li>
-                  <li>
-                    <Link href={paths.crime} className={styles.link}>
-                      КРИМІНАЛ
-                    </Link>
-                  </li>
+                </>
+              ) : (
+                <>
+                  {/* Dynamic main categories from database - ordered by settings */}
+                  {(orderedMainNav.length > 0 ? orderedMainNav : mainCategories.slice(0, 8)).map((category) => (
+                    <li key={category.id}>
+                      <Link href={generateCategoryUrl(category.id) || category.link} className={styles.link}>
+                        {category.title?.toUpperCase()}
+                      </Link>
+                    </li>
+                  ))}
+
+                  {/* Fallback to static categories if no dynamic data */}
+                  {mainCategories.length === 0 && (
+                    <>
+                      <li>
+                        <Link href={paths.society} className={styles.link}>
+                          СУСПІЛЬСТВО
+                        </Link>
+                      </li>
+                      <li>
+                        <Link href={paths.politics} className={styles.link}>
+                          ПОЛІТИКА
+                        </Link>
+                      </li>
+                      <li>
+                        <Link href={paths.economy} className={styles.link}>
+                          ЕКОНОМІКА
+                        </Link>
+                      </li>
+                      <li>
+                        <Link href={paths.culture} className={styles.link}>
+                          КУЛЬТУРА
+                        </Link>
+                      </li>
+                      <li>
+                        <Link href={paths.health} className={styles.link}>
+                          ЗДОРОВ'Я
+                        </Link>
+                      </li>
+                      <li>
+                        <Link href={paths.health} className={styles.link}>
+                          ВІЙНА З РОСІЄЮ
+                        </Link>
+                      </li>
+                      <li>
+                        <Link href={paths.sport} className={styles.link}>
+                          СПОРТ
+                        </Link>
+                      </li>
+                      <li>
+                        <Link href={paths.crime} className={styles.link}>
+                          КРИМІНАЛ
+                        </Link>
+                      </li>
+                    </>
+                  )}
                 </>
               )}
             </ul>
           </div>
 
         </nav>
-        <div className={styles.moreNewsItem}>
-          <Link
-            href="#"
-            onMouseEnter={() => setIsMoreNewsOpen(true)}
-            className={styles.link}
-          >
-            БІЛЬШЕ НОВИН...
-          </Link>
-        </div>
+        {!isAdminPage && (
+          <div className={styles.moreNewsItem}>
+            <Link
+              href="#"
+              onMouseEnter={() => setIsMoreNewsOpen(true)}
+              className={styles.link}
+            >
+              БІЛЬШЕ НОВИН...
+            </Link>
+          </div>
+        )}
         <div className={styles.burgerMenuContainer}>
           <div
             className={styles.burgerMenuIcon}
@@ -401,10 +446,11 @@ export default function Header() {
           </div>
         </div>
       </div>
-      <div
-        onMouseLeave={() => setIsMoreNewsOpen(false)}
-        className={`${styles.moreNewsBlock} ${isMoreNewsOpen ? styles.open : ''}`}
-      >
+      {!isAdminPage && (
+        <div
+          onMouseLeave={() => setIsMoreNewsOpen(false)}
+          className={`${styles.moreNewsBlock} ${isMoreNewsOpen ? styles.open : ''}`}
+        >
         <div className={styles.flexContainer}>
           {/* ТОП ТЕМИ */}
           {headerSettings?.moreNewsDropdown?.topThemes?.enabled !== false && (
@@ -549,7 +595,8 @@ export default function Header() {
             </div>
           )}
         </div>
-      </div>
+        </div>
+      )}
       {
         isAdmin ? null : <div className={styles.secondaryHeaderBox}>
           <div className={styles.secondaryHeader}>
@@ -703,79 +750,98 @@ export default function Header() {
               )}
             </div>
 
-            {/* ТОП ТЕМИ - Mobile */}
-            {headerSettings?.mobileMenu?.topThemes?.enabled !== false && (
+            {/* Admin Mobile Menu */}
+            {isAdminPage ? (
               <>
-                <h3 className={styles.sectionTitle}>
-                ТОП ТЕМИ
-                </h3>
-                <hr className={styles.divider}/>
-                <ul className={styles.topicsList}>
-                  {(orderedMobileTopThemes.length > 0 ? orderedMobileTopThemes : specialThemesItem).map((theme) => (
-                    <li key={theme.id}>
-                      <Link className={styles.textCategory} href={generateCategoryUrl(theme.id) || theme.link}>
-                        {theme.title?.toUpperCase()}
-                      </Link>
-                    </li>
-                  ))}
-                  {/* Fallback if no dynamic data */}
-                  {specialThemesItem.length === 0 && (
-                    <>
-                      <li><Link className={styles.textCategory} href="#">ВІДВЕРТА РОЗМОВА З</Link></li>
-                      <li><Link className={styles.textCategory} href="#">РАЙОНИ ЛЬВОВА</Link></li>
-                      <li><Link className={styles.textCategory} href="#">ПРЕССЛУЖБА</Link></li>
-                    </>
-                  )}
-                </ul>
-              </>
-            )}
-
-            {/* Categories - Mobile */}
-            {headerSettings?.mobileMenu?.categories?.enabled !== false && (
-              <>
-                <h3 className={styles.sectionTitle}>КАТЕГОРІЇ</h3>
+                <h3 className={styles.sectionTitle}>АДМІНІСТРУВАННЯ</h3>
                 <hr className={styles.divider}/>
                 <div className={styles.categories}>
-                  {/* Dynamic categories from database - ordered */}
-                  {(orderedMobileRegions.length > 0 ? orderedMobileRegions : regions).map((region) => (
-                    <Link key={region.id} className={styles.textCategory} href={generateCategoryUrl(region.id) || region.link}>
-                      {region.title?.toUpperCase()}
-                    </Link>
-                  ))}
-                  {(orderedMobileMainCategories.length > 0 ? orderedMobileMainCategories : mainCategories).map((category) => (
-                    <Link key={category.id} className={styles.textCategory} href={generateCategoryUrl(category.id) || category.link}>
-                      {category.title?.toUpperCase()}
-                    </Link>
-                  ))}
-
-                  {/* Fallback to static categories if no dynamic data */}
-                  {regions.length === 0 && mainCategories.length === 0 && (
-                    <>
-                      <Link className={styles.textCategory} href="#">ЛЬВІВЩИНА</Link>
-                      <Link className={styles.textCategory} href="#">СУСПІЛЬСТВО</Link>
-                      <Link className={styles.textCategory} href="#">ТЕРНОПІЛЬЩИНА</Link>
-                      <Link className={styles.textCategory} href="#">ПОЛІТИКА</Link>
-                      <Link className={styles.textCategory} href="#">ВОЛИНЬ</Link>
-                      <Link className={styles.textCategory} href="#">ЕКОНОМІКА</Link>
-                      <Link className={styles.textCategory} href="#">УКРАЇНА</Link>
-                      <Link className={styles.textCategory} href="#">КУЛЬТУРА</Link>
-                      <Link className={styles.textCategory} href="#">ЄС</Link>
-                      <Link className={styles.textCategory} href="#">ЗДОРОВ'Я</Link>
-                      <Link className={styles.textCategory} href="#">СВІТ</Link>
-                      <span></span>
-                      <Link className={styles.textCategory} href="#">СПОРТ</Link>
-                      <Link className={styles.textCategory} href="#">НОВИНА</Link>
-                      <Link className={styles.textCategory} href="#">КРИМІНАЛ</Link>
-                      <Link className={styles.textCategory} href="#">СТАТТЯ</Link>
-                      <Link className={styles.textCategory} href="#">НАДЗВИЧАЙНІ ПОДІЇ</Link>
-                      <Link className={styles.textCategory} href="#">ІНТЕРВ'Ю</Link>
-                      <Link className={styles.textCategory} href="#">ІСТОРІЯ</Link>
-                      <span></span>
-                      <Link className={styles.textCategory} href="#">ТЕХНОЛОГІЇ</Link>
-                      <span></span>
-                    </>
-                  )}
+                  <Link className={styles.textCategory} href="/admin">ПАНЕЛЬ</Link>
+                  <Link className={styles.textCategory} href="/admin/news">НОВИНИ</Link>
+                  <Link className={styles.textCategory} href="/admin?gallery=true">ГАЛЕРЕЯ</Link>
+                  <Link className={styles.textCategory} href="/admin/videos">ВІДЕО</Link>
+                  <Link className={styles.textCategory} href="/admin/users">КОРИСТУВАЧІ</Link>
+                  <Link className={styles.textCategory} href="/admin/telegram-settings">TELEGRAM</Link>
+                  <Link className={styles.textCategory} href="/admin/templates">ШАБЛОНИ</Link>
                 </div>
+              </>
+            ) : (
+              <>
+                {/* ТОП ТЕМИ - Mobile */}
+                {headerSettings?.mobileMenu?.topThemes?.enabled !== false && (
+                  <>
+                    <h3 className={styles.sectionTitle}>
+                    ТОП ТЕМИ
+                    </h3>
+                    <hr className={styles.divider}/>
+                    <ul className={styles.topicsList}>
+                      {(orderedMobileTopThemes.length > 0 ? orderedMobileTopThemes : specialThemesItem).map((theme) => (
+                        <li key={theme.id}>
+                          <Link className={styles.textCategory} href={generateCategoryUrl(theme.id) || theme.link}>
+                            {theme.title?.toUpperCase()}
+                          </Link>
+                        </li>
+                      ))}
+                      {/* Fallback if no dynamic data */}
+                      {specialThemesItem.length === 0 && (
+                        <>
+                          <li><Link className={styles.textCategory} href="#">ВІДВЕРТА РОЗМОВА З</Link></li>
+                          <li><Link className={styles.textCategory} href="#">РАЙОНИ ЛЬВОВА</Link></li>
+                          <li><Link className={styles.textCategory} href="#">ПРЕССЛУЖБА</Link></li>
+                        </>
+                      )}
+                    </ul>
+                  </>
+                )}
+
+                {/* Categories - Mobile */}
+                {headerSettings?.mobileMenu?.categories?.enabled !== false && (
+                  <>
+                    <h3 className={styles.sectionTitle}>КАТЕГОРІЇ</h3>
+                    <hr className={styles.divider}/>
+                    <div className={styles.categories}>
+                      {/* Dynamic categories from database - ordered */}
+                      {(orderedMobileRegions.length > 0 ? orderedMobileRegions : regions).map((region) => (
+                        <Link key={region.id} className={styles.textCategory} href={generateCategoryUrl(region.id) || region.link}>
+                          {region.title?.toUpperCase()}
+                        </Link>
+                      ))}
+                      {(orderedMobileMainCategories.length > 0 ? orderedMobileMainCategories : mainCategories).map((category) => (
+                        <Link key={category.id} className={styles.textCategory} href={generateCategoryUrl(category.id) || category.link}>
+                          {category.title?.toUpperCase()}
+                        </Link>
+                      ))}
+
+                      {/* Fallback to static categories if no dynamic data */}
+                      {regions.length === 0 && mainCategories.length === 0 && (
+                        <>
+                          <Link className={styles.textCategory} href="#">ЛЬВІВЩИНА</Link>
+                          <Link className={styles.textCategory} href="#">СУСПІЛЬСТВО</Link>
+                          <Link className={styles.textCategory} href="#">ТЕРНОПІЛЬЩИНА</Link>
+                          <Link className={styles.textCategory} href="#">ПОЛІТИКА</Link>
+                          <Link className={styles.textCategory} href="#">ВОЛИНЬ</Link>
+                          <Link className={styles.textCategory} href="#">ЕКОНОМІКА</Link>
+                          <Link className={styles.textCategory} href="#">УКРАЇНА</Link>
+                          <Link className={styles.textCategory} href="#">КУЛЬТУРА</Link>
+                          <Link className={styles.textCategory} href="#">ЄС</Link>
+                          <Link className={styles.textCategory} href="#">ЗДОРОВ'Я</Link>
+                          <Link className={styles.textCategory} href="#">СВІТ</Link>
+                          <span></span>
+                          <Link className={styles.textCategory} href="#">СПОРТ</Link>
+                          <Link className={styles.textCategory} href="#">НОВИНА</Link>
+                          <Link className={styles.textCategory} href="#">КРИМІНАЛ</Link>
+                          <Link className={styles.textCategory} href="#">СТАТТЯ</Link>
+                          <Link className={styles.textCategory} href="#">НАДЗВИЧАЙНІ ПОДІЇ</Link>
+                          <Link className={styles.textCategory} href="#">ІНТЕРВ'Ю</Link>
+                          <Link className={styles.textCategory} href="#">ІСТОРІЯ</Link>
+                          <span></span>
+                          <Link className={styles.textCategory} href="#">ТЕХНОЛОГІЇ</Link>
+                          <span></span>
+                        </>
+                      )}
+                    </div>
+                  </>
+                )}
               </>
             )}
             <div className={styles.radioBox}>

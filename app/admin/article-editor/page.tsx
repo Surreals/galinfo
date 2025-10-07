@@ -28,7 +28,11 @@ function ArticleEditorContent() {
   const [isChatGPTVisible, setIsChatGPTVisible] = useState(false);
   const [isTelegramVisible, setIsTelegramVisible] = useState(false);
   const [editorSaveFn, setEditorSaveFn] = useState<(() => Promise<string>) | null>(null);
-  const [isTitleValid, setIsTitleValid] = useState(false);
+  const [isHeaderValid, setIsHeaderValid] = useState(false);
+  const [isSidebarValid, setIsSidebarValid] = useState(false);
+  
+  // Загальна валідація
+  const isFormValid = isHeaderValid && isSidebarValid;
 
   // Завантажуємо дані новини
   const { data: articleData, loading, error, updateData, refetch: fetchArticle, } = useArticleData({ id: newsId });
@@ -64,7 +68,7 @@ function ArticleEditorContent() {
           onNbodyChange={handleNbodyChange}
           onDataChange={handleDataChange}
           onEditorSaveRef={handleEditorSaveRef}
-          onValidationChange={setIsTitleValid}
+          onValidationChange={setIsHeaderValid}
         />
         <NewsEditorSidebar
           fetchArticle={fetchArticle}
@@ -72,7 +76,8 @@ function ArticleEditorContent() {
           newsId={newsId} 
           articleData={articleData}
           onEditorSave={editorSaveFn}
-          isTitleValid={isTitleValid}
+          isTitleValid={isFormValid}
+          onSidebarValidationChange={setIsSidebarValid}
         />
       </div>
       
