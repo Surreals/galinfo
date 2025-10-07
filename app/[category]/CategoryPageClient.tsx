@@ -4,6 +4,7 @@ import React, { useState, useEffect, Suspense } from 'react';
 import { CategoryRenderer } from "@/app/components";
 import { isValidCategoryUrl } from '@/app/lib/categoryMapper';
 import { useTemplateSchemas } from '@/app/hooks/useTemplateSchemas';
+import { useCategoryValidation } from '@/app/hooks/useCategoryValidation';
 import { Spin } from 'antd';
 import styles from "./page.module.css";
 
@@ -21,9 +22,12 @@ export const CategoryPageClient: React.FC<CategoryPageClientProps> = ({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const { getSchema } = useTemplateSchemas();
+  const { validateCategory, menuData, loading: validationLoading } = useCategoryValidation();
 
-  // Перевіряємо, чи є валідна категорія
-  const isValidCategory = isValidCategoryUrl(category);
+  // Перевіряємо, чи є валідна категорія (спочатку статично, потім динамічно)
+  const isValidCategoryStatic = isValidCategoryUrl(category);
+  const isValidCategoryDynamic = validateCategory(category);
+  const isValidCategory = isValidCategoryStatic || isValidCategoryDynamic;
   const isTag = !isValidCategory;
 
   // Завантажуємо дані тегу, якщо це тег
@@ -52,8 +56,8 @@ export const CategoryPageClient: React.FC<CategoryPageClientProps> = ({
     }
   }, [isTag, category]);
 
-  // Якщо це тег і завантажуємо дані
-  if (isTag && loading) {
+  // Якщо завантажуємо дані валідації або тегу
+  if (validationLoading || (isTag && loading)) {
     return (
       <div style={{ 
         display: 'flex', 

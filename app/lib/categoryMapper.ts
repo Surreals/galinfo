@@ -1,54 +1,70 @@
-import { CATEGORY_IDS } from './categoryUtils';
+import { CategoryIds, LEGACY_CATEGORY_IDS, MenuData, isValidCategoryInMenuData, getCategoryFromMenuData } from './categoryUtils';
 
-// Маппер для конвертації URL параметрів в categoryId
-export const CATEGORY_URL_MAPPER: Record<string, number> = {
-  // Спеціальні категорії
-  'all': CATEGORY_IDS.ALL,                // 0 - Всі новини
-  'important': -1,                        // -1 - Важливі новини (спеціальний ID)
-  
-  // Типи контенту
-  'news': -2,                             // -2 - Новини (спеціальний ID)
-  'articles': -3,                         // -3 - Статті (спеціальний ID)
+// Функція для створення маппера URL параметрів в categoryId
+export function createCategoryUrlMapper(categoryIds: CategoryIds): Record<string, number> {
+  return {
+    // Спеціальні категорії
+    'all': categoryIds.ALL,                // 0 - Всі новини
+    'important': -1,                       // -1 - Важливі новини (спеціальний ID)
+    
+    // Типи контенту
+    'news': -2,                            // -2 - Новини (спеціальний ID)
+    'articles': -3,                        // -3 - Статті (спеціальний ID)
 
-  // Основні категорії
-  'society': CATEGORY_IDS.SOCIETY,        // 4 - Суспільство
-  'politics': CATEGORY_IDS.POLITICS,      // 2 - Політика
-  'economics': CATEGORY_IDS.ECONOMICS,    // 3 - Економіка
-  'culture': CATEGORY_IDS.CULTURE,        // 5 - Культура
-  'health': CATEGORY_IDS.HEALTH,          // 101 - Здоров'я
-  'ato': CATEGORY_IDS.ATO,                // 109 - Війна з Росією
-  'sport': CATEGORY_IDS.SPORT,            // 103 - Спорт
-  'crime': CATEGORY_IDS.CRIME,            // 100 - Кримінал
-  'accident': CATEGORY_IDS.ACCIDENT,      // 106 - Надзвичайні події
+    // Основні категорії
+    'society': categoryIds.SOCIETY,        // Суспільство
+    'politics': categoryIds.POLITICS,      // Політика
+    'economics': categoryIds.ECONOMICS,    // Економіка
+    'culture': categoryIds.CULTURE,        // Культура
+    'health': categoryIds.HEALTH,          // Здоров'я
+    'ato': categoryIds.ATO,                // Війна з Росією
+    'sport': categoryIds.SPORT,            // Спорт
+    'crime': categoryIds.CRIME,            // Кримінал
+    'accident': categoryIds.ACCIDENT,      // Надзвичайні події
 
-  // Регіональні категорії (тепер будуть використовувати маршрут /region/)
-  'ukraine': CATEGORY_IDS.UKRAINE,        // 7 - Україна
-  'lviv': CATEGORY_IDS.LVIV,              // 99 - Львів
-  'evropa': CATEGORY_IDS.EVROPA,          // 110 - Європа
-  'svit': CATEGORY_IDS.SVIT,             // 111 - Світ
-  'volyn': CATEGORY_IDS.VOLYN,            // 118 - Волинь
+    // Регіональні категорії (тепер будуть використовувати маршрут /region/)
+    'ukraine': categoryIds.UKRAINE,        // Україна
+    'lviv': categoryIds.LVIV,              // Львів
+    'evropa': categoryIds.EVROPA,          // Європа
+    'svit': categoryIds.SVIT,             // Світ
+    'volyn': categoryIds.VOLYN,            // Волинь
 
-  // Спеціальні теми (тепер будуть використовувати маршрут /topthemes/)
-  'reporter': CATEGORY_IDS.REPORTER,                  // 104 - Голос народу
-  'euro-2012': CATEGORY_IDS.EURO_2012,                // 105 - Весняні мотиви
-  'lvivska-miska-vyborcha-komisiya': CATEGORY_IDS.LVIV_MISKA_VYBORCHA_KOMISIYA, // 114 - Львівська міська виборча комісія
-  'lvivska-oblasna-vyborcha-komisiya': CATEGORY_IDS.LVIV_OBLASNA_VYBORCHA_KOMISIYA, // 115 - Львівська обласна виборча комісія
-  'blits-intervyu': CATEGORY_IDS.BLITS_INTERVYU,      // 116 - Бліц-інтерв'ю
-  'olimpiyski-igry-v-rio-2016': CATEGORY_IDS.OLIMPIYSKI_IGRY_RIO_2016, // 117 - Олімпійські ігри в Ріо 2016
-  'vidverta-rozmova': CATEGORY_IDS.VIDVERTA_ROZMOVA,  // 136 - Відверта Розмова
-  'vidverta-rozmova-z': CATEGORY_IDS.VIDVERTA_ROZMOVA, // 136 - Відверта Розмова (альтернативний слаг)
-  'tvk': CATEGORY_IDS.TVK,                            // 137 - ТВК
-  'vybory-zmin': CATEGORY_IDS.VYBORY_ZMIN,            // 138 - Вибори
-  'zhurnalistyka-zmin': CATEGORY_IDS.ZHURNALISTYKA_ZMIN, // 139 - Журналістика змін
-  'pressluzhba': CATEGORY_IDS.PRESSLUZHBA,            // 140 - Пресслужба
-  'vybory-rektora-lnu': CATEGORY_IDS.VYBORY_REKTORA_LNU, // 141 - Вибори ректора ЛНУ
-  'rayony-lvova': CATEGORY_IDS.RAYONY_LVOVA,          // 142 - Райони Львова
-} as const;
+    // Спеціальні теми (тепер будуть використовувати маршрут /topthemes/)
+    'reporter': categoryIds.REPORTER,                  // Голос народу
+    'euro-2012': categoryIds.EURO_2012,                // Весняні мотиви
+    'lvivska-miska-vyborcha-komisiya': categoryIds.LVIV_MISKA_VYBORCHA_KOMISIYA, // Львівська міська виборча комісія
+    'lvivska-oblasna-vyborcha-komisiya': categoryIds.LVIV_OBLASNA_VYBORCHA_KOMISIYA, // Львівська обласна виборча комісія
+    'blits-intervyu': categoryIds.BLITS_INTERVYU,      // Бліц-інтерв'ю
+    'olimpiyski-igry-v-rio-2016': categoryIds.OLIMPIYSKI_IGRY_RIO_2016, // Олімпійські ігри в Ріо 2016
+    'vidverta-rozmova': categoryIds.VIDVERTA_ROZMOVA,  // Відверта Розмова
+    'vidverta-rozmova-z': categoryIds.VIDVERTA_ROZMOVA, // Відверта Розмова (альтернативний слаг)
+    'tvk': categoryIds.TVK,                            // ТВК
+    'vybory-zmin': categoryIds.VYBORY_ZMIN,            // Вибори
+    'zhurnalistyka-zmin': categoryIds.ZHURNALISTYKA_ZMIN, // Журналістика змін
+    'pressluzhba': categoryIds.PRESSLUZHBA,            // Пресслужба
+    'vybory-rektora-lnu': categoryIds.VYBORY_REKTORA_LNU, // Вибори ректора ЛНУ
+    'rayony-lvova': categoryIds.RAYONY_LVOVA,          // Райони Львова
+  };
+}
+
+// Legacy маппер для зворотної сумісності
+export const CATEGORY_URL_MAPPER = createCategoryUrlMapper(LEGACY_CATEGORY_IDS as CategoryIds);
 
 // Функція для отримання categoryId з URL параметра
-export function getCategoryIdFromUrl(categoryParam: string): number | null {
-  const categoryId = CATEGORY_URL_MAPPER[categoryParam.toLowerCase()];
-  return categoryId !== undefined ? categoryId : null;
+export function getCategoryIdFromUrl(categoryParam: string, menuData?: MenuData | null): number | null {
+  // First try static mapper
+  const staticCategoryId = CATEGORY_URL_MAPPER[categoryParam.toLowerCase()];
+  if (staticCategoryId !== undefined) {
+    return staticCategoryId;
+  }
+  
+  // If not found in static mapper and menu data is available, try dynamic lookup
+  if (menuData) {
+    const category = getCategoryFromMenuData(categoryParam, menuData);
+    return category?.id || null;
+  }
+  
+  return null;
 }
 
 // Функція для отримання URL параметра з categoryId
@@ -59,8 +75,20 @@ export function getUrlFromCategoryId(categoryId: number | string): string | null
 }
 
 // Функція для перевірки, чи існує категорія за URL параметром
-export function isValidCategoryUrl(categoryParam: string): boolean {
-  return categoryParam.toLowerCase() in CATEGORY_URL_MAPPER;
+export function isValidCategoryUrl(categoryParam: string, menuData?: MenuData | null): boolean {
+  // First check static mapper for backward compatibility
+  const staticValid = categoryParam.toLowerCase() in CATEGORY_URL_MAPPER;
+  
+  // If static check passes, return true
+  if (staticValid) return true;
+  
+  // If menu data is available, check dynamically
+  if (menuData) {
+    return isValidCategoryInMenuData(categoryParam, menuData);
+  }
+  
+  // Fallback to static check only
+  return staticValid;
 }
 
 // Функція для отримання всіх доступних URL параметрів
@@ -69,33 +97,34 @@ export function getAllCategoryUrls(): string[] {
 }
 
 // Функція для генерації правильного URL на основі categoryId
-export function generateCategoryUrl(categoryId: number | string): string {
+export function generateCategoryUrl(categoryId: number | string, categoryIds?: CategoryIds): string {
   const numericId = typeof categoryId === 'string' ? parseInt(categoryId, 10) : categoryId;
+  const ids = categoryIds || LEGACY_CATEGORY_IDS as CategoryIds;
   
   // Регіональні категорії
   const regionIds: number[] = [
-    CATEGORY_IDS.UKRAINE,
-    CATEGORY_IDS.LVIV,
-    CATEGORY_IDS.EVROPA,
-    CATEGORY_IDS.SVIT,
-    CATEGORY_IDS.VOLYN
+    ids.UKRAINE,
+    ids.LVIV,
+    ids.EVROPA,
+    ids.SVIT,
+    ids.VOLYN
   ];
   
   // Спеціальні теми
   const specialThemeIds: number[] = [
-    CATEGORY_IDS.REPORTER,
-    CATEGORY_IDS.EURO_2012,
-    CATEGORY_IDS.LVIV_MISKA_VYBORCHA_KOMISIYA,
-    CATEGORY_IDS.LVIV_OBLASNA_VYBORCHA_KOMISIYA,
-    CATEGORY_IDS.BLITS_INTERVYU,
-    CATEGORY_IDS.OLIMPIYSKI_IGRY_RIO_2016,
-    CATEGORY_IDS.VIDVERTA_ROZMOVA,
-    CATEGORY_IDS.TVK,
-    CATEGORY_IDS.VYBORY_ZMIN,
-    CATEGORY_IDS.ZHURNALISTYKA_ZMIN,
-    CATEGORY_IDS.PRESSLUZHBA,
-    CATEGORY_IDS.VYBORY_REKTORA_LNU,
-    CATEGORY_IDS.RAYONY_LVOVA
+    ids.REPORTER,
+    ids.EURO_2012,
+    ids.LVIV_MISKA_VYBORCHA_KOMISIYA,
+    ids.LVIV_OBLASNA_VYBORCHA_KOMISIYA,
+    ids.BLITS_INTERVYU,
+    ids.OLIMPIYSKI_IGRY_RIO_2016,
+    ids.VIDVERTA_ROZMOVA,
+    ids.TVK,
+    ids.VYBORY_ZMIN,
+    ids.ZHURNALISTYKA_ZMIN,
+    ids.PRESSLUZHBA,
+    ids.VYBORY_REKTORA_LNU,
+    ids.RAYONY_LVOVA
   ];
   
   if (regionIds.includes(numericId)) {
@@ -114,35 +143,37 @@ export function generateCategoryUrl(categoryId: number | string): string {
 }
 
 // Функція для перевірки, чи є категорія регіональною
-export function isRegionCategory(categoryId: number | string): boolean {
+export function isRegionCategory(categoryId: number | string, categoryIds?: CategoryIds): boolean {
   const numericId = typeof categoryId === 'string' ? parseInt(categoryId, 10) : categoryId;
+  const ids = categoryIds || LEGACY_CATEGORY_IDS as CategoryIds;
   const regionIds: number[] = [
-    CATEGORY_IDS.UKRAINE,
-    CATEGORY_IDS.LVIV,
-    CATEGORY_IDS.EVROPA,
-    CATEGORY_IDS.SVIT,
-    CATEGORY_IDS.VOLYN
+    ids.UKRAINE,
+    ids.LVIV,
+    ids.EVROPA,
+    ids.SVIT,
+    ids.VOLYN
   ];
   return regionIds.includes(numericId);
 }
 
 // Функція для перевірки, чи є категорія спеціальною темою
-export function isSpecialThemeCategory(categoryId: number | string): boolean {
+export function isSpecialThemeCategory(categoryId: number | string, categoryIds?: CategoryIds): boolean {
   const numericId = typeof categoryId === 'string' ? parseInt(categoryId, 10) : categoryId;
+  const ids = categoryIds || LEGACY_CATEGORY_IDS as CategoryIds;
   const specialThemeIds: number[] = [
-    CATEGORY_IDS.REPORTER,
-    CATEGORY_IDS.EURO_2012,
-    CATEGORY_IDS.LVIV_MISKA_VYBORCHA_KOMISIYA,
-    CATEGORY_IDS.LVIV_OBLASNA_VYBORCHA_KOMISIYA,
-    CATEGORY_IDS.BLITS_INTERVYU,
-    CATEGORY_IDS.OLIMPIYSKI_IGRY_RIO_2016,
-    CATEGORY_IDS.VIDVERTA_ROZMOVA,
-    CATEGORY_IDS.TVK,
-    CATEGORY_IDS.VYBORY_ZMIN,
-    CATEGORY_IDS.ZHURNALISTYKA_ZMIN,
-    CATEGORY_IDS.PRESSLUZHBA,
-    CATEGORY_IDS.VYBORY_REKTORA_LNU,
-    CATEGORY_IDS.RAYONY_LVOVA
+    ids.REPORTER,
+    ids.EURO_2012,
+    ids.LVIV_MISKA_VYBORCHA_KOMISIYA,
+    ids.LVIV_OBLASNA_VYBORCHA_KOMISIYA,
+    ids.BLITS_INTERVYU,
+    ids.OLIMPIYSKI_IGRY_RIO_2016,
+    ids.VIDVERTA_ROZMOVA,
+    ids.TVK,
+    ids.VYBORY_ZMIN,
+    ids.ZHURNALISTYKA_ZMIN,
+    ids.PRESSLUZHBA,
+    ids.VYBORY_REKTORA_LNU,
+    ids.RAYONY_LVOVA
   ];
   return specialThemeIds.includes(numericId);
 }

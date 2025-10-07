@@ -129,13 +129,15 @@ export async function getCategoryMetadata(categorySlug: string, lang: string = '
     const [category] = await executeQuery(`
       SELECT id, param, title, description
       FROM a_cats 
-      WHERE param = ? AND lng = ? AND isvis = 1
-    `, [categorySlug, lang]);
+      WHERE (param = ? OR title = ?) AND lng = ? AND isvis = 1
+    `, [categorySlug, categorySlug, lang]);
 
     if (category.length === 0) {
+      // Instead of "Категорія не знайдена", return a more user-friendly title
+      const fallbackTitle = categorySlug.charAt(0).toUpperCase() + categorySlug.slice(1).replace(/-/g, ' ');
       return {
-        title: 'Категорія не знайдена',
-        description: 'Запитана категорія не існує або була видалена',
+        title: `${fallbackTitle} | Гал-Інфо`,
+        description: `Новини категорії "${fallbackTitle}" від агенції інформації та аналітики "Гал-інфо"`,
       };
     }
 
