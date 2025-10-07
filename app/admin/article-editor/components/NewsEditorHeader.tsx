@@ -7,9 +7,9 @@ import { LinkOutlined, ArrowLeftOutlined } from "@ant-design/icons";
 import dynamic from "next/dynamic";
 import { useRouter } from "next/navigation";
 import { ArticleData } from "@/app/hooks/useArticleData";
-import { EditorJSClientRef } from "@/app/admin/article-editor/components/EditorJSClient";
-const EditorJSClient = dynamic(
-  () => import("@/app/admin/article-editor/components/EditorJSClient"),
+import { CKEditorClientRef } from "@/app/admin/article-editor/components/CKEditorClient";
+const CKEditorClient = dynamic(
+  () => import("@/app/admin/article-editor/components/CKEditorClient"),
   { ssr: false }
 );
 
@@ -28,7 +28,7 @@ interface NewsEditorHeaderProps {
 
 export default function NewsEditorHeader({ isEditing, articleData, onNbodyChange, onDataChange, onEditorSaveRef, onValidationChange }: NewsEditorHeaderProps) {
   const router = useRouter();
-  const editorRef = useRef<EditorJSClientRef>(null);
+  const editorRef = useRef<CKEditorClientRef>(null);
   
   // --- стейти для всіх текстерій ---
   const [mainTitle, setMainTitle] = useState(articleData?.nheader || "");
@@ -297,8 +297,8 @@ export default function NewsEditorHeader({ isEditing, articleData, onNbodyChange
       />
 
       <h2 className={styles.header}>Повний текст новини</h2>
-      <EditorJSClient
-        id={'editorjs'}
+      <CKEditorClient
+        id={'ckeditor'}
         ref={editorRef}
         htmlContent={articleData?.nbody}
         onHtmlChange={(html) => {
