@@ -19,6 +19,8 @@ import {
   articlePageDesktopSchema, 
   articlePageMobileSchema 
 } from '@/app/lib/articlePageSchema';
+import { headerSchema } from '@/app/lib/headerSchema';
+import { footerSchema } from '@/app/lib/footerSchema';
 import { templateDocumentation } from './documentation';
 import { useMenuContext } from '@/app/contexts/MenuContext';
 
@@ -60,7 +62,9 @@ export default function TemplatesPage() {
             'hero-info-desktop': heroInfoSchema,
             'hero-info-mobile': heroInfoMobileSchema,
             'article-desktop': articlePageDesktopSchema,
-            'article-mobile': articlePageMobileSchema
+            'article-mobile': articlePageMobileSchema,
+            'header': headerSchema,
+            'footer': footerSchema
           };
 
           // Конвертуємо дані з БД в формат компонента
@@ -179,6 +183,22 @@ export default function TemplatesPage() {
           schema: articlePageMobileSchema,
           defaultSchema: articlePageMobileSchema,
           documentation: templateDocumentation['article-mobile']
+        },
+        {
+          id: 'header',
+          name: 'Налаштування хедера',
+          description: 'Конфігурація хедера: порядок категорій та меню',
+          schema: headerSchema,
+          defaultSchema: headerSchema,
+          documentation: templateDocumentation['header']
+        },
+        {
+          id: 'footer',
+          name: 'Налаштування футера',
+          description: 'Конфігурація футера: порядок категорій та елементів',
+          schema: footerSchema,
+          defaultSchema: footerSchema,
+          documentation: templateDocumentation['footer']
         }
       ];
 

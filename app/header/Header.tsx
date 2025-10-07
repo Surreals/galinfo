@@ -21,6 +21,7 @@ import {useImportantNewsByLevel} from "@/app/hooks/useImportantNews";
 import {RateRow, useCurrencyRates} from "@/app/hooks/UseCurrencyRatesResult";
 import {useWeather} from "@/app/hooks/useWeather";
 import { generateCategoryUrl } from "@/app/lib/categoryMapper";
+import { useHeaderSettings } from "@/app/hooks/useHeaderSettings";
 
 import styles from "@/app/header/Header.module.scss";
 
@@ -78,6 +79,7 @@ export default function Header() {
 
   const { menuData } = useMenuContext();
   const { user, logout } = useAdminAuth();
+  const { settings: headerSettings, loading: settingsLoading } = useHeaderSettings();
   
   const { weather, loading: weatherLoading, refetch: refetchWeather } = useWeather("Lviv");
   const { importantNews, loading, refetch: refetchRates } = useImportantNewsByLevel(1)
@@ -206,6 +208,71 @@ export default function Header() {
   const specialThemesItem = menuData?.specialThemes || [];
   const additionalItems = menuData?.additionalItems || [];
 
+  // Helper function to order categories by settings
+  const getOrderedCategories = (categories: any[], categoryIds: number[]) => {
+    if (!categoryIds || categoryIds.length === 0) {
+      return []; // Return empty array if no specific order is set
+    }
+    
+    const ordered: any[] = [];
+    categoryIds.forEach(id => {
+      const category = categories.find(cat => cat.id === id);
+      if (category) {
+        ordered.push(category);
+      }
+    });
+    
+    return ordered;
+  };
+
+  // Get ordered categories for main navigation
+  const orderedMainNav = getOrderedCategories(
+    mainCategories,
+    headerSettings?.mainNavigation?.categoryIds || []
+  ).slice(0, headerSettings?.mainNavigation?.maxItems || 8);
+
+  // Get ordered categories for dropdown sections
+  const orderedTopThemes = getOrderedCategories(
+    specialThemesItem,
+    headerSettings?.moreNewsDropdown?.topThemes?.categoryIds || []
+  );
+
+  const orderedRegions = getOrderedCategories(
+    regions,
+    headerSettings?.moreNewsDropdown?.categories?.column1?.categoryIds || []
+  );
+
+  const orderedMainCatCol2 = getOrderedCategories(
+    mainCategories,
+    headerSettings?.moreNewsDropdown?.categories?.column2?.categoryIds || []
+  );
+
+  const orderedMainCatCol3 = getOrderedCategories(
+    mainCategories,
+    headerSettings?.moreNewsDropdown?.categories?.column3?.categoryIds || []
+  );
+
+  const orderedAdditionalItems = (headerSettings?.moreNewsDropdown?.categories?.column4?.items || [])
+    .map(param => additionalItems.find(item => item.param === param))
+    .filter(Boolean);
+
+  // Mobile menu ordering
+  const orderedMobileTopThemes = getOrderedCategories(
+    specialThemesItem,
+    headerSettings?.mobileMenu?.topThemes?.categoryIds || []
+  );
+
+  const orderedMobileRegions = getOrderedCategories(
+    regions,
+    headerSettings?.mobileMenu?.categories?.regionIds || []
+  );
+
+  const orderedMobileMainCategories = getOrderedCategories(
+    mainCategories,
+    headerSettings?.mobileMenu?.categories?.mainCategoryIds || []
+  );
+
+
   return (
     <header className={styles.headerMain}>
       <div className={styles.header}>
@@ -221,8 +288,8 @@ export default function Header() {
         <nav className={styles.headerNav}>
           <div className={styles.navListWrapper}>
             <ul className={styles.navList}>
-              {/* Dynamic main categories from database */}
-              {mainCategories.map((category) => (
+              {/* Dynamic main categories from database - ordered by settings */}
+              {(orderedMainNav.length > 0 ? orderedMainNav : mainCategories.slice(0, 8)).map((category) => (
                 <li key={category.id}>
                   <Link href={generateCategoryUrl(category.id) || category.link} className={styles.link}>
                     {category.title?.toUpperCase()}
@@ -334,143 +401,147 @@ export default function Header() {
       >
         <div className={styles.flexContainer}>
           {/* ТОП ТЕМИ */}
-          <div className={styles.column}>
-            <h3 className={styles.title}>ТОП ТЕМИ</h3>
-            <div className={styles.divider}></div>
-            <ul className={styles.list}>
-              {specialThemesItem.map((region) => (
-                <Link key={region.id} href={generateCategoryUrl(region.id) || region.link} className={styles.linkSlider}>
-                  {region.title?.toUpperCase()}
-                </Link>
-              ))}
-              {/* Fallback to static regions if no dynamic data */}
-              {specialThemesItem.length === 0 && (                <>
-                  <Link href={paths.frankConversation} className={styles.linkSlider}>
-                    ВІДВЕРТА РОЗМОВА З
-                  </Link>
-                  <Link href={paths.lvivDistricts} className={styles.linkSlider}>РАЙОНИ ЛЬВОВА</Link>
-                  <Link href={paths.pressService} className={styles.linkSlider}>ПРЕССЛУЖБА</Link>
-                </>
-              )}
-            </ul>
-          </div>
-
-          {/* КАТЕГОРІЇ */}
-          <div className={styles.categoriesColumn}>
-            <h3 className={styles.title}>КАТЕГОРІЇ</h3>
-            <div className={styles.divider}></div>
-            <div className={styles.grid}>
-              {/* Підколонка 1 - Регіони */}
-              <div className={styles.gridColumn}>
-                {regions.map((region) => (
+          {headerSettings?.moreNewsDropdown?.topThemes?.enabled !== false && (
+            <div className={styles.column}>
+              <h3 className={styles.title}>ТОП ТЕМИ</h3>
+              <div className={styles.divider}></div>
+              <ul className={styles.list}>
+                {(orderedTopThemes.length > 0 ? orderedTopThemes : specialThemesItem).map((region) => (
                   <Link key={region.id} href={generateCategoryUrl(region.id) || region.link} className={styles.linkSlider}>
                     {region.title?.toUpperCase()}
                   </Link>
                 ))}
                 {/* Fallback to static regions if no dynamic data */}
-                {regions.length === 0 && (
-                  <>
-                    <Link href={paths.lvivRegion} className={styles.linkSlider}>
-                      ЛЬВІВЩИНА
+                {specialThemesItem.length === 0 && (                <>
+                    <Link href={paths.frankConversation} className={styles.linkSlider}>
+                      ВІДВЕРТА РОЗМОВА З
                     </Link>
-                    <Link href={paths.ternopilRegion} className={styles.linkSlider}>
-                      ТЕРНОПІЛЬЩИНА
-                    </Link>
-                    <Link href={paths.volyn} className={styles.linkSlider}>
-                      ВОЛИНЬ
-                    </Link>
-                    <Link href={paths.ukraine} className={styles.linkSlider}>
-                      УКРАЇНА
-                    </Link>
-                    <Link href={paths.eu} className={styles.linkSlider}>
-                      ЄС
-                    </Link>
-                    <Link href={paths.world} className={styles.linkSlider}>
-                      СВІТ
-                    </Link>
+                    <Link href={paths.lvivDistricts} className={styles.linkSlider}>РАЙОНИ ЛЬВОВА</Link>
+                    <Link href={paths.pressService} className={styles.linkSlider}>ПРЕССЛУЖБА</Link>
                   </>
                 )}
-              </div>
+              </ul>
+            </div>
+          )}
 
-              {/* Підколонка 2 - Теми */}
-              <div className={styles.gridColumn}>
-                {mainCategories.slice(0, 5).map((category) => (
-                  <Link key={category.id} href={generateCategoryUrl(category.id) || category.link} className={styles.linkSlider}>
-                    {category.title?.toUpperCase()}
-                  </Link>
-                ))}
-                {/* Fallback to static categories if no dynamic data */}
-                {mainCategories.length === 0 && (
-                  <>
-                    <Link href={paths.society} className={styles.linkSlider}>
-                      СУСПІЛЬСТВО
+          {/* КАТЕГОРІЇ */}
+          {headerSettings?.moreNewsDropdown?.categories?.enabled !== false && (
+            <div className={styles.categoriesColumn}>
+              <h3 className={styles.title}>КАТЕГОРІЇ</h3>
+              <div className={styles.divider}></div>
+              <div className={styles.grid}>
+                {/* Підколонка 1 - Регіони */}
+                <div className={styles.gridColumn}>
+                  {(orderedRegions.length > 0 ? orderedRegions : regions).map((region) => (
+                    <Link key={region.id} href={generateCategoryUrl(region.id) || region.link} className={styles.linkSlider}>
+                      {region.title?.toUpperCase()}
                     </Link>
-                    <Link href={paths.politics} className={styles.linkSlider}>
-                      ПОЛІТИКА
-                    </Link>
-                    <Link href={paths.economy} className={styles.linkSlider}>
-                      ЕКОНОМІКА
-                    </Link>
-                    <Link href={paths.culture} className={styles.linkSlider}>
-                      КУЛЬТУРА
-                    </Link>
-                    <Link href={paths.health} className={styles.linkSlider}>
-                      ЗДОРОВ'Я
-                    </Link>
-                  </>
-                )}
-              </div>
+                  ))}
+                  {/* Fallback to static regions if no dynamic data */}
+                  {regions.length === 0 && (
+                    <>
+                      <Link href={paths.lvivRegion} className={styles.linkSlider}>
+                        ЛЬВІВЩИНА
+                      </Link>
+                      <Link href={paths.ternopilRegion} className={styles.linkSlider}>
+                        ТЕРНОПІЛЬЩИНА
+                      </Link>
+                      <Link href={paths.volyn} className={styles.linkSlider}>
+                        ВОЛИНЬ
+                      </Link>
+                      <Link href={paths.ukraine} className={styles.linkSlider}>
+                        УКРАЇНА
+                      </Link>
+                      <Link href={paths.eu} className={styles.linkSlider}>
+                        ЄС
+                      </Link>
+                      <Link href={paths.world} className={styles.linkSlider}>
+                        СВІТ
+                      </Link>
+                    </>
+                  )}
+                </div>
 
-              {/* Підколонка 3 - Додаткові теми */}
-              <div className={styles.gridColumn}>
-                {mainCategories.slice(5).map((category) => (
-                  <Link key={category.id} href={generateCategoryUrl(category.id) || category.link} className={styles.linkSlider}>
-                    {category.title?.toUpperCase()}
-                  </Link>
-                ))}
-                {/* Fallback to static categories if no dynamic data */}
-                {mainCategories.length === 0 && (
-                  <>
-                    <Link href={paths.sport} className={styles.linkSlider}>
-                      СПОРТ
+                {/* Підколонка 2 - Теми */}
+                <div className={styles.gridColumn}>
+                  {(orderedMainCatCol2.length > 0 ? orderedMainCatCol2 : mainCategories.slice(0, 5)).map((category) => (
+                    <Link key={category.id} href={generateCategoryUrl(category.id) || category.link} className={styles.linkSlider}>
+                      {category.title?.toUpperCase()}
                     </Link>
-                    <Link href={paths.crime} className={styles.linkSlider}>
-                      КРИМІНАЛ
-                    </Link>
-                    <Link href={paths.emergency} className={styles.linkSlider}>
-                      НАДЗВИЧАЙНІ ПОДІЇ
-                    </Link>
-                    <Link href={paths.history} className={styles.linkSlider}>
-                      ІСТОРІЯ
-                    </Link>
-                    <Link href={paths.technologies} className={styles.linkSlider}>
-                      ТЕХНОЛОГІЇ
-                    </Link>
-                  </>
-                )}
-              </div>
+                  ))}
+                  {/* Fallback to static categories if no dynamic data */}
+                  {mainCategories.length === 0 && (
+                    <>
+                      <Link href={paths.society} className={styles.linkSlider}>
+                        СУСПІЛЬСТВО
+                      </Link>
+                      <Link href={paths.politics} className={styles.linkSlider}>
+                        ПОЛІТИКА
+                      </Link>
+                      <Link href={paths.economy} className={styles.linkSlider}>
+                        ЕКОНОМІКА
+                      </Link>
+                      <Link href={paths.culture} className={styles.linkSlider}>
+                        КУЛЬТУРА
+                      </Link>
+                      <Link href={paths.health} className={styles.linkSlider}>
+                        ЗДОРОВ'Я
+                      </Link>
+                    </>
+                  )}
+                </div>
 
-              {/* Підколонка 4 - Типи контенту */}
-              <div className={styles.gridColumn}>
-                {additionalItems.slice(0, 2).map((item) => (
-                  <Link key={item.param} href={item.link} className={styles.linkSlider}>
-                    {item.title.toUpperCase()}
-                  </Link>
-                ))}
-                {/* Fallback to static items if no dynamic data */}
-                {additionalItems.length === 0 && (
-                  <>
-                    <Link href={paths.news} className={styles.linkSlider}>
-                      НОВИНА
+                {/* Підколонка 3 - Додаткові теми */}
+                <div className={styles.gridColumn}>
+                  {orderedMainCatCol3.map((category) => (
+                    <Link key={category.id} href={generateCategoryUrl(category.id) || category.link} className={styles.linkSlider}>
+                      {category.title?.toUpperCase()}
                     </Link>
-                    <Link href={paths.article} className={styles.linkSlider}>
-                      СТАТТЯ
+                  ))}
+                  {/* Fallback to static categories if no dynamic data */}
+                  {mainCategories.length === 0 && (
+                    <>
+                      <Link href={paths.sport} className={styles.linkSlider}>
+                        СПОРТ
+                      </Link>
+                      <Link href={paths.crime} className={styles.linkSlider}>
+                        КРИМІНАЛ
+                      </Link>
+                      <Link href={paths.emergency} className={styles.linkSlider}>
+                        НАДЗВИЧАЙНІ ПОДІЇ
+                      </Link>
+                      <Link href={paths.history} className={styles.linkSlider}>
+                        ІСТОРІЯ
+                      </Link>
+                      <Link href={paths.technologies} className={styles.linkSlider}>
+                        ТЕХНОЛОГІЇ
+                      </Link>
+                    </>
+                  )}
+                </div>
+
+                {/* Підколонка 4 - Типи контенту */}
+                <div className={styles.gridColumn}>
+                  {(orderedAdditionalItems.length > 0 ? orderedAdditionalItems : additionalItems.slice(0, 2)).map((item: any) => (
+                    <Link key={item.param} href={item.link} className={styles.linkSlider}>
+                      {item.title.toUpperCase()}
                     </Link>
-                  </>
-                )}
+                  ))}
+                  {/* Fallback to static items if no dynamic data */}
+                  {additionalItems.length === 0 && (
+                    <>
+                      <Link href={paths.news} className={styles.linkSlider}>
+                        НОВИНА
+                      </Link>
+                      <Link href={paths.article} className={styles.linkSlider}>
+                        СТАТТЯ
+                      </Link>
+                    </>
+                  )}
+                </div>
               </div>
             </div>
-          </div>
+          )}
         </div>
       </div>
       {
@@ -626,60 +697,81 @@ export default function Header() {
               )}
             </div>
 
-            <h3 className={styles.sectionTitle}>
-            ТОП ТЕМИ
-            </h3>
-            <hr className={styles.divider}/>
-            <ul className={styles.topicsList}>
-              <li><Link className={styles.textCategory} href="#">ВІДВЕРТА РОЗМОВА З</Link></li>
-              <li><Link className={styles.textCategory} href="#">РАЙОНИ ЛЬВОВА</Link></li>
-              <li><Link className={styles.textCategory} href="#">ПРЕССЛУЖБА</Link></li>
-            </ul>
+            {/* ТОП ТЕМИ - Mobile */}
+            {headerSettings?.mobileMenu?.topThemes?.enabled !== false && (
+              <>
+                <h3 className={styles.sectionTitle}>
+                ТОП ТЕМИ
+                </h3>
+                <hr className={styles.divider}/>
+                <ul className={styles.topicsList}>
+                  {(orderedMobileTopThemes.length > 0 ? orderedMobileTopThemes : specialThemesItem).map((theme) => (
+                    <li key={theme.id}>
+                      <Link className={styles.textCategory} href={generateCategoryUrl(theme.id) || theme.link}>
+                        {theme.title?.toUpperCase()}
+                      </Link>
+                    </li>
+                  ))}
+                  {/* Fallback if no dynamic data */}
+                  {specialThemesItem.length === 0 && (
+                    <>
+                      <li><Link className={styles.textCategory} href="#">ВІДВЕРТА РОЗМОВА З</Link></li>
+                      <li><Link className={styles.textCategory} href="#">РАЙОНИ ЛЬВОВА</Link></li>
+                      <li><Link className={styles.textCategory} href="#">ПРЕССЛУЖБА</Link></li>
+                    </>
+                  )}
+                </ul>
+              </>
+            )}
 
-            {/* Categories */}
-            <h3 className={styles.sectionTitle}>КАТЕГОРІЇ</h3>
-            <hr className={styles.divider}/>
-            <div className={styles.categories}>
-              {/* Dynamic categories from database */}
-              {regions.map((region) => (
-                <Link key={region.id} className={styles.textCategory} href={generateCategoryUrl(region.id) || region.link}>
-                  {region.title?.toUpperCase()}
-                </Link>
-              ))}
-              {mainCategories.map((category) => (
-                <Link key={category.id} className={styles.textCategory} href={generateCategoryUrl(category.id) || category.link}>
-                  {category.title?.toUpperCase()}
-                </Link>
-              ))}
+            {/* Categories - Mobile */}
+            {headerSettings?.mobileMenu?.categories?.enabled !== false && (
+              <>
+                <h3 className={styles.sectionTitle}>КАТЕГОРІЇ</h3>
+                <hr className={styles.divider}/>
+                <div className={styles.categories}>
+                  {/* Dynamic categories from database - ordered */}
+                  {(orderedMobileRegions.length > 0 ? orderedMobileRegions : regions).map((region) => (
+                    <Link key={region.id} className={styles.textCategory} href={generateCategoryUrl(region.id) || region.link}>
+                      {region.title?.toUpperCase()}
+                    </Link>
+                  ))}
+                  {(orderedMobileMainCategories.length > 0 ? orderedMobileMainCategories : mainCategories).map((category) => (
+                    <Link key={category.id} className={styles.textCategory} href={generateCategoryUrl(category.id) || category.link}>
+                      {category.title?.toUpperCase()}
+                    </Link>
+                  ))}
 
-              {/* Fallback to static categories if no dynamic data */}
-              {regions.length === 0 && mainCategories.length === 0 && (
-                <>
-                  <Link className={styles.textCategory} href="#">ЛЬВІВЩИНА</Link>
-                  <Link className={styles.textCategory} href="#">СУСПІЛЬСТВО</Link>
-                  <Link className={styles.textCategory} href="#">ТЕРНОПІЛЬЩИНА</Link>
-                  <Link className={styles.textCategory} href="#">ПОЛІТИКА</Link>
-                  <Link className={styles.textCategory} href="#">ВОЛИНЬ</Link>
-                  <Link className={styles.textCategory} href="#">ЕКОНОМІКА</Link>
-                  <Link className={styles.textCategory} href="#">УКРАЇНА</Link>
-                  <Link className={styles.textCategory} href="#">КУЛЬТУРА</Link>
-                  <Link className={styles.textCategory} href="#">ЄС</Link>
-                  <Link className={styles.textCategory} href="#">ЗДОРОВ'Я</Link>
-                  <Link className={styles.textCategory} href="#">СВІТ</Link>
-                  <span></span>
-                  <Link className={styles.textCategory} href="#">СПОРТ</Link>
-                  <Link className={styles.textCategory} href="#">НОВИНА</Link>
-                  <Link className={styles.textCategory} href="#">КРИМІНАЛ</Link>
-                  <Link className={styles.textCategory} href="#">СТАТТЯ</Link>
-                  <Link className={styles.textCategory} href="#">НАДЗВИЧАЙНІ ПОДІЇ</Link>
-                  <Link className={styles.textCategory} href="#">ІНТЕРВ'Ю</Link>
-                  <Link className={styles.textCategory} href="#">ІСТОРІЯ</Link>
-                  <span></span>
-                  <Link className={styles.textCategory} href="#">ТЕХНОЛОГІЇ</Link>
-                  <span></span>
-                </>
-              )}
-            </div>
+                  {/* Fallback to static categories if no dynamic data */}
+                  {regions.length === 0 && mainCategories.length === 0 && (
+                    <>
+                      <Link className={styles.textCategory} href="#">ЛЬВІВЩИНА</Link>
+                      <Link className={styles.textCategory} href="#">СУСПІЛЬСТВО</Link>
+                      <Link className={styles.textCategory} href="#">ТЕРНОПІЛЬЩИНА</Link>
+                      <Link className={styles.textCategory} href="#">ПОЛІТИКА</Link>
+                      <Link className={styles.textCategory} href="#">ВОЛИНЬ</Link>
+                      <Link className={styles.textCategory} href="#">ЕКОНОМІКА</Link>
+                      <Link className={styles.textCategory} href="#">УКРАЇНА</Link>
+                      <Link className={styles.textCategory} href="#">КУЛЬТУРА</Link>
+                      <Link className={styles.textCategory} href="#">ЄС</Link>
+                      <Link className={styles.textCategory} href="#">ЗДОРОВ'Я</Link>
+                      <Link className={styles.textCategory} href="#">СВІТ</Link>
+                      <span></span>
+                      <Link className={styles.textCategory} href="#">СПОРТ</Link>
+                      <Link className={styles.textCategory} href="#">НОВИНА</Link>
+                      <Link className={styles.textCategory} href="#">КРИМІНАЛ</Link>
+                      <Link className={styles.textCategory} href="#">СТАТТЯ</Link>
+                      <Link className={styles.textCategory} href="#">НАДЗВИЧАЙНІ ПОДІЇ</Link>
+                      <Link className={styles.textCategory} href="#">ІНТЕРВ'Ю</Link>
+                      <Link className={styles.textCategory} href="#">ІСТОРІЯ</Link>
+                      <span></span>
+                      <Link className={styles.textCategory} href="#">ТЕХНОЛОГІЇ</Link>
+                      <span></span>
+                    </>
+                  )}
+                </div>
+              </>
+            )}
             <div className={styles.radioBox}>
               <a className={styles.radioLogo} target={'_blank'} href={'https://lviv.fm/'}>
                 <Image

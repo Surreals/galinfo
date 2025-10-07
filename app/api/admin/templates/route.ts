@@ -11,6 +11,8 @@ const heroInfoSchema = require('@/app/lib/heroSchema').heroInfoSchema;
 const heroInfoMobileSchema = require('@/app/lib/heroSchema').heroInfoMobileSchema;
 const articlePageDesktopSchema = require('@/app/lib/articlePageSchema').articlePageDesktopSchema;
 const articlePageMobileSchema = require('@/app/lib/articlePageSchema').articlePageMobileSchema;
+const headerSchema = require('@/app/lib/headerSchema').headerSchema;
+const footerSchema = require('@/app/lib/footerSchema').footerSchema;
 
 export interface TemplateSchema {
   id: number;
@@ -46,11 +48,111 @@ async function ensureTableExists() {
   }
 }
 
+// Function to ensure default templates exist
+async function ensureDefaultTemplates() {
+  const defaultTemplates = [
+    {
+      template_id: 'main-desktop',
+      name: 'Головна сторінка (Десктоп)',
+      description: 'Схема для десктопної версії головної сторінки',
+      schema: desktopSchema
+    },
+    {
+      template_id: 'main-mobile',
+      name: 'Головна сторінка (Мобільна)',
+      description: 'Схема для мобільної версії головної сторінки',
+      schema: mobileSchema
+    },
+    {
+      template_id: 'category-desktop',
+      name: 'Сторінка категорії (Десктоп)',
+      description: 'Схема для десктопної версії сторінки категорії',
+      schema: categoryDesktopSchema
+    },
+    {
+      template_id: 'category-mobile',
+      name: 'Сторінка категорії (Мобільна)',
+      description: 'Схема для мобільної версії сторінки категорії',
+      schema: categoryMobileSchema
+    },
+    {
+      template_id: 'hero',
+      name: 'Hero секція',
+      description: 'Схема для Hero секції з каруселлю',
+      schema: heroSchema
+    },
+    {
+      template_id: 'hero-info-desktop',
+      name: 'Hero Info (Десктоп)',
+      description: 'Схема для Hero Info секції (десктоп)',
+      schema: heroInfoSchema
+    },
+    {
+      template_id: 'hero-info-mobile',
+      name: 'Hero Info (Мобільна)',
+      description: 'Схема для Hero Info секції (мобільна)',
+      schema: heroInfoMobileSchema
+    },
+    {
+      template_id: 'article-desktop',
+      name: 'Сторінка статті (Десктоп)',
+      description: 'Схема для десктопної версії сторінки статті',
+      schema: articlePageDesktopSchema
+    },
+    {
+      template_id: 'article-mobile',
+      name: 'Сторінка статті (Мобільна)',
+      description: 'Схема для мобільної версії сторінки статті',
+      schema: articlePageMobileSchema
+    },
+    {
+      template_id: 'header',
+      name: 'Налаштування хедера',
+      description: 'Конфігурація хедера: порядок категорій та меню',
+      schema: headerSchema
+    },
+    {
+      template_id: 'footer',
+      name: 'Налаштування футера',
+      description: 'Конфігурація футера: порядок категорій та елементів',
+      schema: footerSchema
+    }
+  ];
+
+  for (const template of defaultTemplates) {
+    try {
+      // Check if template exists
+      const checkQuery = 'SELECT id FROM template_schemas WHERE template_id = ?';
+      const [existing] = await executeQuery<{ id: number }>(checkQuery, [template.template_id]);
+
+      if (existing.length === 0) {
+        // Create template if it doesn't exist
+        const insertQuery = `
+          INSERT INTO template_schemas (template_id, name, description, schema_json)
+          VALUES (?, ?, ?, ?)
+        `;
+        await executeQuery(insertQuery, [
+          template.template_id,
+          template.name,
+          template.description,
+          JSON.stringify(template.schema)
+        ]);
+        console.log(`Created default template: ${template.template_id}`);
+      }
+    } catch (error) {
+      console.error(`Error creating template ${template.template_id}:`, error);
+    }
+  }
+}
+
 // GET - Fetch all templates
 export async function GET(request: NextRequest) {
   try {
     // First, try to create the table if it doesn't exist
     await ensureTableExists();
+    
+    // Ensure default templates exist
+    await ensureDefaultTemplates();
 
     const query = `
       SELECT id, template_id, name, description, schema_json, created_at, updated_at
@@ -78,6 +180,9 @@ export async function POST(request: NextRequest) {
   try {
     // First, ensure the table exists
     await ensureTableExists();
+    
+    // Ensure default templates exist
+    await ensureDefaultTemplates();
 
     const body = await request.json();
     const { template_id, name, description, schema_json } = body;
