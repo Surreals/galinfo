@@ -1,3 +1,10 @@
+/**
+ * @deprecated
+ * Цей компонент застарілий і більше не використовується.
+ * Використовуйте CKEditorClient замість нього.
+ * 
+ * @see CKEditorClient
+ */
 "use client";
 
 import {useEffect, useImperativeHandle, useRef, forwardRef} from "react";

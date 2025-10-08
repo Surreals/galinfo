@@ -496,6 +496,22 @@
   text-align: center;
 }
 
+.searchViewAllButton {
+  display: block;
+  padding: 12px;
+  text-align: center;
+  background: #f6f6f6;
+  color: var(--color-accent);
+  font-weight: 600;
+  font-size: 14px;
+  border-top: 1px solid #e0e0e0;
+  transition: background 0.2s;
+
+  &:hover {
+    background: #eeeeee;
+  }
+}
+
 .header {
   padding: 16px 80px;
   display: flex;
