@@ -2,11 +2,16 @@
 
 import { useState, useEffect } from 'react';
 import dayjs from 'dayjs';
-import { DatePicker, Button } from 'antd';
+import { DatePicker, Button, Tabs, Tag } from 'antd';
 import { EyeOutlined, EditOutlined, DeleteOutlined, ArrowLeftOutlined } from '@ant-design/icons';
 import { useRouter } from 'next/navigation';
 import AdminNavigation from '../components/AdminNavigation';
 import styles from './news.module.css';
+
+const NEWS_TAB_TYPES = {
+  all: { name: 'Всі новини', color: 'blue' },
+  drafts: { name: 'Чернетки', color: 'red' }
+};
 
 interface NewsItem {
   id: number;
@@ -71,6 +76,7 @@ export default function NewsPage() {
   });
   const [deleting, setDeleting] = useState(false);
   const [isUpdatingUrlKeys, setIsUpdatingUrlKeys] = useState(false);
+  const [activeTab, setActiveTab] = useState<'all' | 'drafts'>('all');
   
   // Фільтри
   const [filters, setFilters] = useState({
@@ -96,11 +102,21 @@ export default function NewsPage() {
       setError(null);
       
       const params = new URLSearchParams();
+      
+      // Додаємо фільтри до параметрів запиту
       Object.entries(filters).forEach(([key, value]) => {
         if (value && value !== 'all') {
           params.append(key, value.toString());
         }
       });
+      
+      // Встановлюємо статус залежно від активного табу
+      if (activeTab === 'drafts') {
+        params.set('status', 'unpublished');
+      } else if (filters.status && filters.status !== 'all') {
+        // Якщо на табі "Всі" вибрано фільтр статусу, використовуємо його
+        params.set('status', filters.status);
+      }
       
       const response = await fetch(`/api/admin/news?${params.toString()}`);
       
@@ -119,7 +135,14 @@ export default function NewsPage() {
 
   useEffect(() => {
     fetchNews();
-  }, [filters]);
+  }, [filters, activeTab]);
+
+  // Обробка зміни табу
+  const handleTabChange = (key: string) => {
+    setActiveTab(key as 'all' | 'drafts');
+    // Скидаємо сторінку при зміні табу
+    setFilters(prev => ({ ...prev, page: 1 }));
+  };
 
   // Обробка зміни фільтрів
   const handleFilterChange = (key: string, value: any) => {
@@ -312,20 +335,49 @@ export default function NewsPage() {
           </div>
         </div>
 
+        {/* Таби для розділення новин */}
+        <Tabs
+          activeKey={activeTab}
+          onChange={handleTabChange}
+          className={styles.newsTabs}
+          items={[
+            {
+              key: 'all',
+              label: (
+                <span>
+                  <Tag color={NEWS_TAB_TYPES.all.color}>{NEWS_TAB_TYPES.all.name}</Tag>
+                </span>
+              ),
+              children: null
+            },
+            {
+              key: 'drafts',
+              label: (
+                <span>
+                  <Tag color={NEWS_TAB_TYPES.drafts.color}>{NEWS_TAB_TYPES.drafts.name}</Tag>
+                </span>
+              ),
+              children: null
+            }
+          ]}
+        />
+
         {/* Фільтри */}
         <div className={styles.filters}>
           <div className={styles.filterRow}>
-            <div className={styles.filterGroup}>
-              <label>Статус:</label>
-              <select 
-                value={filters.status} 
-                onChange={(e) => handleFilterChange('status', e.target.value)}
-              >
-                <option value="all">Всі</option>
-                <option value="published">Опубліковані</option>
-                <option value="unpublished">Неопубліковані</option>
-              </select>
-            </div>
+            {activeTab === 'all' && (
+              <div className={styles.filterGroup}>
+                <label>Статус:</label>
+                <select 
+                  value={filters.status} 
+                  onChange={(e) => handleFilterChange('status', e.target.value)}
+                >
+                  <option value="all">Всі</option>
+                  <option value="published">Опубліковані</option>
+                  <option value="unpublished">Неопубліковані</option>
+                </select>
+              </div>
+            )}
 
             <div className={styles.filterGroup}>
               <label>Тип:</label>

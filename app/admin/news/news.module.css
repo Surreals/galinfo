@@ -70,6 +70,11 @@
   cursor: not-allowed;
 }
 
+/* Таби - стиль як на сторінці categories */
+.newsTabs {
+  margin-bottom: 1.5rem;
+}
+
 /* Фільтри */
 .filters {
   background: white;
