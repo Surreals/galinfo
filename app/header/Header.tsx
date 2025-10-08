@@ -308,6 +308,16 @@ export default function Header() {
                     </Link>
                   </li>
                   <li>
+                    <Link href="/admin/categories" className={styles.link}>
+                      КАТЕГОРІЇ
+                    </Link>
+                  </li>
+                  <li>
+                    <Link href="/admin/tags" className={styles.link}>
+                      ТЕГИ
+                    </Link>
+                  </li>
+                  <li>
                     <Link href="/admin?gallery=true" className={styles.link}>
                       ГАЛЕРЕЯ
                     </Link>
@@ -323,6 +333,11 @@ export default function Header() {
                     </Link>
                   </li>
                   <li>
+                    <Link href="/admin/advertisements" className={styles.link}>
+                      РЕКЛАМА
+                    </Link>
+                  </li>
+                  <li>
                     <Link href="/admin/telegram-settings" className={styles.link}>
                       TELEGRAM
                     </Link>
@@ -330,6 +345,11 @@ export default function Header() {
                   <li>
                     <Link href="/admin/templates" className={styles.link}>
                       ШАБЛОНИ
+                    </Link>
+                  </li>
+                  <li>
+                    <Link href="/admin/settings/2fa" className={styles.link}>
+                      БЕЗПЕКА
                     </Link>
                   </li>
                 </>
@@ -767,11 +787,15 @@ export default function Header() {
                 <div className={styles.categories}>
                   <Link className={styles.textCategory} href="/admin">ПАНЕЛЬ</Link>
                   <Link className={styles.textCategory} href="/admin/news">НОВИНИ</Link>
+                  <Link className={styles.textCategory} href="/admin/categories">КАТЕГОРІЇ</Link>
+                  <Link className={styles.textCategory} href="/admin/tags">ТЕГИ</Link>
                   <Link className={styles.textCategory} href="/admin?gallery=true">ГАЛЕРЕЯ</Link>
                   <Link className={styles.textCategory} href="/admin/videos">ВІДЕО</Link>
                   <Link className={styles.textCategory} href="/admin/users">КОРИСТУВАЧІ</Link>
+                  <Link className={styles.textCategory} href="/admin/advertisements">РЕКЛАМА</Link>
                   <Link className={styles.textCategory} href="/admin/telegram-settings">TELEGRAM</Link>
                   <Link className={styles.textCategory} href="/admin/templates">ШАБЛОНИ</Link>
+                  <Link className={styles.textCategory} href="/admin/settings/2fa">БЕЗПЕКА</Link>
                 </div>
               </>
             ) : (
