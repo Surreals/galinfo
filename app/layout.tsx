@@ -6,12 +6,11 @@ import 'dayjs/locale/uk';
 import locale from 'antd/locale/uk_UA';
 import '@ant-design/v5-patch-for-react-19';
 
-import Footer from "@/app/footer/Footer";
-import Header from "@/app/header/Header";
 import {MobileProvider} from "@/app/contexts/MobileContext";
 import {MenuProvider} from "@/app/contexts/MenuContext";
 import {AdminAuthProvider} from "@/app/contexts/AdminAuthContext";
 import BytcdConsole from "@/app/components/BytcdConsole";
+import ConditionalLayout from "@/app/components/ConditionalLayout";
 
 import "./globals.css";
 import "antd/dist/reset.css";
@@ -197,9 +196,9 @@ export default function RootLayout({
           <AdminAuthProvider>
             <MobileProvider>
               <MenuProvider>
-                <Header/>
-                {children}
-                <Footer/>
+                <ConditionalLayout>
+                  {children}
+                </ConditionalLayout>
                 <BytcdConsole />
               </MenuProvider>
             </MobileProvider>
