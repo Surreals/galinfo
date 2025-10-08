@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
+import { Skeleton } from 'antd';
 import styles from './AdBanner.module.css';
 
 interface AdBannerProps {
@@ -72,8 +73,23 @@ const AdBanner: React.FC<AdBannerProps> = ({
     }
   };
 
-  if (loading || !ad) {
-    return null; // Або показати placeholder
+  if (loading) {
+    return (
+      <div className={`${styles.adBanner} ${className || ''}`}>
+        <Skeleton.Image 
+          active 
+          style={{ 
+            width: '100%', 
+            height: '185px',
+            maxHeight: '185px'
+          }} 
+        />
+      </div>
+    );
+  }
+
+  if (!ad) {
+    return null;
   }
 
   return (

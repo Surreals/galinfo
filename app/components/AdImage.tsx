@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
+import { Skeleton } from 'antd';
 
 interface AdImageProps {
   advertisementId?: number;
@@ -72,7 +73,21 @@ const AdImage: React.FC<AdImageProps> = ({
     }
   };
 
-  if (loading || !ad || !ad.image_url) {
+  if (loading) {
+    return (
+      <div className={className} style={{ width: '100%' }}>
+        <Skeleton.Image 
+          active 
+          style={{ 
+            width: '100%', 
+            height: `${height}px`
+          }} 
+        />
+      </div>
+    );
+  }
+
+  if (!ad || !ad.image_url) {
     return null;
   }
 
