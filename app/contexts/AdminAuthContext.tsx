@@ -10,6 +10,7 @@ interface AdminUser {
   agency: string;
   permissions: string;
   active: number;
+  role: string;
 }
 
 interface AdminAuthContextType {

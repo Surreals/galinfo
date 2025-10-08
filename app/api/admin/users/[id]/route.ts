@@ -9,6 +9,7 @@ export interface UserFormData {
   upass: string;
   active: boolean;
   permissions: Record<string, boolean>;
+  role: string;
 }
 
 export async function PUT(
@@ -58,13 +59,14 @@ export async function PUT(
     // Build update query
     let updateQuery = `
       UPDATE a_powerusers 
-      SET uname_ua = ?, uname = ?, uagency = ?, perm = ?, active = ?
+      SET uname_ua = ?, uname = ?, uagency = ?, perm = ?, role = ?, active = ?
     `;
     let queryParams: any[] = [
       body.uname_ua,
       body.uname,
       body.uagency || '',
       serializedPermissions,
+      body.role || 'journalist',
       body.active ? 1 : 0
     ];
 

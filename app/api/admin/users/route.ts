@@ -9,6 +9,7 @@ export interface AdminUser {
   uagency: string;
   active: number;
   perm: string;
+  role: string;
 }
 
 export interface UserFormData {
@@ -18,6 +19,7 @@ export interface UserFormData {
   upass: string;
   active: boolean;
   permissions: Record<string, boolean>;
+  role: string;
 }
 
 export async function GET() {
@@ -81,14 +83,15 @@ export async function POST(request: Request) {
     // Insert new user
     const [result] = await executeQuery(`
       INSERT INTO a_powerusers 
-      (uname_ua, uname, uagency, upass, perm, active) 
-      VALUES (?, ?, ?, ?, ?, ?)
+      (uname_ua, uname, uagency, upass, perm, role, active) 
+      VALUES (?, ?, ?, ?, ?, ?, ?)
     `, [
       body.uname_ua,
       body.uname,
       body.uagency || '',
       hashedPassword,
       serializedPermissions,
+      body.role || 'journalist',
       body.active ? 1 : 0
     ]);
 

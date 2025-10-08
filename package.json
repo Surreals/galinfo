@@ -11,6 +11,10 @@
     "start": "next start",
     "lint": "next lint",
     "test:db": "node scripts/test-db-connection.js",
+    "migrate:add-roles": "node scripts/add-role-column.js",
+    "migrate:fix-roles": "node scripts/fix-role-column.js",
+    "migrate:convert-roles": "node scripts/convert-roles.js",
+    "migrate:assign-roles": "node scripts/assign-roles-by-name.js",
     "setup:admin": "node scripts/setup-admin.js",
     "test:telegram": "node scripts/test-telegram-bot.js",
     "migrate:2fa": "node scripts/add-2fa-columns.js"

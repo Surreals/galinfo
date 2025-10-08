@@ -232,6 +232,13 @@
       text-overflow: ellipsis;
     }
 
+    .mobileAdminRole {
+      font-size: 12px;
+      color: #868e96;
+      font-weight: 500;
+      white-space: nowrap;
+    }
+
     .mobileAdminEmail {
       font-size: 14px;
       color: #6c757d;
@@ -650,6 +657,12 @@
     border: 1px solid #e9ecef;
   }
 
+  .adminUserInfo {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
   .adminUserName {
     color: #495057;
     font-weight: 600;
@@ -658,6 +671,13 @@
     overflow: hidden;
     text-overflow: ellipsis;
     max-width: 120px;
+  }
+
+  .adminUserRole {
+    color: #6c757d;
+    font-size: 10px;
+    font-weight: 500;
+    white-space: nowrap;
   }
 
   .adminLogoutButton {

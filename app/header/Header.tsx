@@ -16,6 +16,7 @@ import burgerMenu from "@/assets/icons/burgerMenu.svg"
 import logoutIcon from "@/assets/icons/logoutIcon.svg"
 import { useMenuContext } from "@/app/contexts/MenuContext";
 import { useAdminAuth } from "@/app/contexts/AdminAuthContext";
+import { UserRole, ROLE_LABELS } from "@/app/types/roles";
 import SearchBox from "@/app/header/components/SearchBox";
 import {useImportantNewsByLevel} from "@/app/hooks/useImportantNews";
 import {RateRow, useCurrencyRates} from "@/app/hooks/UseCurrencyRatesResult";
@@ -446,9 +447,14 @@ export default function Header() {
             {/* Admin logout button - only show if admin is authenticated and on admin page */}
             {user && isAdminPage && (
               <div className={styles.adminSection}>
-                <span className={styles.adminUserName} title={user.name}>
-                  {user.name}
-                </span>
+                <div className={styles.adminUserInfo}>
+                  <span className={styles.adminUserName} title={user.name}>
+                    {user.name}
+                  </span>
+                  <span className={styles.adminUserRole}>
+                    {ROLE_LABELS[user.role as UserRole] || user.role}
+                  </span>
+                </div>
                 <button 
                   className={styles.adminLogoutButton} 
                   onClick={logout}
@@ -894,6 +900,9 @@ export default function Header() {
                 <div className={styles.mobileAdminInfo}>
                   <span className={styles.mobileAdminUserName} title={user.name}>
                     {user.name}
+                  </span>
+                  <span className={styles.mobileAdminRole}>
+                    {ROLE_LABELS[user.role as UserRole] || user.role}
                   </span>
                   <span className={styles.mobileAdminEmail}>{user.email}</span>
                 </div>
