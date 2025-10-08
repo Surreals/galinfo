@@ -2,14 +2,17 @@
 
 import React, { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { Pagination, Input, Spin } from 'antd';
+import { Pagination, Input, Spin, DatePicker, Button } from 'antd';
+import { CalendarOutlined, CloseCircleOutlined } from '@ant-design/icons';
 import Image from 'next/image';
 import Link from 'next/link';
+import dayjs, { Dayjs } from 'dayjs';
 import { formatFullNewsDate } from '@/app/lib/newsUtils';
 import { AccentSquare } from '@/app/shared';
 import styles from './search.module.css';
 
 const { Search } = Input;
+const { RangePicker } = DatePicker;
 
 interface SearchResult {
   id: number;
@@ -59,21 +62,35 @@ export default function SearchPageContent() {
   const [error, setError] = useState<string | null>(null);
   const [pagination, setPagination] = useState<any>(null);
   const [currentPage, setCurrentPage] = useState(1);
+  const [dateRange, setDateRange] = useState<[Dayjs | null, Dayjs | null] | null>(null);
 
   // Отримання пошукового запиту з URL при завантаженні
   useEffect(() => {
     const queryFromUrl = searchParams.get('q');
     const pageFromUrl = searchParams.get('page');
+    const dateFromUrl = searchParams.get('dateFrom');
+    const dateToUrl = searchParams.get('dateTo');
     
     if (queryFromUrl) {
       setSearchQuery(queryFromUrl);
       const page = pageFromUrl ? parseInt(pageFromUrl) : 1;
       setCurrentPage(page);
-      performSearch(queryFromUrl, page);
+      
+      // Відновлюємо діапазон дат з URL
+      if (dateFromUrl && dateToUrl) {
+        setDateRange([dayjs(dateFromUrl), dayjs(dateToUrl)]);
+      }
+      
+      performSearch(queryFromUrl, page, dateFromUrl, dateToUrl);
     }
   }, [searchParams]);
 
-  const performSearch = async (query: string, page: number = 1) => {
+  const performSearch = async (
+    query: string, 
+    page: number = 1, 
+    dateFrom?: string | null, 
+    dateTo?: string | null
+  ) => {
     if (!query.trim()) return;
     
     setLoading(true);
@@ -87,6 +104,14 @@ export default function SearchPageContent() {
         lang: '1'
       });
       
+      // Додаємо параметри дат якщо вони є
+      if (dateFrom) {
+        params.append('dateFrom', dateFrom);
+      }
+      if (dateTo) {
+        params.append('dateTo', dateTo);
+      }
+      
       const response = await fetch(`/api/news/search?${params}`);
       const data: SearchResponse = await response.json();
       
@@ -94,7 +119,7 @@ export default function SearchPageContent() {
         setSearchResults(data.searchResults);
         setPagination(data.pagination);
       } else {
-        setError(data.error || 'Помилка пошуку');
+        setError('Помилка пошуку');
       }
     } catch (error) {
       console.error('Error searching news:', error);
@@ -107,15 +132,58 @@ export default function SearchPageContent() {
   const handleSearch = (value: string) => {
     if (value.trim()) {
       setCurrentPage(1);
-      router.push(`/search?q=${encodeURIComponent(value.trim())}&page=1`);
+      
+      let url = `/search?q=${encodeURIComponent(value.trim())}&page=1`;
+      
+      // Додаємо дати до URL якщо вони вибрані
+      if (dateRange && dateRange[0] && dateRange[1]) {
+        url += `&dateFrom=${dateRange[0].format('YYYY-MM-DD')}&dateTo=${dateRange[1].format('YYYY-MM-DD')}`;
+      }
+      
+      router.push(url);
     }
   };
 
   const handlePageChange = (page: number) => {
     if (searchQuery.trim()) {
       setCurrentPage(page);
-      router.push(`/search?q=${encodeURIComponent(searchQuery.trim())}&page=${page}`);
+      
+      let url = `/search?q=${encodeURIComponent(searchQuery.trim())}&page=${page}`;
+      
+      // Додаємо дати до URL якщо вони вибрані
+      if (dateRange && dateRange[0] && dateRange[1]) {
+        url += `&dateFrom=${dateRange[0].format('YYYY-MM-DD')}&dateTo=${dateRange[1].format('YYYY-MM-DD')}`;
+      }
+      
+      router.push(url);
       window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  };
+
+  const handleDateChange = (dates: [Dayjs | null, Dayjs | null] | null) => {
+    setDateRange(dates);
+  };
+
+  const handleApplyDateFilter = () => {
+    if (searchQuery.trim()) {
+      setCurrentPage(1);
+      
+      let url = `/search?q=${encodeURIComponent(searchQuery.trim())}&page=1`;
+      
+      if (dateRange && dateRange[0] && dateRange[1]) {
+        url += `&dateFrom=${dateRange[0].format('YYYY-MM-DD')}&dateTo=${dateRange[1].format('YYYY-MM-DD')}`;
+      }
+      
+      router.push(url);
+    }
+  };
+
+  const handleClearDateFilter = () => {
+    setDateRange(null);
+    
+    if (searchQuery.trim()) {
+      setCurrentPage(1);
+      router.push(`/search?q=${encodeURIComponent(searchQuery.trim())}&page=1`);
     }
   };
 
@@ -123,22 +191,59 @@ export default function SearchPageContent() {
     <div className={styles.searchPage}>
       <div className={styles.container}>
         {/* Пошукова форма */}
-        <div className={styles.searchHeader}>
-          <div className={styles.titleContainer}>
-            <AccentSquare className={styles.titleAccent} />
-            <h1 className={styles.title}>ПОШУК НОВИН</h1>
-          </div>
-          <Search
-            placeholder="Введіть пошуковий запит..."
-            enterButton="Пошук"
-            size="large"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            onSearch={handleSearch}
-            loading={loading}
-            className={styles.searchInput}
-          />
+      <div className={styles.searchHeader}>
+        <div className={styles.titleContainer}>
+          <AccentSquare className={styles.titleAccent} />
+          <h1 className={styles.title}>ПОШУК НОВИН</h1>
         </div>
+        <div className={styles.searchControls}>
+          <div className={styles.searchRow}>
+            <Search
+              placeholder="Введіть пошуковий запит..."
+              enterButton="Пошук"
+              size="large"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              onSearch={handleSearch}
+              loading={loading}
+              className={styles.searchInput}
+            />
+            
+            {/* Фільтр по даті */}
+            <div className={styles.dateFilter}>
+              <RangePicker
+                value={dateRange}
+                onChange={handleDateChange}
+                format="DD.MM.YYYY"
+                placeholder={['Дата від', 'Дата до']}
+                size="large"
+                className={styles.datePicker}
+                suffixIcon={<CalendarOutlined />}
+              />
+              <Button
+                type="primary"
+                size="large"
+                onClick={handleApplyDateFilter}
+                disabled={!dateRange || !searchQuery}
+                icon={<CalendarOutlined />}
+                className={styles.applyButton}
+              >
+                Застосувати
+              </Button>
+              {dateRange && (
+                <Button
+                  size="large"
+                  onClick={handleClearDateFilter}
+                  icon={<CloseCircleOutlined />}
+                  className={styles.clearButton}
+                >
+                  Очистити
+                </Button>
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
 
         {/* Результати пошуку або інфо */}
         {loading ? (

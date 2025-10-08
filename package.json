@@ -58,7 +58,7 @@
     "axios": "^1.11.0",
     "ckeditor4-react": "^4.3.0",
     "classnames": "^2.5.1",
-    "dayjs": "^1.11.13",
+    "dayjs": "^1.11.18",
     "dotenv": "^17.2.1",
     "editorjs-alert": "^1.1.4",
     "editorjs-button": "^3.0.3",
