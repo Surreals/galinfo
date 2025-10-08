@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAdminAuth } from '@/app/contexts/AdminAuthContext';
+import TwoFactorPage from './TwoFactorPage';
 import styles from './login.module.css';
 
 export default function LoginPage() {
@@ -10,7 +11,9 @@ export default function LoginPage() {
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
-  const { login: authLogin, isAuthenticated, isLoading: authLoading } = useAdminAuth();
+  const [showTwoFactor, setShowTwoFactor] = useState(false);
+  const [userId, setUserId] = useState<number | null>(null);
+  const { isAuthenticated, isLoading: authLoading } = useAdminAuth();
   const router = useRouter();
 
   useEffect(() => {
@@ -32,12 +35,32 @@ export default function LoginPage() {
     setError('');
 
     try {
-      const success = await authLogin(login, password);
-      
-      if (success) {
-        router.push('/admin');
+      const response = await fetch('/api/admin/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ login, password }),
+      });
+
+      const data = await response.json();
+
+      // Check if 2FA is required
+      if (data.requiresTwoFactor) {
+        setUserId(data.userId);
+        setShowTwoFactor(true);
+        return;
+      }
+
+      if (data.success) {
+        // Store user data and token
+        localStorage.setItem('adminUser', JSON.stringify(data.user));
+        localStorage.setItem('adminToken', data.token);
+        
+        // Reload to update context
+        window.location.href = '/admin';
       } else {
-        setError('Невірний логін або пароль');
+        setError(data.error || 'Невірний логін або пароль');
       }
     } catch (err) {
       setError('Помилка входу. Спробуйте ще раз.');
@@ -46,12 +69,35 @@ export default function LoginPage() {
     }
   };
 
+  const handleTwoFactorSuccess = () => {
+    window.location.href = '/admin';
+  };
+
+  const handleBackFromTwoFactor = () => {
+    setShowTwoFactor(false);
+    setUserId(null);
+    setPassword('');
+  };
+
   if (authLoading) {
     return (
       <div className={styles.loadingContainer}>
         <div className={styles.loadingSpinner}></div>
         <p>Завантаження...</p>
       </div>
+    );
+  }
+
+  // Show 2FA page if required
+  if (showTwoFactor && userId) {
+    return (
+      <TwoFactorPage
+        userId={userId}
+        login={login}
+        password={password}
+        onSuccess={handleTwoFactorSuccess}
+        onBack={handleBackFromTwoFactor}
+      />
     );
   }
 

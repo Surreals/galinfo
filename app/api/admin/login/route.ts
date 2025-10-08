@@ -4,7 +4,7 @@ import crypto from 'crypto';
 
 export async function POST(request: NextRequest) {
   try {
-    const { login, email, password } = await request.json();
+    const { login, email, password, twoFactorCode } = await request.json();
     
     // Accept either 'login' or 'email' parameter for backward compatibility
     const userLogin = login || email;
@@ -39,6 +39,43 @@ export async function POST(request: NextRequest) {
         { error: 'Invalid login or password' },
         { status: 401 }
       );
+    }
+
+    // Check if 2FA is enabled for this user
+    const twoFactorEnabled = user.twofa_enabled === 1;
+
+    // If 2FA is enabled and no code provided, require 2FA
+    if (twoFactorEnabled && !twoFactorCode) {
+      return NextResponse.json({
+        success: false,
+        requiresTwoFactor: true,
+        userId: user.id,
+        message: '2FA code required'
+      });
+    }
+
+    // If 2FA is enabled and code provided, verify it
+    if (twoFactorEnabled && twoFactorCode) {
+      const verifyResponse = await fetch(`${request.nextUrl.origin}/api/admin/2fa/verify`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          userId: user.id,
+          token: twoFactorCode,
+          isLogin: true
+        }),
+      });
+
+      const verifyData = await verifyResponse.json();
+
+      if (!verifyData.success) {
+        return NextResponse.json(
+          { error: 'Invalid 2FA code' },
+          { status: 401 }
+        );
+      }
     }
 
     // Generate a simple token (in production, use JWT)
