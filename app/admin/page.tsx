@@ -117,9 +117,9 @@ export default function AdminPage() {
       id: 'advertising',
       title: 'Реклама',
       description: 'Управління рекламними матеріалами',
-      href: '/admin/advertising',
+      href: '/admin/advertisements',
       icon: '📢',
-      disabled: true,
+      disabled: false,
       color: '#ffc107'
     },
     {

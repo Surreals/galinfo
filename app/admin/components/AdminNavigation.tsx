@@ -22,7 +22,7 @@ export default function AdminNavigation({ onClose }: AdminNavigationProps) {
     { id: 'templates', label: 'JSON Шаблони', href: '/admin/templates' },
     { id: 'properties', label: 'Властивості', href: '/admin/properties' },
     { id: 'users', label: 'Користувачі', href: '/admin/users' },
-    { id: 'advertising', label: 'Реклама', href: '/admin/advertising' },
+    { id: 'advertising', label: 'Реклама', href: '/admin/advertisements' },
     { id: 'test', label: 'Тестування', href: '/admin/test-category-news' },
   ];
 
