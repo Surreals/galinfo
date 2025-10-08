@@ -14,10 +14,10 @@ export interface TemplateSchema {
 // GET - Fetch specific template by ID
 export async function GET(
   request: NextRequest,
-  { params }: { params: { template_id: string } }
+  { params }: { params: Promise<{ template_id: string }> }
 ) {
   try {
-    const { template_id } = params;
+    const { template_id } = await params;
 
     const query = `
       SELECT id, template_id, name, description, schema_json, created_at, updated_at
@@ -50,10 +50,10 @@ export async function GET(
 // PUT - Update specific template
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { template_id: string } }
+  { params }: { params: Promise<{ template_id: string }> }
 ) {
   try {
-    const { template_id } = params;
+    const { template_id } = await params;
     const body = await request.json();
     const { name, description, schema_json } = body;
 
@@ -101,10 +101,10 @@ export async function PUT(
 // DELETE - Delete specific template
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { template_id: string } }
+  { params }: { params: Promise<{ template_id: string }> }
 ) {
   try {
-    const { template_id } = params;
+    const { template_id } = await params;
 
     const deleteQuery = 'DELETE FROM template_schemas WHERE template_id = ?';
     const [result] = await executeQuery(deleteQuery, [template_id]);

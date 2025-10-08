@@ -32,10 +32,10 @@ function getCategoryTitle(type: string, slug: string): string {
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { type: string; slug: string } }
+  { params }: { params: Promise<{ type: string; slug: string }> }
 ) {
   try {
-    const { type, slug } = params
+    const { type, slug } = await params
     const url = new URL(request.url)
     const limit = parseInt(url.searchParams.get('limit') || '20')
     const lang = url.searchParams.get('lang') || '1'
