@@ -8,6 +8,29 @@ import { useRouter } from 'next/navigation';
 import AdminNavigation from '../components/AdminNavigation';
 import styles from './news.module.css';
 
+// Функція для перевірки, чи новина запланована на майбутнє
+const isNewsScheduled = (formattedDate: string, formattedTime: string): boolean => {
+  try {
+    // formattedDate має формат DD.MM.YYYY (наприклад, "10.10.2025")
+    // formattedTime має формат HH:mm:ss (наприклад, "21:22:00")
+    
+    // Обрізаємо секунди з часу
+    const timeWithoutSeconds = formattedTime.split(':').slice(0, 2).join(':');
+    
+    // Перетворюємо DD.MM.YYYY в YYYY-MM-DD
+    const [day, month, year] = formattedDate.split('.');
+    const isoDate = `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
+    
+    // Об'єднуємо в ISO формат
+    const fullDateTime = dayjs(`${isoDate}T${timeWithoutSeconds}`);
+    
+    return fullDateTime.isAfter(dayjs());
+  } catch (error) {
+    console.error('Error checking if news is scheduled:', error);
+    return false;
+  }
+};
+
 const NEWS_TAB_TYPES = {
   all: { name: 'Всі новини', color: 'blue' },
   drafts: { name: 'Чернетки', color: 'red' }
@@ -537,10 +560,16 @@ export default function NewsPage() {
                     </td>
                     <td className={styles.statusCell}>
                       <span className={`${styles.status} ${
-                        news.approved ? styles.published : styles.unpublished
+                        news.approved ? 
+                          (isNewsScheduled(news.formattedDate, news.formattedTime) ? styles.scheduled : styles.published) 
+                          : styles.unpublished
                       }`}>
-                        {news.approved ? 'Опубліковано' : 'Чернетка'}
+                        {news.approved ? 
+                          (isNewsScheduled(news.formattedDate, news.formattedTime) ? 'Запланована' : 'Опубліковано')
+                          : 'Чернетка'}
                       </span>
+                      
+                      
                     </td>
                     <td className={styles.statsCell}>
                       <div className={styles.viewsValue}>

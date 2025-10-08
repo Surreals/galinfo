@@ -351,6 +351,11 @@
   color: #721c24;
 }
 
+.status.scheduled {
+  background: #cfe2ff;
+  color: #084298;
+}
+
 .statsCell { width: 110px; text-align: center; }
 
 /* Views value inline with icon */
