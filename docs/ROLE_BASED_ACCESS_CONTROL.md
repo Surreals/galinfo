@@ -36,7 +36,7 @@ The GalInfo admin system implements a comprehensive role-based access control sy
 
 - ❌ User Management
 - ❌ Category Management
-- ✅ Tag Management
+- ❌ Tag Management
 - ❌ Advertisement Management
 - ❌ Telegram Management
 - ❌ Site Settings Management
@@ -303,18 +303,20 @@ Visual indicators for journalists:
 
 The admin navigation menu automatically filters based on user role:
 
-**All Roles:**
+**Редактори та Журналісти:**
 
 - Новини / Статті
 - Галерея
-- Користувачі (view only for non-admins)
 
-**Admin Only:**
+**Тільки Адміністратори:**
 
 - Сайт
 - JSON Шаблони
 - Властивості
+- Користувачі
 - Реклама
+- Теги
+- Telegram
 - Тестування
 
 ## Security Considerations

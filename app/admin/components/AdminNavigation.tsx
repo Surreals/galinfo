@@ -21,17 +21,19 @@ export default function AdminNavigation({ onClose }: AdminNavigationProps) {
     { id: 'site', label: 'Сайт', href: '/admin/site', requiresAdmin: true },
     { id: 'templates', label: 'JSON Шаблони', href: '/admin/templates', requiresAdmin: true },
     { id: 'properties', label: 'Властивості', href: '/admin/properties', requiresAdmin: true },
-    { id: 'users', label: 'Користувачі', href: '/admin/users', requiresAdmin: false }, // All can view, but only admin can edit
+    { id: 'users', label: 'Користувачі', href: '/admin/users', requiresAdmin: true },
     { id: 'advertising', label: 'Реклама', href: '/admin/advertisements', requiresAdmin: true },
+    { id: 'tags', label: 'Теги', href: '/admin/tags', requiresAdmin: true },
+    { id: 'telegram', label: 'Telegram', href: '/admin/telegram', requiresAdmin: true },
     { id: 'test', label: 'Тестування', href: '/admin/test-category-news', requiresAdmin: true },
   ];
 
-  // Filter tabs based on user role
+  // Filter tabs based on user role - only admins see admin sections
   const mainTabs = allMainTabs.filter(tab => {
     if (tab.requiresAdmin) {
       return isAdmin;
     }
-    return true; // Allow for all roles
+    return true; // Allow for all roles (only news and gallery)
   });
 
   const siteSubTabs = [

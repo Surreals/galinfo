@@ -42,7 +42,7 @@ export const ROLE_PERMISSIONS: Record<UserRole, RolePermissions> = {
   [UserRole.EDITOR]: {
     canManageUsers: false,
     canManageCategories: false,
-    canManageTags: true,
+    canManageTags: false,
     canManageAdvertisements: false,
     canManageTelegram: false,
     canManageSiteSettings: false,

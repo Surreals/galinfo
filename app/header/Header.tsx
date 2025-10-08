@@ -17,6 +17,7 @@ import logoutIcon from "@/assets/icons/logoutIcon.svg"
 import { useMenuContext } from "@/app/contexts/MenuContext";
 import { useAdminAuth } from "@/app/contexts/AdminAuthContext";
 import { UserRole, ROLE_LABELS } from "@/app/types/roles";
+import { useRolePermissions } from "@/app/hooks/useRolePermissions";
 import SearchBox from "@/app/header/components/SearchBox";
 import {useImportantNewsByLevel} from "@/app/hooks/useImportantNews";
 import {RateRow, useCurrencyRates} from "@/app/hooks/UseCurrencyRatesResult";
@@ -81,6 +82,7 @@ export default function Header() {
 
   const { menuData } = useMenuContext();
   const { user, logout } = useAdminAuth();
+  const { isAdmin: isAdminRole } = useRolePermissions();
   const { settings: headerSettings, loading: settingsLoading } = useHeaderSettings();
   
   const { weather, loading: weatherLoading, refetch: refetchWeather } = useWeather("Lviv");
@@ -88,7 +90,6 @@ export default function Header() {
   const currencies = useMemo(() => ['USD', 'EUR'], []);
   const { rates } = useCurrencyRates(currencies);
   const pathname = usePathname();
-  const isAdmin = pathname.includes("admin");
 
   // Check if user is on admin page
   const isAdminPage = pathname.startsWith('/admin');
@@ -308,16 +309,20 @@ export default function Header() {
                       НОВИНИ
                     </Link>
                   </li>
-                  <li>
-                    <Link href="/admin/categories" className={styles.link}>
-                      КАТЕГОРІЇ
-                    </Link>
-                  </li>
-                  <li>
-                    <Link href="/admin/tags" className={styles.link}>
-                      ТЕГИ
-                    </Link>
-                  </li>
+                  {isAdminRole && (
+                    <li>
+                      <Link href="/admin/categories" className={styles.link}>
+                        КАТЕГОРІЇ
+                      </Link>
+                    </li>
+                  )}
+                  {isAdminRole && (
+                    <li>
+                      <Link href="/admin/tags" className={styles.link}>
+                        ТЕГИ
+                      </Link>
+                    </li>
+                  )}
                   <li>
                     <Link href="/admin?gallery=true" className={styles.link}>
                       ГАЛЕРЕЯ
@@ -328,26 +333,34 @@ export default function Header() {
                       ВІДЕО
                     </Link>
                   </li>
-                  <li>
-                    <Link href="/admin/users" className={styles.link}>
-                      КОРИСТУВАЧІ
-                    </Link>
-                  </li>
-                  <li>
-                    <Link href="/admin/advertisements" className={styles.link}>
-                      РЕКЛАМА
-                    </Link>
-                  </li>
-                  <li>
-                    <Link href="/admin/telegram-settings" className={styles.link}>
-                      TELEGRAM
-                    </Link>
-                  </li>
-                  <li>
-                    <Link href="/admin/templates" className={styles.link}>
-                      ШАБЛОНИ
-                    </Link>
-                  </li>
+                  {isAdminRole && (
+                    <li>
+                      <Link href="/admin/users" className={styles.link}>
+                        КОРИСТУВАЧІ
+                      </Link>
+                    </li>
+                  )}
+                  {isAdminRole && (
+                    <li>
+                      <Link href="/admin/advertisements" className={styles.link}>
+                        РЕКЛАМА
+                      </Link>
+                    </li>
+                  )}
+                  {isAdminRole && (
+                    <li>
+                      <Link href="/admin/telegram-settings" className={styles.link}>
+                        TELEGRAM
+                      </Link>
+                    </li>
+                  )}
+                  {isAdminRole && (
+                    <li>
+                      <Link href="/admin/templates" className={styles.link}>
+                        ШАБЛОНИ
+                      </Link>
+                    </li>
+                  )}
                   <li>
                     <Link href="/admin/settings/2fa" className={styles.link}>
                       БЕЗПЕКА
@@ -624,7 +637,7 @@ export default function Header() {
         </div>
       )}
       {
-        isAdmin ? null : <div className={styles.secondaryHeaderBox}>
+        isAdminPage ? null : <div className={styles.secondaryHeaderBox}>
           <div className={styles.secondaryHeader}>
             <p className={styles.text}>
               Агенція інформації та аналітики "Гал-інфо"
@@ -793,14 +806,14 @@ export default function Header() {
                 <div className={styles.categories}>
                   <Link className={styles.textCategory} href="/admin">ПАНЕЛЬ</Link>
                   <Link className={styles.textCategory} href="/admin/news">НОВИНИ</Link>
-                  <Link className={styles.textCategory} href="/admin/categories">КАТЕГОРІЇ</Link>
-                  <Link className={styles.textCategory} href="/admin/tags">ТЕГИ</Link>
+                  {isAdminRole && <Link className={styles.textCategory} href="/admin/categories">КАТЕГОРІЇ</Link>}
+                  {isAdminRole && <Link className={styles.textCategory} href="/admin/tags">ТЕГИ</Link>}
                   <Link className={styles.textCategory} href="/admin?gallery=true">ГАЛЕРЕЯ</Link>
                   <Link className={styles.textCategory} href="/admin/videos">ВІДЕО</Link>
-                  <Link className={styles.textCategory} href="/admin/users">КОРИСТУВАЧІ</Link>
-                  <Link className={styles.textCategory} href="/admin/advertisements">РЕКЛАМА</Link>
-                  <Link className={styles.textCategory} href="/admin/telegram-settings">TELEGRAM</Link>
-                  <Link className={styles.textCategory} href="/admin/templates">ШАБЛОНИ</Link>
+                  {isAdminRole && <Link className={styles.textCategory} href="/admin/users">КОРИСТУВАЧІ</Link>}
+                  {isAdminRole && <Link className={styles.textCategory} href="/admin/advertisements">РЕКЛАМА</Link>}
+                  {isAdminRole && <Link className={styles.textCategory} href="/admin/telegram-settings">TELEGRAM</Link>}
+                  {isAdminRole && <Link className={styles.textCategory} href="/admin/templates">ШАБЛОНИ</Link>}
                   <Link className={styles.textCategory} href="/admin/settings/2fa">БЕЗПЕКА</Link>
                 </div>
               </>
