@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Table, Button, Modal, Form, Input, message, Popconfirm, Space, Tag as AntTag, Select, InputNumber } from 'antd';
+import { Table, Button, Modal, Form, Input, message, Popconfirm, Space } from 'antd';
 import { PlusOutlined, EditOutlined, DeleteOutlined, SearchOutlined } from '@ant-design/icons';
 import AdminNavigation from '../components/AdminNavigation';
 import styles from './tags.module.css';
@@ -9,76 +9,89 @@ import styles from './tags.module.css';
 interface Tag {
   id: number;
   tag: string;
-  usage_count?: number;
+  newsCount: number;
+}
+
+interface PaginationInfo {
+  total: number;
+  page: number;
+  perPage: number;
+  totalPages: number;
 }
 
 export default function TagsPage() {
   const [tags, setTags] = useState<Tag[]>([]);
-  const [allTags, setAllTags] = useState<Tag[]>([]);
   const [loading, setLoading] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
   const [deleteModalVisible, setDeleteModalVisible] = useState(false);
   const [editingTag, setEditingTag] = useState<Tag | null>(null);
   const [deletingTag, setDeletingTag] = useState<Tag | null>(null);
-  const [searchText, setSearchText] = useState('');
-  const [replaceTagId, setReplaceTagId] = useState<number | null>(null);
+  const [replaceTagId, setReplaceTagId] = useState<string>('');
+  const [pagination, setPagination] = useState<PaginationInfo>({
+    total: 0,
+    page: 0,
+    perPage: 100,
+    totalPages: 0
+  });
+  const [filters, setFilters] = useState({
+    keyword: '',
+    newsId: ''
+  });
   const [form] = Form.useForm();
+  const [filterForm] = Form.useForm();
 
   // Завантаження тегів
-  const loadTags = async (search?: string) => {
+  const loadTags = async (page: number = 0, filterData?: typeof filters) => {
     setLoading(true);
     try {
-      const params = new URLSearchParams({ 
-        withUsageCount: 'true'
+      const currentFilters = filterData || filters;
+      const params = new URLSearchParams({
+        page: page.toString(),
+        perPage: pagination.perPage.toString(),
       });
-      if (search) {
-        params.append('search', search);
+
+      if (currentFilters.keyword) {
+        params.append('keyword', currentFilters.keyword);
       }
-      
+      if (currentFilters.newsId) {
+        params.append('newsId', currentFilters.newsId);
+      }
+
       const response = await fetch(`/api/admin/tags?${params}`);
       const data = await response.json();
-      
+
       if (data.success) {
         setTags(data.data);
+        setPagination(data.pagination);
       } else {
-        message.error('Помилка завантаження тегів');
+        // Показати повідомлення про помилку з беку
+        alert(data.error || 'Помилка завантаження тегів');
       }
-    } catch (error) {
-      message.error('Помилка з\'єднання з сервером');
+    } catch (error: any) {
+      alert(error.message || 'Помилка з\'єднання з сервером');
       console.error(error);
     } finally {
       setLoading(false);
     }
   };
 
-  // Завантаження всіх тегів для вибору при видаленні
-  const loadAllTags = async () => {
-    try {
-      const response = await fetch('/api/admin/tags');
-      const data = await response.json();
-      
-      if (data.success) {
-        setAllTags(data.data);
-      }
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
   useEffect(() => {
     loadTags();
-    loadAllTags();
   }, []);
 
-  // Пошук
-  const handleSearch = () => {
-    loadTags(searchText);
+  // Застосувати фільтри
+  const handleFilter = async () => {
+    const values = filterForm.getFieldsValue();
+    setFilters(values);
+    await loadTags(0, values);
   };
 
-  // Скинути пошук
-  const handleResetSearch = () => {
-    setSearchText('');
-    loadTags();
+  // Скинути фільтри
+  const handleResetFilters = async () => {
+    filterForm.resetFields();
+    const resetFilters = { keyword: '', newsId: '' };
+    setFilters(resetFilters);
+    await loadTags(0, resetFilters);
   };
 
   // Відкрити модальне вікно для створення/редагування
@@ -104,9 +117,9 @@ export default function TagsPage() {
   const handleSave = async () => {
     try {
       const values = await form.validateFields();
-      
+
       const method = editingTag ? 'PUT' : 'POST';
-      const body = editingTag 
+      const body = editingTag
         ? { ...values, id: editingTag.id }
         : values;
 
@@ -118,15 +131,23 @@ export default function TagsPage() {
 
       const data = await response.json();
 
-      if (data.success) {
+      // Перевіряємо як успішність операції, так і HTTP статус
+      if (data.success && response.ok) {
         message.success(editingTag ? 'Тег оновлено' : 'Тег створено');
         closeModal();
-        loadTags(searchText);
+        loadTags(pagination.page);
       } else {
-        message.error(data.error || 'Помилка збереження');
+        // Показати повідомлення про помилку з беку
+        const errorMsg = data.error || 'Помилка збереження';
+        alert(errorMsg);
       }
-    } catch (error) {
-      message.error('Помилка валідації форми');
+    } catch (error: any) {
+      // Обробка помилок валідації або мережевих помилок
+      if (error.errorFields) {
+        alert('Будь ласка, заповніть всі обов\'язкові поля');
+      } else {
+        alert(error.message || 'Помилка з\'єднання з сервером');
+      }
       console.error(error);
     }
   };
@@ -134,7 +155,7 @@ export default function TagsPage() {
   // Відкрити діалог видалення
   const openDeleteModal = (tag: Tag) => {
     setDeletingTag(tag);
-    setReplaceTagId(null);
+    setReplaceTagId('');
     setDeleteModalVisible(true);
   };
 
@@ -143,9 +164,9 @@ export default function TagsPage() {
     if (!deletingTag) return;
 
     try {
-      const params = new URLSearchParams({ id: String(deletingTag.id) });
+      const params = new URLSearchParams({ id: deletingTag.id.toString() });
       if (replaceTagId) {
-        params.append('replaceWithId', String(replaceTagId));
+        params.append('replaceId', replaceTagId);
       }
 
       const response = await fetch(`/api/admin/tags?${params}`, {
@@ -155,18 +176,24 @@ export default function TagsPage() {
       const data = await response.json();
 
       if (data.success) {
-        message.success('Тег видалено');
+        message.success('Тег успішно видалено');
         setDeleteModalVisible(false);
         setDeletingTag(null);
-        setReplaceTagId(null);
-        loadTags(searchText);
+        setReplaceTagId('');
+        loadTags(pagination.page);
       } else {
-        message.error(data.error || 'Помилка видалення');
+        // Показати повідомлення про помилку з беку
+        alert(data.error || 'Помилка видалення');
       }
-    } catch (error) {
-      message.error('Помилка з\'єднання з сервером');
+    } catch (error: any) {
+      alert(error.message || 'Помилка з\'єднання з сервером');
       console.error(error);
     }
+  };
+
+  // Зміна сторінки пагінації
+  const handlePageChange = (page: number) => {
+    loadTags(page - 1); // Ant Design використовує 1-based pagination, API - 0-based
   };
 
   // Колонки таблиці
@@ -181,37 +208,35 @@ export default function TagsPage() {
       title: 'Тег',
       dataIndex: 'tag',
       key: 'tag',
-      render: (text: string) => <AntTag color="blue">{text}</AntTag>
+      render: (text: string) => <strong>{text}</strong>
     },
     {
-      title: 'Кількість використань',
-      dataIndex: 'usage_count',
-      key: 'usage_count',
-      width: 200,
-      render: (count: number) => (
-        <AntTag color={count > 0 ? 'green' : 'default'}>
-          {count || 0} {count === 1 ? 'новина' : 'новин'}
-        </AntTag>
-      ),
-      sorter: (a: Tag, b: Tag) => (a.usage_count || 0) - (b.usage_count || 0)
+      title: 'Кількість новин',
+      dataIndex: 'newsCount',
+      key: 'newsCount',
+      width: 150,
+      align: 'center' as const
     },
     {
       title: 'Дії',
       key: 'actions',
-      width: 150,
+      width: 120,
+      align: 'center' as const,
       render: (_: any, record: Tag) => (
-        <Space>
+        <Space size="small">
           <Button
             size="small"
             icon={<EditOutlined />}
             onClick={() => openModal(record)}
             type="primary"
+            title="Редагувати"
           />
           <Button
             size="small"
             icon={<DeleteOutlined />}
             onClick={() => openDeleteModal(record)}
             danger
+            title="Видалити"
           />
         </Space>
       )
@@ -221,10 +246,10 @@ export default function TagsPage() {
   return (
     <div className={styles.tagsPage}>
       <AdminNavigation />
-      
+
       <div className={styles.content}>
         <div className={styles.header}>
-          <h1>Управління тегами</h1>
+          <h1>Теги</h1>
           <Button
             type="primary"
             icon={<PlusOutlined />}
@@ -235,36 +260,68 @@ export default function TagsPage() {
           </Button>
         </div>
 
-        <div className={styles.searchBar}>
-          <Input
-            placeholder="Пошук тегів..."
-            value={searchText}
-            onChange={(e) => setSearchText(e.target.value)}
-            onPressEnter={handleSearch}
-            prefix={<SearchOutlined />}
-            style={{ width: 300 }}
-          />
-          <Button onClick={handleSearch} type="primary">
-            Пошук
-          </Button>
-          <Button onClick={handleResetSearch}>
-            Скинути
-          </Button>
+
+        {/* Фільтри */}
+        <div className={styles.filters}>
+          <Form
+            form={filterForm}
+            layout="inline"
+            initialValues={filters}
+            className={styles.filterForm}
+          >
+            <Form.Item name="keyword" label="Ключове слово">
+              <Input
+                placeholder="Введіть тег"
+                style={{ width: 200 }}
+                allowClear
+              />
+            </Form.Item>
+            <Form.Item name="newsId" label="ID новини">
+              <Input
+                placeholder="ID"
+                style={{ width: 120 }}
+                allowClear
+              />
+            </Form.Item>
+            <Form.Item>
+              <Space>
+                <Button
+                  type="primary"
+                  icon={<SearchOutlined />}
+                  onClick={handleFilter}
+                >
+                  Фільтрувати
+                </Button>
+                <Button onClick={handleResetFilters}>
+                  Скинути
+                </Button>
+              </Space>
+            </Form.Item>
+          </Form>
         </div>
 
+        {/* Інформація про кількість */}
+        <div className={styles.info}>
+          Всього тегів: <strong>{pagination.total}</strong>
+        </div>
+
+        {/* Таблиця */}
         <Table
           columns={columns}
           dataSource={tags}
           rowKey="id"
           loading={loading}
           pagination={{
-            pageSize: 50,
-            showSizeChanger: true,
-            showTotal: (total) => `Всього: ${total} тегів`
+            current: pagination.page + 1,
+            pageSize: pagination.perPage,
+            total: pagination.total,
+            onChange: handlePageChange,
+            showSizeChanger: false,
+            showTotal: (total) => `Всього: ${total}`
           }}
         />
 
-        {/* Модальне вікно створення/редагування */}
+        {/* Модальне вікно додавання/редагування */}
         <Modal
           title={editingTag ? 'Редагувати тег' : 'Новий тег'}
           open={modalVisible}
@@ -272,6 +329,7 @@ export default function TagsPage() {
           onCancel={closeModal}
           okText="Зберегти"
           cancelText="Скасувати"
+          width={500}
         >
           <Form
             form={form}
@@ -282,69 +340,59 @@ export default function TagsPage() {
               label="Назва тегу"
               rules={[
                 { required: true, message: 'Введіть назву тегу' },
-                { min: 2, message: 'Мінімум 2 символи' }
+                { max: 100, message: 'Максимум 100 символів' }
               ]}
             >
-              <Input placeholder="Наприклад: Львів" />
+              <Input placeholder="Наприклад: політика, економіка" />
             </Form.Item>
           </Form>
         </Modal>
 
-        {/* Модальне вікно видалення */}
+        {/* Модальне вікно видалення з можливістю заміни */}
         <Modal
-          title="Видалити тег"
+          title="Видалення тегу"
           open={deleteModalVisible}
           onOk={handleDelete}
           onCancel={() => {
             setDeleteModalVisible(false);
             setDeletingTag(null);
-            setReplaceTagId(null);
+            setReplaceTagId('');
           }}
           okText="Видалити"
           cancelText="Скасувати"
           okButtonProps={{ danger: true }}
+          width={500}
         >
-          {deletingTag && (
-            <div>
-              <p>
-                Ви дійсно хочете видалити тег <strong>"{deletingTag.tag}"</strong>?
-              </p>
-              {deletingTag.usage_count && deletingTag.usage_count > 0 && (
-                <div className={styles.warningBox}>
-                  <p>
-                    ⚠️ Цей тег використовується в <strong>{deletingTag.usage_count}</strong> новинах.
-                  </p>
-                  <p>Ви можете замінити його на інший тег:</p>
-                  <Select
-                    placeholder="Виберіть тег для заміни (опціонально)"
-                    style={{ width: '100%' }}
-                    value={replaceTagId}
-                    onChange={(value) => setReplaceTagId(value)}
-                    allowClear
-                    showSearch
-                    optionFilterProp="children"
-                  >
-                    {allTags
-                      .filter(t => t.id !== deletingTag.id)
-                      .map(t => (
-                        <Select.Option key={t.id} value={t.id}>
-                          {t.tag}
-                        </Select.Option>
-                      ))
-                    }
-                  </Select>
-                  {!replaceTagId && (
-                    <p className={styles.warningText}>
-                      Якщо не вказати тег для заміни, він буде просто видалений з усіх новин.
-                    </p>
-                  )}
-                </div>
-              )}
-            </div>
-          )}
+          <div className={styles.deleteModal}>
+            <p>
+              Ви впевнені, що хочете видалити тег{' '}
+              <strong style={{ color: '#f00' }}>"{deletingTag?.tag}"</strong>?
+            </p>
+            
+            {deletingTag && deletingTag.newsCount > 0 && (
+              <div className={styles.replaceSection}>
+                <p>
+                  Цей тег використовується в <strong>{deletingTag.newsCount}</strong> новинах.
+                </p>
+                <p>
+                  При необхідності, ви можете замінити його на інший тег.
+                  Введіть ID тегу-замінника:
+                </p>
+                <Input
+                  type="number"
+                  placeholder="ID тегу для заміни"
+                  value={replaceTagId}
+                  onChange={(e) => setReplaceTagId(e.target.value)}
+                  style={{ width: '100%', marginTop: 10 }}
+                />
+                <p className={styles.hint}>
+                  Якщо не вказати ID, тег буде просто видалено зі всіх новин.
+                </p>
+              </div>
+            )}
+          </div>
         </Modal>
       </div>
     </div>
   );
 }
-

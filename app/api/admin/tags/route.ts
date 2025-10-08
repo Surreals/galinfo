@@ -1,49 +1,84 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { executeQuery } from '@/app/lib/db';
+import mysql from 'mysql2/promise';
 
-export interface Tag {
-  id: number;
-  tag: string;
-  usage_count?: number;
-}
+const pool = mysql.createPool({
+  host: process.env.DB_HOST || 'localhost',
+  user: process.env.DB_USER || 'root',
+  password: process.env.DB_PASSWORD || '',
+  database: process.env.DB_NAME || 'galinfo',
+  waitForConnections: true,
+  connectionLimit: 10,
+  queueLimit: 0
+});
 
-// GET - Отримати всі теги
+// GET - Отримати список тегів з пагінацією та фільтрацією
 export async function GET(request: NextRequest) {
   try {
-    const { searchParams } = new URL(request.url);
-    const search = searchParams.get('search');
-    const withUsageCount = searchParams.get('withUsageCount') === 'true';
+    const searchParams = request.nextUrl.searchParams;
+    const page = parseInt(searchParams.get('page') || '0');
+    const perPage = parseInt(searchParams.get('perPage') || '100');
+    const keyword = searchParams.get('keyword') || '';
+    const newsId = searchParams.get('newsId') || '';
 
-    let query = `
-      SELECT a_tags.id, a_tags.tag
-      ${withUsageCount ? ', COUNT(a_tagmap.newsid) as usage_count' : ''}
-      FROM a_tags
-      ${withUsageCount ? 'LEFT JOIN a_tagmap ON a_tags.id = a_tagmap.tagid' : ''}
-    `;
-
+    let whereClauses: string[] = ['1=1'];
     const params: any[] = [];
 
-    if (search) {
-      query += ' WHERE a_tags.tag LIKE ?';
-      params.push(`%${search}%`);
+    // Фільтр по ключовому слову
+    if (keyword) {
+      whereClauses.push('a_tags.tag LIKE ?');
+      params.push(`%${keyword}%`);
     }
 
-    if (withUsageCount) {
-      query += ' GROUP BY a_tags.id';
+    // Фільтр по ID новини
+    if (newsId) {
+      whereClauses.push('a_tags_map.newsid = ?');
+      params.push(parseInt(newsId));
     }
 
-    query += ' ORDER BY a_tags.tag';
+    const whereClause = whereClauses.join(' AND ');
 
-    const tags = await executeQuery<Tag>(query, params);
+    // Підрахунок загальної кількості
+    const [countResult] = await pool.query<any[]>(
+      `SELECT COUNT(DISTINCT a_tags.id) as total
+       FROM a_tags 
+       LEFT JOIN a_tags_map ON a_tags.id = a_tags_map.tagid
+       WHERE ${whereClause}`,
+      params
+    );
+
+    const total = countResult[0]?.total || 0;
+
+    // Отримання даних з пагінацією
+    const offset = page * perPage;
+    const [rows] = await pool.query<any[]>(
+      `SELECT 
+        a_tags.id,
+        a_tags.tag,
+        COUNT(a_tags_map.newsid) as newsCount
+       FROM a_tags 
+       LEFT JOIN a_tags_map ON a_tags.id = a_tags_map.tagid
+       WHERE ${whereClause}
+       GROUP BY a_tags.id
+       ORDER BY a_tags.tag
+       LIMIT ? OFFSET ?`,
+      [...params, perPage, offset]
+    );
 
     return NextResponse.json({
       success: true,
-      data: tags,
+      data: rows,
+      pagination: {
+        total,
+        page,
+        perPage,
+        totalPages: Math.ceil(total / perPage)
+      }
     });
-  } catch (error) {
+
+  } catch (error: any) {
     console.error('Error fetching tags:', error);
     return NextResponse.json(
-      { success: false, error: 'Failed to fetch tags' },
+      { success: false, error: error.message || 'Помилка отримання тегів' },
       { status: 500 }
     );
   }
@@ -55,29 +90,27 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const { tag } = body;
 
-    // Валідація
     if (!tag || !tag.trim()) {
       return NextResponse.json(
-        { success: false, error: 'Tag name is required' },
+        { success: false, error: 'Назва тегу обов\'язкова' },
         { status: 400 }
       );
     }
 
-    // Перевірка чи існує тег з такою назвою
-    const existing = await executeQuery<Tag>(
+    // Перевірка на дублікати
+    const [existing] = await pool.query<any[]>(
       'SELECT id FROM a_tags WHERE tag = ?',
       [tag.trim()]
     );
 
     if (existing.length > 0) {
       return NextResponse.json(
-        { success: false, error: 'Tag with this name already exists' },
+        { success: false, error: 'Тег з такою назвою вже існує' },
         { status: 400 }
       );
     }
 
-    // Вставка нового тегу
-    const result = await executeQuery(
+    const [result] = await pool.query<any>(
       'INSERT INTO a_tags (tag) VALUES (?)',
       [tag.trim()]
     );
@@ -85,15 +118,16 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
       success: true,
       data: {
-        id: (result as any).insertId,
+        id: result.insertId,
         tag: tag.trim()
       },
-      message: 'Tag created successfully'
+      message: 'Тег успішно створено'
     });
-  } catch (error) {
+
+  } catch (error: any) {
     console.error('Error creating tag:', error);
     return NextResponse.json(
-      { success: false, error: 'Failed to create tag' },
+      { success: false, error: error.message || 'Помилка створення тегу' },
       { status: 500 }
     );
   }
@@ -105,61 +139,53 @@ export async function PUT(request: NextRequest) {
     const body = await request.json();
     const { id, tag } = body;
 
-    // Валідація
-    if (!id) {
+    if (!id || !tag || !tag.trim()) {
       return NextResponse.json(
-        { success: false, error: 'Tag ID is required' },
+        { success: false, error: 'ID та назва тегу обов\'язкові' },
         { status: 400 }
       );
     }
 
-    if (!tag || !tag.trim()) {
-      return NextResponse.json(
-        { success: false, error: 'Tag name is required' },
-        { status: 400 }
-      );
-    }
-
-    // Перевірка чи існує тег
-    const existing = await executeQuery<Tag>(
+    // Перевірка існування тегу
+    const [existing] = await pool.query<any[]>(
       'SELECT id FROM a_tags WHERE id = ?',
       [id]
     );
 
     if (existing.length === 0) {
       return NextResponse.json(
-        { success: false, error: 'Tag not found' },
+        { success: false, error: 'Тег не знайдено' },
         { status: 404 }
       );
     }
 
-    // Перевірка унікальності назви
-    const duplicate = await executeQuery<Tag>(
+    // Перевірка на дублікати (виключаючи поточний тег)
+    const [duplicate] = await pool.query<any[]>(
       'SELECT id FROM a_tags WHERE tag = ? AND id != ?',
       [tag.trim(), id]
     );
 
     if (duplicate.length > 0) {
       return NextResponse.json(
-        { success: false, error: 'Tag with this name already exists' },
+        { success: false, error: 'Тег з такою назвою вже існує' },
         { status: 400 }
       );
     }
 
-    // Оновлення тегу
-    await executeQuery(
+    await pool.query(
       'UPDATE a_tags SET tag = ? WHERE id = ?',
       [tag.trim(), id]
     );
 
     return NextResponse.json({
       success: true,
-      message: 'Tag updated successfully'
+      message: 'Тег успішно оновлено'
     });
-  } catch (error) {
+
+  } catch (error: any) {
     console.error('Error updating tag:', error);
     return NextResponse.json(
-      { success: false, error: 'Failed to update tag' },
+      { success: false, error: error.message || 'Помилка оновлення тегу' },
       { status: 500 }
     );
   }
@@ -168,88 +194,81 @@ export async function PUT(request: NextRequest) {
 // DELETE - Видалити тег
 export async function DELETE(request: NextRequest) {
   try {
-    const { searchParams } = new URL(request.url);
+    const searchParams = request.nextUrl.searchParams;
     const id = searchParams.get('id');
-    const replaceWithId = searchParams.get('replaceWithId');
+    const replaceId = searchParams.get('replaceId');
 
     if (!id) {
       return NextResponse.json(
-        { success: false, error: 'Tag ID is required' },
+        { success: false, error: 'ID тегу обов\'язковий' },
         { status: 400 }
       );
     }
 
-    // Перевірка чи використовується тег
-    const usage = await executeQuery<{ count: number }>(
-      'SELECT COUNT(*) as count FROM a_tagmap WHERE tagid = ?',
+    // Перевірка існування тегу
+    const [existing] = await pool.query<any[]>(
+      'SELECT id, tag FROM a_tags WHERE id = ?',
       [id]
     );
 
-    const usageCount = usage[0]?.count || 0;
-
-    if (usageCount > 0 && !replaceWithId) {
+    if (existing.length === 0) {
       return NextResponse.json(
-        { 
-          success: false, 
-          error: `Cannot delete tag: it is used in ${usageCount} news items. Please specify a replacement tag.`,
-          usageCount
-        },
-        { status: 400 }
+        { success: false, error: 'Тег не знайдено' },
+        { status: 404 }
       );
     }
 
-    // Якщо вказано тег для заміни
-    if (replaceWithId && usageCount > 0) {
-      // Перевірка чи існує тег для заміни
-      const replaceTag = await executeQuery<Tag>(
+    // Якщо потрібно замінити тег на інший перед видаленням
+    if (replaceId) {
+      // Перевірка існування тегу-замінника
+      const [replaceTag] = await pool.query<any[]>(
         'SELECT id FROM a_tags WHERE id = ?',
-        [replaceWithId]
+        [replaceId]
       );
 
       if (replaceTag.length === 0) {
         return NextResponse.json(
-          { success: false, error: 'Replacement tag not found' },
+          { success: false, error: 'Тег-замінник не знайдено' },
           { status: 404 }
         );
       }
 
-      // Видаляємо дублікати (якщо новина вже має тег для заміни)
-      await executeQuery(
-        `DELETE FROM a_tagmap WHERE newsid IN (
-          SELECT id FROM (
-            SELECT a.newsid AS id
-            FROM a_tagmap a
-            JOIN a_tagmap a2 ON a.newsid = a2.newsid
-            WHERE a.tagid = ? AND a2.tagid = ?
-          ) AS tmp
-        ) AND tagid = ?`,
-        [id, replaceWithId, id]
+      // Видалити дублікати (новини, які вже мають обидва теги)
+      await pool.query(
+        `DELETE FROM a_tags_map 
+         WHERE newsid IN (
+           SELECT id FROM (
+             SELECT a.newsid AS id
+             FROM a_tags_map a
+             JOIN a_tags_map a2 ON a.newsid = a2.newsid
+             WHERE a.tagid = ? AND a2.tagid = ?
+           ) AS tmp
+         ) AND tagid = ?`,
+        [id, replaceId, id]
       );
 
-      // Замінюємо тег у всіх новинах
-      await executeQuery(
-        'UPDATE a_tagmap SET tagid = ? WHERE tagid = ?',
-        [replaceWithId, id]
-      );
-    } else if (usageCount > 0) {
-      // Видаляємо всі зв'язки з новинами
-      await executeQuery(
-        'DELETE FROM a_tagmap WHERE tagid = ?',
-        [id]
+      // Замінити тег у решті новин
+      await pool.query(
+        'UPDATE a_tags_map SET tagid = ? WHERE tagid = ?',
+        [replaceId, id]
       );
     }
 
-    // Видалення тегу
-    await executeQuery('DELETE FROM a_tags WHERE id = ?', [id]);
+    // Видалити тег та його зв'язки
+    await pool.query(
+      'DELETE a_tags, a_tags_map FROM a_tags LEFT JOIN a_tags_map ON a_tags.id = a_tags_map.tagid WHERE a_tags.id = ?',
+      [id]
+    );
 
     return NextResponse.json({
       success: true,
-      message: 'Tag deleted successfully'
+      message: 'Тег успішно видалено'
     });
-  } catch (error) {
+
+  } catch (error: any) {
     console.error('Error deleting tag:', error);
     return NextResponse.json(
-      { success: false, error: 'Failed to delete tag' },
+      { success: false, error: error.message || 'Помилка видалення тегу' },
       { status: 500 }
     );
   }
