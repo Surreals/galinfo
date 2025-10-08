@@ -49,6 +49,7 @@ import ImagePickerModal from "./ImagePickerModal";
 import { useRouter } from "next/navigation";
 import { MenuData } from "@/app/api/homepage/services/menuService";
 import TimeButtons from "./TimeButtons";
+import TagInput from "./TagInput";
 
 const { TextArea } = Input;
 
@@ -687,12 +688,11 @@ export default function NewsEditorSidebar({ newsId, articleData, menuData, onEdi
         {/* Теги */}
         <div className={styles.section}>
           <div className={styles.sectionTitle}>Теги ( , )</div>
-          <TextArea
-            rows={2}
+          <TagInput
             value={tags}
-            onChange={(e) => {
-              setTags(e.target.value);
-              validateTags(e.target.value);
+            onChange={(value) => {
+              setTags(value);
+              validateTags(value);
               updateSidebarValidation();
             }}
             placeholder="Львівщина, полювання, ... "
