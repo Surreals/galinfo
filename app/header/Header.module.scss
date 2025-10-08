@@ -541,6 +541,21 @@
 
   }
 
+  .mainNav {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    flex: 1;
+    justify-content: center;
+  }
+
+  .headerRight {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    flex-shrink: 0;
+  }
+
   .navListWrapper {
     position: relative; // обов’язково для абсолютного позиціонування псевдоелемента
     overflow: hidden; // ховає зайве

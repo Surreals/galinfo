@@ -12,6 +12,8 @@ export async function GET(request: NextRequest) {
     const type = searchParams.get('type');
     const rubric = searchParams.get('rubric');
     const approved = searchParams.get('approved') !== 'false'; // За замовчуванням тільки схвалені
+    const dateFrom = searchParams.get('dateFrom'); // Дата початку (YYYY-MM-DD)
+    const dateTo = searchParams.get('dateTo');     // Дата кінця (YYYY-MM-DD)
     
     if (!query || query.trim().length === 0) {
       return NextResponse.json(
@@ -43,6 +45,18 @@ export async function GET(request: NextRequest) {
     if (rubric && rubric !== 'all') {
       whereConditions.push('FIND_IN_SET(?, a_news.rubric) > 0');
       queryParams.push(rubric);
+    }
+    
+    // Фільтрація по даті (від)
+    if (dateFrom) {
+      whereConditions.push('a_news.ndate >= ?');
+      queryParams.push(dateFrom);
+    }
+    
+    // Фільтрація по даті (до)
+    if (dateTo) {
+      whereConditions.push('a_news.ndate <= ?');
+      queryParams.push(dateTo);
     }
     
     const whereClause = whereConditions.join(' AND ');

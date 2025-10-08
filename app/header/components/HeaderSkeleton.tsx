@@ -18,7 +18,7 @@ export default function HeaderSkeleton() {
           }} 
         />
 
-        {/* Main navigation skeleton */}
+        {/* Main navigation skeleton - single line */}
         <nav className={styles.mainNav}>
           <Skeleton.Input 
             active 
@@ -67,64 +67,6 @@ export default function HeaderSkeleton() {
           />
         </nav>
 
-        {/* Dropdown menu skeleton (when hovered) */}
-        <div className={styles.dropdown}>
-          <div className={styles.dropdownContent}>
-            {/* Top themes column skeleton */}
-            <div className={styles.dropdownColumn}>
-              <Skeleton.Input 
-                active 
-                size="default" 
-                style={{ width: '100px', height: '24px', marginBottom: '15px' }} 
-              />
-              <div className={styles.dropdownLinks}>
-                {[1, 2, 3].map((i) => (
-                  <Skeleton.Input 
-                    key={i}
-                    active 
-                    size="small" 
-                    style={{ 
-                      width: `${120 + i * 20}px`, 
-                      height: '16px', 
-                      marginBottom: '8px',
-                      display: 'block'
-                    }} 
-                  />
-                ))}
-              </div>
-            </div>
-
-            {/* Categories columns skeleton */}
-            <div className={styles.dropdownColumn}>
-              <Skeleton.Input 
-                active 
-                size="default" 
-                style={{ width: '100px', height: '24px', marginBottom: '15px' }} 
-              />
-              <div className={styles.dropdownCategories}>
-                {/* 4 sub-columns */}
-                {[1, 2, 3, 4].map((col) => (
-                  <div key={col} className={styles.dropdownSubColumn}>
-                    {[1, 2, 3, 4, 5].map((i) => (
-                      <Skeleton.Input 
-                        key={i}
-                        active 
-                        size="small" 
-                        style={{ 
-                          width: `${60 + i * 5}px`, 
-                          height: '16px', 
-                          marginBottom: '8px',
-                          display: 'block'
-                        }} 
-                      />
-                    ))}
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
-
         {/* Right side skeleton */}
         <div className={styles.headerRight}>
           {/* Search icon skeleton */}
@@ -145,66 +87,6 @@ export default function HeaderSkeleton() {
               borderRadius: '6px'
             }} 
           />
-        </div>
-      </div>
-
-      {/* Mobile menu button skeleton */}
-      <div className={styles.mobileMenuButton}>
-        <Skeleton.Avatar 
-          active 
-          size={24} 
-          shape="square" 
-        />
-      </div>
-
-      {/* Mobile menu skeleton (when expanded) */}
-      <div className={styles.mobileMenu}>
-        {/* Top themes skeleton */}
-        <div className={styles.mobileSection}>
-          <Skeleton.Input 
-            active 
-            size="default" 
-            style={{ width: '100px', height: '24px', marginBottom: '15px' }} 
-          />
-          <div className={styles.mobileLinks}>
-            {[1, 2, 3].map((i) => (
-              <Skeleton.Input 
-                key={i}
-                active 
-                size="small" 
-                style={{ 
-                  width: `${120 + i * 20}px`, 
-                  height: '16px', 
-                  marginBottom: '8px',
-                  display: 'block'
-                }} 
-              />
-            ))}
-          </div>
-        </div>
-
-        {/* Categories skeleton */}
-        <div className={styles.mobileSection}>
-          <Skeleton.Input 
-            active 
-            size="default" 
-            style={{ width: '100px', height: '24px', marginBottom: '15px' }} 
-          />
-          <div className={styles.mobileLinks}>
-            {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
-              <Skeleton.Input 
-                key={i}
-                active 
-                size="small" 
-                style={{ 
-                  width: `${80 + i * 10}px`, 
-                  height: '16px', 
-                  marginBottom: '8px',
-                  display: 'block'
-                }} 
-              />
-            ))}
-          </div>
         </div>
       </div>
     </header>
