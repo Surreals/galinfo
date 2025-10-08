@@ -483,9 +483,9 @@ export default function NewsPage() {
                           <span className={styles.imageIcon}>📷</span>
                         )}
                       </div>
-                      {news.nteaser && (
+                      {/* {news.nteaser && (
                         <div className={styles.teaser}>{news.nteaser}</div>
-                      )}
+                      )} */}
                     </td>
                     <td className={styles.typeCell}>
                       <span className={`${styles.type} ${styles[`type-${news.ntype}`]}`}>
