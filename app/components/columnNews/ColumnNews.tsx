@@ -2,6 +2,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { AccentSquare, ViewAllButton } from '@/app/shared';
 import NewsList from '../listNews/listNews';
+import AdImage from '../AdImage';
 import styles from './ColumnNews.module.css';
 import arrowRight from "@/assets/icons/arrowRight.svg";
 import adBannerIndfomo from '@/assets/images/Ad Banner white.png';
@@ -60,6 +61,8 @@ export interface ColumnNewsProps {
       approved?: boolean;
       type?: string;
     };
+    advertisementId?: number; // ID реклами для банера
+    showAdvertisement?: boolean; // Чи показувати банер
   };
 }
 
@@ -317,17 +320,27 @@ export default function ColumnNews({
                 moreButtonUrl="/all-news"
                 widthPercent={100}
               />
-                {!smallImg && !isMobile &&
+                {!smallImg && !isMobile && config?.showAdvertisement !== false &&
                 <>
                   <div className={styles.rightSeparator}></div>              
-                    <Image 
-                    src={adBannerIndfomo} 
-                    alt="IN-FOMO Banner" 
-                    width={600} 
-                    height={240} 
-                    className={styles.fomoLogo}
-                    priority={false}
-                  />
+                    {config?.advertisementId ? (
+                      <AdImage
+                        advertisementId={config.advertisementId}
+                        placement="general"
+                        width={600}
+                        height={240}
+                        className={styles.fomoLogo}
+                      />
+                    ) : (
+                      <Image 
+                        src={adBannerIndfomo} 
+                        alt="IN-FOMO Banner" 
+                        width={600} 
+                        height={240} 
+                        className={styles.fomoLogo}
+                        priority={false}
+                      />
+                    )}
               </>
                 }
             </div>

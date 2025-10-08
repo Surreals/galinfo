@@ -253,17 +253,14 @@ export const categoryDesktopSchema = {
         }
       },
       
-      // Банер IN-FOMO
+      // Банер IN-FOMO (захардкодений)
       {
         type: BANNER_IMAGE,
         config: {
-          show: true,
-          src: '/assets/images/Ad Banner black.png',
           alt: 'IN-FOMO Banner',
           width: 600,
           height: 240,
-          className: 'fomoLogo',
-          advertisementId: 2  // ID реклами infomo з таблиці advertisements
+          className: 'fomoLogo'
         }
       },
       
@@ -478,9 +475,7 @@ export const categoryMobileSchema = {
     {
       type: BANNER_IMAGE,
       config: {
-        show: true,
         mobileOnly: true,
-        src: '/assets/images/Ad Banner black.png',
         alt: 'IN-FOMO Banner',
         width: 600,
         height: 240,

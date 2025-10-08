@@ -92,6 +92,8 @@ export default function HomePageRenderer({
           <AdBanner
             key={`ad-banner-${index}`}
             className={block.config?.className}
+            advertisementId={block.config?.advertisementId}
+            placement={block.config?.placement}
           />
         );
       

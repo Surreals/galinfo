@@ -37,7 +37,10 @@ export const desktopSchema = {
           limit: 4,
           lang: '1',
           approved: true
-        }
+        },
+        // Реклама всередині ColumnNews
+        advertisementId: 2,  // ID реклами з таблиці advertisements
+        showAdvertisement: true
       }
     },
     {
@@ -60,7 +63,8 @@ export const desktopSchema = {
       type: AD_BANNER,
       config: {
         show: true,
-        className: 'adBannerStandard'
+        className: 'adBannerStandard',
+        advertisementId: 1  // ID реклами з таблиці advertisements
       }
     },
     {
@@ -86,7 +90,10 @@ export const desktopSchema = {
           limit: 5,
           lang: '1',
           approved: true
-        }
+        },
+        // Реклама всередині ColumnNews
+        advertisementId: 2,  // ID реклами з таблиці advertisements
+        showAdvertisement: true
       }
     },
     {
@@ -109,7 +116,8 @@ export const desktopSchema = {
       type: AD_BANNER,
       config: {
         show: true,
-        className: 'adBannerStandard'
+        className: 'adBannerStandard',
+        advertisementId: 1  // ID реклами з таблиці advertisements
       }
     },
     {
@@ -134,7 +142,10 @@ export const desktopSchema = {
           limit: 5,
           lang: '1',
           approved: true
-        }
+        },
+        // Реклама всередині ColumnNews
+        advertisementId: 2,  // ID реклами з таблиці advertisements
+        showAdvertisement: true
       }
     },
     {
@@ -192,7 +203,10 @@ export const mobileSchema = {
           limit: 5,
           lang: '1',
           approved: true
-        }
+        },
+        // Реклама всередині ColumnNews
+        advertisementId: 2,  // ID реклами з таблиці advertisements
+        showAdvertisement: true
       }
     },
     {
@@ -209,6 +223,14 @@ export const mobileSchema = {
           lang: '1',
           approved: true
         }
+      }
+    },
+    {
+      type: AD_BANNER,
+      config: {
+        show: true,
+        className: 'adBannerStandard',
+        advertisementId: 1  // ID реклами з таблиці advertisements
       }
     },
     {
@@ -235,7 +257,10 @@ export const mobileSchema = {
           limit: 8,
           lang: '1',
           approved: true
-        }
+        },
+        // Реклама всередині ColumnNews
+        advertisementId: 2,  // ID реклами з таблиці advertisements
+        showAdvertisement: true
       }
     },
     {
@@ -277,7 +302,18 @@ export const mobileSchema = {
           limit: 8,
           lang: '1',
           approved: true
-        }
+        },
+        // Реклама всередині ColumnNews
+        advertisementId: 2,  // ID реклами з таблиці advertisements
+        showAdvertisement: true
+      }
+    },
+    {
+      type: AD_BANNER,
+      config: {
+        show: true,
+        className: 'adBannerStandard',
+        advertisementId: 1  // ID реклами з таблиці advertisements
       }
     },
     {

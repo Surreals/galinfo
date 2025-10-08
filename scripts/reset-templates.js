@@ -22,13 +22,18 @@ async function resetTemplates() {
     connection = await mysql.createConnection(dbConfig);
     console.log('✅ Підключено!\n');
 
-    // Список шаблонів для оновлення
-    const templateIds = [
-      'category-desktop',
-      'category-mobile',
-      'article-desktop',
-      'article-mobile'
-    ];
+    // Отримуємо список шаблонів з аргументів командного рядка
+    const templateIds = process.argv.slice(2);
+    
+    // Якщо не передано аргументів, використовуємо дефолтний список
+    if (templateIds.length === 0) {
+      templateIds.push(
+        'category-desktop',
+        'category-mobile',
+        'article-desktop',
+        'article-mobile'
+      );
+    }
 
     console.log('🗑️  Видалення старих шаблонів...\n');
 

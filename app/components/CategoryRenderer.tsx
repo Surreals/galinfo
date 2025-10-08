@@ -31,7 +31,6 @@ import AdImage from "@/app/components/AdImage";
 import Image from "next/image";
 import styles from "../[category]/page.module.css";
 import { Pagination } from 'antd';
-import banner3 from '@/assets/images/banner3.png';
 import adBannerIndfomo from '@/assets/images/Ad Banner black.png';
 
 interface CategoryRendererProps {
@@ -621,14 +620,33 @@ const CategoryRenderer: React.FC<CategoryRendererProps> = ({
         );
 
       case 'BANNER_IMAGE':
-        // Визначаємо позицію реклами на основі src (якщо немає advertisementId)
-        let placement: 'infomo' | 'sidebar' | 'general' = 'general';
-        if (config.src?.includes('Ad Banner black.png')) {
-          placement = 'infomo';
-        } else if (config.src?.includes('banner3.png')) {
+        // Захардкодена реклама Infomo Black (за alt)
+        if (config.alt === 'IN-FOMO Banner') {
+          return (
+            <div key={index} className={styles.newsColumn}>
+              <div 
+                style={{ cursor: 'pointer' }}
+                onClick={() => window.open('https://in-fomo.com/uk', '_blank')}
+              >
+                <Image
+                  src={adBannerIndfomo}
+                  alt="IN-FOMO Banner"
+                  width={config.width || 600}
+                  height={config.height || 240}
+                  className={styles[config.className]}
+                  style={{ width: '100%', height: 'auto' }}
+                />
+              </div>
+            </div>
+          );
+        }
+
+        // Інші реклами (sidebar та general) - використовуємо AdImage
+        let placement: 'sidebar' | 'general' = 'general';
+        if (config.src?.includes('banner3.png')) {
           placement = 'sidebar';
         }
-        
+
         return (
           <div key={index} className={styles.newsColumn}>
             <AdImage

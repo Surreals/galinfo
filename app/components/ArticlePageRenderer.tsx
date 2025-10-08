@@ -32,7 +32,6 @@ import WeatherWidget from "@/app/components/hero/WeatherWidget";
 import AdImage from "@/app/components/AdImage";
 import Image from "next/image";
 import styles from "../news/[id]/page.module.css";
-import banner3 from '@/assets/images/banner3.png';
 import adBannerIndfomo from '@/assets/images/Ad Banner black.png';
 import roundArrowRight from "@/assets/icons/roundArrowRight.svg";
 import roundArrowLeft from "@/assets/icons/roundArrowLeft.svg";
@@ -308,7 +307,8 @@ const ArticlePageRenderer: React.FC<ArticlePageRendererProps> = ({ article, load
   const renderBlock = (block: any, index: number) => {
     const config = block.config;
 
-    if (!config?.show) return null;
+    // Пропускаємо перевірку show для захардкодених Infomo Black банерів
+    if (!config?.show && config?.alt !== 'IN-FOMO Banner') return null;
 
     // Перевірка на мобільну/десктопну версію
     if (config.mobileOnly && !isMobile) return null;
@@ -721,11 +721,30 @@ const ArticlePageRenderer: React.FC<ArticlePageRendererProps> = ({ article, load
         );
 
       case 'BANNER_IMAGE':
-        // Визначаємо позицію реклами на основі src (якщо немає advertisementId)
-        let placement: 'infomo' | 'sidebar' | 'general' = 'general';
-        if (config.src?.includes('Ad Banner black.png')) {
-          placement = 'infomo';
-        } else if (config.src?.includes('banner3.png')) {
+        // Захардкодена реклама Infomo Black (за alt)
+        if (config.alt === 'IN-FOMO Banner') {
+          return (
+            <div key={index} className={styles.newsColumn}>
+              <div 
+                style={{ cursor: 'pointer' }}
+                onClick={() => window.open('https://in-fomo.com/uk', '_blank')}
+              >
+                <Image
+                  src={adBannerIndfomo}
+                  alt="IN-FOMO Banner"
+                  width={config.width || 600}
+                  height={config.height || 240}
+                  className={styles[config.className]}
+                  style={{ width: '100%', height: 'auto' }}
+                />
+              </div>
+            </div>
+          );
+        }
+
+        // Інші реклами (sidebar та general) - використовуємо AdImage
+        let placement: 'sidebar' | 'general' = 'general';
+        if (config.src?.includes('banner3.png')) {
           placement = 'sidebar';
         }
 

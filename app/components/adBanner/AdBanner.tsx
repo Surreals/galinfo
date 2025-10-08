@@ -85,8 +85,8 @@ const AdBanner: React.FC<AdBannerProps> = ({
               src={ad.image_url}
               alt={ad.title}
               width={728}
-              height={90}
-              style={{ width: '100%', height: 'auto', cursor: 'pointer' }}
+              height={185}
+              style={{ width: '100%', height: '100%', objectFit: 'cover', cursor: 'pointer' }}
             />
           </div>
         )}

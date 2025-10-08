@@ -24,17 +24,19 @@
 }
 
 .adContent {
-  display: flex;
-  min-height: 160px;
+  display: block;
+  min-height: auto;
 }
 
 .adImage {
-  flex: 0 0 55%;
+  width: 100%;
+  max-height: 185px;
   position: relative;
   background: transparent;
   display: flex;
   align-items: center;
   justify-content: center;
+  overflow: hidden;
 }
 
 .imagePlaceholder {
@@ -183,12 +185,13 @@
   }
   
   .adContent {
-    flex-direction: column;
+    display: block;
     min-height: auto;
   }
   
   .adImage {
-    flex: 0 0 180px;
+    width: 100%;
+    max-height: 185px;
   }
   
   .adText {
