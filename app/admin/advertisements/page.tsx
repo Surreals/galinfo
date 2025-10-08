@@ -14,7 +14,8 @@ import {
   InputNumber,
   Upload,
   Image,
-  DatePicker
+  DatePicker,
+  Select
 } from 'antd';
 import { 
   PlusOutlined, 
@@ -35,6 +36,7 @@ interface Advertisement {
   title: string;
   image_url: string | null;
   link_url: string;
+  placement: string;
   is_active: boolean;
   display_order: number;
   click_count: number;
@@ -86,6 +88,7 @@ export default function AdvertisementsPage() {
       form.setFieldsValue({
         title: ad.title,
         link_url: ad.link_url,
+        placement: ad.placement,
         is_active: ad.is_active,
         display_order: ad.display_order,
         date_range: ad.start_date && ad.end_date ? [
@@ -99,7 +102,8 @@ export default function AdvertisementsPage() {
       form.resetFields();
       form.setFieldsValue({
         is_active: true,
-        display_order: 0
+        display_order: 0,
+        placement: 'general'
       });
     }
     setModalVisible(true);
@@ -152,6 +156,7 @@ export default function AdvertisementsPage() {
         title: values.title,
         image_url: imageUrl,
         link_url: values.link_url,
+        placement: values.placement || 'general',
         is_active: values.is_active !== undefined ? values.is_active : true,
         display_order: values.display_order || 0,
         start_date: dateRange && dateRange[0] ? dateRange[0].format('YYYY-MM-DD HH:mm:ss') : null,
@@ -222,6 +227,7 @@ export default function AdvertisementsPage() {
           title: ad.title,
           image_url: ad.image_url,
           link_url: ad.link_url,
+          placement: ad.placement,
           is_active: !ad.is_active,
           display_order: ad.display_order,
           start_date: ad.start_date,
@@ -275,6 +281,21 @@ export default function AdvertisementsPage() {
       title: 'Назва',
       dataIndex: 'title',
       key: 'title',
+    },
+    {
+      title: 'Позиція',
+      dataIndex: 'placement',
+      key: 'placement',
+      width: 120,
+      render: (placement: string) => {
+        const placements: Record<string, string> = {
+          adbanner: 'AdBanner',
+          infomo: 'Infomo',
+          sidebar: 'Sidebar',
+          general: 'Загальна'
+        };
+        return placements[placement] || placement;
+      },
     },
     {
       title: 'Посилання',
@@ -397,6 +418,20 @@ export default function AdvertisementsPage() {
               rules={[{ required: true, message: 'Введіть назву реклами' }]}
             >
               <Input placeholder="Назва реклами" />
+            </Form.Item>
+
+            <Form.Item
+              label="Позиція реклами"
+              name="placement"
+              rules={[{ required: true, message: 'Виберіть позицію реклами' }]}
+              tooltip="Де буде показуватися ця реклама"
+            >
+              <Select placeholder="Виберіть позицію">
+                <Select.Option value="adbanner">AdBanner (головна реклама)</Select.Option>
+                <Select.Option value="infomo">Infomo (IN-FOMO банер)</Select.Option>
+                <Select.Option value="sidebar">Sidebar (бокова панель)</Select.Option>
+                <Select.Option value="general">Загальна</Select.Option>
+              </Select>
             </Form.Item>
 
             <Form.Item label="Зображення">

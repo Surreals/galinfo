@@ -2,12 +2,13 @@
 
 import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
-import styles from './AdBanner.module.css';
 
-interface AdBannerProps {
-  className?: string;
+interface AdImageProps {
   advertisementId?: number;
-  placement?: string;
+  placement?: 'infomo' | 'sidebar' | 'general';
+  width?: number;
+  height?: number;
+  className?: string;
 }
 
 interface Advertisement {
@@ -18,10 +19,12 @@ interface Advertisement {
   placement: string;
 }
 
-const AdBanner: React.FC<AdBannerProps> = ({ 
-  className, 
+const AdImage: React.FC<AdImageProps> = ({ 
   advertisementId,
-  placement = 'adbanner' 
+  placement = 'general', 
+  width = 728, 
+  height = 90,
+  className 
 }) => {
   const [ad, setAd] = useState<Advertisement | null>(null);
   const [loading, setLoading] = useState(true);
@@ -63,36 +66,35 @@ const AdBanner: React.FC<AdBannerProps> = ({
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ id: ad.id, type: 'click' }),
         });
-        
-        // Відкриваємо посилання
-        window.open(ad.link_url, '_blank');
       } catch (error) {
         console.error('Error tracking click:', error);
       }
     }
   };
 
-  if (loading || !ad) {
-    return null; // Або показати placeholder
+  if (loading || !ad || !ad.image_url) {
+    return null;
   }
 
   return (
-    <div className={`${styles.adBanner} ${className || ''}`} onClick={handleClick}>
-      <div className={styles.adContent}>
-        {ad.image_url && (
-          <div className={styles.adImage}>
-            <Image
-              src={ad.image_url}
-              alt={ad.title}
-              width={728}
-              height={90}
-              style={{ width: '100%', height: 'auto', cursor: 'pointer' }}
-            />
-          </div>
-        )}
-      </div>
-    </div>
+    <a
+      href={ad.link_url}
+      target="_blank"
+      rel="noopener noreferrer"
+      onClick={handleClick}
+      className={className}
+      style={{ display: 'block', width: '100%' }}
+    >
+      <Image
+        src={ad.image_url}
+        alt={ad.title}
+        width={width}
+        height={height}
+        style={{ width: '100%', height: 'auto' }}
+      />
+    </a>
   );
 };
 
-export default AdBanner;
+export default AdImage;
+

@@ -29,6 +29,7 @@ import {
 import NewsList from "@/app/components/listNews/listNews";
 import CurrencyRates from "@/app/components/hero/CurrencyRates";
 import WeatherWidget from "@/app/components/hero/WeatherWidget";
+import AdImage from "@/app/components/AdImage";
 import Image from "next/image";
 import styles from "../news/[id]/page.module.css";
 import banner3 from '@/assets/images/banner3.png';
@@ -714,30 +715,28 @@ const ArticlePageRenderer: React.FC<ArticlePageRendererProps> = ({ article, load
           <AdBanner
             key={index}
             className={styles[config.className]}
+            advertisementId={config.advertisementId}
+            placement={config.placement}
           />
         );
 
       case 'BANNER_IMAGE':
-        // Визначаємо правильне зображення на основі src
-        let imageSrc;
-        if (config.src?.includes('banner3.png')) {
-          imageSrc = banner3;
-        } else if (config.src?.includes('Ad Banner black.png')) {
-          imageSrc = adBannerIndfomo;
-        } else {
-          imageSrc = config.src;
+        // Визначаємо позицію реклами на основі src (якщо немає advertisementId)
+        let placement: 'infomo' | 'sidebar' | 'general' = 'general';
+        if (config.src?.includes('Ad Banner black.png')) {
+          placement = 'infomo';
+        } else if (config.src?.includes('banner3.png')) {
+          placement = 'sidebar';
         }
 
         return (
           <div key={index} className={styles.newsColumn}>
-            <Image
-              src={imageSrc}
-              alt={config.alt}
+            <AdImage
+              advertisementId={config.advertisementId}
+              placement={placement}
               width={config.width}
               height={config.height}
               className={styles[config.className]}
-              priority={false}
-              style={config.style}
             />
           </div>
         );

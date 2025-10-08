@@ -35,7 +35,8 @@ export const articlePageDesktopSchema = {
       type: AD_BANNER,
       config: {
         show: true,
-        className: 'adBannerStandard'
+        className: 'adBannerStandard',
+        advertisementId: 1  // ID реклами з таблиці advertisements
       }
     },
     
@@ -84,7 +85,8 @@ export const articlePageDesktopSchema = {
       type: AD_BANNER,
       config: {
         show: true,
-        className: 'adBannerStandard'
+        className: 'adBannerStandard',
+        advertisementId: 1  // ID реклами з таблиці advertisements
       }
     },
     
@@ -117,7 +119,8 @@ export const articlePageDesktopSchema = {
       type: AD_BANNER,
       config: {
         show: true,
-        className: 'adBannerStandard'
+        className: 'adBannerStandard',
+        advertisementId: 1  // ID реклами з таблиці advertisements
       }
     }
   ],
@@ -134,7 +137,8 @@ export const articlePageDesktopSchema = {
           alt: 'banner3',
           width: 600,
           height: 240,
-          className: 'banner3'
+          className: 'banner3',
+          advertisementId: 3  // ID реклами sidebar з таблиці advertisements
         }
       },
       
@@ -203,7 +207,8 @@ export const articlePageDesktopSchema = {
           alt: 'IN-FOMO Banner',
           width: 600,
           height: 240,
-          className: 'fomoLogo'
+          className: 'fomoLogo',
+          advertisementId: 4  // ID реклами infomo з таблиці advertisements
         }
       }
     ]
@@ -319,7 +324,8 @@ export const articlePageMobileSchema = {
         alt: 'banner3',
         width: 600,
         height: 240,
-        className: 'banner3'
+        className: 'banner3',
+        advertisementId: 3  // ID реклами sidebar з таблиці advertisements
       }
     },
     
@@ -352,7 +358,8 @@ export const articlePageMobileSchema = {
       type: AD_BANNER,
       config: {
         show: true,
-        className: 'adBannerStandard'
+        className: 'adBannerStandard',
+        advertisementId: 1  // ID реклами з таблиці advertisements
       }
     },
     
@@ -366,7 +373,8 @@ export const articlePageMobileSchema = {
         alt: 'IN-FOMO Banner',
         width: 600,
         height: 240,
-        className: 'fomoLogo'
+        className: 'fomoLogo',
+        advertisementId: 4  // ID реклами infomo з таблиці advertisements
       }
     }
   ],

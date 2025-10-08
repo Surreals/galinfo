@@ -54,6 +54,7 @@ export async function POST(request: NextRequest) {
       title,
       image_url,
       link_url,
+      placement = 'general',
       is_active = true,
       display_order = 0,
       start_date,
@@ -70,14 +71,15 @@ export async function POST(request: NextRequest) {
 
     const query = `
       INSERT INTO advertisements 
-      (title, image_url, link_url, is_active, display_order, start_date, end_date)
-      VALUES (?, ?, ?, ?, ?, ?, ?)
+      (title, image_url, link_url, placement, is_active, display_order, start_date, end_date)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?)
     `;
 
     const [result] = await pool.query<ResultSetHeader>(query, [
       title,
       image_url || null,
       link_url,
+      placement,
       is_active,
       display_order,
       start_date || null,
@@ -91,6 +93,7 @@ export async function POST(request: NextRequest) {
         title,
         image_url,
         link_url,
+        placement,
         is_active,
         display_order,
         start_date,
@@ -115,6 +118,7 @@ export async function PUT(request: NextRequest) {
       title,
       image_url,
       link_url,
+      placement,
       is_active,
       display_order,
       start_date,
@@ -133,6 +137,7 @@ export async function PUT(request: NextRequest) {
       SET title = ?, 
           image_url = ?, 
           link_url = ?, 
+          placement = ?,
           is_active = ?, 
           display_order = ?,
           start_date = ?,
@@ -144,6 +149,7 @@ export async function PUT(request: NextRequest) {
       title,
       image_url || null,
       link_url,
+      placement || 'general',
       is_active,
       display_order,
       start_date || null,
@@ -153,7 +159,7 @@ export async function PUT(request: NextRequest) {
 
     return NextResponse.json({
       success: true,
-      data: { id, title, image_url, link_url, is_active, display_order },
+      data: { id, title, image_url, link_url, placement, is_active, display_order },
     });
   } catch (error) {
     console.error('Error updating advertisement:', error);
