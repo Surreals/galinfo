@@ -112,10 +112,11 @@ export default function NewsPage() {
       
       // Встановлюємо статус залежно від активного табу
       if (activeTab === 'drafts') {
+        // В табі "Чернетки" показуємо тільки неопубліковані новини
         params.set('status', 'unpublished');
-      } else if (filters.status && filters.status !== 'all') {
-        // Якщо на табі "Всі" вибрано фільтр статусу, використовуємо його
-        params.set('status', filters.status);
+      } else {
+        // В табі "Всі новини" показуємо тільки опубліковані новини
+        params.set('status', 'published');
       }
       
       const response = await fetch(`/api/admin/news?${params.toString()}`);
@@ -365,19 +366,6 @@ export default function NewsPage() {
         {/* Фільтри */}
         <div className={styles.filters}>
           <div className={styles.filterRow}>
-            {activeTab === 'all' && (
-              <div className={styles.filterGroup}>
-                <label>Статус:</label>
-                <select 
-                  value={filters.status} 
-                  onChange={(e) => handleFilterChange('status', e.target.value)}
-                >
-                  <option value="all">Всі</option>
-                  <option value="published">Опубліковані</option>
-                  <option value="unpublished">Неопубліковані</option>
-                </select>
-              </div>
-            )}
 
             <div className={styles.filterGroup}>
               <label>Тип:</label>
