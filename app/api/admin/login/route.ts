@@ -91,7 +91,8 @@ export async function POST(request: NextRequest) {
       email: user.uname,
       agency: user.uagency,
       permissions: user.perm,
-      active: user.active
+      active: user.active,
+      role: user.role || 'journalist'
     };
 
     return NextResponse.json({

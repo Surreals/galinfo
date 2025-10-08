@@ -6,12 +6,14 @@ import { useSearchParams, useRouter } from 'next/navigation';
 import AdminNavigation from './components/AdminNavigation';
 import ImagePickerModal from './article-editor/components/ImagePickerModal';
 import { ImageItem } from './article-editor/components/types';
+import { useRolePermissions } from '@/app/hooks/useRolePermissions';
 import styles from './admin.module.css';
 
 export default function AdminPage() {
   const DISABLE = true;
   const searchParams = useSearchParams();
   const router = useRouter();
+  const { isAdmin } = useRolePermissions();
   const [isGalleryModalOpen, setIsGalleryModalOpen] = useState(false);
 
   // Відкрити галерею при наявності параметра gallery=true
@@ -40,7 +42,7 @@ export default function AdminPage() {
   };
 
 
-  const adminSections = [
+  const allAdminSections = [
     {
       id: 'news',
       title: 'Новини / Статті',
@@ -48,25 +50,8 @@ export default function AdminPage() {
       href: '/admin/news',
       icon: '📰',
       disabled: false,
-      color: '#007bff'
-    },
-    {
-      id: 'categories',
-      title: 'Категорії',
-      description: 'Управління категоріями, темами та регіонами',
-      href: '/admin/categories',
-      icon: '🏷️',
-      disabled: false,
-      color: '#6610f2'
-    },
-    {
-      id: 'tags',
-      title: 'Теги',
-      description: 'Управління тегами для новин та статей',
-      href: '/admin/tags',
-      icon: '🔖',
-      disabled: false,
-      color: '#fd7e14'
+      color: '#007bff',
+      requiresAdmin: false // Доступно всім
     },
     {
       id: 'gallery',
@@ -75,7 +60,28 @@ export default function AdminPage() {
       href: '/admin/gallery',
       icon: '🖼️',
       disabled: false,
-      color: '#28a745'
+      color: '#28a745',
+      requiresAdmin: false // Доступно всім
+    },
+    {
+      id: 'categories',
+      title: 'Категорії',
+      description: 'Управління категоріями, темами та регіонами',
+      href: '/admin/categories',
+      icon: '🏷️',
+      disabled: false,
+      color: '#6610f2',
+      requiresAdmin: true // Тільки для адмінів
+    },
+    {
+      id: 'tags',
+      title: 'Теги',
+      description: 'Управління тегами для новин та статей',
+      href: '/admin/tags',
+      icon: '🔖',
+      disabled: false,
+      color: '#fd7e14',
+      requiresAdmin: true // Тільки для адмінів
     },
     {
       id: 'videos',
@@ -84,7 +90,8 @@ export default function AdminPage() {
       href: '/admin/videos',
       icon: '🎥',
       disabled: false,
-      color: '#dc3545'
+      color: '#dc3545',
+      requiresAdmin: false // Доступно всім (фото-відео матеріали)
     },
     {
       id: 'site',
@@ -93,7 +100,8 @@ export default function AdminPage() {
       href: '/admin/site',
       icon: '🌐',
       disabled: true,
-      color: '#6f42c1'
+      color: '#6f42c1',
+      requiresAdmin: true // Тільки для адмінів
     },
     {
       id: 'properties',
@@ -102,7 +110,8 @@ export default function AdminPage() {
       href: '/admin/properties',
       icon: '⚙️',
       disabled: true,
-      color: '#20c997'
+      color: '#20c997',
+      requiresAdmin: true // Тільки для адмінів
     },
     {
       id: 'users',
@@ -111,7 +120,8 @@ export default function AdminPage() {
       href: '/admin/users',
       icon: '👥',
       disabled: false,
-      color: '#e83e8c'
+      color: '#e83e8c',
+      requiresAdmin: true // Тільки для адмінів
     },
     {
       id: 'advertising',
@@ -120,7 +130,8 @@ export default function AdminPage() {
       href: '/admin/advertisements',
       icon: '📢',
       disabled: false,
-      color: '#ffc107'
+      color: '#ffc107',
+      requiresAdmin: true // Тільки для адмінів
     },
     {
       id: 'telegram-settings',
@@ -129,7 +140,8 @@ export default function AdminPage() {
       href: '/admin/telegram-settings',
       icon: '🤖',
       disabled: false,
-      color: '#0088cc'
+      color: '#0088cc',
+      requiresAdmin: true // Тільки для адмінів
     },
     {
       id: 'templates',
@@ -138,7 +150,8 @@ export default function AdminPage() {
       href: '/admin/templates',
       icon: '📄',
       disabled: false,
-      color: '#17a2b8'
+      color: '#17a2b8',
+      requiresAdmin: true // Тільки для адмінів
     },
     {
       id: 'security',
@@ -147,9 +160,18 @@ export default function AdminPage() {
       href: '/admin/settings/2fa',
       icon: '🔒',
       disabled: false,
-      color: '#6c757d'
+      color: '#6c757d',
+      requiresAdmin: false // Доступно всім (власні налаштування безпеки)
     }
   ];
+
+  // Фільтруємо секції на основі ролі користувача
+  const adminSections = allAdminSections.filter(section => {
+    if (section.requiresAdmin) {
+      return isAdmin;
+    }
+    return true; // Показуємо секції без обмежень всім
+  });
 
   return (
     <div className={styles.adminPage}>

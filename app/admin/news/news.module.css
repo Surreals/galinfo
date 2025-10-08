@@ -70,6 +70,11 @@
   cursor: not-allowed;
 }
 
+/* Таби - стиль як на сторінці categories */
+.newsTabs {
+  margin-bottom: 1.5rem;
+}
+
 /* Фільтри */
 .filters {
   background: white;
@@ -344,6 +349,11 @@
 .status.unpublished {
   background: #f8d7da;
   color: #721c24;
+}
+
+.status.scheduled {
+  background: #cfe2ff;
+  color: #084298;
 }
 
 .statsCell { width: 110px; text-align: center; }

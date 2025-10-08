@@ -15,7 +15,7 @@ export async function GET() {
     // Це ті самі користувачі, які показуються на сторінці /admin/users
     const [adminUsers] = await executeQuery<{
       id: number;
-      uname_ua: string;
+      name: string;
       uname: string;
       active: number;
     }>(`
@@ -32,7 +32,7 @@ export async function GET() {
     // Всі користувачі з a_powerusers мають тип 'editor'
     const allUsers: AllUser[] = adminUsers.map(user => ({
       id: user.id,
-      name: user.uname_ua, // Використовуємо uname_ua як name
+      name: user.name, // Використовуємо поле name з SQL запиту
       uname: user.uname,
       type: 'editor' as const,
       active: user.active

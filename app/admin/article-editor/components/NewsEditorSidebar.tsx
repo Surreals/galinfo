@@ -45,6 +45,7 @@ import { ArticleData } from "@/app/hooks/useArticleData";
 import { useArticleSave } from "@/app/hooks/useArticleSave";
 import { getImageUrl, ensureFullImageUrl } from "@/app/lib/imageUtils";
 import { useAdminAuth } from "@/app/contexts/AdminAuthContext";
+import { useRolePermissions } from "@/app/hooks/useRolePermissions";
 import ImagePickerModal from "./ImagePickerModal";
 import { useRouter } from "next/navigation";
 import { MenuData } from "@/app/api/homepage/services/menuService";
@@ -69,6 +70,7 @@ export default function NewsEditorSidebar({ newsId, articleData, menuData, onEdi
   const { modal } = App.useApp();
   const [savingProcess, setSavingProcess] = useState(false);
   const { user } = useAdminAuth();
+  const { permissions, isJournalist, isEditor, isAdmin } = useRolePermissions();
   
   // Стани для валідації
   const [typeError, setTypeError] = useState<string>("");
@@ -382,7 +384,13 @@ export default function NewsEditorSidebar({ newsId, articleData, menuData, onEdi
       currentNbody = await onEditorSave();
     }
 
-    
+    // Role-based permission check for publishing
+    // Journalists can only save as drafts
+    let canPublish = publishOnSite;
+    if (isJournalist && publishOnSite) {
+      message.warning('Журналісти можуть зберігати новини тільки в чернетках');
+      canPublish = false;
+    }
 
     const payload = {
       // Основні поля
@@ -440,8 +448,8 @@ export default function NewsEditorSidebar({ newsId, articleData, menuData, onEdi
       })(),
       udate: Math.floor(Date.now() / 1000),
       
-      // Публікація
-      approved: publishOnSite,
+      // Публікація - respect role permissions
+      approved: canPublish,
       to_twitter: publishOnTwitter,
       
       // Зображення - зберігаємо ID зображень, а не назви файлів
@@ -486,6 +494,30 @@ export default function NewsEditorSidebar({ newsId, articleData, menuData, onEdi
   };
 
   const onDelete = async () => {
+    // Only allow moving to draft for non-admins
+    if (!isAdmin) {
+      // Move to draft instead of delete
+      modal.confirm({
+        title: 'Перемістити в чернетки',
+        content: 'Ви впевнені, що хочете перемістити цю новину в чернетки?',
+        okText: 'Так',
+        cancelText: 'Скасувати',
+        onOk: async () => {
+          const payload = {
+            ...articleData,
+            approved: false,
+          };
+          const result = await saveArticle(payload);
+          if (result.success) {
+            message.success('Новину переміщено в чернетки');
+            router.push('/admin/news');
+          }
+        }
+      });
+      return;
+    }
+    
+    // Full delete for admins
     modal.confirm({
       title: 'Підтвердження видалення',
       content: 'Ви впевнені, що хочете видалити цю новину? Цю дію неможливо скасувати.',
@@ -798,9 +830,15 @@ export default function NewsEditorSidebar({ newsId, articleData, menuData, onEdi
           <Checkbox
             checked={publishOnSite}
             onChange={(e) => setPublishOnSite(e.target.checked)}
+            disabled={isJournalist}
           >
             Опублікувати на сайті
           </Checkbox>
+          {isJournalist && (
+            <div style={{ fontSize: '12px', color: '#ff4d4f', marginTop: '4px' }}>
+              ⚠️ Журналісти можуть зберігати тільки в чернетках
+            </div>
+          )}
         </div>
         <Divider className={styles.divider}/>
 
@@ -830,7 +868,7 @@ export default function NewsEditorSidebar({ newsId, articleData, menuData, onEdi
               disabled={saving}
               className={styles.blueBtn}
             >
-              ВИДАЛИТИ
+              {isAdmin ? 'ВИДАЛИТИ' : 'В ЧЕРНЕТКИ'}
             </Button>
           )}
         </div>

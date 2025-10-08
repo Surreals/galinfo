@@ -66,25 +66,37 @@ export default function TwoFactorPage({ userId, login, password, onSuccess, onBa
   };
 
   return (
-    <div className={styles.loginContainer}>
-      <div className={styles.loginCard}>
-        <h1 className={styles.title}>Двофакторна автентифікація</h1>
-        <p className={styles.subtitle}>
-          Введіть 6-значний код з вашого додатку Google Authenticator
-        </p>
+    <div className={styles.loginPage}>
+      <div className={styles.loginContainer}>
+        <div className={styles.loginHeader}>
+          <div className={styles.logo}>
+            <span className={styles.logoText}>G</span>
+          </div>
+          <h1>Двофакторна автентифікація</h1>
+          <p>Введіть 6-значний код з вашого додатку Google Authenticator</p>
+        </div>
 
-        <form onSubmit={handleSubmit} className={styles.form}>
-          <div className={styles.inputGroup}>
-            <label htmlFor="code" className={styles.label}>
-              Код автентифікації
-            </label>
+        <form onSubmit={handleSubmit} className={styles.loginForm}>
+          {error && (
+            <div className={styles.errorMessage}>
+              {error}
+            </div>
+          )}
+
+          <div className={styles.formGroup}>
+            <label htmlFor="code">Код автентифікації</label>
             <input
               id="code"
               type="text"
               value={code}
               onChange={(e) => setCode(e.target.value.replace(/\D/g, '').substring(0, 6))}
               placeholder="000000"
-              className={styles.input}
+              style={{
+                fontSize: '20px',
+                letterSpacing: '0.5em',
+                textAlign: 'center',
+                fontFamily: 'monospace'
+              }}
               disabled={isLoading}
               maxLength={6}
               autoFocus
@@ -93,15 +105,9 @@ export default function TwoFactorPage({ userId, login, password, onSuccess, onBa
             />
           </div>
 
-          {error && (
-            <div className={styles.error}>
-              {error}
-            </div>
-          )}
-
           <button
             type="submit"
-            className={styles.button}
+            className={styles.loginButton}
             disabled={isLoading || code.length !== 6}
           >
             {isLoading ? 'Перевірка...' : 'Підтвердити'}
@@ -125,9 +131,9 @@ export default function TwoFactorPage({ userId, login, password, onSuccess, onBa
           </div>
         </form>
 
-        <div className={styles.helpText}>
-          <p>Не можете отримати код?</p>
-          <p>Використайте один з резервних кодів, які ви зберегли при налаштуванні 2FA.</p>
+        <div className={styles.loginFooter}>
+          <p>GalInfo Admin Panel</p>
+          <small>Система управління контентом</small>
         </div>
       </div>
     </div>

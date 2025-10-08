@@ -1,9 +1,11 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Table, Input, Button, Tag, Space, Modal, Form, Checkbox, message, Popconfirm } from 'antd';
+import { Table, Input, Button, Tag, Space, Modal, Form, Checkbox, message, Popconfirm, Select } from 'antd';
 import { SearchOutlined, PlusOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
 import AdminNavigation from '../components/AdminNavigation';
+import { useAdminAuth } from '@/app/contexts/AdminAuthContext';
+import { UserRole, ROLE_LABELS } from '@/app/types/roles';
 import styles from './users.module.css';
 
 interface User {
@@ -13,6 +15,7 @@ interface User {
   uagency: string;
   active: number;
   perm: string;
+  role: string;
 }
 
 interface Permission {
@@ -22,12 +25,15 @@ interface Permission {
 }
 
 export default function UsersPage() {
+  const { user: currentUser } = useAdminAuth();
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [editingUser, setEditingUser] = useState<User | null>(null);
   const [form] = Form.useForm();
+  
+  const isCurrentUserAdmin = currentUser?.role === UserRole.ADMIN;
 
   // Define available permissions based on PHP implementation
   const availablePermissions: { key: string; name: string }[] = [
@@ -88,7 +94,8 @@ export default function UsersPage() {
       uagency: user.uagency || '',
       upass: '',
       active: user.active === 1,
-      permissions: permissionKeys
+      permissions: permissionKeys,
+      role: user.role || 'journalist'
     });
     setIsModalVisible(true);
   };
@@ -114,6 +121,12 @@ export default function UsersPage() {
 
   const handleSubmit = async (values: any) => {
     try {
+      // Prevent admin from changing their own role
+      if (editingUser && editingUser.id === currentUser?.id && values.role !== currentUser?.role) {
+        message.error('Ви не можете змінити свою власну роль');
+        return;
+      }
+      
       const url = editingUser 
         ? `/api/admin/users/${editingUser.id}`
         : '/api/admin/users';
@@ -213,6 +226,19 @@ export default function UsersPage() {
     (user.uagency && user.uagency.toLowerCase().includes(searchTerm.toLowerCase()))
   );
 
+  const getRoleColor = (role: string) => {
+    switch (role) {
+      case UserRole.ADMIN:
+        return 'red';
+      case UserRole.EDITOR:
+        return 'orange';
+      case UserRole.JOURNALIST:
+        return 'blue';
+      default:
+        return 'default';
+    }
+  };
+
   // Table columns definition
   const columns = [
     {
@@ -227,6 +253,22 @@ export default function UsersPage() {
       dataIndex: 'uname',
       key: 'uname',
       sorter: (a: User, b: User) => a.uname.localeCompare(b.uname),
+    },
+    {
+      title: 'Роль',
+      dataIndex: 'role',
+      key: 'role',
+      render: (role: string) => (
+        <Tag color={getRoleColor(role)}>
+          {ROLE_LABELS[role as UserRole] || role}
+        </Tag>
+      ),
+      filters: [
+        { text: 'Адміністратор', value: UserRole.ADMIN },
+        { text: 'Редактор', value: UserRole.EDITOR },
+        { text: 'Журналіст', value: UserRole.JOURNALIST },
+      ],
+      onFilter: (value: any, record: User) => record.role === value,
     },
     {
       title: 'Агенція',
@@ -265,18 +307,21 @@ export default function UsersPage() {
             icon={<EditOutlined />}
             onClick={() => handleEditUser(record)}
             title="Редагувати"
+            disabled={!isCurrentUserAdmin}
           />
           <Popconfirm
             title="Ви впевнені, що хочете видалити цього користувача?"
             onConfirm={() => handleDeleteUser(record.id)}
             okText="Так"
             cancelText="Ні"
+            disabled={!isCurrentUserAdmin}
           >
             <Button
               type="text"
               danger
               icon={<DeleteOutlined />}
               title="Видалити"
+              disabled={!isCurrentUserAdmin}
             />
           </Popconfirm>
         </Space>
@@ -299,6 +344,7 @@ export default function UsersPage() {
               type="primary"
               icon={<PlusOutlined />}
               onClick={handleAddUser}
+              disabled={!isCurrentUserAdmin}
             >
               Додати користувача
             </Button>
@@ -347,7 +393,8 @@ export default function UsersPage() {
             onFinish={handleSubmit}
             initialValues={{
               active: true,
-              permissions: []
+              permissions: [],
+              role: 'journalist'
             }}
           >
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
@@ -386,6 +433,33 @@ export default function UsersPage() {
                 />
               </Form.Item>
             </div>
+
+            <Form.Item
+              label="Роль користувача"
+              name="role"
+              rules={[{ required: true, message: 'Будь ласка, оберіть роль' }]}
+            >
+              <Select 
+                placeholder="Оберіть роль"
+                disabled={editingUser?.id === currentUser?.id}
+              >
+                <Select.Option value={UserRole.ADMIN}>
+                  {ROLE_LABELS[UserRole.ADMIN]}
+                </Select.Option>
+                <Select.Option value={UserRole.EDITOR}>
+                  {ROLE_LABELS[UserRole.EDITOR]}
+                </Select.Option>
+                <Select.Option value={UserRole.JOURNALIST}>
+                  {ROLE_LABELS[UserRole.JOURNALIST]}
+                </Select.Option>
+              </Select>
+            </Form.Item>
+            
+            {editingUser?.id === currentUser?.id && (
+              <div style={{ marginBottom: '16px', padding: '8px', background: '#fff7e6', border: '1px solid #ffd666', borderRadius: '4px' }}>
+                <small>⚠️ Ви не можете змінити свою власну роль</small>
+              </div>
+            )}
 
             <Form.Item
               label="Права доступу"
