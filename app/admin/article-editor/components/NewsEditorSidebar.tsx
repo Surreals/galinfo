@@ -50,6 +50,7 @@ import { useRouter } from "next/navigation";
 import { MenuData } from "@/app/api/homepage/services/menuService";
 import TimeButtons from "./TimeButtons";
 import TagInput from "./TagInput";
+import CustomMultiSelect from "./CustomMultiSelect";
 
 const { TextArea } = Input;
 
@@ -607,8 +608,7 @@ export default function NewsEditorSidebar({ newsId, articleData, menuData, onEdi
           <div className={styles.section}>
             <div className={styles.sectionTitle}>Рубрики</div>
             <div className={styles.scrollBox}>
-              <Select
-                mode="multiple"
+              <CustomMultiSelect
                 placeholder="Оберіть рубрики"
                 value={selectedRubrics}
                 onChange={(value) => {
@@ -638,8 +638,7 @@ export default function NewsEditorSidebar({ newsId, articleData, menuData, onEdi
           <div className={styles.section}>
             <div className={styles.sectionTitle}>Регіон</div>
             <div className={styles.scrollBox}>
-              <Select
-                mode="multiple"
+              <CustomMultiSelect
                 placeholder="Оберіть регіони"
                 value={selectedRegions}
                 onChange={(value) => {
