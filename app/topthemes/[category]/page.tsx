@@ -90,7 +90,7 @@ export default async function TopThemesCategoryPage({ params, searchParams }: To
          LEFT JOIN a_news_headers ON a_news.id = a_news_headers.id
          LEFT JOIN a_statcomm ON a_news.id = a_statcomm.id
          LEFT JOIN a_statview ON a_news.id = a_statview.id
-         WHERE FIND_IN_SET(?, a_news.rubric) > 0
+         WHERE a_news.theme = ?
            AND a_news.approved = 1
            AND a_news.lang = "1"
            AND CONCAT(a_news.ndate, " ", a_news.ntime) < NOW()
@@ -98,6 +98,19 @@ export default async function TopThemesCategoryPage({ params, searchParams }: To
          LIMIT 24`,
         [currentTheme.id]
       );
+
+      console.log('🔍 Theme query results:', {
+        themeId: currentTheme.id,
+        themeName: currentTheme.title,
+        themeParam: currentTheme.param,
+        foundNewsCount: newsResult?.length || 0,
+        news: newsResult?.map(n => ({
+          id: n.id,
+          header: n.nheader,
+          date: n.ndate,
+          time: n.ntime
+        })) || []
+      });
 
       specialThemesData = {
         theme: currentTheme,
