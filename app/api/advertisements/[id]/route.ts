@@ -16,10 +16,10 @@ interface Advertisement extends RowDataPacket {
 // GET - Get advertisement by ID
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const id = params.id;
+    const { id } = await params;
 
     const query = `
       SELECT id, title, image_url, link_url, placement, display_order

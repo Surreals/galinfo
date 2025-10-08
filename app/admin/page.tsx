@@ -139,6 +139,15 @@ export default function AdminPage() {
       icon: '📄',
       disabled: false,
       color: '#17a2b8'
+    },
+    {
+      id: 'security',
+      title: 'Безпека',
+      description: 'Налаштування двофакторної автентифікації (2FA)',
+      href: '/admin/settings/2fa',
+      icon: '🔒',
+      disabled: false,
+      color: '#6c757d'
     }
   ];
 

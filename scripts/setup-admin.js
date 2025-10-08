@@ -135,6 +135,9 @@ async function createPowerUsersTable() {
         uagency VARCHAR(255),
         perm TEXT,
         active TINYINT(1) DEFAULT 1,
+        twofa_enabled TINYINT(1) DEFAULT 0,
+        twofa_secret VARCHAR(255) DEFAULT NULL,
+        backup_codes TEXT DEFAULT NULL,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
       )

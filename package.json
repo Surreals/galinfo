@@ -12,7 +12,8 @@
     "lint": "next lint",
     "test:db": "node scripts/test-db-connection.js",
     "setup:admin": "node scripts/setup-admin.js",
-    "test:telegram": "node scripts/test-telegram-bot.js"
+    "test:telegram": "node scripts/test-telegram-bot.js",
+    "migrate:2fa": "node scripts/add-2fa-columns.js"
   },
   "dependencies": {
     "@ant-design/icons": "^6.0.0",
@@ -58,7 +59,7 @@
     "axios": "^1.11.0",
     "ckeditor4-react": "^4.3.0",
     "classnames": "^2.5.1",
-    "dayjs": "^1.11.13",
+    "dayjs": "^1.11.18",
     "dotenv": "^17.2.1",
     "editorjs-alert": "^1.1.4",
     "editorjs-button": "^3.0.3",
@@ -71,6 +72,7 @@
     "lodash.throttle": "^4.1.1",
     "mysql2": "^3.14.3",
     "next": "15.4.5",
+    "next-auth": "^4.24.11",
     "node-telegram-bot-api": "^0.66.0",
     "qrcode": "^1.5.4",
     "react": "19.1.0",
