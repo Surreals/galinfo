@@ -37,6 +37,24 @@ export default function AdminPage() {
       color: '#007bff'
     },
     {
+      id: 'categories',
+      title: 'Категорії',
+      description: 'Управління категоріями, темами та регіонами',
+      href: '/admin/categories',
+      icon: '🏷️',
+      disabled: false,
+      color: '#6610f2'
+    },
+    {
+      id: 'tags',
+      title: 'Теги',
+      description: 'Управління тегами для новин та статей',
+      href: '/admin/tags',
+      icon: '🔖',
+      disabled: false,
+      color: '#fd7e14'
+    },
+    {
       id: 'gallery',
       title: 'Галерея',
       description: 'Управління зображеннями та медіа',

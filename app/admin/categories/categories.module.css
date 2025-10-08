@@ -1,0 +1,113 @@
+.categoriesPage {
+  min-height: 100vh;
+  background: #f5f5f5;
+}
+
+.content {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 24px;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  background: white;
+  padding: 24px;
+  border-radius: 8px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+}
+
+.header h1 {
+  margin: 0;
+  font-size: 28px;
+  color: #1a1a1a;
+}
+
+/* Ant Design overrides */
+:global(.ant-tabs-card) {
+  background: white;
+  padding: 16px;
+  border-radius: 8px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+}
+
+:global(.ant-table-wrapper) {
+  background: white;
+}
+
+:global(.ant-modal-body) {
+  padding: 24px;
+}
+
+/* Стилі для колонки "Дії" */
+.actionsColumn {
+  display: flex;
+  gap: 4px;
+  flex-wrap: nowrap;
+  align-items: center;
+  justify-content: flex-start;
+  min-width: 260px;
+}
+
+.actionsColumn .ant-btn {
+  min-width: 32px;
+  height: 32px;
+  padding: 4px 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.actionsColumn .ant-btn-sm {
+  min-width: 28px;
+  height: 28px;
+  padding: 2px 6px;
+}
+
+/* Переконаємося, що кнопки не виходять за межі */
+:global(.ant-table-cell) {
+  overflow: visible;
+}
+
+:global(.ant-table-tbody > tr > td) {
+  padding: 8px 16px;
+  vertical-align: middle;
+}
+
+/* Додаткові стилі для таблиці */
+:global(.ant-table) {
+  overflow-x: auto;
+}
+
+:global(.ant-table-thead > tr > th) {
+  white-space: nowrap;
+  font-weight: 600;
+}
+
+/* Стилі для фіксованої колонки */
+:global(.ant-table-cell-fix-right) {
+  background: white;
+  box-shadow: -2px 0 4px rgba(0, 0, 0, 0.05);
+}
+
+/* Адаптивність для мобільних пристроїв */
+@media (max-width: 768px) {
+  .actionsColumn {
+    min-width: 240px;
+    gap: 2px;
+  }
+  
+  .actionsColumn .ant-btn-sm {
+    min-width: 24px;
+    height: 24px;
+    padding: 1px 4px;
+  }
+  
+  :global(.ant-table-tbody > tr > td) {
+    padding: 6px 8px;
+  }
+}
+
