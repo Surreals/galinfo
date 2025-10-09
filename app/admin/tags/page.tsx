@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Table, Button, Modal, Form, Input, message, Popconfirm, Space } from 'antd';
+import { Table, Button, Modal, Form, Input, message, Popconfirm, Space, Select } from 'antd';
 import { PlusOutlined, EditOutlined, DeleteOutlined, SearchOutlined } from '@ant-design/icons';
 import AdminNavigation from '../components/AdminNavigation';
 import styles from './tags.module.css';
@@ -27,6 +27,8 @@ export default function TagsPage() {
   const [editingTag, setEditingTag] = useState<Tag | null>(null);
   const [deletingTag, setDeletingTag] = useState<Tag | null>(null);
   const [replaceTagId, setReplaceTagId] = useState<string>('');
+  const [allTagsForSelect, setAllTagsForSelect] = useState<Tag[]>([]);
+  const [loadingAllTags, setLoadingAllTags] = useState(false);
   const [pagination, setPagination] = useState<PaginationInfo>({
     total: 0,
     page: 0,
@@ -94,6 +96,32 @@ export default function TagsPage() {
     await loadTags(0, resetFilters);
   };
 
+  // Завантажити всі теги для випадаючого списку
+  const loadAllTagsForSelect = async () => {
+    setLoadingAllTags(true);
+    try {
+      // Завантажуємо всі теги без пагінації
+      const params = new URLSearchParams({
+        page: '0',
+        perPage: '10000' // Завантажуємо всі теги
+      });
+
+      const response = await fetch(`/api/admin/tags?${params}`);
+      const data = await response.json();
+
+      if (data.success) {
+        setAllTagsForSelect(data.data);
+      } else {
+        message.error(data.error || 'Помилка завантаження тегів');
+      }
+    } catch (error: any) {
+      message.error(error.message || 'Помилка з\'єднання з сервером');
+      console.error(error);
+    } finally {
+      setLoadingAllTags(false);
+    }
+  };
+
   // Відкрити модальне вікно для створення/редагування
   const openModal = (tag?: Tag) => {
     if (tag) {
@@ -153,10 +181,12 @@ export default function TagsPage() {
   };
 
   // Відкрити діалог видалення
-  const openDeleteModal = (tag: Tag) => {
+  const openDeleteModal = async (tag: Tag) => {
     setDeletingTag(tag);
     setReplaceTagId('');
     setDeleteModalVisible(true);
+    // Завантажити всі теги для можливості вибору
+    await loadAllTagsForSelect();
   };
 
   // Видалити тег
@@ -375,18 +405,30 @@ export default function TagsPage() {
                   Цей тег використовується в <strong>{deletingTag.newsCount}</strong> новинах.
                 </p>
                 <p>
-                  При необхідності, ви можете замінити його на інший тег.
-                  Введіть ID тегу-замінника:
+                  При необхідності, ви можете об'єднати його з іншим існуючим тегом.
+                  Виберіть тег для заміни:
                 </p>
-                <Input
-                  type="number"
-                  placeholder="ID тегу для заміни"
-                  value={replaceTagId}
-                  onChange={(e) => setReplaceTagId(e.target.value)}
+                <Select
+                  showSearch
+                  placeholder="Оберіть тег для об'єднання"
+                  value={replaceTagId || undefined}
+                  onChange={(value) => setReplaceTagId(value)}
                   style={{ width: '100%', marginTop: 10 }}
+                  loading={loadingAllTags}
+                  allowClear
+                  filterOption={(input, option) =>
+                    (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
+                  }
+                  options={allTagsForSelect
+                    .filter(t => t.id !== deletingTag.id) // Виключаємо тег, який видаляємо
+                    .map(t => ({
+                      value: t.id.toString(),
+                      label: `${t.tag} (ID: ${t.id}, новин: ${t.newsCount})`
+                    }))}
                 />
                 <p className={styles.hint}>
-                  Якщо не вказати ID, тег буде просто видалено зі всіх новин.
+                  Якщо не обрати тег, видалений тег буде просто видалено зі всіх новин.
+                  При об'єднанні всі новини з видаленим тегом отримають обраний тег.
                 </p>
               </div>
             )}
