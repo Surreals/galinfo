@@ -600,16 +600,30 @@ const CategoryRenderer: React.FC<CategoryRendererProps> = ({
         );
 
       case 'AD_BANNER':
-        // Знаходимо індекс першого банеру в схемі
-        const firstBannerIndex = schema.blocks.findIndex((block: any) => block.type === 'AD_BANNER');
-        const isFirstBanner = index === firstBannerIndex;
-        
-        // Перший банер завжди рендеримо (якщо не завантажується)
-        // Інші банери рендеримо тільки якщо є новини перед ними
-        if (currentCategoryLoading || (!isFirstBanner && !hasNewsInPreviousBlocks(index, schema.blocks))) {
+        // Вимикаємо рендер під час завантаження
+        if (currentCategoryLoading) {
           return null;
         }
-        
+
+        // Кількість новин без головної
+        const availableNewsCount = getNewsWithoutMain().length;
+
+        // Порядковий номер банера серед уже зустрінутих у схемі до поточного індексу
+        const bannersBeforeOrAtIndex = schema.blocks
+          .slice(0, index + 1)
+          .filter((b: any) => b.type === 'AD_BANNER').length;
+
+        const currentBannerOrder = Math.max(1, bannersBeforeOrAtIndex); // 1, 2, 3...
+
+        // Пороги для відображення банерів залежно від кількості доступних новин (без головної)
+        // 1-й банер — 0+, 2-й — від 8, 3-й — від 13, 4-й — від 18 (на майбутнє)
+        const bannerThresholds = [0, 9, 14, 19];
+        const requiredNews = bannerThresholds[currentBannerOrder - 1] ?? bannerThresholds[bannerThresholds.length - 1];
+
+        if (availableNewsCount < requiredNews) {
+          return null;
+        }
+
         return (
           <AdBanner 
             key={index}

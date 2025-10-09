@@ -99,18 +99,18 @@ export default async function TopThemesCategoryPage({ params, searchParams }: To
         [currentTheme.id]
       );
 
-      console.log('🔍 Theme query results:', {
-        themeId: currentTheme.id,
-        themeName: currentTheme.title,
-        themeParam: currentTheme.param,
-        foundNewsCount: newsResult?.length || 0,
-        news: newsResult?.map(n => ({
-          id: n.id,
-          header: n.nheader,
-          date: n.ndate,
-          time: n.ntime
-        })) || []
-      });
+      // console.log('🔍 Theme query results:', {
+      //   themeId: currentTheme.id,
+      //   themeName: currentTheme.title,
+      //   themeParam: currentTheme.param,
+      //   foundNewsCount: newsResult?.length || 0,
+      //   news: newsResult?.map(n => ({
+      //     id: n.id,
+      //     header: n.nheader,
+      //     date: n.ndate,
+      //     time: n.ntime
+      //   })) || []
+      // });
 
       specialThemesData = {
         theme: currentTheme,
