@@ -12,7 +12,6 @@ import { AccentSquare } from '@/app/shared';
 import styles from './search.module.css';
 
 const { Search } = Input;
-const { RangePicker } = DatePicker;
 
 interface SearchResult {
   id: number;
@@ -62,7 +61,8 @@ export default function SearchPageContent() {
   const [error, setError] = useState<string | null>(null);
   const [pagination, setPagination] = useState<any>(null);
   const [currentPage, setCurrentPage] = useState(1);
-  const [dateRange, setDateRange] = useState<[Dayjs | null, Dayjs | null] | null>(null);
+  const [dateFrom, setDateFrom] = useState<Dayjs | null>(null);
+  const [dateTo, setDateTo] = useState<Dayjs | null>(null);
 
   // Отримання пошукового запиту з URL при завантаженні
   useEffect(() => {
@@ -76,9 +76,12 @@ export default function SearchPageContent() {
       const page = pageFromUrl ? parseInt(pageFromUrl) : 1;
       setCurrentPage(page);
       
-      // Відновлюємо діапазон дат з URL
-      if (dateFromUrl && dateToUrl) {
-        setDateRange([dayjs(dateFromUrl), dayjs(dateToUrl)]);
+      // Відновлюємо дати з URL
+      if (dateFromUrl) {
+        setDateFrom(dayjs(dateFromUrl));
+      }
+      if (dateToUrl) {
+        setDateTo(dayjs(dateToUrl));
       }
       
       performSearch(queryFromUrl, page, dateFromUrl, dateToUrl);
@@ -136,8 +139,11 @@ export default function SearchPageContent() {
       let url = `/search?q=${encodeURIComponent(value.trim())}&page=1`;
       
       // Додаємо дати до URL якщо вони вибрані
-      if (dateRange && dateRange[0] && dateRange[1]) {
-        url += `&dateFrom=${dateRange[0].format('YYYY-MM-DD')}&dateTo=${dateRange[1].format('YYYY-MM-DD')}`;
+      if (dateFrom) {
+        url += `&dateFrom=${dateFrom.format('YYYY-MM-DD')}`;
+      }
+      if (dateTo) {
+        url += `&dateTo=${dateTo.format('YYYY-MM-DD')}`;
       }
       
       router.push(url);
@@ -151,8 +157,11 @@ export default function SearchPageContent() {
       let url = `/search?q=${encodeURIComponent(searchQuery.trim())}&page=${page}`;
       
       // Додаємо дати до URL якщо вони вибрані
-      if (dateRange && dateRange[0] && dateRange[1]) {
-        url += `&dateFrom=${dateRange[0].format('YYYY-MM-DD')}&dateTo=${dateRange[1].format('YYYY-MM-DD')}`;
+      if (dateFrom) {
+        url += `&dateFrom=${dateFrom.format('YYYY-MM-DD')}`;
+      }
+      if (dateTo) {
+        url += `&dateTo=${dateTo.format('YYYY-MM-DD')}`;
       }
       
       router.push(url);
@@ -160,8 +169,12 @@ export default function SearchPageContent() {
     }
   };
 
-  const handleDateChange = (dates: [Dayjs | null, Dayjs | null] | null) => {
-    setDateRange(dates);
+  const handleDateFromChange = (date: Dayjs | null) => {
+    setDateFrom(date);
+  };
+
+  const handleDateToChange = (date: Dayjs | null) => {
+    setDateTo(date);
   };
 
   const handleApplyDateFilter = () => {
@@ -170,8 +183,11 @@ export default function SearchPageContent() {
       
       let url = `/search?q=${encodeURIComponent(searchQuery.trim())}&page=1`;
       
-      if (dateRange && dateRange[0] && dateRange[1]) {
-        url += `&dateFrom=${dateRange[0].format('YYYY-MM-DD')}&dateTo=${dateRange[1].format('YYYY-MM-DD')}`;
+      if (dateFrom) {
+        url += `&dateFrom=${dateFrom.format('YYYY-MM-DD')}`;
+      }
+      if (dateTo) {
+        url += `&dateTo=${dateTo.format('YYYY-MM-DD')}`;
       }
       
       router.push(url);
@@ -179,7 +195,8 @@ export default function SearchPageContent() {
   };
 
   const handleClearDateFilter = () => {
-    setDateRange(null);
+    setDateFrom(null);
+    setDateTo(null);
     
     if (searchQuery.trim()) {
       setCurrentPage(1);
@@ -211,11 +228,20 @@ export default function SearchPageContent() {
             
             {/* Фільтр по даті */}
             <div className={styles.dateFilter}>
-              <RangePicker
-                value={dateRange}
-                onChange={handleDateChange}
+              <DatePicker
+                value={dateFrom}
+                onChange={handleDateFromChange}
                 format="DD.MM.YYYY"
-                placeholder={['Дата від', 'Дата до']}
+                placeholder="Дата від"
+                size="large"
+                className={styles.datePicker}
+                suffixIcon={<CalendarOutlined />}
+              />
+              <DatePicker
+                value={dateTo}
+                onChange={handleDateToChange}
+                format="DD.MM.YYYY"
+                placeholder="Дата до"
                 size="large"
                 className={styles.datePicker}
                 suffixIcon={<CalendarOutlined />}
@@ -224,13 +250,13 @@ export default function SearchPageContent() {
                 type="primary"
                 size="large"
                 onClick={handleApplyDateFilter}
-                disabled={!dateRange || !searchQuery}
+                disabled={(!dateFrom && !dateTo) || !searchQuery}
                 icon={<CalendarOutlined />}
                 className={styles.applyButton}
               >
                 Застосувати
               </Button>
-              {dateRange && (
+              {(dateFrom || dateTo) && (
                 <Button
                   size="large"
                   onClick={handleClearDateFilter}

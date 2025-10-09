@@ -61,7 +61,7 @@
 }
 
 .datePicker {
-  width: 280px;
+  width: 160px;
 }
 
 .applyButton {
@@ -276,7 +276,7 @@
 
   .datePicker {
     flex: 1;
-    min-width: 200px;
+    min-width: 140px;
   }
 
   .applyButton,
@@ -303,17 +303,19 @@
   }
 
   .dateFilter {
-    flex-direction: column;
+    flex-wrap: wrap;
     gap: 12px;
   }
 
   .datePicker {
-    width: 100%;
+    flex: 1;
+    min-width: calc(50% - 6px);
   }
 
   .applyButton,
   .clearButton {
-    width: 100%;
+    flex: 1;
+    min-width: calc(50% - 6px);
   }
 
   .newsLink {
