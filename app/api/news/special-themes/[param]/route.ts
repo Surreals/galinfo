@@ -110,7 +110,7 @@ export async function GET(
 
     const specialTheme = specialThemeResult[0];
 
-    // Get news for this special theme using the theme's ID in rubric
+    // Get news for this special theme using the theme field
     const [newsResult] = await executeQuery<SpecialThemesNewsItem>(
       `SELECT 
         a_news.id,
@@ -134,7 +134,7 @@ export async function GET(
        LEFT JOIN a_news_headers ON a_news.id = a_news_headers.id
        LEFT JOIN a_statcomm ON a_news.id = a_statcomm.id
        LEFT JOIN a_statview ON a_news.id = a_statview.id
-       WHERE FIND_IN_SET(?, a_news.rubric) > 0
+       WHERE a_news.theme = ?
          AND a_news.approved = 1
          AND a_news.lang = ?
          AND CONCAT(a_news.ndate, " ", a_news.ntime) < NOW()
@@ -147,7 +147,7 @@ export async function GET(
     const [countResult] = await executeQuery<{ total: number }>(
       `SELECT COUNT(*) as total 
        FROM a_news 
-       WHERE FIND_IN_SET(?, a_news.rubric) > 0
+       WHERE a_news.theme = ?
          AND a_news.approved = 1
          AND a_news.lang = ?
          AND CONCAT(a_news.ndate, " ", a_news.ntime) < NOW()`,
