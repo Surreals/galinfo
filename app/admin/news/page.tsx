@@ -1,9 +1,9 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import dayjs from 'dayjs';
-import { DatePicker, Button, Tabs, Tag } from 'antd';
-import { EyeOutlined, EditOutlined, DeleteOutlined, ArrowLeftOutlined } from '@ant-design/icons';
+import { DatePicker, Button, Tag, Table } from 'antd';
+import { EyeOutlined, EditOutlined, DeleteOutlined, ArrowLeftOutlined, LinkOutlined } from '@ant-design/icons';
 import { useRouter } from 'next/navigation';
 import AdminNavigation from '../components/AdminNavigation';
 import styles from './news.module.css';
@@ -32,7 +32,7 @@ const isNewsScheduled = (formattedDate: string, formattedTime: string): boolean 
 };
 
 const NEWS_TAB_TYPES = {
-  all: { name: 'Всі новини', color: 'blue' },
+  all: { name: 'Підтверджені', color: 'blue' },
   drafts: { name: 'Чернетки', color: 'red' }
 };
 
@@ -87,6 +87,7 @@ export default function NewsPage() {
   const router = useRouter();
   const [newsData, setNewsData] = useState<NewsListResponse | null>(null);
   const [loading, setLoading] = useState(true);
+  const [paginationLoading, setPaginationLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [deleteConfirm, setDeleteConfirm] = useState<{
     isOpen: boolean;
@@ -100,11 +101,12 @@ export default function NewsPage() {
   const [deleting, setDeleting] = useState(false);
   const [isUpdatingUrlKeys, setIsUpdatingUrlKeys] = useState(false);
   const [activeTab, setActiveTab] = useState<'all' | 'drafts'>('all');
+  const previousPageRef = useRef(1);
   
   // Фільтри
   const [filters, setFilters] = useState({
     page: 1,
-    limit: 30,
+    limit: 15,
     status: 'all',
     type: 'all',
     rubric: 'all',
@@ -119,9 +121,13 @@ export default function NewsPage() {
   });
 
   // Завантаження даних
-  const fetchNews = async () => {
+  const fetchNews = async (isPaginationChange = false) => {
     try {
-      setLoading(true);
+      if (isPaginationChange) {
+        setPaginationLoading(true);
+      } else {
+        setLoading(true);
+      }
       setError(null);
       
       const params = new URLSearchParams();
@@ -153,12 +159,20 @@ export default function NewsPage() {
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Unknown error');
     } finally {
-      setLoading(false);
+      if (isPaginationChange) {
+        setPaginationLoading(false);
+      } else {
+        setLoading(false);
+      }
     }
   };
 
   useEffect(() => {
-    fetchNews();
+    // Check if only the page or limit changed
+    const isPageChange = filters.page !== previousPageRef.current;
+    
+    fetchNews(isPageChange);
+    previousPageRef.current = filters.page;
   }, [filters, activeTab]);
 
   // Обробка зміни табу
@@ -180,6 +194,11 @@ export default function NewsPage() {
   // Обробка пагінації
   const handlePageChange = (page: number) => {
     setFilters(prev => ({ ...prev, page }));
+  };
+
+  // Обробка зміни розміру сторінки
+  const handlePageSizeChange = (current: number, size: number) => {
+    setFilters(prev => ({ ...prev, page: 1, limit: size }));
   };
 
   // Обробка редагування новини
@@ -280,11 +299,133 @@ export default function NewsPage() {
     });
   };
 
+  // Конфігурація колонок для Ant Design Table
+  const columns = [
+    {
+      title: 'Дата/Час',
+      dataIndex: 'formattedDate',
+      key: 'date',
+      width: 120,
+      render: (date: string, record: NewsItem) => (
+        <div>
+          <div className={styles.date}>{date}</div>
+          <div className={styles.time}>{record.formattedTime}</div>
+        </div>
+      ),
+    },
+    {
+      title: 'Заголовок',
+      dataIndex: 'nheader',
+      key: 'title',
+      width: 300,
+      render: (title: string, record: NewsItem) => (
+        <div 
+          className={styles.title}
+          onClick={() => handleEditNews(record.id)}
+          style={{ cursor: 'pointer' }}
+          title="Клікніть для редагування"
+        >
+          <span className={styles.newsId}>#{record.id}</span>
+          {title || 'Без заголовка'}
+          {record.images.length > 0 && (
+            <span className={styles.imageIcon}>📷</span>
+          )}
+        </div>
+      ),
+    },
+    {
+      title: 'Тип',
+      dataIndex: 'typeName',
+      key: 'type',
+      width: 120,
+      render: (typeName: string, record: NewsItem) => (
+        <span className={`${styles.type} ${styles[`type-${record.ntype}`]}`}>
+          {typeName}
+        </span>
+      ),
+    },
+    {
+      title: 'Автор',
+      dataIndex: 'authorDisplayName',
+      key: 'author',
+      width: 150,
+    },
+    {
+      title: 'Статус',
+      dataIndex: 'approved',
+      key: 'status',
+      width: 120,
+      render: (approved: number, record: NewsItem) => (
+        <span className={`${styles.status} ${
+          approved ? 
+            (isNewsScheduled(record.formattedDate, record.formattedTime) ? styles.scheduled : styles.published) 
+            : styles.unpublished
+        }`}>
+          {approved ? 
+            (isNewsScheduled(record.formattedDate, record.formattedTime) ? 'Запланована' : 'Опубліковано')
+            : 'Чернетка'}
+        </span>
+      ),
+    },
+    {
+      title: 'Перегляди',
+      dataIndex: 'views_count',
+      key: 'views',
+      width: 110,
+      align: 'center' as const,
+      render: (views: number) => (
+        <div className={styles.viewsValue}>
+          <EyeOutlined className={styles.inlineIcon} />
+          <span>{views}</span>
+        </div>
+      ),
+    },
+    {
+      title: 'Перегляд',
+      key: 'view',
+      width: 72,
+      align: 'center' as const,
+      render: (_: any, record: NewsItem) => (
+        <button
+          className={`${styles.iconButton} ${styles.viewIconButton}`}
+          onClick={() => window.open(`/news/${record.urlkey || 'article'}_${record.id}`, '_blank')}
+          title="Перегляд"
+        >
+          <LinkOutlined />
+        </button>
+      ),
+    },
+    {
+      title: 'Дії',
+      key: 'actions',
+      width: 112,
+      align: 'center' as const,
+      render: (_: any, record: NewsItem) => (
+        <div className={styles.actionButtons}>
+          <button
+            className={`${styles.iconButton} ${styles.editIconButton}`}
+            onClick={() => handleEditNews(record.id)}
+            title="Редагувати"
+          >
+            <EditOutlined />
+          </button>
+          <button
+            className={`${styles.iconButton} ${styles.deleteIconButton}`}
+            onClick={() => handleDeleteNews(record.id, record.nheader || 'Без заголовка')}
+            title="Видалити"
+          >
+            <DeleteOutlined />
+          </button>
+        </div>
+      ),
+    },
+  ];
+
   // Очищення фільтрів
   const clearFilters = () => {
     setFilters({
       page: 1,
-      limit: 30,
+      limit: 15,
       status: 'all',
       type: 'all',
       rubric: 'all',
@@ -359,32 +500,6 @@ export default function NewsPage() {
           </div>
         </div>
 
-        {/* Таби для розділення новин */}
-        <Tabs
-          activeKey={activeTab}
-          onChange={handleTabChange}
-          className={styles.newsTabs}
-          items={[
-            {
-              key: 'all',
-              label: (
-                <span>
-                  <Tag color={NEWS_TAB_TYPES.all.color}>{NEWS_TAB_TYPES.all.name}</Tag>
-                </span>
-              ),
-              children: null
-            },
-            {
-              key: 'drafts',
-              label: (
-                <span>
-                  <Tag color={NEWS_TAB_TYPES.drafts.color}>{NEWS_TAB_TYPES.drafts.name}</Tag>
-                </span>
-              ),
-              children: null
-            }
-          ]}
-        />
 
         {/* Фільтри */}
         <div className={styles.filters}>
@@ -395,6 +510,7 @@ export default function NewsPage() {
               <select 
                 value={filters.type} 
                 onChange={(e) => handleFilterChange('type', e.target.value)}
+                disabled={paginationLoading}
               >
                 <option value="all">Всі типи</option>
                 <option value="news">Новини</option>
@@ -414,6 +530,7 @@ export default function NewsPage() {
                   handleFilterChange('sortBy', sortBy);
                   handleFilterChange('sortOrder', sortOrder);
                 }}
+                disabled={paginationLoading}
               >
                 <option value="ndate-DESC">Дата публікації (новіші)</option>
                 <option value="ndate-ASC">Дата публікації (старіші)</option>
@@ -427,26 +544,13 @@ export default function NewsPage() {
             </div>
 
             <div className={styles.filterGroup}>
-              <label>На сторінці:</label>
-              <select 
-                value={filters.limit} 
-                onChange={(e) => handleFilterChange('limit', parseInt(e.target.value))}
-              >
-                <option value="30">30</option>
-                <option value="50">50</option>
-                <option value="100">100</option>
-              </select>
-            </div>
-          </div>
-
-          <div className={styles.filterRow}>
-            <div className={styles.filterGroup}>
               <label>Ключове слово:</label>
               <input
                 type="text"
                 value={filters.keyword}
                 onChange={(e) => handleFilterChange('keyword', e.target.value)}
                 placeholder="Пошук в заголовках..."
+                disabled={paginationLoading}
               />
             </div>
 
@@ -457,6 +561,7 @@ export default function NewsPage() {
                 value={filters.newsId}
                 onChange={(e) => handleFilterChange('newsId', e.target.value)}
                 placeholder="Введіть ID..."
+                disabled={paginationLoading}
               />
             </div>
 
@@ -468,6 +573,7 @@ export default function NewsPage() {
                 value={filters.dateFrom ? dayjs(filters.dateFrom) : null}
                 onChange={(date) => handleFilterChange('dateFrom', date ? date.format('YYYY-MM-DD') : '')}
                 className={styles.datePicker}
+                disabled={paginationLoading}
               />
             </div>
 
@@ -479,6 +585,7 @@ export default function NewsPage() {
                 value={filters.dateTo ? dayjs(filters.dateTo) : null}
                 onChange={(date) => handleFilterChange('dateTo', date ? date.format('YYYY-MM-DD') : '')}
                 className={styles.datePicker}
+                disabled={paginationLoading}
               />
             </div>
 
@@ -486,6 +593,7 @@ export default function NewsPage() {
               <button 
                 className={styles.clearButton}
                 onClick={clearFilters}
+                disabled={paginationLoading}
               >
                 Очистити фільтри
               </button>
@@ -493,163 +601,61 @@ export default function NewsPage() {
           </div>
         </div>
 
-        {/* Статистика */}
-        {newsData && (
-          <div className={styles.stats}>
-            <span>Всього новин: {newsData.pagination.total}</span>
-            <span>Сторінка {newsData.pagination.page} з {newsData.pagination.totalPages}</span>
-          </div>
-        )}
 
         {/* Список новин */}
         <div className={styles.newsList}>
-          {newsData?.news.length === 0 ? (
-            <div className={styles.noNews}>Новини не знайдено</div>
-          ) : (
-            <table className={styles.newsTable}>
-              <thead>
-                <tr>
-                  <th>Дата/Час</th>
-                  <th>Заголовок</th>
-                  <th>Тип</th>
-                  <th>Автор</th>
-                  <th>Статус</th>
-                  <th>Перегляди</th>
-                  <th>Перегляд</th>
-                  <th>Дії</th>
-                </tr>
-              </thead>
-              <tbody>
-                {newsData?.news.map((news) => (
-                  <tr 
-                    key={news.id}
-                    className={`${styles.newsRow} ${
-                      news.isImportant ? styles.importantNews : ''
-                    } ${news.isTopNews ? styles.topNews : ''} ${
-                      news.isDelayed ? styles.delayedNews : ''
-                    }`}
-                  >
-                    <td className={styles.dateCell}>
-                      <div className={styles.date}>{news.formattedDate}</div>
-                      <div className={styles.time}>{news.formattedTime}</div>
-                    </td>
-                    <td className={styles.titleCell}>
-                      <div 
-                        className={styles.title}
-                        onClick={() => handleEditNews(news.id)}
-                        style={{ cursor: 'pointer' }}
-                        title="Клікніть для редагування"
-                      >
-                        <span className={styles.newsId}>#{news.id}</span>
-                        {news.nheader || 'Без заголовка'}
-                        {news.images.length > 0 && (
-                          <span className={styles.imageIcon}>📷</span>
-                        )}
-                      </div>
-                      {/* {news.nteaser && (
-                        <div className={styles.teaser}>{news.nteaser}</div>
-                      )} */}
-                    </td>
-                    <td className={styles.typeCell}>
-                      <span className={`${styles.type} ${styles[`type-${news.ntype}`]}`}>
-                        {news.typeName}
-                      </span>
-                    </td>
-                    <td className={styles.authorCell}>
-                      {news.authorDisplayName}
-                    </td>
-                    <td className={styles.statusCell}>
-                      <span className={`${styles.status} ${
-                        news.approved ? 
-                          (isNewsScheduled(news.formattedDate, news.formattedTime) ? styles.scheduled : styles.published) 
-                          : styles.unpublished
-                      }`}>
-                        {news.approved ? 
-                          (isNewsScheduled(news.formattedDate, news.formattedTime) ? 'Запланована' : 'Опубліковано')
-                          : 'Чернетка'}
-                      </span>
-                      
-                      
-                    </td>
-                    <td className={styles.statsCell}>
-                      <div className={styles.viewsValue}>
-                        <EyeOutlined className={styles.inlineIcon} />
-                        <span>{news.views_count}</span>
-                      </div>
-                    </td>
-                    <td className={styles.viewCell}>
-                      <button
-                        className={`${styles.iconButton} ${styles.viewIconButton}`}
-                        onClick={() => window.open(`/news/${news.urlkey || 'article'}_${news.id}`, '_blank')}
-                        title="Перегляд"
-                      >
-                        <EyeOutlined />
-                      </button>
-                    </td>
-                    <td className={styles.actionsCell}>
-                      <div className={styles.actionButtons}>
-                        <button
-                          className={`${styles.iconButton} ${styles.editIconButton}`}
-                          onClick={() => handleEditNews(news.id)}
-                          title="Редагувати"
-                        >
-                          <EditOutlined />
-                        </button>
-                        <button
-                          className={`${styles.iconButton} ${styles.deleteIconButton}`}
-                          onClick={() => handleDeleteNews(news.id, news.nheader || 'Без заголовка')}
-                          title="Видалити"
-                        >
-                          <DeleteOutlined />
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          )}
-        </div>
-
-        {/* Пагінація */}
-        {newsData && newsData.pagination.totalPages > 1 && (
-          <div className={styles.pagination}>
+          {/* Таби над таблицею */}
+          <div className={styles.tableTabs}>
             <button 
-              className={styles.paginationButton}
-              disabled={!newsData.pagination.hasPrev}
-              onClick={() => handlePageChange(filters.page - 1)}
+              className={`${styles.tabButton} ${activeTab === 'all' ? styles.activeTab : ''}`}
+              onClick={() => handleTabChange('all')}
+              disabled={paginationLoading}
             >
-              ‹ Попередня
+              <Tag color={NEWS_TAB_TYPES.all.color}>{NEWS_TAB_TYPES.all.name}</Tag>
             </button>
-            
-            <div className={styles.pageNumbers}>
-              {Array.from({ length: Math.min(5, newsData.pagination.totalPages) }, (_, i) => {
-                const pageNum = Math.max(1, filters.page - 2) + i;
-                if (pageNum > newsData.pagination.totalPages) return null;
-                
-                return (
-                  <button
-                    key={pageNum}
-                    className={`${styles.pageButton} ${
-                      pageNum === filters.page ? styles.activePage : ''
-                    }`}
-                    onClick={() => handlePageChange(pageNum)}
-                  >
-                    {pageNum}
-                  </button>
-                );
-              })}
-            </div>
-            
             <button 
-              className={styles.paginationButton}
-              disabled={!newsData.pagination.hasNext}
-              onClick={() => handlePageChange(filters.page + 1)}
+              className={`${styles.tabButton} ${activeTab === 'drafts' ? styles.activeTab : ''}`}
+              onClick={() => handleTabChange('drafts')}
+              disabled={paginationLoading}
             >
-              Наступна ›
+              <Tag color={NEWS_TAB_TYPES.drafts.color}>{NEWS_TAB_TYPES.drafts.name}</Tag>
             </button>
           </div>
-        )}
+
+          <Table
+            columns={columns}
+            dataSource={newsData?.news || []}
+            rowKey="id"
+            loading={loading || paginationLoading}
+            pagination={newsData ? {
+              current: newsData.pagination.page,
+              total: newsData.pagination.total,
+              pageSize: filters.limit,
+              showSizeChanger: true,
+              showQuickJumper: false,
+              showTotal: (total, range) => 
+                `${range[0]}-${range[1]} з ${total} новин`,
+              onChange: handlePageChange,
+              onShowSizeChange: handlePageSizeChange,
+              pageSizeOptions: ['15', '30', '50', '100'],
+              className: styles.antdPagination,
+              position: ['bottomCenter'],
+              disabled: paginationLoading
+            } : false}
+            scroll={{ x: 1200 }}
+            rowClassName={(record) => {
+              let className = styles.newsRow;
+              if (record.isImportant) className += ` ${styles.importantNews}`;
+              if (record.isTopNews) className += ` ${styles.topNews}`;
+              if (record.isDelayed) className += ` ${styles.delayedNews}`;
+              return className;
+            }}
+            locale={{
+              emptyText: <div className={styles.noNews}>Новини не знайдено</div>
+            }}
+          />
+        </div>
+
 
         {/* Діалог підтвердження видалення */}
         {deleteConfirm.isOpen && (

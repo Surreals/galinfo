@@ -7,7 +7,7 @@
 }
 
 .mainContent {
-  padding: 2re;
+  padding-bottom: 2rem;
   max-width: 1400px;
   margin: 0 auto;
 }
@@ -70,9 +70,58 @@
   cursor: not-allowed;
 }
 
-/* Таби - стиль як на сторінці categories */
-.newsTabs {
-  margin-bottom: 1.5rem;
+/* Таби над таблицею */
+.tableTabs {
+  display: flex;
+  gap: 0.5rem;
+  padding: 1rem 1.5rem 0 1.5rem;
+  background: #f8f9fa;
+  border-bottom: 1px solid #dee2e6;
+}
+
+.tabButton {
+  background: transparent;
+  border: 1px solid #dee2e6;
+  border-bottom: none;
+  padding: 0.75rem 1rem;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: all 0.2s;
+  border-radius: 6px 6px 0 0;
+  margin-bottom: -1px;
+}
+
+.tabButton:hover {
+  background: #e9ecef;
+  border-color: #adb5bd;
+}
+
+.activeTab {
+  background: white;
+  border-color: #007bff;
+  color: #007bff;
+  border-bottom: 1px solid white;
+  z-index: 1;
+  position: relative;
+}
+
+.activeTab:hover {
+  background: white;
+  border-color: #007bff;
+}
+
+.tabButton:disabled {
+  background: #f5f5f5;
+  color: #999;
+  cursor: not-allowed;
+  opacity: 0.6;
+  border-color: #d9d9d9;
+}
+
+.tabButton:disabled:hover {
+  background: #f5f5f5;
+  border-color: #d9d9d9;
 }
 
 /* Фільтри */
@@ -91,22 +140,12 @@
   flex-wrap: wrap;
 }
 
-/* Ensure consistent column widths across rows */
+/* Single row filter layout */
 .filterGroup {
   display: flex;
   flex-direction: column;
-  min-width: 220px;
-  width: 220px;
-}
-
-.filterRow:last-child {
-  margin-bottom: 0;
-}
-
-.filterGroup {
-  display: flex;
-  flex-direction: column;
-  min-width: 150px;
+  min-width: 140px;
+  flex: 0 0 auto;
 }
 
 .filterGroup label {
@@ -126,9 +165,17 @@
   line-height: 1;
 }
 
+.filterGroup select:disabled,
+.filterGroup input:disabled {
+  background-color: #f5f5f5;
+  color: #999;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
 .filterGroup input[type="text"],
 .filterGroup input[type="date"] {
-  min-width: 200px;
+  min-width: 140px;
 }
 
 /* Make DatePickers follow the same column width */
@@ -136,7 +183,7 @@
 :global(.ant-picker).datePicker,
 .datePicker:global(.ant-picker),
 .datePicker :global(.ant-picker) {
-  width: 220px !important;
+  width: 140px !important;
 }
 
 .clearButton {
@@ -151,10 +198,18 @@
   margin-top: 1.85rem;
   height: 41px;
   line-height: 1;
+  white-space: nowrap;
 }
 
-.clearButton:hover {
+.clearButton:hover:not(:disabled) {
   background: #fbd1da;
+}
+
+.clearButton:disabled {
+  background: #f5f5f5;
+  color: #999;
+  cursor: not-allowed;
+  opacity: 0.6;
 }
 
 /* Reduce spacing before clear button */
@@ -173,17 +228,6 @@
   border-radius: 4px !important;
 }
 
-/* Статистика */
-.stats {
-  background: #e9ecef;
-  padding: 1rem;
-  border-radius: 6px;
-  margin-bottom: 1rem;
-  display: flex;
-  gap: 2rem;
-  font-size: 0.9rem;
-  color: #495057;
-}
 
 /* Список новин */
 .newsList {
@@ -193,34 +237,22 @@
   overflow: hidden;
 }
 
-.newsTable {
-  width: 100%;
-  border-collapse: collapse;
+/* Ant Design Table стилі */
+.newsList :global(.ant-table) {
+  border-radius: 0;
 }
 
-.newsTable thead {
+.newsList :global(.ant-table-thead > tr > th) {
   background: #f8f9fa;
-}
-
-.newsTable th {
-  padding: 1rem;
-  text-align: left;
+  border-bottom: 2px solid #dee2e6;
   font-weight: 600;
   color: #495057;
-  border-bottom: 2px solid #dee2e6;
   font-size: 0.9rem;
 }
 
-/* Align the 'Дії' header to center (8th column) */
-.newsTable thead th:nth-child(8) {
-  text-align: center;
-  width: 112px;
-}
-
-.newsTable td {
-  padding: 1rem;
+.newsList :global(.ant-table-tbody > tr > td) {
   border-bottom: 1px solid #dee2e6;
-  vertical-align: top;
+  padding: 1rem;
 }
 
 .newsRow {
@@ -249,12 +281,7 @@
   color: #6c757d;
 }
 
-/* Клітинки таблиці */
-.dateCell {
-  width: 120px;
-  white-space: nowrap;
-}
-
+/* Стилі для контенту таблиці */
 .date {
   font-weight: 600;
   color: #495057;
@@ -264,10 +291,6 @@
 .time {
   color: #6c757d;
   font-size: 0.8rem;
-}
-
-.titleCell {
-  min-width: 300px;
 }
 
 .title {
@@ -303,10 +326,6 @@
   font-size: 0.9rem;
 }
 
-.typeCell {
-  width: 120px;
-}
-
 .type {
   display: inline-block;
   padding: 0.25rem 0.5rem;
@@ -322,16 +341,6 @@
 .type-3 { background: #fff3cd; color: #856404; }
 .type-4 { background: #f8d7da; color: #721c24; }
 .type-20 { background: #e2e3e5; color: #383d41; }
-
-.authorCell {
-  width: 150px;
-  font-size: 0.9rem;
-  color: #495057;
-}
-
-.statusCell {
-  width: 120px;
-}
 
 .status {
   display: inline-block;
@@ -356,8 +365,6 @@
   color: #084298;
 }
 
-.statsCell { width: 110px; text-align: center; }
-
 /* Views value inline with icon */
 .viewsValue {
   display: inline-flex;
@@ -372,10 +379,6 @@
   font-size: 16px;
   color: #6c757d;
 }
-
-.viewCell { width: 72px; text-align: center; }
-
-.actionsCell { width: 112px; text-align: center; }
 
 .actionButtons {
   display: flex;
@@ -439,63 +442,55 @@
   background: #c82333;
 }
 
-/* Пагінація */
-.pagination {
-  display: flex;
+/* Ant Design Table Pagination */
+.antdPagination :global(.ant-pagination) {
+  margin: 1rem 0 0 0;
   justify-content: center;
-  align-items: center;
-  gap: 1rem;
-  padding: 2rem;
-  background: white;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  margin-top: 1.5rem;
 }
 
-.paginationButton {
-  background: #007bff;
-  color: white;
-  border: none;
-  padding: 0.5rem 1rem;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 0.9rem;
-  transition: background-color 0.2s;
+.antdPagination :global(.ant-pagination-item) {
+  border-color: #007bff;
 }
 
-.paginationButton:hover:not(:disabled) {
-  background: #0056b3;
-}
-
-.paginationButton:disabled {
-  background: #6c757d;
-  cursor: not-allowed;
-}
-
-.pageNumbers {
-  display: flex;
-  gap: 0.5rem;
-}
-
-.pageButton {
-  background: white;
+.antdPagination :global(.ant-pagination-item a) {
   color: #007bff;
-  border: 1px solid #007bff;
-  padding: 0.5rem 0.75rem;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 0.9rem;
-  transition: all 0.2s;
 }
 
-.pageButton:hover {
+.antdPagination :global(.ant-pagination-item:hover) {
+  border-color: #0056b3;
+}
+
+.antdPagination :global(.ant-pagination-item:hover a) {
+  color: #0056b3;
+}
+
+.antdPagination :global(.ant-pagination-item-active) {
   background: #007bff;
+  border-color: #007bff;
+}
+
+.antdPagination :global(.ant-pagination-item-active a) {
   color: white;
 }
 
-.pageButton.activePage {
-  background: #007bff;
-  color: white;
+.antdPagination :global(.ant-pagination-prev),
+.antdPagination :global(.ant-pagination-next) {
+  border-color: #007bff;
+}
+
+.antdPagination :global(.ant-pagination-prev a),
+.antdPagination :global(.ant-pagination-next a) {
+  color: #007bff;
+}
+
+.antdPagination :global(.ant-pagination-prev:hover),
+.antdPagination :global(.ant-pagination-next:hover) {
+  border-color: #0056b3;
+}
+
+.antdPagination :global(.ant-pagination-prev:hover a),
+.antdPagination :global(.ant-pagination-next:hover a) {
+  color: #0056b3;
 }
 
 /* Стани завантаження та помилок */
@@ -628,22 +623,16 @@
   
   .filterGroup {
     min-width: auto;
+    width: 100%;
   }
   
-  .newsTable {
+  .newsList :global(.ant-table-thead > tr > th),
+  .newsList :global(.ant-table-tbody > tr > td) {
+    padding: 0.5rem;
     font-size: 0.8rem;
   }
   
-  .newsTable th,
-  .newsTable td {
-    padding: 0.5rem;
-  }
-  
-  .titleCell {
-    min-width: 200px;
-  }
-  
-  .pagination {
+  .antdPagination :global(.ant-pagination) {
     flex-wrap: wrap;
     gap: 0.5rem;
   }
