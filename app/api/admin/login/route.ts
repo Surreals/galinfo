@@ -18,7 +18,7 @@ export async function POST(request: NextRequest) {
 
     // Query admin user from database (a_powerusers table)
     const [users] = await executeQuery(
-      'SELECT * FROM a_powerusers WHERE uname = ? AND active = 1',
+      'SELECT id, uname, uname_ua, uagency, upass, perm, active, role, twofa_enabled FROM a_powerusers WHERE uname = ? AND active = 1',
       [userLogin]
     );
 
@@ -84,13 +84,8 @@ export async function POST(request: NextRequest) {
     // Note: IP tracking removed as lastip column doesn't exist in a_powerusers table
     // In a production environment, you might want to add this column or use a separate logging table
 
-    // Determine role based on uname_ua field
-    let userRole = 'journalist'; // default role
-    if (user.uname_ua === 'Адміністратор') {
-      userRole = 'admin';
-    } else if (user.uname_ua === 'Редактор') {
-      userRole = 'editor';
-    }
+    // Use role from database field, fallback to 'journalist' if not set
+    const userRole = user.role || 'journalist';
 
     // Return user data (excluding sensitive information)
     const userData = {
