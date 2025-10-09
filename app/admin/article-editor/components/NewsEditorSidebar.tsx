@@ -30,6 +30,7 @@ import {
   SaveOutlined,
   EyeOutlined,
   CopyOutlined,
+  FileOutlined,
 } from "@ant-design/icons";
 import dayjs, { Dayjs } from "dayjs";
 import styles from "../NewsEditor.module.css";
@@ -501,30 +502,43 @@ export default function NewsEditorSidebar({ newsId, articleData, menuData, onEdi
   };
 
   const onDelete = async () => {
-    // Only allow moving to draft for non-admins
-    if (!isAdmin) {
-      // Move to draft instead of delete
+    const isApproved = articleData?.approved || false;
+    
+    // Якщо новина підтверджена (approved = true), переносимо в чернетки
+    if (isApproved) {
       modal.confirm({
         title: 'Перемістити в чернетки',
         content: 'Ви впевнені, що хочете перемістити цю новину в чернетки?',
         okText: 'Так',
         cancelText: 'Скасувати',
         onOk: async () => {
-          const payload = {
-            ...articleData,
-            approved: false,
-          };
-          const result = await saveArticle(payload);
-          if (result.success) {
+          try {
+            const response = await fetch(`/api/admin/news/move-to-draft?id=${newsId}`, {
+              method: 'PUT'
+            });
+            
+            if (!response.ok) {
+              const errorData = await response.json();
+              throw new Error(errorData.error || 'Failed to move to draft');
+            }
+            
             message.success('Новину переміщено в чернетки');
             router.push('/admin/news');
+          } catch (error) {
+            message.error('Помилка при перенесенні в чернетки');
+            console.error(error);
           }
         }
       });
       return;
     }
     
-    // Full delete for admins
+    // Якщо новина в чернетках (approved = false), видаляємо (тільки для адміна)
+    if (!isAdmin) {
+      message.warning('Тільки адміністратори можуть видаляти чернетки');
+      return;
+    }
+    
     modal.confirm({
       title: 'Підтвердження видалення',
       content: 'Ви впевнені, що хочете видалити цю новину? Цю дію неможливо скасувати.',
@@ -870,15 +884,22 @@ export default function NewsEditorSidebar({ newsId, articleData, menuData, onEdi
             <>
               
               <Button
-                danger
+                danger={!articleData?.approved}
                 size="large"
-                icon={<DeleteOutlined/>}
+                icon={articleData?.approved ? <FileOutlined /> : <DeleteOutlined/>}
                 onClick={onDelete}
                 loading={saving}
-                disabled={saving}
+                disabled={saving || (!articleData?.approved && !isAdmin)}
                 className={styles.blueBtn}
+                style={articleData?.approved ? { 
+                  background: '#ffc107', 
+                  borderColor: '#ffc107',
+                  color: '#212529'
+                } : undefined}
               >
-                {isAdmin ? 'ВИДАЛИТИ' : 'В ЧЕРНЕТКИ'}
+                {articleData?.approved 
+                  ? 'В ЧЕРНЕТКИ' 
+                  : (isAdmin ? 'ВИДАЛИТИ' : 'НЕМАЄ ПРАВ')}
               </Button>
                 <Button
                   // type="text"

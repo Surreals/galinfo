@@ -3,10 +3,11 @@
 import { useState, useEffect, useRef } from 'react';
 import dayjs from 'dayjs';
 import { DatePicker, Button, Tag, Table } from 'antd';
-import { EyeOutlined, EditOutlined, DeleteOutlined, ArrowLeftOutlined, LinkOutlined } from '@ant-design/icons';
+import { EyeOutlined, EditOutlined, DeleteOutlined, ArrowLeftOutlined, LinkOutlined, FileOutlined } from '@ant-design/icons';
 import { useRouter } from 'next/navigation';
 import AdminNavigation from '../components/AdminNavigation';
 import styles from './news.module.css';
+import { useRolePermissions } from '@/app/hooks/useRolePermissions';
 
 // Функція для перевірки, чи новина запланована на майбутнє
 const isNewsScheduled = (formattedDate: string, formattedTime: string): boolean => {
@@ -33,7 +34,7 @@ const isNewsScheduled = (formattedDate: string, formattedTime: string): boolean 
 
 const NEWS_TAB_TYPES = {
   all: { name: 'Підтверджені', color: 'blue' },
-  drafts: { name: 'Чернетки', color: 'red' }
+  drafts: { name: 'Чернетки', color: 'gold' }
 };
 
 interface NewsItem {
@@ -85,6 +86,7 @@ interface NewsListResponse {
 
 export default function NewsPage() {
   const router = useRouter();
+  const { isAdmin } = useRolePermissions();
   const [newsData, setNewsData] = useState<NewsListResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [paginationLoading, setPaginationLoading] = useState(false);
@@ -93,10 +95,12 @@ export default function NewsPage() {
     isOpen: boolean;
     newsId: number | null;
     newsTitle: string;
+    isApproved: boolean; // Додаємо інформацію про статус новини
   }>({
     isOpen: false,
     newsId: null,
-    newsTitle: ''
+    newsTitle: '',
+    isApproved: false
   });
   const [deleting, setDeleting] = useState(false);
   const [isUpdatingUrlKeys, setIsUpdatingUrlKeys] = useState(false);
@@ -249,28 +253,39 @@ export default function NewsPage() {
   };
 
   // Обробка видалення новини
-  const handleDeleteNews = (newsId: number, newsTitle: string) => {
+  const handleDeleteNews = (newsId: number, newsTitle: string, isApproved: boolean) => {
     setDeleteConfirm({
       isOpen: true,
       newsId,
-      newsTitle
+      newsTitle,
+      isApproved
     });
   };
 
-  // Підтвердження видалення
+  // Підтвердження видалення або перенесення в чернетки
   const confirmDelete = async () => {
     if (!deleteConfirm.newsId) return;
     
     try {
       setDeleting(true);
       
-      const response = await fetch(`/api/admin/news?id=${deleteConfirm.newsId}`, {
-        method: 'DELETE'
-      });
+      let response;
+      
+      // Якщо новина підтверджена (approved = true), переносимо в чернетки
+      if (deleteConfirm.isApproved) {
+        response = await fetch(`/api/admin/news/move-to-draft?id=${deleteConfirm.newsId}`, {
+          method: 'PUT'
+        });
+      } else {
+        // Якщо новина в чернетках (approved = false), видаляємо (тільки для адміна)
+        response = await fetch(`/api/admin/news?id=${deleteConfirm.newsId}`, {
+          method: 'DELETE'
+        });
+      }
       
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.error || 'Failed to delete news');
+        throw new Error(errorData.error || 'Failed to process request');
       }
       
       // Оновлюємо список новин
@@ -280,7 +295,8 @@ export default function NewsPage() {
       setDeleteConfirm({
         isOpen: false,
         newsId: null,
-        newsTitle: ''
+        newsTitle: '',
+        isApproved: false
       });
       
     } catch (err) {
@@ -295,7 +311,8 @@ export default function NewsPage() {
     setDeleteConfirm({
       isOpen: false,
       newsId: null,
-      newsTitle: ''
+      newsTitle: '',
+      isApproved: false
     });
   };
 
@@ -400,24 +417,34 @@ export default function NewsPage() {
       key: 'actions',
       width: 112,
       align: 'center' as const,
-      render: (_: any, record: NewsItem) => (
-        <div className={styles.actionButtons}>
-          <button
-            className={`${styles.iconButton} ${styles.editIconButton}`}
-            onClick={() => handleEditNews(record.id)}
-            title="Редагувати"
-          >
-            <EditOutlined />
-          </button>
-          <button
-            className={`${styles.iconButton} ${styles.deleteIconButton}`}
-            onClick={() => handleDeleteNews(record.id, record.nheader || 'Без заголовка')}
-            title="Видалити"
-          >
-            <DeleteOutlined />
-          </button>
-        </div>
-      ),
+      render: (_: any, record: NewsItem) => {
+        const isApproved = record.approved === 1;
+        const canDelete = !isApproved && isAdmin; // Видалення тільки для адміна і тільки чернеток
+        const canMoveToDraft = isApproved; // Перенесення в чернетки для опублікованих
+        
+        return (
+          <div className={styles.actionButtons}>
+            <button
+              className={`${styles.iconButton} ${styles.editIconButton}`}
+              onClick={() => handleEditNews(record.id)}
+              title="Редагувати"
+            >
+              <EditOutlined />
+            </button>
+            {(canMoveToDraft || canDelete) && (
+              <button
+                className={`${styles.iconButton} ${
+                  canMoveToDraft ? styles.draftIconButton : styles.deleteIconButton
+                }`}
+                onClick={() => handleDeleteNews(record.id, record.nheader || 'Без заголовка', isApproved)}
+                title={canMoveToDraft ? 'Перенести в чернетки' : 'Видалити'}
+              >
+                {canMoveToDraft ? <FileOutlined /> : <DeleteOutlined />}
+              </button>
+            )}
+          </div>
+        );
+      },
     },
   ];
 
@@ -657,19 +684,27 @@ export default function NewsPage() {
         </div>
 
 
-        {/* Діалог підтвердження видалення */}
+        {/* Діалог підтвердження видалення або перенесення в чернетки */}
         {deleteConfirm.isOpen && (
           <div className={styles.modalOverlay}>
             <div className={styles.modalContent}>
-              <h3>Підтвердження видалення</h3>
+              <h3>
+                {deleteConfirm.isApproved 
+                  ? 'Перенесення в чернетки' 
+                  : 'Підтвердження видалення'}
+              </h3>
               <p>
-                Ви впевнені, що хочете видалити новину:
+                {deleteConfirm.isApproved 
+                  ? 'Ви впевнені, що хочете перенести новину в чернетки:'
+                  : 'Ви впевнені, що хочете видалити новину:'}
                 <br />
                 <strong>"{deleteConfirm.newsTitle}"</strong>
               </p>
-              <p className={styles.warningText}>
-                ⚠️ Ця дія незворотна! Всі дані новини будуть видалені назавжди.
-              </p>
+              {!deleteConfirm.isApproved && (
+                <p className={styles.warningText}>
+                  ⚠️ Ця дія незворотна! Всі дані новини будуть видалені назавжди.
+                </p>
+              )}
               <div className={styles.modalActions}>
                 <button 
                   className={styles.cancelButton}
@@ -679,11 +714,13 @@ export default function NewsPage() {
                   Скасувати
                 </button>
                 <button 
-                  className={styles.confirmDeleteButton}
+                  className={deleteConfirm.isApproved ? styles.confirmDraftButton : styles.confirmDeleteButton}
                   onClick={confirmDelete}
                   disabled={deleting}
                 >
-                  {deleting ? 'Видалення...' : 'Видалити'}
+                  {deleting 
+                    ? (deleteConfirm.isApproved ? 'Перенесення...' : 'Видалення...') 
+                    : (deleteConfirm.isApproved ? 'Перенести в чернетки' : 'Видалити')}
                 </button>
               </div>
             </div>
