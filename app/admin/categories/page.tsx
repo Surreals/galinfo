@@ -286,7 +286,7 @@ export default function CategoriesPage() {
             onClick={() => openModal()}
             size="large"
           >
-            Додати категорію
+            Додати
           </Button>
         </div>
 
