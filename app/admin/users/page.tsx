@@ -18,12 +18,6 @@ interface User {
   role: string;
 }
 
-interface Permission {
-  key: string;
-  name: string;
-  value: boolean;
-}
-
 export default function UsersPage() {
   const { user: currentUser } = useAdminAuth();
   const [users, setUsers] = useState<User[]>([]);
@@ -35,7 +29,7 @@ export default function UsersPage() {
   
   const isCurrentUserAdmin = currentUser?.role === UserRole.ADMIN;
 
-  // Define available permissions based on PHP implementation
+  // Available permissions for display purposes
   const availablePermissions: { key: string; name: string }[] = [
     { key: 'ac_usermanage', name: 'Управління користувачами' },
     { key: 'ac_newsmanage', name: 'Управління новинами' },
@@ -77,24 +71,12 @@ export default function UsersPage() {
   const handleEditUser = (user: User) => {
     setEditingUser(user);
     
-    let permissions: Record<string, any> = {};
-    try {
-      permissions = user.perm ? JSON.parse(user.perm) : {};
-    } catch (error) {
-      console.error('Error parsing permissions for user:', user.uname, error);
-      permissions = {};
-    }
-    
-    // Convert permissions object to array of keys for Checkbox.Group
-    const permissionKeys = Object.keys(permissions).filter(key => permissions[key] === true || permissions[key] === 1);
-    
     form.setFieldsValue({
       uname_ua: user.uname_ua || '',
       uname: user.uname || '',
       uagency: user.uagency || '',
       upass: '',
       active: user.active === 1,
-      permissions: permissionKeys,
       role: user.role || 'journalist'
     });
     setIsModalVisible(true);
@@ -133,17 +115,14 @@ export default function UsersPage() {
       
       const method = editingUser ? 'PUT' : 'POST';
       
-      // Convert permissions array back to object
-      const permissionsObj: Record<string, boolean> = {};
-      if (values.permissions && Array.isArray(values.permissions)) {
-        values.permissions.forEach((perm: string) => {
-          permissionsObj[perm] = true;
-        });
-      }
-      
+      // Permissions are now auto-assigned based on role on the backend
       const submitData = {
-        ...values,
-        permissions: permissionsObj
+        uname_ua: values.uname_ua,
+        uname: values.uname,
+        uagency: values.uagency,
+        upass: values.upass,
+        active: values.active,
+        role: values.role
       };
       
       const response = await fetch(url, {
@@ -393,7 +372,6 @@ export default function UsersPage() {
             onFinish={handleSubmit}
             initialValues={{
               active: true,
-              permissions: [],
               role: 'journalist'
             }}
           >
@@ -438,6 +416,7 @@ export default function UsersPage() {
               label="Роль користувача"
               name="role"
               rules={[{ required: true, message: 'Будь ласка, оберіть роль' }]}
+              tooltip="Права доступу автоматично призначаються відповідно до обраної ролі"
             >
               <Select 
                 placeholder="Оберіть роль"
@@ -461,18 +440,20 @@ export default function UsersPage() {
               </div>
             )}
 
-            <Form.Item
-              label="Права доступу"
-              name="permissions"
-            >
-              <Checkbox.Group style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '8px' }}>
-                {availablePermissions.map(perm => (
-                  <Checkbox key={perm.key} value={perm.key}>
-                    {perm.name}
-                  </Checkbox>
-                ))}
-              </Checkbox.Group>
-            </Form.Item>
+            <div style={{ 
+              marginBottom: '16px', 
+              padding: '12px', 
+              background: '#f0f5ff', 
+              border: '1px solid #adc6ff', 
+              borderRadius: '4px'
+            }}>
+              <strong>Опис ролей:</strong>
+              <ul style={{ marginTop: '8px', marginBottom: '0', paddingLeft: '20px' }}>
+                <li><strong>Адміністратор:</strong> повний доступ до всіх функцій адмінки</li>
+                <li><strong>Редактор:</strong> створення, редагування та публікація новин, статей та медіа. Видалення новини тільки в чернетки</li>
+                <li><strong>Журналіст:</strong> створення та редагування новин, статей та медіа з розміщенням тільки в чернетках</li>
+              </ul>
+            </div>
 
             <Form.Item
               name="active"

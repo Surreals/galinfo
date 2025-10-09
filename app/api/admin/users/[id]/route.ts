@@ -8,8 +8,63 @@ export interface UserFormData {
   uagency: string;
   upass: string;
   active: boolean;
-  permissions: Record<string, boolean>;
+  permissions?: Record<string, boolean>; // Made optional since it's auto-assigned
   role: string;
+}
+
+/**
+ * Maps user roles to their corresponding permissions
+ * Based on requirements:
+ * - Administrator: access to all admin functions
+ * - Editor: can create, edit, publish news/articles/media, can only move to drafts (not fully delete)
+ * - Journalist: can create, edit news/articles/media but only save to drafts (cannot publish)
+ */
+function getRolePermissions(role: string): Record<string, boolean> {
+  switch (role) {
+    case 'admin':
+      return {
+        ac_usermanage: true,
+        ac_newsmanage: true,
+        ac_articlemanage: true,
+        ac_commentmanage: true,
+        ac_sitemanage: true,
+        ac_admanage: true,
+        ac_telegrammanage: true,
+      };
+    
+    case 'editor':
+      return {
+        ac_usermanage: false,
+        ac_newsmanage: true,
+        ac_articlemanage: true,
+        ac_commentmanage: true,
+        ac_sitemanage: false,
+        ac_admanage: false,
+        ac_telegrammanage: false,
+      };
+    
+    case 'journalist':
+      return {
+        ac_usermanage: false,
+        ac_newsmanage: true,
+        ac_articlemanage: true,
+        ac_commentmanage: false,
+        ac_sitemanage: false,
+        ac_admanage: false,
+        ac_telegrammanage: false,
+      };
+    
+    default:
+      return {
+        ac_usermanage: false,
+        ac_newsmanage: false,
+        ac_articlemanage: false,
+        ac_commentmanage: false,
+        ac_sitemanage: false,
+        ac_admanage: false,
+        ac_telegrammanage: false,
+      };
+  }
 }
 
 export async function PUT(
@@ -53,8 +108,18 @@ export async function PUT(
       );
     }
 
-    // Serialize permissions
-    const serializedPermissions = JSON.stringify(body.permissions);
+    // Validate role
+    const role = body.role || 'journalist';
+    if (!['admin', 'editor', 'journalist'].includes(role)) {
+      return NextResponse.json(
+        { success: false, error: 'Invalid role' },
+        { status: 400 }
+      );
+    }
+
+    // Auto-assign permissions based on role
+    const permissions = getRolePermissions(role);
+    const serializedPermissions = JSON.stringify(permissions);
 
     // Build update query
     let updateQuery = `
@@ -66,7 +131,7 @@ export async function PUT(
       body.uname,
       body.uagency || '',
       serializedPermissions,
-      body.role || 'journalist',
+      role,
       body.active ? 1 : 0
     ];
 

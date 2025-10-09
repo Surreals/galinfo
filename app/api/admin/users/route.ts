@@ -18,8 +18,69 @@ export interface UserFormData {
   uagency: string;
   upass: string;
   active: boolean;
-  permissions: Record<string, boolean>;
+  permissions?: Record<string, boolean>; // Made optional since it's auto-assigned
   role: string;
+}
+
+/**
+ * Maps user roles to their corresponding permissions
+ * Based on requirements:
+ * - Administrator: access to all admin functions
+ * - Editor: can create, edit, publish news/articles/media, can only move to drafts (not fully delete)
+ * - Journalist: can create, edit news/articles/media but only save to drafts (cannot publish)
+ */
+function getRolePermissions(role: string): Record<string, boolean> {
+  switch (role) {
+    case 'admin':
+      // Адміністратор - доступ до всіх функцій адмінки
+      return {
+        ac_usermanage: true,      // Управління користувачами
+        ac_newsmanage: true,       // Управління новинами
+        ac_articlemanage: true,    // Управління статтями
+        ac_commentmanage: true,    // Управління коментарями
+        ac_sitemanage: true,       // Управління сайтом
+        ac_admanage: true,         // Управління рекламою
+        ac_telegrammanage: true,   // Управління Telegram
+      };
+    
+    case 'editor':
+      // Редактор - доступ до створення, редагування, публікації новин/статей/медіа
+      // Видалення новини тільки в чернетки
+      return {
+        ac_usermanage: false,
+        ac_newsmanage: true,       // Управління новинами (створення, редагування, публікація)
+        ac_articlemanage: true,    // Управління статтями
+        ac_commentmanage: true,    // Управління коментарями
+        ac_sitemanage: false,
+        ac_admanage: false,
+        ac_telegrammanage: false,
+      };
+    
+    case 'journalist':
+      // Журналіст - доступ до створення, редагування новин/статей/медіа
+      // Розміщення тільки в чернетках
+      return {
+        ac_usermanage: false,
+        ac_newsmanage: true,       // Управління новинами (тільки чернетки)
+        ac_articlemanage: true,    // Управління статтями (тільки чернетки)
+        ac_commentmanage: false,
+        ac_sitemanage: false,
+        ac_admanage: false,
+        ac_telegrammanage: false,
+      };
+    
+    default:
+      // За замовчуванням - мінімальні права
+      return {
+        ac_usermanage: false,
+        ac_newsmanage: false,
+        ac_articlemanage: false,
+        ac_commentmanage: false,
+        ac_sitemanage: false,
+        ac_admanage: false,
+        ac_telegrammanage: false,
+      };
+  }
 }
 
 export async function GET() {
@@ -32,7 +93,8 @@ export async function GET() {
         uname,
         uagency,
         active,
-        perm
+        perm,
+        role
       FROM a_powerusers 
       ORDER BY uname_ua
     `);
@@ -62,6 +124,15 @@ export async function POST(request: Request) {
       );
     }
 
+    // Validate role
+    const role = body.role || 'journalist';
+    if (!['admin', 'editor', 'journalist'].includes(role)) {
+      return NextResponse.json(
+        { success: false, error: 'Invalid role' },
+        { status: 400 }
+      );
+    }
+
     // Check if username already exists
     const [existingUsers] = await executeQuery<{ count: number }>(`
       SELECT COUNT(*) as count FROM a_powerusers WHERE uname = ?
@@ -77,8 +148,9 @@ export async function POST(request: Request) {
     // Hash password
     const hashedPassword = crypto.createHash('md5').update(body.upass).digest('hex');
     
-    // Serialize permissions
-    const serializedPermissions = JSON.stringify(body.permissions);
+    // Auto-assign permissions based on role
+    const permissions = getRolePermissions(role);
+    const serializedPermissions = JSON.stringify(permissions);
 
     // Insert new user
     const [result] = await executeQuery(`
@@ -91,7 +163,7 @@ export async function POST(request: Request) {
       body.uagency || '',
       hashedPassword,
       serializedPermissions,
-      body.role || 'journalist',
+      role,
       body.active ? 1 : 0
     ]);
 
