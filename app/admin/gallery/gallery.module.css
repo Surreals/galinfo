@@ -191,11 +191,11 @@
 }
 
 /* Selected rows highlight */
-:global(.ant-table-row-selected) {
+.container :global(.ant-table-row-selected) {
   background-color: #e6f7ff !important;
 }
 
-:global(.ant-table-row-selected:hover) {
+.container :global(.ant-table-row-selected:hover) {
   background-color: #bae7ff !important;
 }
 
