@@ -1,0 +1,62 @@
+import { BreadcrumbStructuredData } from '@/components/BreadcrumbStructuredData'
+
+export default function EditorialPolicyPage() {
+  const breadcrumbs = [
+    { name: 'Головна', item: 'https://galinfo.com.ua/' },
+    { name: 'Редакційна політика', item: 'https://galinfo.com.ua/editorial-policy' }
+  ]
+  
+  return (
+    <>
+      <BreadcrumbStructuredData breadcrumbs={breadcrumbs} />
+      <div className="max-w-4xl mx-auto px-4 py-8">
+        <h1 className="text-3xl font-bold mb-6">РЕДАКЦІЙНА ПОЛІТИКА</h1>
+        <div className="prose prose-lg">
+          <p className="mb-6"><strong>Увага ! Матеріали сайту призначені для осіб старше 21 року (21+)</strong></p>
+
+          <h2 className="text-2xl font-semibold mt-6 mb-4">Про Агенцію</h2>
+          <p className="mb-4">
+            Агенція інформації та аналітики «Гал-інфо» працює в інформаційній сфері Львівської області та України з початку 2005 року. 
+            Є зареєстрованим суб'єктом у сфері онлайн-медіа. Рішення Національної ради з питань телебачення та радіомовлення №259 від 01.02.2024. 
+            Ідентифікатор медіа R40-02551.
+          </p>
+          <p className="mb-4">
+            Основними видами діяльності Агенції є одержання та поширення інформації, надання інформаційних послуг, формування якісного мультимедійного контенту.
+          </p>
+          <p className="mb-4">
+            Головну увагу Агенція зосереджує на подіях та явищах в галузі політики, економіки, культури, охорони здоров'я, 
+            а також у соціальній, екологічній, міжнародній та інших сферах.
+          </p>
+          <p className="mb-4">
+            Діяльність Агенції насамперед спрямована на поширення добірних щоденних новин, передачу нових знань та організацію громадського дискурсу з актуальних суспільних тем.
+          </p>
+          <p className="mb-6">
+            У своїй діяльності Гал-інфо керується стандартами новинної журналістики.
+          </p>
+
+          <h2 className="text-2xl font-semibold mt-8 mb-4">Контактна інформація</h2>
+          <p className="mb-2"><strong>Телефон редакції:</strong> (093) 77-07-018</p>
+          <p className="mb-6"><strong>e-mail:</strong> info@galinfo.com.ua</p>
+
+          <h3 className="text-xl font-semibold mt-6 mb-2">Адреса для листування:</h3>
+          <p className="mb-1">79008, м.Львів</p>
+          <p className="mb-1">вул. Гуцульська 9а</p>
+          <p className="mb-6">ТзОВ"Агенція інформації та аналітики «Гал-інфо»</p>
+
+          <h2 className="text-2xl font-semibold mt-8 mb-4">Реєстр журналістських посвідчень АІА "Гал-інфо"</h2>
+          <ul className="list-disc pl-6 space-y-1">
+            <li>LV-G-001-UA - головний редактор Андрій Маринюк</li>
+            <li>LV-G-002-UA - журналістка Марічка Твардовська</li>
+            <li>LV-G-003-UA - журналістка Вікторія Тимофій</li>
+            <li>LV-G-004-UA - журналіст Мирослав Ватащук</li>
+            <li>LV-G-010-UA - посвідчення практиканта</li>
+            <li>LV-G-011-UA - посвідчення практиканта</li>
+            <li>LV-G-012-UA - посвідчення практиканта</li>
+            <li>LV-G-013-UA - посвідчення практиканта</li>
+          </ul>
+          <p className="mt-2">Посвідчення чинні до 01.03.2027</p>
+        </div>
+      </div>
+    </>
+  );
+}
