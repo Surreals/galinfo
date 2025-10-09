@@ -84,6 +84,14 @@ export async function POST(request: NextRequest) {
     // Note: IP tracking removed as lastip column doesn't exist in a_powerusers table
     // In a production environment, you might want to add this column or use a separate logging table
 
+    // Determine role based on uname_ua field
+    let userRole = 'journalist'; // default role
+    if (user.uname_ua === 'Адміністратор') {
+      userRole = 'admin';
+    } else if (user.uname_ua === 'Редактор') {
+      userRole = 'editor';
+    }
+
     // Return user data (excluding sensitive information)
     const userData = {
       id: user.id,
@@ -92,7 +100,7 @@ export async function POST(request: NextRequest) {
       agency: user.uagency,
       permissions: user.perm,
       active: user.active,
-      role: user.role || 'journalist'
+      role: userRole
     };
 
     return NextResponse.json({
