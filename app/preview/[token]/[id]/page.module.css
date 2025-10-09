@@ -1,0 +1,99 @@
+.previewContainer {
+  position: relative;
+}
+
+.previewBanner {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 16px 0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  border-bottom: 3px solid #5568d3;
+}
+
+.previewBannerContent {
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 0 80px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.previewBannerIcon {
+  font-size: 32px;
+  line-height: 1;
+}
+
+.previewBannerText {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.previewBannerText strong {
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+.previewBannerSubtext {
+  font-size: 14px;
+  opacity: 0.9;
+}
+
+.errorContainer {
+  min-height: 50vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+}
+
+.errorContent {
+  text-align: center;
+  max-width: 600px;
+}
+
+.errorTitle {
+  font-size: 32px;
+  font-weight: 700;
+  color: #e53e3e;
+  margin-bottom: 16px;
+}
+
+.errorMessage {
+  font-size: 18px;
+  color: #4a5568;
+  line-height: 1.6;
+}
+
+/* Мобільна адаптація */
+@media (max-width: 768px) {
+  .previewBannerContent {
+    padding: 0 20px;
+  }
+
+  .previewBannerIcon {
+    font-size: 24px;
+  }
+
+  .previewBannerText strong {
+    font-size: 16px;
+  }
+
+  .previewBannerSubtext {
+    font-size: 12px;
+  }
+
+  .errorTitle {
+    font-size: 24px;
+  }
+
+  .errorMessage {
+    font-size: 16px;
+  }
+}
+

@@ -28,6 +28,8 @@ import {
   PictureOutlined,
   DeleteOutlined,
   SaveOutlined,
+  EyeOutlined,
+  CopyOutlined,
 } from "@ant-design/icons";
 import dayjs, { Dayjs } from "dayjs";
 import styles from "../NewsEditor.module.css";
@@ -52,6 +54,7 @@ import { MenuData } from "@/app/api/homepage/services/menuService";
 import TimeButtons from "./TimeButtons";
 import TagInput from "./TagInput";
 import CustomMultiSelect from "./CustomMultiSelect";
+import { generatePreviewUrl } from "@/app/lib/previewToken";
 
 const { TextArea } = Input;
 
@@ -861,17 +864,36 @@ export default function NewsEditorSidebar({ newsId, articleData, menuData, onEdi
           </Button>
 
           {newsId && (
-            <Button
-              danger
-              size="large"
-              icon={<DeleteOutlined/>}
-              onClick={onDelete}
-              loading={saving}
-              disabled={saving}
-              className={styles.blueBtn}
-            >
-              {isAdmin ? 'ВИДАЛИТИ' : 'В ЧЕРНЕТКИ'}
-            </Button>
+            <>
+              
+              <Button
+                danger
+                size="large"
+                icon={<DeleteOutlined/>}
+                onClick={onDelete}
+                loading={saving}
+                disabled={saving}
+                className={styles.blueBtn}
+              >
+                {isAdmin ? 'ВИДАЛИТИ' : 'В ЧЕРНЕТКИ'}
+              </Button>
+              <Button
+                // type="text"
+                size="large"
+                icon={<EyeOutlined/>}
+                onClick={() => {
+                  const previewUrl = generatePreviewUrl(parseInt(newsId), window.location.origin);
+                  navigator.clipboard.writeText(previewUrl);
+                  message.success('Preview URL скопійовано в буфер обміну!');
+                }}
+                loading={saving}
+                disabled={saving}
+                className={styles.previewBtn}
+                title="КОПІЮВАТИ PREVIEW URL"
+              >
+                
+              </Button>
+            </>
           )}
         </div>
       </div>
