@@ -80,7 +80,7 @@ export default function Header() {
   const [searchError, setSearchError] = useState<string | null>(null);
   const searchRef = useRef<HTMLDivElement>(null);
 
-  const { menuData } = useMenuContext();
+  const { menuData, loading: menuLoading } = useMenuContext();
   const { user, logout } = useAdminAuth();
   const { isAdmin: isAdminRole } = useRolePermissions();
   const { settings: headerSettings, loading: settingsLoading } = useHeaderSettings();
@@ -276,8 +276,8 @@ export default function Header() {
   );
 
 
-  // Показуємо скелетон поки завантажуються налаштування
-  if (settingsLoading) {
+  // Показуємо скелетон поки завантажуються налаштування та дані меню
+  if (settingsLoading || menuLoading) {
     return <HeaderSkeleton />;
   }
 
