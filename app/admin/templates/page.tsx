@@ -21,6 +21,13 @@ import {
 } from '@/app/lib/articlePageSchema';
 import { headerSchema } from '@/app/lib/headerSchema';
 import { footerSchema } from '@/app/lib/footerSchema';
+import { 
+  aboutPageSchema, 
+  editorialPolicySchema, 
+  advertisingPageSchema, 
+  contactsPageSchema, 
+  termsOfUsePageSchema 
+} from '@/app/lib/editorialPageSchema';
 import { templateDocumentation } from './documentation';
 import { useMenuContext } from '@/app/contexts/MenuContext';
 
@@ -42,6 +49,7 @@ export default function TemplatesPage() {
   const [jsonValues, setJsonValues] = useState<Record<string, string>>({});
   const [expandedDocs, setExpandedDocs] = useState<Set<string>>(new Set());
   const [isCategoryDrawerOpen, setIsCategoryDrawerOpen] = useState(false);
+  const [activeTab, setActiveTab] = useState<'main' | 'editorial'>('main');
 
   // Ініціалізація шаблонів
   useEffect(() => {
@@ -64,7 +72,12 @@ export default function TemplatesPage() {
             'article-desktop': articlePageDesktopSchema,
             'article-mobile': articlePageMobileSchema,
             'header': headerSchema,
-            'footer': footerSchema
+            'footer': footerSchema,
+            'about-page': aboutPageSchema,
+            'editorial-policy': editorialPolicySchema,
+            'advertising-page': advertisingPageSchema,
+            'contacts-page': contactsPageSchema,
+            'terms-of-use': termsOfUsePageSchema
           };
 
           // Конвертуємо дані з БД в формат компонента
@@ -199,6 +212,46 @@ export default function TemplatesPage() {
           schema: footerSchema,
           defaultSchema: footerSchema,
           documentation: templateDocumentation['footer']
+        },
+        {
+          id: 'about-page',
+          name: 'Про редакцію',
+          description: 'Шаблон для сторінки "Про редакцію"',
+          schema: aboutPageSchema,
+          defaultSchema: aboutPageSchema,
+          documentation: templateDocumentation['about-page']
+        },
+        {
+          id: 'editorial-policy',
+          name: 'Редакційна політика',
+          description: 'Шаблон для сторінки "Редакційна політика"',
+          schema: editorialPolicySchema,
+          defaultSchema: editorialPolicySchema,
+          documentation: templateDocumentation['editorial-policy']
+        },
+        {
+          id: 'advertising-page',
+          name: 'Замовити рекламу',
+          description: 'Шаблон для сторінки "Замовити рекламу"',
+          schema: advertisingPageSchema,
+          defaultSchema: advertisingPageSchema,
+          documentation: templateDocumentation['advertising-page']
+        },
+        {
+          id: 'contacts-page',
+          name: 'Контакти',
+          description: 'Шаблон для сторінки "Контакти"',
+          schema: contactsPageSchema,
+          defaultSchema: contactsPageSchema,
+          documentation: templateDocumentation['contacts-page']
+        },
+        {
+          id: 'terms-of-use',
+          name: 'Правила використання',
+          description: 'Шаблон для сторінки "Правила використання"',
+          schema: termsOfUsePageSchema,
+          defaultSchema: termsOfUsePageSchema,
+          documentation: templateDocumentation['terms-of-use']
         }
       ];
 
@@ -477,12 +530,42 @@ export default function TemplatesPage() {
     });
   };
 
+  // Функція для фільтрації шаблонів за табом
+  const getFilteredTemplates = () => {
+    if (activeTab === 'main') {
+      return templates.filter(template => 
+        !['about-page', 'editorial-policy', 'advertising-page', 'contacts-page', 'terms-of-use'].includes(template.id)
+      );
+    } else {
+      return templates.filter(template => 
+        ['about-page', 'editorial-policy', 'advertising-page', 'contacts-page', 'terms-of-use'].includes(template.id)
+      );
+    }
+  };
+
   return (
     <div className={styles.adminPage}>
       <div className={styles.mainContent}>
         <div className={styles.header}>
           <h1>Редактор шаблонів</h1>
           <p>Редагуйте JSON схеми для різних сторінок сайту</p>
+          
+          {/* Таби */}
+          <div className={styles.tabsContainer}>
+            <button
+              className={`${styles.tab} ${activeTab === 'main' ? styles.activeTab : ''}`}
+              onClick={() => setActiveTab('main')}
+            >
+              📄 Основні шаблони
+            </button>
+            <button
+              className={`${styles.tab} ${activeTab === 'editorial' ? styles.activeTab : ''}`}
+              onClick={() => setActiveTab('editorial')}
+            >
+              📝 Шаблони для сторінок редакції
+            </button>
+          </div>
+
           <button 
             className={styles.categoryInfoButton}
             onClick={() => setIsCategoryDrawerOpen(true)}
@@ -493,7 +576,7 @@ export default function TemplatesPage() {
         </div>
 
         <div className={styles.templatesGrid}>
-          {templates.map((template) => (
+          {getFilteredTemplates().map((template) => (
             <div key={template.id} className={styles.templateCard}>
               <div className={styles.templateHeader}>
                 <div className={styles.templateTitle}>

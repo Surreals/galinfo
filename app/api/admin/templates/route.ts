@@ -13,6 +13,13 @@ const articlePageDesktopSchema = require('@/app/lib/articlePageSchema').articleP
 const articlePageMobileSchema = require('@/app/lib/articlePageSchema').articlePageMobileSchema;
 const headerSchema = require('@/app/lib/headerSchema').headerSchema;
 const footerSchema = require('@/app/lib/footerSchema').footerSchema;
+const { 
+  aboutPageSchema, 
+  editorialPolicySchema, 
+  advertisingPageSchema, 
+  contactsPageSchema, 
+  termsOfUsePageSchema 
+} = require('@/app/lib/editorialPageSchema');
 
 export interface TemplateSchema {
   id: number;
@@ -116,6 +123,36 @@ async function ensureDefaultTemplates() {
       name: 'Налаштування футера',
       description: 'Конфігурація футера: порядок категорій та елементів',
       schema: footerSchema
+    },
+    {
+      template_id: 'about-page',
+      name: 'Про редакцію',
+      description: 'Шаблон для сторінки "Про редакцію"',
+      schema: aboutPageSchema
+    },
+    {
+      template_id: 'editorial-policy',
+      name: 'Редакційна політика',
+      description: 'Шаблон для сторінки "Редакційна політика"',
+      schema: editorialPolicySchema
+    },
+    {
+      template_id: 'advertising-page',
+      name: 'Замовити рекламу',
+      description: 'Шаблон для сторінки "Замовити рекламу"',
+      schema: advertisingPageSchema
+    },
+    {
+      template_id: 'contacts-page',
+      name: 'Контакти',
+      description: 'Шаблон для сторінки "Контакти"',
+      schema: contactsPageSchema
+    },
+    {
+      template_id: 'terms-of-use',
+      name: 'Правила використання',
+      description: 'Шаблон для сторінки "Правила використання"',
+      schema: termsOfUsePageSchema
     }
   ];
 

@@ -4,7 +4,8 @@ import React, { useState, useEffect, Suspense } from 'react';
 import { CategoryRenderer } from "@/app/components";
 import { isValidCategoryUrl } from '@/app/lib/categoryMapper';
 import { useTemplateSchemas } from '@/app/hooks/useTemplateSchemas';
-import { useCategoryValidation } from '@/app/hooks/useCategoryValidation';
+import { useMenuContext } from '@/app/contexts/MenuContext';
+import { isValidCategoryInMenuData } from '@/app/lib/categoryUtils';
 import { Spin } from 'antd';
 import styles from "./page.module.css";
 
@@ -22,11 +23,11 @@ export const CategoryPageClient: React.FC<CategoryPageClientProps> = ({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const { getSchema } = useTemplateSchemas();
-  const { validateCategory, menuData, loading: validationLoading } = useCategoryValidation();
+  const { menuData, loading: menuLoading } = useMenuContext();
 
   // Перевіряємо, чи є валідна категорія (спочатку статично, потім динамічно)
   const isValidCategoryStatic = isValidCategoryUrl(category);
-  const isValidCategoryDynamic = validateCategory(category);
+  const isValidCategoryDynamic = menuData ? isValidCategoryInMenuData(category, menuData) : false;
   const isValidCategory = isValidCategoryStatic || isValidCategoryDynamic;
   const isTag = !isValidCategory;
 
@@ -56,8 +57,8 @@ export const CategoryPageClient: React.FC<CategoryPageClientProps> = ({
     }
   }, [isTag, category]);
 
-  // Якщо завантажуємо дані валідації або тегу
-  if (validationLoading || (isTag && loading)) {
+  // Якщо завантажуємо дані меню або тегу
+  if (menuLoading || (isTag && loading)) {
     return (
       <div style={{ 
         display: 'flex', 
