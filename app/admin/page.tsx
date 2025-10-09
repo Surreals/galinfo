@@ -1,45 +1,13 @@
 'use client';
 
 import Link from 'next/link';
-import { useState, useEffect } from 'react';
-import { useSearchParams, useRouter } from 'next/navigation';
-import AdminNavigation from './components/AdminNavigation';
-import ImagePickerModal from './article-editor/components/ImagePickerModal';
-import { ImageItem } from './article-editor/components/types';
 import { useRolePermissions } from '@/app/hooks/useRolePermissions';
+import AdminNavigation from './components/AdminNavigation';
 import styles from './admin.module.css';
 
 export default function AdminPage() {
   const DISABLE = true;
-  const searchParams = useSearchParams();
-  const router = useRouter();
   const { isAdmin } = useRolePermissions();
-  const [isGalleryModalOpen, setIsGalleryModalOpen] = useState(false);
-
-  // Відкрити галерею при наявності параметра gallery=true
-  useEffect(() => {
-    if (searchParams.get('gallery') === 'true') {
-      setIsGalleryModalOpen(true);
-    }
-  }, [searchParams]);
-
-  const handleGalleryClick = (e: React.MouseEvent) => {
-    e.preventDefault();
-    setIsGalleryModalOpen(true);
-    // Додаємо параметр в URL
-    router.push('/admin?gallery=true', { scroll: false });
-  };
-
-  const handleGalleryModalClose = () => {
-    setIsGalleryModalOpen(false);
-    // Видаляємо параметр з URL
-    router.push('/admin', { scroll: false });
-  };
-
-  const handleImageSelect = (image: ImageItem) => {
-    // Тут можна додати логіку для обробки вибраного зображення
-    console.log('Selected image:', image);
-  };
 
 
   const allAdminSections = [
@@ -190,9 +158,6 @@ export default function AdminPage() {
               href={section.href}
               onClick={(e) => {
                 if (section.disabled) e.preventDefault(); // блокуємо перехід
-                if (section.id === 'gallery') {
-                  handleGalleryClick(e);
-                }
               }}
               className={`${styles.sectionCard} ${section.disabled ? styles.disabledCard : ''}`}
             >
@@ -242,13 +207,6 @@ export default function AdminPage() {
             </div>
           </div>
         </div>
-
-        {/* Модалка галереї */}
-        <ImagePickerModal
-          open={isGalleryModalOpen}
-          onClose={handleGalleryModalClose}
-          onSelect={handleImageSelect}
-        />
       </div>
     </div>
   );
