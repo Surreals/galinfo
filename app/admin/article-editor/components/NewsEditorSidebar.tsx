@@ -54,7 +54,6 @@ import { MenuData } from "@/app/api/homepage/services/menuService";
 import TimeButtons from "./TimeButtons";
 import TagInput from "./TagInput";
 import CustomMultiSelect from "./CustomMultiSelect";
-import { generatePreviewUrl } from "@/app/lib/previewToken";
 
 const { TextArea } = Input;
 
@@ -877,22 +876,36 @@ export default function NewsEditorSidebar({ newsId, articleData, menuData, onEdi
               >
                 {isAdmin ? 'ВИДАЛИТИ' : 'В ЧЕРНЕТКИ'}
               </Button>
-              <Button
-                // type="text"
-                size="large"
-                icon={<EyeOutlined/>}
-                onClick={() => {
-                  const previewUrl = generatePreviewUrl(parseInt(newsId), window.location.origin);
-                  navigator.clipboard.writeText(previewUrl);
-                  message.success('Preview URL скопійовано в буфер обміну!');
-                }}
-                loading={saving}
-                disabled={saving}
-                className={styles.previewBtn}
-                title="КОПІЮВАТИ PREVIEW URL"
-              >
-                
-              </Button>
+                <Button
+                  // type="text"
+                  size="large"
+                  icon={<EyeOutlined/>}
+                  onClick={async () => {
+                    try {
+                      // Викликаємо API для генерації preview URL
+                      const response = await fetch(`/api/news/preview-url/${newsId}`);
+                      if (!response.ok) {
+                        throw new Error('Failed to generate preview URL');
+                      }
+                      
+                      const data = await response.json();
+                      const previewUrl = data.previewUrl;
+                      
+                      // Копіюємо URL в буфер обміну
+                      await navigator.clipboard.writeText(previewUrl);
+                      message.success('Preview URL скопійовано в буфер обміну!');
+                    } catch (error) {
+                      console.error('Error generating preview URL:', error);
+                      message.error('Помилка генерації preview URL');
+                    }
+                  }}
+                  loading={saving}
+                  disabled={saving}
+                  className={styles.previewBtn}
+                  title="КОПІЮВАТИ PREVIEW URL"
+                >
+                  
+                </Button>
             </>
           )}
         </div>

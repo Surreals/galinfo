@@ -180,7 +180,22 @@ Preview URL не включаються в sitemap.xml
 
 ## Використання в коді
 
-### Генерація preview URL
+### Генерація preview URL через API
+
+Для клієнтського коду використовуйте API endpoint:
+
+```typescript
+// В клієнтському компоненті
+const newsId = 12345;
+const response = await fetch(`/api/news/preview-url/${newsId}`);
+const data = await response.json();
+const previewUrl = data.previewUrl;
+// Результат: https://yourdomain.com/preview/{token}/12345
+```
+
+### Генерація preview URL на сервері
+
+Для серверного коду можна використовувати безпосередньо:
 
 ```typescript
 import { generatePreviewUrl } from '@/app/lib/previewToken';
@@ -189,6 +204,8 @@ const newsId = 12345;
 const previewUrl = generatePreviewUrl(newsId);
 // Результат: https://yourdomain.com/preview/{token}/12345
 ```
+
+**ВАЖЛИВО:** `generatePreviewUrl` використовує Node.js `crypto` модуль і працює тільки на сервері!
 
 ### Валідація токена
 
@@ -287,11 +304,12 @@ A: Ні, авторизація не потрібна. Безпека забез
 
 ## Файли системи
 
-- `app/api/news/preview/[token]/[id]/route.ts` - API endpoint
+- `app/api/news/preview/[token]/[id]/route.ts` - API endpoint для отримання preview новини
+- `app/api/news/preview-url/[id]/route.ts` - API endpoint для генерації preview URL
 - `app/preview/[token]/[id]/page.tsx` - Сторінка preview (server component)
 - `app/preview/[token]/[id]/PreviewPageClient.tsx` - Клієнтський компонент
 - `app/preview/[token]/[id]/page.module.css` - Стилі preview
-- `app/lib/previewToken.ts` - Утиліти для роботи з токенами
+- `app/lib/previewToken.ts` - Утиліти для роботи з токенами (тільки на сервері!)
 - `app/admin/article-editor/components/NewsEditorSidebar.tsx` - Кнопка копіювання URL
 - `app/robots.ts` - Правила для robots.txt
 
