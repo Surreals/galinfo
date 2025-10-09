@@ -473,6 +473,38 @@
   font-size: 1rem;
 }
 
+/* Protected Field Warning */
+.protectedFieldWarning {
+  color: #856404;
+  background: #fff3cd;
+  border: 1px solid #ffeeba;
+  border-radius: 6px;
+  padding: 0.75rem 1rem;
+  margin-top: 0.75rem;
+  font-size: 0.85rem;
+  font-weight: 500;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  line-height: 1.5;
+}
+
+.protectedFieldWarning code {
+  background: #ffc107;
+  color: #000;
+  padding: 0.15rem 0.4rem;
+  border-radius: 3px;
+  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+  font-size: 0.9em;
+  font-weight: 600;
+}
+
+.warningIcon {
+  font-size: 1rem;
+  flex-shrink: 0;
+  margin-top: 0.1rem;
+}
+
 /* Success States */
 .successMessage {
   color: #155724;

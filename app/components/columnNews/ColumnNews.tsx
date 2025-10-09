@@ -4,8 +4,7 @@ import { AccentSquare, ViewAllButton } from '@/app/shared';
 import NewsList from '../listNews/listNews';
 import AdImage from '../AdImage';
 import styles from './ColumnNews.module.css';
-import arrowRight from "@/assets/icons/arrowRight.svg";
-import adBannerIndfomo from '@/assets/images/Ad Banner white.png';
+import adBannerIndfomo from '@/assets/images/Ad Banner black.png';
 import { useState, useEffect } from 'react';
 import { Skeleton } from 'antd';
 import { useNewsByRubric } from '@/app/hooks/useNewsByRubric';
@@ -63,6 +62,7 @@ export interface ColumnNewsProps {
     };
     advertisementId?: number; // ID реклами для банера
     showAdvertisement?: boolean; // Чи показувати банер
+    hardcodedInFomo?: boolean; // Чи використовувати захардкоджений банер IN-FOMO (чорний варіант)
   };
 }
 
@@ -323,15 +323,12 @@ export default function ColumnNews({
                 {!smallImg && !isMobile && config?.showAdvertisement !== false &&
                 <>
                   <div className={styles.rightSeparator}></div>              
-                    {config?.advertisementId ? (
-                      <AdImage
-                        advertisementId={config.advertisementId}
-                        placement="general"
-                        width={600}
-                        height={240}
-                        className={styles.fomoLogo}
-                      />
-                    ) : (
+                  {config?.hardcodedInFomo ? (
+                    // Захардкодена реклама IN-FOMO (чорний варіант) - не можна змінити через адмін
+                    <div 
+                      style={{ cursor: 'pointer' }}
+                      onClick={() => window.open('https://in-fomo.com/uk', '_blank')}
+                    >
                       <Image 
                         src={adBannerIndfomo} 
                         alt="IN-FOMO Banner" 
@@ -340,7 +337,17 @@ export default function ColumnNews({
                         className={styles.fomoLogo}
                         priority={false}
                       />
-                    )}
+                    </div>
+                  ) : config?.advertisementId ? (
+                    // Реклама з бази даних (можна змінювати через адмін)
+                    <AdImage
+                      advertisementId={config.advertisementId}
+                      placement="general"
+                      width={600}
+                      height={240}
+                      className={styles.fomoLogo}
+                    />
+                  ) : null}
               </>
                 }
             </div>

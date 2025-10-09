@@ -145,7 +145,8 @@ export const desktopSchema = {
         },
         // Реклама всередині ColumnNews
         advertisementId: 2,  // ID реклами з таблиці advertisements
-        showAdvertisement: true
+        showAdvertisement: true,
+        hardcodedInFomo: true  // Захардкоджена реклама IN-FOMO (чорний варіант) - не можна змінити через адмін
       }
     },
     {
@@ -305,7 +306,8 @@ export const mobileSchema = {
         },
         // Реклама всередині ColumnNews
         advertisementId: 2,  // ID реклами з таблиці advertisements
-        showAdvertisement: true
+        showAdvertisement: true,
+        hardcodedInFomo: true  // Захардкоджена реклама IN-FOMO (чорний варіант) - не можна змінити через адмін
       }
     },
     {

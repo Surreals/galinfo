@@ -95,7 +95,7 @@ export default function TemplatesPage() {
           // Ініціалізуємо JSON значення для кожного шаблону
           const initialJsonValues: Record<string, string> = {};
           templatesFromDb.forEach(template => {
-            initialJsonValues[template.id] = formatJson(template.schema);
+            initialJsonValues[template.id] = formatJson(template.schema, template.id);
           });
           setJsonValues(initialJsonValues);
         } else {
@@ -207,7 +207,7 @@ export default function TemplatesPage() {
       // Ініціалізуємо JSON значення для кожного шаблону
       const initialJsonValues: Record<string, string> = {};
       initialTemplates.forEach(template => {
-        initialJsonValues[template.id] = formatJson(template.schema);
+        initialJsonValues[template.id] = formatJson(template.schema, template.id);
       });
       setJsonValues(initialJsonValues);
     };
@@ -215,9 +215,52 @@ export default function TemplatesPage() {
     loadTemplates();
   }, []);
 
+  // Функція для видалення захищених полів з відображення
+  const removeProtectedFields = (schema: any, templateId: string): any => {
+    // Перевіряємо, чи це схема головної сторінки
+    if (templateId !== 'main-desktop' && templateId !== 'main-mobile') {
+      return schema;
+    }
+
+    // Якщо немає блоків, повертаємо схему без змін
+    if (!schema?.blocks) {
+      return schema;
+    }
+
+    // ID категорій CRIME та SPORT (з categoryUtils.ts)
+    const CRIME_ID = 100;
+    const SPORT_ID = 103;
+
+    // Видаляємо захищені поля з блоків для відображення
+    const cleanedBlocks = schema.blocks.map((block: any) => {
+      // Перевіряємо, чи це захищений блок ColumnNews з CRIME та SPORT категоріями
+      const isProtectedColumnNews = block.type === 'ColumnNews' && 
+                                     block.categoryId === CRIME_ID && 
+                                     block.sideCategoryId === SPORT_ID;
+      
+      if (isProtectedColumnNews && block.config) {
+        // Видаляємо hardcodedInFomo та showAdvertisement
+        const { hardcodedInFomo, showAdvertisement, ...restConfig } = block.config;
+        return {
+          ...block,
+          config: restConfig
+        };
+      }
+      
+      return block;
+    });
+
+    return {
+      ...schema,
+      blocks: cleanedBlocks
+    };
+  };
+
   // Форматування JSON з табуляцією
-  const formatJson = (obj: any): string => {
-    return JSON.stringify(obj, null, 2);
+  const formatJson = (obj: any, templateId?: string): string => {
+    // Видаляємо захищені поля перед форматуванням для відображення
+    const cleanedObj = templateId ? removeProtectedFields(obj, templateId) : obj;
+    return JSON.stringify(cleanedObj, null, 2);
   };
 
   // Парсинг JSON з обробкою помилок
@@ -363,7 +406,7 @@ export default function TemplatesPage() {
       setIsLoading(true);
       
       // Відновлюємо дефолтні значення локально
-      const defaultJson = formatJson(template.defaultSchema);
+      const defaultJson = formatJson(template.defaultSchema, templateId);
       
       setTemplates(prev => prev.map(t => 
         t.id === templateId 
@@ -482,7 +525,7 @@ export default function TemplatesPage() {
                   <textarea
                     id={`json-${template.id}`}
                     className={`${styles.jsonTextarea} ${jsonErrors[template.id] ? styles.jsonTextareaError : ''}`}
-                    value={jsonValues[template.id] || formatJson(template.schema)}
+                    value={jsonValues[template.id] || formatJson(template.schema, template.id)}
                     onChange={(e) => handleJsonChange(template.id, e.target.value)}
                     placeholder="Введіть JSON схему..."
                     spellCheck={false}

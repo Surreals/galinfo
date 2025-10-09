@@ -145,6 +145,47 @@ async function ensureDefaultTemplates() {
   }
 }
 
+// Функція для додавання захардкодженого флагу для IN-FOMO реклами
+function enforceHardcodedInFomo(schema: any, templateId: string): any {
+  // Перевіряємо, чи це схема головної сторінки
+  if (templateId !== 'main-desktop' && templateId !== 'main-mobile') {
+    return schema;
+  }
+
+  // Якщо немає блоків, повертаємо схему без змін
+  if (!schema?.blocks) {
+    return schema;
+  }
+
+  // ID категорій CRIME та SPORT (з categoryUtils.ts)
+  const CRIME_ID = 100;
+  const SPORT_ID = 103;
+
+  // Додаємо hardcodedInFomo та showAdvertisement для останнього блоку ColumnNews з CRIME та SPORT категоріями
+  const updatedBlocks = schema.blocks.map((block: any) => {
+    const isTargetColumnNews = block.type === 'ColumnNews' && 
+                                block.categoryId === CRIME_ID && 
+                                block.sideCategoryId === SPORT_ID;
+    
+    if (isTargetColumnNews) {
+      return {
+        ...block,
+        config: {
+          ...block.config,
+          hardcodedInFomo: true, // Завжди встановлюємо true для цього блоку
+          showAdvertisement: true // Завжди показуємо рекламу
+        }
+      };
+    }
+    return block;
+  });
+
+  return {
+    ...schema,
+    blocks: updatedBlocks
+  };
+}
+
 // GET - Fetch all templates
 export async function GET(request: NextRequest) {
   try {
@@ -162,9 +203,32 @@ export async function GET(request: NextRequest) {
 
     const [templates] = await executeQuery<TemplateSchema>(query);
 
+    // Додаємо захардкоджений флаг для IN-FOMO реклами в схемах головної сторінки
+    const processedTemplates = templates.map((template: TemplateSchema) => {
+      let schemaJson = template.schema_json;
+      
+      // Парсимо JSON якщо це строка
+      if (typeof schemaJson === 'string') {
+        try {
+          schemaJson = JSON.parse(schemaJson);
+        } catch (e) {
+          console.error(`Failed to parse schema for ${template.template_id}:`, e);
+          return template;
+        }
+      }
+
+      // Додаємо захардкоджений флаг
+      const updatedSchema = enforceHardcodedInFomo(schemaJson, template.template_id);
+
+      return {
+        ...template,
+        schema_json: updatedSchema
+      };
+    });
+
     return NextResponse.json({
       success: true,
-      data: templates,
+      data: processedTemplates,
     });
   } catch (error) {
     console.error('Error fetching templates:', error);
@@ -194,6 +258,10 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // ЗАХИСТ: Автоматично додаємо hardcodedInFomo для потрібного блоку
+    // навіть якщо адміністратор спробує його видалити або змінити
+    const protectedSchema = enforceHardcodedInFomo(schema_json, template_id);
+
     // Check if template exists
     const checkQuery = 'SELECT id FROM template_schemas WHERE template_id = ?';
     const [existing] = await executeQuery<{ id: number }>(checkQuery, [template_id]);
@@ -206,12 +274,12 @@ export async function POST(request: NextRequest) {
         WHERE template_id = ?
       `;
       
-      await executeQuery(updateQuery, [name, description, JSON.stringify(schema_json), template_id]);
+      await executeQuery(updateQuery, [name, description, JSON.stringify(protectedSchema), template_id]);
       
       return NextResponse.json({
         success: true,
         message: 'Template updated successfully',
-        data: { template_id, name, description, schema_json }
+        data: { template_id, name, description, schema_json: protectedSchema }
       });
     } else {
       // Create new template
@@ -220,12 +288,12 @@ export async function POST(request: NextRequest) {
         VALUES (?, ?, ?, ?)
       `;
       
-      await executeQuery(insertQuery, [template_id, name, description, JSON.stringify(schema_json)]);
+      await executeQuery(insertQuery, [template_id, name, description, JSON.stringify(protectedSchema)]);
       
       return NextResponse.json({
         success: true,
         message: 'Template created successfully',
-        data: { template_id, name, description, schema_json }
+        data: { template_id, name, description, schema_json: protectedSchema }
       });
     }
   } catch (error) {
