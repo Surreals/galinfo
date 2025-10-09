@@ -492,33 +492,37 @@ export async function updateNews(id: number, data: Partial<NewsData>): Promise<b
     // Оновлюємо тіло новини
     if (data.nbody !== undefined) {
       const bodyQuery = `
-        UPDATE ${TABLES.NEWS_BODY} SET nbody = ? WHERE id = ?
+        INSERT INTO ${TABLES.NEWS_BODY} (id, nbody) VALUES (?, ?)
+        ON DUPLICATE KEY UPDATE nbody = ?
       `;
-      await executeQuery(bodyQuery, [data.nbody, id]);
+      await executeQuery(bodyQuery, [id, data.nbody, data.nbody]);
     }
     
     // Оновлюємо заголовки
     if (data.nheader !== undefined || data.nsubheader !== undefined || data.nteaser !== undefined) {
       const headersQuery = `
-        UPDATE ${TABLES.NEWS_HEADERS} SET nheader = ?, nsubheader = ?, nteaser = ? WHERE id = ?
+        INSERT INTO ${TABLES.NEWS_HEADERS} (id, nheader, nsubheader, nteaser) VALUES (?, ?, ?, ?)
+        ON DUPLICATE KEY UPDATE nheader = ?, nsubheader = ?, nteaser = ?
       `;
-      await executeQuery(headersQuery, [data.nheader || '', data.nsubheader || '', data.nteaser || '', id]);
+      await executeQuery(headersQuery, [id, data.nheader || '', data.nsubheader || '', data.nteaser || '', data.nheader || '', data.nsubheader || '', data.nteaser || '']);
     }
     
     // Оновлюємо спеціальні заголовки
     if (data.sheader !== undefined || data.steaser !== undefined) {
       const slideHeadersQuery = `
-        UPDATE ${TABLES.NEWS_SLIDE_HEADERS} SET sheader = ?, steaser = ? WHERE id = ?
+        INSERT INTO ${TABLES.NEWS_SLIDE_HEADERS} (id, sheader, steaser) VALUES (?, ?, ?)
+        ON DUPLICATE KEY UPDATE sheader = ?, steaser = ?
       `;
-      await executeQuery(slideHeadersQuery, [data.sheader || '', data.steaser || '', id]);
+      await executeQuery(slideHeadersQuery, [id, data.sheader || '', data.steaser || '', data.sheader || '', data.steaser || '']);
     }
     
     // Оновлюємо мета-дані
     if (data.ntitle !== undefined || data.ndescription !== undefined || data.nkeywords !== undefined) {
       const metaQuery = `
-        UPDATE ${TABLES.NEWS_META} SET ntitle = ?, ndescription = ?, nkeywords = ? WHERE id = ?
+        INSERT INTO ${TABLES.NEWS_META} (id, ntitle, ndescription, nkeywords) VALUES (?, ?, ?, ?)
+        ON DUPLICATE KEY UPDATE ntitle = ?, ndescription = ?, nkeywords = ?
       `;
-      await executeQuery(metaQuery, [data.ntitle || '', data.ndescription || '', data.nkeywords || '', id]);
+      await executeQuery(metaQuery, [id, data.ntitle || '', data.ndescription || '', data.nkeywords || '', data.ntitle || '', data.ndescription || '', data.nkeywords || '']);
     }
     
     // Оновлюємо теги
