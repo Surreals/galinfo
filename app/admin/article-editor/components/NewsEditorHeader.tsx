@@ -74,6 +74,7 @@ export default function NewsEditorHeader({ isEditing, articleData, onNbodyChange
     }
   }, [articleData]);
 
+
   // Функція валідації заголовка
   const validateTitle = (title: string): boolean => {
     const trimmedTitle = title?.trim();
@@ -120,7 +121,8 @@ export default function NewsEditorHeader({ isEditing, articleData, onNbodyChange
   // Handlers для оновлення даних
   const handleMainTitleChange = (value: string) => {
     setMainTitle(value);
-    onDataChange?.({ nheader: value });
+    setMetaTitle(value); // Sync with meta Title
+    onDataChange?.({ nheader: value, ntitle: value });
     
     // Валідуємо заголовок
     validateTitle(value);
@@ -129,7 +131,8 @@ export default function NewsEditorHeader({ isEditing, articleData, onNbodyChange
 
   const handleMainLeadChange = (value: string) => {
     setMainLead(value);
-    onDataChange?.({ nteaser: value });
+    setMetaDescription(value); // Sync with meta Description
+    onDataChange?.({ nteaser: value, ndescription: value });
     
     // Валідуємо лід
     validateLead(value);

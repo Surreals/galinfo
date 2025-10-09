@@ -181,6 +181,15 @@
     padding-bottom: 40px !important;
 }
 
+.editorToolbar {
+    background: #fafafa;
+    border-bottom: 1px solid #e8e8e8;
+    padding: 8px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
 .heading {
     margin: 0 0 4px 0;
 }

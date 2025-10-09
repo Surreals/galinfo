@@ -54,6 +54,22 @@ function ArticleEditorContent() {
     updateData(updates);
   };
 
+  // Handler for tags changes from sidebar
+  const handleTagsChange = (tags: string) => {
+    console.log('Tags changed in parent:', tags);
+    
+    // Convert tags string to array and update both tags and keywords
+    const tagsArray = tags.split(',').map(tag => tag.trim()).filter(tag => tag);
+    const keywordsString = tagsArray.join(', ');
+    
+    console.log('Tags array:', tagsArray, 'Keywords string:', keywordsString);
+    
+    updateData({ 
+      tags: tagsArray,
+      nkeywords: keywordsString 
+    });
+  };
+
   // Handler for editor save function
   const handleEditorSaveRef = useCallback((saveFn: () => Promise<string>) => {
     setEditorSaveFn(() => saveFn);
@@ -78,6 +94,7 @@ function ArticleEditorContent() {
           onEditorSave={editorSaveFn}
           isTitleValid={isFormValid}
           onSidebarValidationChange={setIsSidebarValid}
+          onTagsChange={handleTagsChange}
         />
       </div>
       

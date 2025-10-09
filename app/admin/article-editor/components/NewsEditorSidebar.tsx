@@ -63,9 +63,10 @@ interface NewsEditorSidebarProps {
   fetchArticle?: (() => void) | undefined;
   isTitleValid?: boolean;
   onSidebarValidationChange?: (isValid: boolean) => void;
+  onTagsChange?: (tags: string) => void;
 }
 
-export default function NewsEditorSidebar({ newsId, articleData, menuData, onEditorSave, fetchArticle, isTitleValid, onSidebarValidationChange }: NewsEditorSidebarProps) {
+export default function NewsEditorSidebar({ newsId, articleData, menuData, onEditorSave, fetchArticle, isTitleValid, onSidebarValidationChange, onTagsChange }: NewsEditorSidebarProps) {
   const router = useRouter();
   const { modal } = App.useApp();
   const [savingProcess, setSavingProcess] = useState(false);
@@ -723,6 +724,7 @@ export default function NewsEditorSidebar({ newsId, articleData, menuData, onEdi
             value={tags}
             onChange={(value) => {
               setTags(value);
+              onTagsChange?.(value); // Notify parent component about tags change
               validateTags(value);
               updateSidebarValidation();
             }}
@@ -800,7 +802,7 @@ export default function NewsEditorSidebar({ newsId, articleData, menuData, onEdi
               checked={mainFeed}
               onChange={(e) => setMainFeed(e.target.checked)}
             >
-              Не транслювати в RSS додати
+              Не транслювати в RSS
             </Checkbox>
           </div>
         </div>

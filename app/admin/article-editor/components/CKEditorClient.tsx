@@ -1,7 +1,8 @@
 "use client";
 
-import { useEffect, useImperativeHandle, useRef, forwardRef } from "react";
+import { useEffect, useImperativeHandle, useRef, forwardRef, useState } from "react";
 import { CKEditor } from "ckeditor4-react";
+import VideoWidget from "./VideoWidget";
 
 import styles from "../NewsEditor.module.css";
 
@@ -20,6 +21,7 @@ type Props = {
 const CKEditorClient = forwardRef<CKEditorClientRef, Props>(
   ({ htmlContent, onHtmlChange, placeholder = "Введіть текст новини..." }, ref) => {
     const editorRef = useRef<any>(null);
+    const [existingVideos, setExistingVideos] = useState<any[]>([]);
 
     // CKEditor 4 конфігурація
     const editorConfig = {
@@ -79,6 +81,90 @@ const CKEditorClient = forwardRef<CKEditorClientRef, Props>(
       }
     };
 
+    // Завантажуємо існуючі відео при ініціалізації
+    useEffect(() => {
+      fetchExistingVideos();
+    }, []);
+
+    // Функція для завантаження існуючих відео
+    const fetchExistingVideos = async () => {
+      try {
+        const response = await fetch('/api/admin/videos?limit=50&video_type=news');
+        const data = await response.json();
+        if (data.videos) {
+          setExistingVideos(data.videos);
+        }
+      } catch (error) {
+        console.error('Error fetching videos:', error);
+      }
+    };
+
+    // Функція для завантаження відео файлу
+    const handleVideoUpload = async (file: File, title: string, description?: string) => {
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('title', title);
+      formData.append('description', description || '');
+      formData.append('video_type', 'news');
+
+      const response = await fetch('/api/admin/videos/upload', {
+        method: 'POST',
+        body: formData,
+      });
+
+      const result = await response.json();
+      if (result.success) {
+        return result.video;
+      } else {
+        throw new Error(result.error || 'Upload failed');
+      }
+    };
+
+    // Функція для вставки відео по URL
+    const handleVideoUrlInsert = async (url: string, title: string, description?: string) => {
+      const response = await fetch('/api/admin/videos/upload', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ url, title, description, video_type: 'news' }),
+      });
+
+      const result = await response.json();
+      if (result.success) {
+        return result.video;
+      } else {
+        throw new Error(result.error || 'URL insert failed');
+      }
+    };
+
+    // Функція для вставки відео в редактор
+    const handleVideoSelect = (video: any) => {
+      if (editorRef.current?.editor) {
+        const editor = editorRef.current.editor;
+        
+        // Створюємо HTML для відео
+        const videoHtml = `
+          <div class="video-block" data-url="${video.url}" data-caption="${video.title || ''}">
+            <video controls style="max-width: 100%; width: 100%; height: auto; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
+              <source src="${video.url}" type="video/mp4">
+              <source src="${video.url}" type="video/webm">
+              <source src="${video.url}" type="video/ogg">
+              Ваш браузер не підтримує відео тег.
+            </video>
+            ${video.title ? `<div class="video-caption" style="text-align: center; margin-top: 8px; font-style: italic; color: #666;">${video.title}</div>` : ''}
+          </div>
+        `;
+        
+        // Вставляємо відео в редактор
+        editor.insertHtml(videoHtml);
+        
+        // Оновлюємо контент
+        const newContent = editor.getData();
+        onHtmlChange?.(newContent);
+      }
+    };
+
     // Ініціалізація редактора
     const handleEditorReady = (event: any) => {
       const editor = event.editor;
@@ -108,6 +194,14 @@ const CKEditorClient = forwardRef<CKEditorClientRef, Props>(
 
     return (
       <div className={styles.editor}>
+        <div className={styles.editorToolbar}>
+          <VideoWidget
+            onVideoSelect={handleVideoSelect}
+            onVideoUpload={handleVideoUpload}
+            onVideoUrlInsert={handleVideoUrlInsert}
+            existingVideos={existingVideos}
+          />
+        </div>
         <CKEditor
           initData={htmlContent || ''}
           config={editorConfig}

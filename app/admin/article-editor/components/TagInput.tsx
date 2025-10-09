@@ -23,8 +23,30 @@ export default function TagInput({ value, onChange, placeholder, status }: TagIn
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [currentTag, setCurrentTag] = useState('');
   const [cursorPosition, setCursorPosition] = useState(0);
+  const [internalValue, setInternalValue] = useState(value);
+  const [pendingValue, setPendingValue] = useState(value);
   const inputRef = useRef<any>(null);
-  const debounceRef = useRef<NodeJS.Timeout>();
+  const debounceRef = useRef<NodeJS.Timeout | null>(null);
+  const updateDebounceRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Sync internal value with external value (only if not currently editing)
+  useEffect(() => {
+    if (pendingValue === value) {
+      setInternalValue(value);
+    }
+  }, [value, pendingValue]);
+
+  // Debounced update function
+  const debouncedUpdate = useCallback((newValue: string) => {
+    if (updateDebounceRef.current) {
+      clearTimeout(updateDebounceRef.current);
+    }
+    
+    updateDebounceRef.current = setTimeout(() => {
+      setPendingValue(newValue);
+      onChange(newValue);
+    }, 2000);
+  }, [onChange]);
 
   // Parse tags from the input value
   const parseTags = useCallback((tagString: string): string[] => {
@@ -80,8 +102,11 @@ export default function TagInput({ value, onChange, placeholder, status }: TagIn
     const newValue = e.target.value;
     const newCursorPosition = e.target.selectionStart || 0;
     
-    onChange(newValue);
+    setInternalValue(newValue);
     setCursorPosition(newCursorPosition);
+    
+    // Use debounced update instead of immediate onChange
+    debouncedUpdate(newValue);
     
     const currentTagValue = getCurrentTag(newValue, newCursorPosition);
     setCurrentTag(currentTagValue);
@@ -97,27 +122,38 @@ export default function TagInput({ value, onChange, placeholder, status }: TagIn
 
   // Handle suggestion selection
   const handleSuggestionSelect = (selectedTag: string) => {
-    const tags = parseTags(value);
-    const currentTagValue = getCurrentTag(value, cursorPosition);
+    const currentTagValue = getCurrentTag(internalValue, cursorPosition);
     
-    // Replace the current tag being typed with the selected suggestion
-    const beforeCursor = value.substring(0, cursorPosition);
-    const afterCursor = value.substring(cursorPosition);
-    const beforeCurrentTag = beforeCursor.substring(0, beforeCursor.lastIndexOf(currentTagValue));
+    // Simple approach: replace the current tag being typed with the selected tag
+    let newValue = internalValue;
     
-    let newValue = '';
-    if (tags.length === 1 && currentTagValue === tags[0]) {
-      // If this is the first tag, just use the selected tag
-      newValue = selectedTag;
-    } else if (beforeCurrentTag.endsWith(',') || beforeCurrentTag === '') {
-      // If we're at the beginning or after a comma
-      newValue = beforeCurrentTag + selectedTag + afterCursor;
+    // Find the position of the current tag being typed
+    const beforeCursor = internalValue.substring(0, cursorPosition);
+    const afterCursor = internalValue.substring(cursorPosition);
+    
+    // Replace the current incomplete tag with the selected tag
+    const lastCommaIndex = beforeCursor.lastIndexOf(',');
+    const startOfCurrentTag = lastCommaIndex >= 0 ? lastCommaIndex + 1 : 0;
+    const beforeCurrentTag = internalValue.substring(0, startOfCurrentTag);
+    const afterCurrentTag = internalValue.substring(cursorPosition);
+    
+    // Build the new value
+    if (beforeCurrentTag.trim() === '') {
+      // First tag
+      newValue = selectedTag + (afterCurrentTag.startsWith(',') ? '' : ', ') + afterCurrentTag;
     } else {
-      // If we're in the middle of a tag, replace it and add comma if needed
-      newValue = beforeCurrentTag + selectedTag + (afterCursor.startsWith(',') ? '' : ',') + afterCursor;
+      // Subsequent tags
+      newValue = beforeCurrentTag + selectedTag + (afterCurrentTag.startsWith(',') ? '' : ', ') + afterCurrentTag;
     }
     
-    onChange(newValue);
+    // Clean up extra commas and spaces
+    newValue = newValue.replace(/,\s*,/g, ',').replace(/,\s*$/g, '').trim();
+    
+    console.log('Tag selected:', selectedTag, 'New value:', newValue);
+    
+    setInternalValue(newValue);
+    setPendingValue(newValue);
+    onChange(newValue); // Immediate update for suggestion selection
     setShowSuggestions(false);
     setSuggestions([]);
     
@@ -125,7 +161,8 @@ export default function TagInput({ value, onChange, placeholder, status }: TagIn
     setTimeout(() => {
       if (inputRef.current) {
         inputRef.current.focus();
-        const newCursorPos = newValue.length;
+        // Position cursor at the end of the selected tag
+        const newCursorPos = newValue.indexOf(selectedTag) + selectedTag.length + 2; // +2 for ", "
         inputRef.current.setSelectionRange(newCursorPos, newCursorPos);
       }
     }, 0);
@@ -133,7 +170,7 @@ export default function TagInput({ value, onChange, placeholder, status }: TagIn
 
   // Handle input focus
   const handleFocus = () => {
-    const currentTagValue = getCurrentTag(value, cursorPosition);
+    const currentTagValue = getCurrentTag(internalValue, cursorPosition);
     if (currentTagValue.length > 0) {
       setShowSuggestions(true);
       debouncedSearch(currentTagValue);
@@ -142,6 +179,13 @@ export default function TagInput({ value, onChange, placeholder, status }: TagIn
 
   // Handle input blur
   const handleBlur = () => {
+    // Apply any pending changes immediately on blur
+    if (updateDebounceRef.current) {
+      clearTimeout(updateDebounceRef.current);
+      setPendingValue(internalValue);
+      onChange(internalValue);
+    }
+    
     // Delay hiding suggestions to allow for selection
     setTimeout(() => {
       setShowSuggestions(false);
@@ -160,6 +204,9 @@ export default function TagInput({ value, onChange, placeholder, status }: TagIn
     return () => {
       if (debounceRef.current) {
         clearTimeout(debounceRef.current);
+      }
+      if (updateDebounceRef.current) {
+        clearTimeout(updateDebounceRef.current);
       }
     };
   }, []);
@@ -183,7 +230,7 @@ export default function TagInput({ value, onChange, placeholder, status }: TagIn
     <div style={{ position: 'relative' }}>
       <Input.TextArea
         ref={inputRef}
-        value={value}
+        value={internalValue}
         onChange={handleInputChange}
         onFocus={handleFocus}
         onBlur={handleBlur}
