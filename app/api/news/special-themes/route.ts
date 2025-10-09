@@ -97,7 +97,7 @@ export async function GET(request: NextRequest) {
 
     const specialThemeIds = specialThemesResult.map(theme => theme.id);
 
-    // Get news from all special themes
+    // Get news from all special themes using theme field
     const [newsResult] = await executeQuery<SpecialThemesNewsItem & { theme_id: number }>(
       `SELECT 
         a_news.id,
@@ -125,8 +125,8 @@ export async function GET(request: NextRequest) {
        LEFT JOIN a_news_headers ON a_news.id = a_news_headers.id
        LEFT JOIN a_statcomm ON a_news.id = a_statcomm.id
        LEFT JOIN a_statview ON a_news.id = a_statview.id
-       LEFT JOIN a_cats ON FIND_IN_SET(a_cats.id, a_news.rubric) > 0 AND a_cats.cattype = 2
-       WHERE a_cats.id IN (${specialThemeIds.map(() => '?').join(',')})
+       LEFT JOIN a_cats ON a_news.theme = a_cats.id AND a_cats.cattype = 2
+       WHERE a_news.theme IN (${specialThemeIds.map(() => '?').join(',')})
          AND a_news.approved = 1
          AND a_news.lang = ?
          AND CONCAT(a_news.ndate, " ", a_news.ntime) < NOW()
@@ -139,8 +139,7 @@ export async function GET(request: NextRequest) {
     const [countResult] = await executeQuery<{ total: number }>(
       `SELECT COUNT(*) as total
        FROM a_news
-       LEFT JOIN a_cats ON FIND_IN_SET(a_cats.id, a_news.rubric) > 0 AND a_cats.cattype = 2
-       WHERE a_cats.id IN (${specialThemeIds.map(() => '?').join(',')})
+       WHERE a_news.theme IN (${specialThemeIds.map(() => '?').join(',')})
          AND a_news.approved = 1
          AND a_news.lang = ?
          AND CONCAT(a_news.ndate, " ", a_news.ntime) < NOW()`,
@@ -152,14 +151,13 @@ export async function GET(request: NextRequest) {
 
     // Get news count per theme
     const [themeCounts] = await executeQuery<{ theme_id: number; count: number }>(
-      `SELECT a_cats.id as theme_id, COUNT(*) as count
+      `SELECT a_news.theme as theme_id, COUNT(*) as count
        FROM a_news
-       LEFT JOIN a_cats ON FIND_IN_SET(a_cats.id, a_news.rubric) > 0 AND a_cats.cattype = 2
-       WHERE a_cats.id IN (${specialThemeIds.map(() => '?').join(',')})
+       WHERE a_news.theme IN (${specialThemeIds.map(() => '?').join(',')})
          AND a_news.approved = 1
          AND a_news.lang = ?
          AND CONCAT(a_news.ndate, " ", a_news.ntime) < NOW()
-       GROUP BY a_cats.id`,
+       GROUP BY a_news.theme`,
       [...specialThemeIds, lang]
     );
 
