@@ -324,7 +324,7 @@ export default function Header() {
                     </li>
                   )}
                   <li>
-                    <Link href="/admin?gallery=true" className={styles.link}>
+                    <Link href="/admin/gallery" className={styles.link}>
                       ГАЛЕРЕЯ
                     </Link>
                   </li>
@@ -449,20 +449,22 @@ export default function Header() {
           </div>
           <div className={styles.svgBox}>
             <SearchBox/>
-            <a className={styles.radioLogo} target={'_blank'} href={'https://lviv.fm/'}>
+            {!isAdminPage && <a className={styles.radioLogo} target={'_blank'} href={'https://lviv.fm/'}>
               <Image
                 src={radioLogo}
                 alt="Radio Logo"
                 width={120}
                 height={40}
               />
-            </a>
+            </a>}
             {/* Admin logout button - only show if admin is authenticated and on admin page */}
             {user && isAdminPage && (
               <div className={styles.adminSection}>
                 <div className={styles.adminUserInfo}>
                   <span className={styles.adminUserName} title={user.name}>
+                  <a  href={'/admin'}>
                     {user.name}
+                    </a>
                   </span>
                   <span className={styles.adminUserRole}>
                     {ROLE_LABELS[user.role as UserRole] || user.role}
@@ -808,7 +810,7 @@ export default function Header() {
                   <Link className={styles.textCategory} href="/admin/news">НОВИНИ</Link>
                   {isAdminRole && <Link className={styles.textCategory} href="/admin/categories">КАТЕГОРІЇ</Link>}
                   {isAdminRole && <Link className={styles.textCategory} href="/admin/tags">ТЕГИ</Link>}
-                  <Link className={styles.textCategory} href="/admin?gallery=true">ГАЛЕРЕЯ</Link>
+                  <Link className={styles.textCategory} href="/admin/gallery">ГАЛЕРЕЯ</Link>
                   <Link className={styles.textCategory} href="/admin/videos">ВІДЕО</Link>
                   {isAdminRole && <Link className={styles.textCategory} href="/admin/users">КОРИСТУВАЧІ</Link>}
                   {isAdminRole && <Link className={styles.textCategory} href="/admin/advertisements">РЕКЛАМА</Link>}
@@ -896,7 +898,7 @@ export default function Header() {
                 )}
               </>
             )}
-            <div className={styles.radioBox}>
+           {!isAdminPage && <div className={styles.radioBox}>
               <a className={styles.radioLogo} target={'_blank'} href={'https://lviv.fm/'}>
                 <Image
                   src={radioLogo}
@@ -905,14 +907,16 @@ export default function Header() {
                   height={40}
                 />
               </a>
-            </div>
+            </div>}
 
             {/* Admin section in mobile menu */}
             {user && isAdminPage && (
               <div className={styles.mobileAdminSection}>
                 <div className={styles.mobileAdminInfo}>
                   <span className={styles.mobileAdminUserName} title={user.name}>
-                    {user.name}
+                    <a  href={'/admin'}>
+                      {user.name}
+                    </a>
                   </span>
                   <span className={styles.mobileAdminRole}>
                     {ROLE_LABELS[user.role as UserRole] || user.role}
