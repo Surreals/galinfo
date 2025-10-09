@@ -489,6 +489,10 @@ export default function NewsEditorSidebar({ newsId, articleData, menuData, onEdi
         router.push(`/admin/article-editor?id=${result.id}`);
         return;
       }
+      // Після успішного збереження існуючої новини перенаправляємо на список новин
+      message.success('Новину успішно збережено');
+      router.push('/admin/news');
+      return;
     }
 
 
