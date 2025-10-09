@@ -446,6 +446,153 @@
   list-style-type: square;
 }
 
+/* Стилі для таблиць у контенті статті */
+.paragraph table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 20px 0;
+  background: white;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.paragraph th,
+.paragraph td {
+  padding: 12px 16px;
+  text-align: left;
+  border-bottom: 1px solid #e9ecef;
+  color: var(--color-primary);
+}
+
+.paragraph th {
+  background: #f8f9fa;
+  font-weight: 600;
+  color: #495057;
+  border-bottom: 2px solid #dee2e6;
+}
+
+.paragraph tr:hover {
+  background: #f8f9fa;
+}
+
+.paragraph tr:last-child td {
+  border-bottom: none;
+}
+
+/* Стилі для цитат (blockquote) у контенті статті */
+.paragraph blockquote {
+  margin: 20px 0;
+  padding: 16px 20px;
+  background: #f8f9fa;
+  border-left: 4px solid #007bff;
+  border-radius: 0 8px 8px 0;
+  font-style: italic;
+  color: #495057;
+  position: relative;
+}
+
+.paragraph blockquote::before {
+  content: '"';
+  font-size: 48px;
+  color: #007bff;
+  position: absolute;
+  top: -10px;
+  left: 10px;
+  line-height: 1;
+}
+
+.paragraph blockquote p {
+  margin: 0;
+  padding-left: 20px;
+}
+
+/* Стилі для заголовків у контенті статті */
+.paragraph h1,
+.paragraph h2,
+.paragraph h3,
+.paragraph h4,
+.paragraph h5,
+.paragraph h6 {
+  color: var(--color-primary);
+  margin: 24px 0 16px 0;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.paragraph h1 {
+  font-size: 28px;
+  border-bottom: 2px solid #e9ecef;
+  padding-bottom: 8px;
+}
+
+.paragraph h2 {
+  font-size: 24px;
+}
+
+.paragraph h3 {
+  font-size: 20px;
+}
+
+.paragraph h4 {
+  font-size: 18px;
+}
+
+.paragraph h5 {
+  font-size: 16px;
+}
+
+.paragraph h6 {
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Стилі для коду у контенті статті */
+.paragraph code {
+  background: #f8f9fa;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-family: 'Courier New', monospace;
+  font-size: 14px;
+  color: #e83e8c;
+  border: 1px solid #e9ecef;
+}
+
+.paragraph pre {
+  background: #f8f9fa;
+  padding: 16px;
+  border-radius: 8px;
+  overflow-x: auto;
+  margin: 20px 0;
+  border: 1px solid #e9ecef;
+}
+
+.paragraph pre code {
+  background: none;
+  padding: 0;
+  border: none;
+  color: var(--color-primary);
+}
+
+/* Стилі для горизонтальної лінії */
+.paragraph hr {
+  border: none;
+  height: 2px;
+  background: linear-gradient(to right, transparent, #e9ecef, transparent);
+  margin: 30px 0;
+}
+
+/* Стилі для зображень у контенті статті */
+.paragraph img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+  margin: 20px 0;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+
 /* Метадані статті */
 .articleMetadata {
   display: flex;
