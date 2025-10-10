@@ -30,6 +30,7 @@ import {
 } from '@/app/lib/editorialPageSchema';
 import { templateDocumentation } from './documentation';
 import { useMenuContext } from '@/app/contexts/MenuContext';
+import EditorialPagesEditor from './EditorialPagesEditor';
 
 interface SchemaTemplate {
   id: string;
@@ -575,8 +576,12 @@ export default function TemplatesPage() {
           </button>
         </div>
 
-        <div className={styles.templatesGrid}>
-          {getFilteredTemplates().map((template) => (
+        {/* Показуємо редактор для editorial сторінок */}
+        {activeTab === 'editorial' ? (
+          <EditorialPagesEditor />
+        ) : (
+          <div className={styles.templatesGrid}>
+            {getFilteredTemplates().map((template) => (
             <div key={template.id} className={styles.templateCard}>
               <div className={styles.templateHeader}>
                 <div className={styles.templateTitle}>
@@ -647,7 +652,8 @@ export default function TemplatesPage() {
               </div>
             </div>
           ))}
-        </div>
+          </div>
+        )}
       </div>
 
       {/* Drawer з інформацією про категорії */}

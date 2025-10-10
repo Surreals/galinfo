@@ -8,18 +8,13 @@ import ClientOnly from '../../components/ClientOnly';
 import NewsEditorHeader from "@/app/admin/article-editor/components/NewsEditorHeader";
 import NewsEditorSidebar from "@/app/admin/article-editor/components/NewsEditorSidebar";
 import NewsEditor from "@/app/admin/article-editor/components/NewsEditor";
-import NewsFullEditor from "@/app/admin/article-editor/components/NewsEditorTipTap";
 import ArticleEditorLoader from "@/app/admin/article-editor/components/ArticleEditorLoader";
 import ChatGPTIframe from "@/app/admin/article-editor/components/ChatGPTIframe";
 import TelegramMessenger from "@/app/admin/article-editor/components/TelegramMessenger";
 import { useArticleData, ArticleData } from "@/app/hooks/useArticleData";
 import {useMenuContext} from "@/app/contexts/MenuContext";
 
-// Dynamically import the TipTap editor to avoid SSR issues
-const RichTextEditor = dynamic(() => import('../components/RichTextEditor'), {
-  ssr: false,
-  loading: () => <p>Loading editor...</p>,
-});
+// RichTextEditor removed - TipTap replaced with CKEditor
 
 function ArticleEditorContent() {
   const searchParams = useSearchParams();

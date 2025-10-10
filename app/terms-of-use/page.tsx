@@ -1,10 +1,10 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { EditorialPageRenderer } from '@/app/components/EditorialPageRenderer';
+import { EditorialPageHtmlRenderer } from '@/app/components/EditorialPageHtmlRenderer';
 
 export default function TermsOfUsePage() {
-  const [pageData, setPageData] = useState(null);
+  const [htmlContent, setHtmlContent] = useState('');
   const [loading, setLoading] = useState(true);
 
   const breadcrumbs = [
@@ -13,25 +13,22 @@ export default function TermsOfUsePage() {
   ];
 
   useEffect(() => {
-    const fetchTemplateData = async () => {
+    const fetchPageData = async () => {
       try {
-        const response = await fetch('/api/admin/templates');
+        const response = await fetch('/api/admin/editorial-pages?page_id=terms-of-use');
         const result = await response.json();
         
         if (result.success && result.data) {
-          const template = result.data.find((template: any) => template.template_id === 'terms-of-use');
-          if (template) {
-            setPageData(template.schema_json);
-          }
+          setHtmlContent(result.data.html_content);
         }
       } catch (error) {
-        console.error('Error fetching template data:', error);
+        console.error('Error fetching page data:', error);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchTemplateData();
+    fetchPageData();
   }, []);
 
   if (loading) {
@@ -44,7 +41,7 @@ export default function TermsOfUsePage() {
     );
   }
 
-  if (!pageData) {
+  if (!htmlContent) {
     return (
       <div className="max-w-4xl mx-auto px-4 py-8">
         <h1 className="text-3xl font-bold mb-6">ПРАВИЛА ВИКОРИСТАННЯ</h1>
@@ -53,7 +50,7 @@ export default function TermsOfUsePage() {
     );
   }
 
-  return <EditorialPageRenderer data={pageData} breadcrumbs={breadcrumbs} />;
+  return <EditorialPageHtmlRenderer htmlContent={htmlContent} breadcrumbs={breadcrumbs} />;
 }
 
 

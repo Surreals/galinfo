@@ -3,11 +3,7 @@
 import { useState, useEffect } from 'react';
 import dynamic from 'next/dynamic';
 
-// Dynamically import the TipTap editor to avoid SSR issues
-const RichTextEditor = dynamic(() => import('./RichTextEditor'), {
-  ssr: false,
-  loading: () => <p>Loading editor...</p>,
-});
+// RichTextEditor removed - TipTap replaced with CKEditor
 
 interface NewsData {
   id?: number;
@@ -338,10 +334,13 @@ export default function NewsEditor({ newsId, onSave, onCancel, initialData }: Ne
                     Повний текст новини
                   </label>
                   <div className="richTextWrapper">
-                    <RichTextEditor
+                    {/* RichTextEditor removed - use CKEditor from article-editor instead */}
+                    <textarea
                       value={body.nbody}
-                      onChange={(content) => setBody({ nbody: content })}
+                      onChange={(e) => setBody({ nbody: e.target.value })}
                       placeholder="Введіть повний текст новини..."
+                      rows={10}
+                      style={{ width: '100%', padding: '0.5rem', fontFamily: 'monospace' }}
                     />
                   </div>
                 </div>

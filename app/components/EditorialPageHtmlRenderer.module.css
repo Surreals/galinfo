@@ -1,0 +1,259 @@
+.container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+}
+
+.content {
+  font-size: 1rem;
+  line-height: 1.6;
+  color: #2c3e50;
+}
+
+/* Typography */
+.content h1 {
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin: 1.5rem 0 1rem 0;
+  color: #2c3e50;
+  line-height: 1.2;
+}
+
+.content h2 {
+  font-size: 2rem;
+  font-weight: 700;
+  margin: 1.5rem 0 1rem 0;
+  color: #2c3e50;
+  line-height: 1.3;
+}
+
+.content h3 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin: 1.25rem 0 0.75rem 0;
+  color: #2c3e50;
+  line-height: 1.4;
+}
+
+.content h4 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin: 1rem 0 0.5rem 0;
+  color: #2c3e50;
+}
+
+.content h5,
+.content h6 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin: 1rem 0 0.5rem 0;
+  color: #2c3e50;
+}
+
+.content p {
+  margin: 0.75rem 0;
+  line-height: 1.6;
+}
+
+.content p:first-child {
+  margin-top: 0;
+}
+
+.content p:last-child {
+  margin-bottom: 0;
+}
+
+/* Lists */
+.content ul,
+.content ol {
+  margin: 1rem 0;
+  padding-left: 2rem;
+}
+
+.content li {
+  margin: 0.5rem 0;
+  line-height: 1.6;
+}
+
+.content ul {
+  list-style-type: disc;
+}
+
+.content ol {
+  list-style-type: decimal;
+}
+
+.content ul ul,
+.content ol ul {
+  list-style-type: circle;
+}
+
+.content ul ul ul,
+.content ol ul ul,
+.content ol ol ul,
+.content ul ol ul {
+  list-style-type: square;
+}
+
+/* Links */
+.content a {
+  color: #007bff;
+  text-decoration: underline;
+  transition: color 0.2s ease;
+}
+
+.content a:hover {
+  color: #0056b3;
+}
+
+/* Images */
+.content img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+  margin: 1.5rem 0;
+  display: block;
+}
+
+/* Blockquotes */
+.content blockquote {
+  margin: 1.5rem 0;
+  padding: 1rem 1.5rem;
+  border-left: 4px solid #c7084f;
+  background: #f8f9fa;
+  font-style: italic;
+  color: #495057;
+}
+
+.content blockquote p {
+  margin: 0.5rem 0;
+}
+
+/* Tables */
+.content table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1.5rem 0;
+  font-size: 0.95rem;
+}
+
+.content table th,
+.content table td {
+  border: 1px solid #dee2e6;
+  padding: 0.75rem;
+  text-align: left;
+}
+
+.content table th {
+  background: #f8f9fa;
+  font-weight: 600;
+  color: #2c3e50;
+}
+
+.content table tr:nth-child(even) {
+  background: #f8f9fa;
+}
+
+/* Horizontal Rule */
+.content hr {
+  border: none;
+  border-top: 2px solid #e9ecef;
+  margin: 2rem 0;
+}
+
+/* Code */
+.content code {
+  background: #f8f9fa;
+  padding: 0.2rem 0.4rem;
+  border-radius: 4px;
+  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+  font-size: 0.9em;
+  color: #c7084f;
+}
+
+.content pre {
+  background: #f8f9fa;
+  padding: 1rem;
+  border-radius: 8px;
+  overflow-x: auto;
+  margin: 1.5rem 0;
+}
+
+.content pre code {
+  background: none;
+  padding: 0;
+  color: #2c3e50;
+}
+
+/* Strong and Em */
+.content strong {
+  font-weight: 700;
+}
+
+.content em {
+  font-style: italic;
+}
+
+.content u {
+  text-decoration: underline;
+}
+
+.content s {
+  text-decoration: line-through;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .container {
+    padding: 1.5rem 1rem;
+  }
+
+  .content h1 {
+    font-size: 2rem;
+  }
+
+  .content h2 {
+    font-size: 1.75rem;
+  }
+
+  .content h3 {
+    font-size: 1.5rem;
+  }
+
+  .content table {
+    font-size: 0.875rem;
+  }
+
+  .content table th,
+  .content table td {
+    padding: 0.5rem;
+  }
+
+  .content ul,
+  .content ol {
+    padding-left: 1.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .container {
+    padding: 1rem 0.75rem;
+  }
+
+  .content h1 {
+    font-size: 1.75rem;
+  }
+
+  .content h2 {
+    font-size: 1.5rem;
+  }
+
+  .content h3 {
+    font-size: 1.25rem;
+  }
+
+  .content {
+    font-size: 0.95rem;
+  }
+}
+

@@ -55,43 +55,6 @@
     width: 100%;
 }
 
-.editorJSClient {
-    padding-top: 30px;
-    border: 1px solid #e8e8e8;
-    border-radius: 8px;
-    background: white;
-    width: 100%;
-}
-
-.editorJSClient:hover {
-    border: 1px solid #c7084f;
-}
-
-.editorJSClient :global(.codex-editor__redactor) {
-    padding-bottom: 30px !important;
-}
-
-.editorJSClient :global(.ce-block__content) {
-    max-width: none !important;
-    padding-left: 30px !important;
-}
-
-.editorJSClient :global(.ce-toolbar__content) {
-    max-width: none !important;
-}
-
-.editorJSClient :global(.ce-toolbar__actions) {
-    right: 0!important;
-}
-
-
-
-
-
-.ce-block__content {
-    max-width: none;
-    padding-left: 50px;
-}
 
 .header {
     font-size: 20px;
@@ -154,31 +117,6 @@
 .editor:hover {
     border-color: #c7084f;
     cursor: text;
-}
-
-/* пересунути тулбар вправо */
-.editor :global(.ce-toolbar) {
-    left: auto !important;
-    right: 0 !important;
-}
-
-/* кнопка "+" також вправо */
-.editor :global(.ce-toolbar__plus) {
-    margin-left: auto;
-    margin-right: 0;
-}
-
-/* блок налаштувань */
-.editor :global(.ce-settings) {
-    left: auto !important;
-    right: 0 !important;
-}
-.editor :global(.cdx-block) {
-    padding-right: 45px!important;
-}
-
-.editor :global(.codex-editor__redactor) {
-    padding-bottom: 40px !important;
 }
 
 .editorToolbar {
