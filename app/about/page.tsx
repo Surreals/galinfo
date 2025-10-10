@@ -33,10 +33,39 @@ export default function AboutPage() {
 
   if (loading) {
     return (
-      <div className="max-w-4xl mx-auto px-4 py-8">
-        <div className="flex justify-center items-center h-64">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-        </div>
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "center",
+          minHeight: "400px",
+          backgroundColor: "#f9f9f9",
+        }}
+      >
+        <div
+          style={{
+            width: "48px",
+            height: "48px",
+            border: "4px solid #ccc",
+            borderTop: "4px solid #c7084f",
+            borderRadius: "50%",
+            animation: "spin 1s linear infinite",
+          }}
+        />
+        <p style={{marginTop: "16px", fontSize: "18px", color: "#333"}}>
+          Завантаження...
+        </p>
+
+        {/* Додаємо ключові кадри прямо в JSX через <style> */}
+        <style>
+          {`
+      @keyframes spin {
+        0%   { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+      }
+    `}
+        </style>
       </div>
     );
   }
