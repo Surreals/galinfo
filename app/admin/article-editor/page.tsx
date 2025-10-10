@@ -90,6 +90,7 @@ function ArticleEditorContent() {
           isTitleValid={isFormValid}
           onSidebarValidationChange={setIsSidebarValid}
           onTagsChange={handleTagsChange}
+          onDataChange={handleDataChange}
         />
       </div>
       

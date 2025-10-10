@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { Input, AutoComplete, Tag } from 'antd';
+import type { TextAreaRef } from 'antd/es/input/TextArea';
 import { SearchOutlined } from '@ant-design/icons';
 
 interface TagSuggestion {
@@ -25,7 +26,7 @@ export default function TagInput({ value, onChange, placeholder, status }: TagIn
   const [cursorPosition, setCursorPosition] = useState(0);
   const [internalValue, setInternalValue] = useState(value);
   const [pendingValue, setPendingValue] = useState(value);
-  const inputRef = useRef<any>(null);
+  const inputRef = useRef<TextAreaRef>(null);
   const debounceRef = useRef<NodeJS.Timeout | null>(null);
   const updateDebounceRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -163,7 +164,11 @@ export default function TagInput({ value, onChange, placeholder, status }: TagIn
         inputRef.current.focus();
         // Position cursor at the end of the selected tag
         const newCursorPos = newValue.indexOf(selectedTag) + selectedTag.length + 2; // +2 for ", "
-        inputRef.current.setSelectionRange(newCursorPos, newCursorPos);
+        // Access the actual textarea element from Ant Design's TextArea component
+        const textareaElement = inputRef.current.resizableTextArea?.textArea;
+        if (textareaElement && typeof textareaElement.setSelectionRange === 'function') {
+          textareaElement.setSelectionRange(newCursorPos, newCursorPos);
+        }
       }
     }, 0);
   };

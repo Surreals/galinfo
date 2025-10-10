@@ -67,9 +67,10 @@ interface NewsEditorSidebarProps {
   isTitleValid?: boolean;
   onSidebarValidationChange?: (isValid: boolean) => void;
   onTagsChange?: (tags: string) => void;
+  onDataChange?: (updates: Partial<ArticleData>) => void;
 }
 
-export default function NewsEditorSidebar({ newsId, articleData, menuData, onEditorSave, fetchArticle, isTitleValid, onSidebarValidationChange, onTagsChange }: NewsEditorSidebarProps) {
+export default function NewsEditorSidebar({ newsId, articleData, menuData, onEditorSave, fetchArticle, isTitleValid, onSidebarValidationChange, onTagsChange, onDataChange }: NewsEditorSidebarProps) {
   const router = useRouter();
   const { modal } = App.useApp();
   const [savingProcess, setSavingProcess] = useState(false);
@@ -194,7 +195,7 @@ export default function NewsEditorSidebar({ newsId, articleData, menuData, onEdi
     articleData?.userid || null
   );
   const [showAuthorInfo, setShowAuthorInfo] = useState<boolean>(
-    articleData?.showauthor || false
+    articleData?.showauthor ?? true  // За замовчуванням увімкнено
   );
 
   // Пріоритет / Шаблон
@@ -210,7 +211,7 @@ export default function NewsEditorSidebar({ newsId, articleData, menuData, onEdi
   const [blockInMain, setBlockInMain] = useState<boolean>(articleData?.headlineblock || false);
   const [noRss, setNoRss] = useState<boolean>(articleData?.hiderss || false);
   const [banComments, setBanComments] = useState<boolean>(articleData?.nocomment || false);
-  const [mainInRubric, setMainInRubric] = useState<boolean>(articleData?.maininblock || false);
+  const [mainInRubric, setMainInRubric] = useState<boolean>(articleData?.maininblock ?? true);  // За замовчуванням увімкнено (Головна стрічка)
   const [idToTop, setIdToTop] = useState<number>(articleData?.idtotop || 0);
   const [favBlock, setFavBlock] = useState<boolean>(articleData?.suggest || false);
   const [markPhoto, setMarkPhoto] = useState<boolean>(articleData?.photo || false);
@@ -270,24 +271,35 @@ export default function NewsEditorSidebar({ newsId, articleData, menuData, onEdi
   };
 
   // Функція для оновлення загальної валідації sidebar
-  const updateSidebarValidation = () => {
-    const isTypeValid = validateType(articleType);
-    const isRubricValid = validateRubric(selectedRubrics);
-    const isRegionValid = validateRegion(selectedRegions);
-    const isTagsValid = validateTags(tags);
+  const updateSidebarValidation = (
+    currentType?: number,
+    currentRubrics?: string[],
+    currentRegions?: string[],
+    currentTags?: string
+  ) => {
+    const isTypeValid = validateType(currentType !== undefined ? currentType : articleType);
+    const isRubricValid = validateRubric(currentRubrics !== undefined ? currentRubrics : selectedRubrics);
+    const isRegionValid = validateRegion(currentRegions !== undefined ? currentRegions : selectedRegions);
+    const isTagsValid = validateTags(currentTags !== undefined ? currentTags : tags);
     
     const overallValid = isTypeValid && isRubricValid && isRegionValid && isTagsValid;
     onSidebarValidationChange?.(overallValid);
   };
 
   // Оновлюємо стан при зміні даних новини
+  // Використовуємо articleData?.id як залежність, щоб не перезаписувати локальні зміни
+  // при редагуванні інших полів (наприклад, заголовка або ліда)
   useEffect(() => {
     if (articleData && !loading && !savingProcess) {
+      const rubrics = (articleData.rubric || []).map(String);
+      const regions = (articleData.region || []).map(String);
+      const tagsString = articleData.tags.join(', ');
+      
       setArticleType(articleData.ntype);
-      setSelectedRubrics((articleData.rubric || []).map(String)); // [2]
-      setSelectedRegions((articleData.region || []).map(String)); // [2]
+      setSelectedRubrics(rubrics);
+      setSelectedRegions(regions);
       setSelectedTheme(!!articleData.theme ? String(articleData.theme) : null);
-      setTags(articleData.tags.join(', '));
+      setTags(tagsString);
       setEditor(articleData.nauthor || null);
       setAuthor(articleData.nauthor || null); // Use same value as editor for consistency
       setShowAuthorInfo(articleData.showauthor);
@@ -336,12 +348,12 @@ export default function NewsEditorSidebar({ newsId, articleData, menuData, onEdi
         setFileList(imageFiles);
       }
       
-      // Валідуємо всі поля після завантаження
+      // Валідуємо всі поля після завантаження з актуальними значеннями
       validateType(articleData.ntype);
-      validateRubric((articleData.rubric || []).map(String));
-      validateRegion((articleData.region || []).map(String));
-      validateTags(articleData.tags.join(', '));
-      updateSidebarValidation();
+      validateRubric(rubrics);
+      validateRegion(regions);
+      validateTags(tagsString);
+      updateSidebarValidation(articleData.ntype, rubrics, regions, tagsString);
     } else if (!articleData && !loading) {
       // Скидаємо до значень за замовчуванням при створенні нової новини
       setArticleType(ARTICLE_TYPE_OPTIONS[0].value);
@@ -349,16 +361,17 @@ export default function NewsEditorSidebar({ newsId, articleData, menuData, onEdi
       setSelectedRegions([]);
       setSelectedTheme(null);
       setTags("");
-      setEditor(null);
-      setAuthor(null);
-      setShowAuthorInfo(false);
+      // Встановлюємо поточного користувача як автора
+      setEditor(user?.id || null);
+      setAuthor(user?.id || null);
+      setShowAuthorInfo(true);  // За замовчуванням увімкнено
       setPriority(PRIORITY_OPTIONS[0].value);
       setTemplate(LAYOUT_OPTIONS[0].value);
       setMainFeed(true);
       setBlockInMain(false);
-      setNoRss(false);
+      setNoRss(false);  // За замовчуванням вимкнено (не блокувати RSS)
       setBanComments(false);
-      setMainInRubric(false);
+      setMainInRubric(true);  // За замовчуванням увімкнено (Головна стрічка)
       setIdToTop(0);
       setFavBlock(false);
       setMarkPhoto(false);
@@ -373,9 +386,9 @@ export default function NewsEditorSidebar({ newsId, articleData, menuData, onEdi
       validateRubric([]);
       validateRegion([]);
       validateTags("");
-      updateSidebarValidation();
+      updateSidebarValidation(ARTICLE_TYPE_OPTIONS[0].value, [], [], "");
     }
-  }, [articleData, loading]);
+  }, [articleData?.id, loading, user?.id]);
 
 
 
@@ -644,7 +657,7 @@ export default function NewsEditorSidebar({ newsId, articleData, menuData, onEdi
             onChange={(value) => {
               setArticleType(value);
               validateType(value);
-              updateSidebarValidation();
+              updateSidebarValidation(value, undefined, undefined, undefined);
             }}
             className={styles.fullWidth}
             status={typeError ? "error" : undefined}
@@ -667,7 +680,9 @@ export default function NewsEditorSidebar({ newsId, articleData, menuData, onEdi
                 onChange={(value) => {
                   setSelectedRubrics(value);
                   validateRubric(value);
-                  updateSidebarValidation();
+                  updateSidebarValidation(undefined, value, undefined, undefined);
+                  // Синхронізуємо з articleData, щоб зміни не втрачалися
+                  onDataChange?.({ rubric: value.map(Number) });
                 }}
                 options={mainCategoriesResponse.map((r) => ({
                   label: r.title,
@@ -697,7 +712,9 @@ export default function NewsEditorSidebar({ newsId, articleData, menuData, onEdi
                 onChange={(value) => {
                   setSelectedRegions(value);
                   validateRegion(value);
-                  updateSidebarValidation();
+                  updateSidebarValidation(undefined, undefined, value, undefined);
+                  // Синхронізуємо з articleData, щоб зміни не втрачалися
+                  onDataChange?.({ region: value.map(Number) });
                 }}
                 options={regionsResponse.map((r) => ({
                   label: r.title,
@@ -746,7 +763,7 @@ export default function NewsEditorSidebar({ newsId, articleData, menuData, onEdi
               setTags(value);
               onTagsChange?.(value); // Notify parent component about tags change
               validateTags(value);
-              updateSidebarValidation();
+              updateSidebarValidation(undefined, undefined, undefined, value);
             }}
             placeholder="Львівщина, полювання, ... "
             status={tagsError ? "error" : undefined}
@@ -785,7 +802,13 @@ export default function NewsEditorSidebar({ newsId, articleData, menuData, onEdi
                 }
                 notFoundContent="Автори не знайдені"
                 loading={loading}
+                disabled={isJournalist}
               />
+              {isJournalist && (
+                <div style={{ fontSize: '12px', color: '#999', marginTop: '4px' }}>
+                  Журналісти не можуть змінювати автора
+                </div>
+              )}
             </div>
             <Checkbox
               className={styles.mt8}
@@ -819,8 +842,8 @@ export default function NewsEditorSidebar({ newsId, articleData, menuData, onEdi
               Головна стрічка
             </Checkbox>
             <Checkbox
-              checked={mainFeed}
-              onChange={(e) => setMainFeed(e.target.checked)}
+              checked={noRss}
+              onChange={(e) => setNoRss(e.target.checked)}
             >
               Не транслювати в RSS
             </Checkbox>
