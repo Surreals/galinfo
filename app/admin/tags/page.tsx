@@ -238,7 +238,18 @@ export default function TagsPage() {
       title: 'Тег',
       dataIndex: 'tag',
       key: 'tag',
-      render: (text: string) => <strong>{text}</strong>
+      render: (text: string) => (
+        <strong 
+          style={{ 
+            color: '#1890ff', 
+            cursor: 'pointer',
+            textDecoration: 'underline'
+          }}
+          onClick={() => window.open(`/tags/${encodeURIComponent(text)}`, '_blank')}
+        >
+          {text}
+        </strong>
+      )
     },
     {
       title: 'Кількість новин',
