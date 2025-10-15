@@ -125,7 +125,7 @@
   border-color: #d9d9d9;
 }
 
-/* Фільтри */
+/* Фільтри - оновлено для Ant Design компонентів */
 .filters {
   background: white;
   padding: 1rem;
@@ -134,140 +134,42 @@
   margin-bottom: 1.5rem;
 }
 
-.filterRow {
-  display: flex;
-  gap: 0.75rem;
-  margin-bottom: 1rem;
-  flex-wrap: nowrap;
-  align-items: flex-end;
-  overflow-x: auto;
+/* Стилі для Ant Design компонентів у фільтрах */
+.filters :global(.ant-select),
+.filters :global(.ant-input),
+.filters :global(.ant-picker) {
+  width: 100%;
 }
 
-/* Single row filter layout */
-.filterGroup {
-  display: flex;
-  flex-direction: column;
-  min-width: 120px;
-  flex: 0 0 auto;
+.filters :global(.ant-select-selector),
+.filters :global(.ant-input),
+.filters :global(.ant-picker) {
+  border-radius: 6px;
 }
 
-.filterGroup label {
+/* Покращені стилі для лейблів */
+.filters label {
   font-weight: 500;
-  margin-bottom: 0.25rem;
   color: #333;
-  font-size: 0.85rem;
-}
-
-.filterGroup select,
-.filterGroup input {
-  padding: 6px 8px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  font-size: 0.85rem;
-  height: 36px;
-  line-height: 1;
-}
-
-.filterGroup select:disabled,
-.filterGroup input:disabled {
-  background-color: #f5f5f5;
-  color: #999;
-  cursor: not-allowed;
-  opacity: 0.6;
-}
-
-.filterGroup input[type="text"],
-.filterGroup input[type="date"] {
-  min-width: 120px;
-}
-
-/* Make DatePickers follow the same column width */
-.datePicker,
-:global(.ant-picker).datePicker,
-.datePicker:global(.ant-picker),
-.datePicker :global(.ant-picker) {
-  width: 120px !important;
-}
-
-.searchButton {
-  align-self: flex-end;
-  background: #007bff;
-  color: white;
-  border: 1px solid #007bff;
-  padding: 0.25rem;
-  border-radius: 4px;
-  cursor: pointer;
   font-size: 0.9rem;
-  margin-top: 1.5rem;
-  height: 36px;
-  width: 36px;
-  line-height: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-right: 0.25rem;
 }
 
-.searchButton:hover:not(:disabled) {
-  background: #0056b3;
-  border-color: #0056b3;
+/* Стилі для кнопок дій */
+.filters :global(.ant-btn) {
+  border-radius: 6px;
 }
 
-.searchButton:disabled {
-  background: #6c757d;
-  border-color: #6c757d;
-  cursor: not-allowed;
-  opacity: 0.6;
+.filters :global(.ant-btn-primary) {
+  background: #1890ff;
+  border-color: #1890ff;
 }
 
-.clearButton {
-  align-self: flex-end;
-  background: #fde8ec;
-  color: #c7084f;
-  border: 1px solid #f8c6d4;
-  padding: 0.25rem;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 0.9rem;
-  margin-top: 1.5rem;
-  height: 36px;
-  width: 36px;
-  line-height: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+.filters :global(.ant-btn-primary:hover) {
+  background: #40a9ff;
+  border-color: #40a9ff;
 }
 
-.clearButton:hover:not(:disabled) {
-  background: #fbd1da;
-}
-
-.clearButton:disabled {
-  background: #f5f5f5;
-  color: #999;
-  cursor: not-allowed;
-  opacity: 0.6;
-}
-
-/* Action buttons group */
-.actionButtonGroup {
-  min-width: auto;
-  width: auto;
-  margin-left: -0.25rem;
-  display: flex;
-  flex-direction: row;
-  gap: 0.25rem;
-}
-
-/* Local override for antd DatePicker only on admin news page */
-/* target either same element or descendant just in case CSS Modules scoping differs */
-:global(.ant-picker).datePicker,
-.datePicker:global(.ant-picker),
-.datePicker :global(.ant-picker) {
-  padding: 6px 8px !important;
-  border-radius: 4px !important;
-  height: 36px !important;
-}
+/* Видалено старі стилі кнопок - тепер використовуються Ant Design компоненти */
 
 
 /* Список новин */

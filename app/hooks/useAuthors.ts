@@ -46,7 +46,12 @@ export function useAuthors(options: UseAuthorsOptions = {}): UseAuthorsReturn {
   // Функція для завантаження авторів
   const fetchAuthors = async (): Promise<Author[]> => {
     try {
-      const response = await fetch('/api/admin/all-users');
+      // Використовуємо різні ендпоінти залежно від опції includeInactive
+      const endpoint = options.includeInactive 
+        ? '/api/admin/users-for-filters' 
+        : '/api/admin/all-users';
+        
+      const response = await fetch(endpoint);
       if (!response.ok) {
         throw new Error('Failed to fetch authors');
       }

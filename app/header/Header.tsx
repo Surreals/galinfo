@@ -284,7 +284,7 @@ export default function Header() {
   return (
     <header className={styles.headerMain}>
       <div className={styles.header}>
-        <Link href="/" target={'_blank'} className={styles.logo}>
+        <Link href="/" target={isAdminPage ? '_blank' : undefined} className={styles.logo}>
           <Image
             src={galinfoLogo}
             alt="Galinfo Logo"

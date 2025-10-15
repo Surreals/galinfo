@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import dayjs from 'dayjs';
-import { DatePicker, Button, Tag, Table } from 'antd';
+import { DatePicker, Button, Tag, Table, Select, Input, Space, Row, Col, Card } from 'antd';
 import { EyeOutlined, EditOutlined, DeleteOutlined, ArrowLeftOutlined, LinkOutlined, FileOutlined, ClearOutlined, SearchOutlined } from '@ant-design/icons';
 import { useRouter } from 'next/navigation';
 import AdminNavigation from '../components/AdminNavigation';
@@ -88,7 +88,7 @@ interface NewsListResponse {
 export default function NewsPage() {
   const router = useRouter();
   const { isAdmin } = useRolePermissions();
-  const { authorsData } = useAuthors();
+  const { authorsData } = useAuthors({ includeInactive: true });
   const [newsData, setNewsData] = useState<NewsListResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [paginationLoading, setPaginationLoading] = useState(false);
@@ -115,10 +115,10 @@ export default function NewsPage() {
     page: 1,
     limit: 15,
     status: 'all',
-    type: 'all',
+    type: 'all' as string | undefined,
     rubric: 'all',
     theme: 'all',
-    author: 'all',
+    author: 'all' as string | undefined,
     keyword: '',
     newsId: '',
     dateFrom: '',
@@ -473,10 +473,10 @@ export default function NewsPage() {
       page: 1,
       limit: 15,
       status: 'all',
-      type: 'all',
+      type: undefined, // undefined для allowClear
       rubric: 'all',
       theme: 'all',
-      author: 'all',
+      author: undefined, // undefined для allowClear
       keyword: '',
       newsId: '',
       dateFrom: '',
@@ -548,127 +548,185 @@ export default function NewsPage() {
 
 
         {/* Фільтри */}
-        <div className={styles.filters}>
-          <div className={styles.filterRow}>
-
-            <div className={styles.filterGroup}>
-              <label>Тип:</label>
-              <select 
-                value={filters.type} 
-                onChange={(e) => handleFilterChange('type', e.target.value)}
-                disabled={paginationLoading}
-              >
-                <option value="all">Всі типи</option>
-                <option value="news">Новини</option>
-                <option value="articles">Статті</option>
-                <option value="photo">Фоторепортажі</option>
-                <option value="video">Відео</option>
-                <option value="blogs">Блоги</option>
-              </select>
+        <Card 
+          title={
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              Фільтри
+              {(() => {
+                const activeFiltersCount = [
+                  filters.type && filters.type !== 'all',
+                  filters.author && filters.author !== 'all',
+                  filters.keyword?.trim(),
+                  filters.newsId?.trim(),
+                  filters.dateFrom,
+                  filters.dateTo
+                ].filter(Boolean).length;
+                
+                return activeFiltersCount > 0 ? (
+                  <Tag color="blue">
+                    {activeFiltersCount} активний
+                  </Tag>
+                ) : null;
+              })()}
             </div>
+          }
+          size="small" 
+          style={{ marginBottom: '16px' }}
+        >
+          <Row gutter={[16, 16]}>
+            <Col xs={24} sm={12} md={8} lg={6}>
+              <div>
+                <label style={{ display: 'block', marginBottom: '4px', fontWeight: 500 }}>Тип:</label>
+                <Select
+                  value={filters.type === 'all' ? undefined : filters.type}
+                  onChange={(value) => handleFilterChange('type', value || 'all')}
+                  disabled={paginationLoading}
+                  style={{ width: '100%' }}
+                  allowClear
+                  placeholder="Оберіть тип"
+                  options={[
+                    { value: 'news', label: 'Новини' },
+                    { value: 'articles', label: 'Статті' },
+                    { value: 'photo', label: 'Фоторепортажі' },
+                    { value: 'video', label: 'Відео' },
+                    { value: 'blogs', label: 'Блоги' },
+                  ]}
+                />
+              </div>
+            </Col>
 
-            <div className={styles.filterGroup}>
-              <label>Сортування:</label>
-              <select 
-                value={`${filters.sortBy}-${filters.sortOrder}`} 
-                onChange={(e) => {
-                  const [sortBy, sortOrder] = e.target.value.split('-');
-                  handleFilterChange('sortBy', sortBy);
-                  handleFilterChange('sortOrder', sortOrder);
-                }}
-                disabled={paginationLoading}
-              >
-                <option value="ndate-DESC">Дата публікації (новіші)</option>
-                <option value="ndate-ASC">Дата публікації (старіші)</option>
-                <option value="udate-DESC">Дата оновлення (новіші)</option>
-                <option value="udate-ASC">Дата оновлення (старіші)</option>
-                <option value="nheader-ASC">Заголовок (А-Я)</option>
-                <option value="nheader-DESC">Заголовок (Я-А)</option>
-                <option value="views_count-DESC">Перегляди (більше)</option>
-                <option value="views_count-ASC">Перегляди (менше)</option>
-              </select>
-            </div>
+            <Col xs={24} sm={12} md={8} lg={6}>
+              <div>
+                <label style={{ display: 'block', marginBottom: '4px', fontWeight: 500 }}>Сортування:</label>
+                <Select
+                  value={`${filters.sortBy}-${filters.sortOrder}`}
+                  onChange={(value) => {
+                    const [sortBy, sortOrder] = value.split('-');
+                    handleFilterChange('sortBy', sortBy);
+                    handleFilterChange('sortOrder', sortOrder);
+                  }}
+                  disabled={paginationLoading}
+                  style={{ width: '100%' }}
+                  options={[
+                    { value: 'ndate-DESC', label: 'Дата публікації (новіші)' },
+                    { value: 'ndate-ASC', label: 'Дата публікації (старіші)' },
+                    { value: 'udate-DESC', label: 'Дата оновлення (новіші)' },
+                    { value: 'udate-ASC', label: 'Дата оновлення (старіші)' },
+                    { value: 'nheader-ASC', label: 'Заголовок (А-Я)' },
+                    { value: 'nheader-DESC', label: 'Заголовок (Я-А)' },
+                    { value: 'views_count-DESC', label: 'Перегляди (більше)' },
+                    { value: 'views_count-ASC', label: 'Перегляди (менше)' },
+                  ]}
+                />
+              </div>
+            </Col>
 
-            <div className={styles.filterGroup}>
-              <label>Автор:</label>
-              <select 
-                value={filters.author} 
-                onChange={(e) => handleFilterChange('author', e.target.value)}
-                disabled={paginationLoading}
-              >
-                <option value="all">Всі автори</option>
-                {authorsData.allAuthors.map(author => (
-                  <option key={author.id} value={author.id}>{author.name}</option>
-                ))}
-              </select>
-            </div>
+            <Col xs={24} sm={12} md={8} lg={6}>
+              <div>
+                <label style={{ display: 'block', marginBottom: '4px', fontWeight: 500 }}>Автор:</label>
+                <Select
+                  value={filters.author === 'all' ? undefined : filters.author}
+                  onChange={(value) => handleFilterChange('author', value || 'all')}
+                  disabled={paginationLoading || authorsData.loading}
+                  loading={authorsData.loading}
+                  style={{ width: '100%' }}
+                  showSearch
+                  allowClear
+                  placeholder={authorsData.loading ? "Завантаження..." : "Оберіть автора"}
+                  optionFilterProp="children"
+                  filterOption={(input, option) =>
+                    (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
+                  }
+                  options={[
+                    ...(authorsData.error ? [] : authorsData.allAuthors.map(author => ({
+                      value: author.id,
+                      label: `${author.name}${author.isActive === false ? ' (неактивний)' : ''}`,
+                    })))
+                  ]}
+                  notFoundContent={authorsData.error ? 'Помилка завантаження авторів' : undefined}
+                />
+              </div>
+            </Col>
 
-            <div className={styles.filterGroup}>
-              <label>Ключове слово:</label>
-              <input
-                type="text"
-                value={filters.keyword}
-                onChange={(e) => handleFilterChange('keyword', e.target.value)}
-                placeholder="Пошук в заголовках..."
-                disabled={paginationLoading}
-              />
-            </div>
+            <Col xs={24} sm={12} md={8} lg={6}>
+              <div>
+                <label style={{ display: 'block', marginBottom: '4px', fontWeight: 500 }}>Ключове слово:</label>
+                <Input
+                  value={filters.keyword}
+                  onChange={(e) => handleFilterChange('keyword', e.target.value)}
+                  placeholder="Пошук в заголовках та описі..."
+                  disabled={paginationLoading}
+                  title="Пошук працює в заголовках новин та їх коротких описах"
+                />
+              </div>
+            </Col>
 
-            <div className={styles.filterGroup}>
-              <label>ID новини:</label>
-              <input
-                type="text"
-                value={filters.newsId}
-                onChange={(e) => handleFilterChange('newsId', e.target.value)}
-                placeholder="Введіть ID..."
-                disabled={paginationLoading}
-              />
-            </div>
+            <Col xs={24} sm={12} md={8} lg={6}>
+              <div>
+                <label style={{ display: 'block', marginBottom: '4px', fontWeight: 500 }}>ID новини:</label>
+                <Input
+                  value={filters.newsId}
+                  onChange={(e) => handleFilterChange('newsId', e.target.value)}
+                  placeholder="Введіть ID..."
+                  disabled={paginationLoading}
+                />
+              </div>
+            </Col>
 
-            <div className={styles.filterGroup}>
-              <label>Дата від:</label>
-              <DatePicker
-                allowClear
-                format="YYYY-MM-DD"
-                value={filters.dateFrom ? dayjs(filters.dateFrom) : null}
-                onChange={(date) => handleFilterChange('dateFrom', date ? date.format('YYYY-MM-DD') : '')}
-                className={styles.datePicker}
-                disabled={paginationLoading}
-              />
-            </div>
+            <Col xs={24} sm={12} md={8} lg={6}>
+              <div>
+                <label style={{ display: 'block', marginBottom: '4px', fontWeight: 500 }}>Дата від:</label>
+                <DatePicker
+                  allowClear
+                  format="YYYY-MM-DD"
+                  value={filters.dateFrom ? dayjs(filters.dateFrom) : null}
+                  onChange={(date) => handleFilterChange('dateFrom', date ? date.format('YYYY-MM-DD') : '')}
+                  style={{ width: '100%' }}
+                  disabled={paginationLoading}
+                />
+              </div>
+            </Col>
 
-            <div className={styles.filterGroup}>
-              <label>Дата до:</label>
-              <DatePicker
-                allowClear
-                format="YYYY-MM-DD"
-                value={filters.dateTo ? dayjs(filters.dateTo) : null}
-                onChange={(date) => handleFilterChange('dateTo', date ? date.format('YYYY-MM-DD') : '')}
-                className={styles.datePicker}
-                disabled={paginationLoading}
-              />
-            </div>
+            <Col xs={24} sm={12} md={8} lg={6}>
+              <div>
+                <label style={{ display: 'block', marginBottom: '4px', fontWeight: 500 }}>Дата до:</label>
+                <DatePicker
+                  allowClear
+                  format="YYYY-MM-DD"
+                  value={filters.dateTo ? dayjs(filters.dateTo) : null}
+                  onChange={(date) => handleFilterChange('dateTo', date ? date.format('YYYY-MM-DD') : '')}
+                  style={{ width: '100%' }}
+                  disabled={paginationLoading}
+                />
+              </div>
+            </Col>
 
-            <div className={`${styles.filterGroup} ${styles.actionButtonGroup}`}>
-              <button 
-                className={styles.searchButton}
-                onClick={handleSearch}
-                disabled={paginationLoading}
-                title="Пошук"
-              >
-                <SearchOutlined />
-              </button>
-              <button 
-                className={styles.clearButton}
-                onClick={clearFilters}
-                disabled={paginationLoading}
-                title="Очистити фільтри"
-              >
-                <ClearOutlined />
-              </button>
-            </div>
-          </div>
-        </div>
+            <Col xs={24} sm={12} md={8} lg={6}>
+              <div>
+                <label style={{ display: 'block', marginBottom: '4px', fontWeight: 500 }}>Дії:</label>
+                <Space>
+                  <Button
+                    type="primary"
+                    icon={<SearchOutlined />}
+                    onClick={handleSearch}
+                    disabled={paginationLoading}
+                    title="Пошук"
+                  >
+                    Пошук
+                  </Button>
+                  <Button
+                    icon={<ClearOutlined />}
+                    onClick={clearFilters}
+                    disabled={paginationLoading}
+                    title="Очистити всі фільтри"
+                  >
+                    Очистити
+                  </Button>
+                </Space>
+              </div>
+            </Col>
+          </Row>
+        </Card>
 
 
         {/* Список новин */}
