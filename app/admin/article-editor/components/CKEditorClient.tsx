@@ -194,14 +194,14 @@ const CKEditorClient = forwardRef<CKEditorClientRef, Props>(
 
     return (
       <div className={styles.editor}>
-        <div className={styles.editorToolbar}>
+        {/* <div className={styles.editorToolbar}>
           <VideoWidget
             onVideoSelect={handleVideoSelect}
             onVideoUpload={handleVideoUpload}
             onVideoUrlInsert={handleVideoUrlInsert}
             existingVideos={existingVideos}
           />
-        </div>
+        </div> */}
         <CKEditor
           initData={htmlContent || ''}
           config={editorConfig}

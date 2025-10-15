@@ -21,9 +21,9 @@
 
 .imageGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  gap: 16px;
-  max-height: 600px;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 12px;
+  max-height: 700px;
   overflow-y: auto;
   padding: 8px;
 }
@@ -42,11 +42,43 @@
 .imageCard.selected {
   border-color: #1890ff;
   box-shadow: 0 4px 12px rgba(24, 144, 255, 0.3);
+  position: relative;
+}
+
+.imageCard.selected::before {
+  content: '';
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 20px;
+  height: 20px;
+  background: #1890ff;
+  border-radius: 50%;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.imageCard.selected::after {
+  content: '✓';
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 20px;
+  height: 20px;
+  color: white;
+  font-size: 12px;
+  font-weight: bold;
+  z-index: 11;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .imageContainer {
   position: relative;
-  height: 150px;
+  height: 120px;
   overflow: hidden;
 }
 
@@ -68,6 +100,7 @@
   justify-content: center;
   opacity: 0;
   transition: opacity 0.3s ease;
+  pointer-events: none;
 }
 
 .imageCard:hover .imageOverlay {
@@ -83,14 +116,15 @@
   background: rgba(255, 255, 255, 0.9);
   border: none;
   border-radius: 50%;
-  width: 36px;
-  height: 36px;
+  width: 28px;
+  height: 28px;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  font-size: 16px;
+  font-size: 14px;
   transition: all 0.3s ease;
+  pointer-events: auto;
 }
 
 .actionButton:hover {
@@ -106,7 +140,7 @@
 
 .imageTitle {
   font-weight: 500;
-  font-size: 14px;
+  font-size: 12px;
   color: #262626;
   white-space: nowrap;
   overflow: hidden;
@@ -117,7 +151,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  font-size: 12px;
+  font-size: 10px;
   color: #8c8c8c;
 }
 

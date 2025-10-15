@@ -24,6 +24,7 @@ export async function POST(request: NextRequest) {
     const title = formData.get('title') as string;
     const picType = formData.get('pic_type') as string;
     const description = formData.get('description') as string;
+    const tags = formData.get('tags') as string;
 
     if (files.length === 0) {
       return NextResponse.json(
@@ -120,15 +121,16 @@ export async function POST(request: NextRequest) {
 
         // Зберігаємо інформацію в базу даних
         const insertQuery = `
-          INSERT INTO a_pics (filename, title_ua, title_deflang, pic_type)
-          VALUES (?, ?, ?, ?)
+          INSERT INTO a_pics (filename, title_ua, title_deflang, pic_type, tags)
+          VALUES (?, ?, ?, ?, ?)
         `;
 
         const [result] = await executeQuery(insertQuery, [
           filename,
           title || file.name,
           title || file.name, // title_deflang - using same value as title_ua
-          getPicTypeId(picType || 'gallery')
+          getPicTypeId(picType || 'gallery'),
+          tags || null
         ]);
 
         // Отримуємо ID вставленого запису
@@ -141,7 +143,8 @@ export async function POST(request: NextRequest) {
             filename,
             title_ua,
             title_deflang,
-            pic_type
+            pic_type,
+            tags
           FROM a_pics 
           WHERE id = ?
         `;

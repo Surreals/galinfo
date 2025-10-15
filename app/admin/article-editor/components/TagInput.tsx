@@ -12,13 +12,13 @@ interface TagSuggestion {
 }
 
 interface TagInputProps {
-  value: string;
-  onChange: (value: string) => void;
+  value?: string;
+  onChange?: (value: string) => void;
   placeholder?: string;
   status?: 'error' | 'warning';
 }
 
-export default function TagInput({ value, onChange, placeholder, status }: TagInputProps) {
+export default function TagInput({ value = '', onChange, placeholder, status }: TagInputProps) {
   const [suggestions, setSuggestions] = useState<TagSuggestion[]>([]);
   const [loading, setLoading] = useState(false);
   const [showSuggestions, setShowSuggestions] = useState(false);
@@ -45,7 +45,7 @@ export default function TagInput({ value, onChange, placeholder, status }: TagIn
     
     updateDebounceRef.current = setTimeout(() => {
       setPendingValue(newValue);
-      onChange(newValue);
+      onChange?.(newValue);
     }, 2000);
   }, [onChange]);
 
@@ -138,23 +138,21 @@ export default function TagInput({ value, onChange, placeholder, status }: TagIn
     const beforeCurrentTag = internalValue.substring(0, startOfCurrentTag);
     const afterCurrentTag = internalValue.substring(cursorPosition);
     
-    // Build the new value
+    // Build the new value - always add comma and space after selected tag
     if (beforeCurrentTag.trim() === '') {
       // First tag
-      newValue = selectedTag + (afterCurrentTag.startsWith(',') ? '' : ', ') + afterCurrentTag;
+      newValue = selectedTag + ', ' + afterCurrentTag;
     } else {
       // Subsequent tags
-      newValue = beforeCurrentTag + selectedTag + (afterCurrentTag.startsWith(',') ? '' : ', ') + afterCurrentTag;
+      newValue = beforeCurrentTag + selectedTag + ', ' + afterCurrentTag;
     }
     
     // Clean up extra commas and spaces
     newValue = newValue.replace(/,\s*,/g, ',').replace(/,\s*$/g, '').trim();
     
-    console.log('Tag selected:', selectedTag, 'New value:', newValue);
-    
     setInternalValue(newValue);
     setPendingValue(newValue);
-    onChange(newValue); // Immediate update for suggestion selection
+    onChange?.(newValue); // Immediate update for suggestion selection
     setShowSuggestions(false);
     setSuggestions([]);
     
@@ -162,7 +160,7 @@ export default function TagInput({ value, onChange, placeholder, status }: TagIn
     setTimeout(() => {
       if (inputRef.current) {
         inputRef.current.focus();
-        // Position cursor at the end of the selected tag
+        // Position cursor at the end after the comma and space
         const newCursorPos = newValue.indexOf(selectedTag) + selectedTag.length + 2; // +2 for ", "
         // Access the actual textarea element from Ant Design's TextArea component
         const textareaElement = inputRef.current.resizableTextArea?.textArea;
@@ -188,7 +186,7 @@ export default function TagInput({ value, onChange, placeholder, status }: TagIn
     if (updateDebounceRef.current) {
       clearTimeout(updateDebounceRef.current);
       setPendingValue(internalValue);
-      onChange(internalValue);
+      onChange?.(internalValue);
     }
     
     // Delay hiding suggestions to allow for selection

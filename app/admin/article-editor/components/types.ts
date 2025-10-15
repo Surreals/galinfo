@@ -17,14 +17,19 @@ export interface ImagePickerModalProps {
   open: boolean;
   onClose: () => void;
   onSelect: (image: ImageItem) => void;
+  onSelectMultiple?: (images: ImageItem[]) => void;
   currentImage?: ImageItem | null;
+  allowMultiple?: boolean;
 }
 
 export interface ImageGalleryProps {
   images: ImageItem[];
   onSelect: (image: ImageItem) => void;
+  onSelectMultiple?: (images: ImageItem[]) => void;
   selectedImageId?: number;
+  selectedImageIds?: number[];
   loading?: boolean;
+  allowMultiple?: boolean;
 }
 
 export interface ImageUploadProps {

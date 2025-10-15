@@ -8,8 +8,10 @@ import styles from './ImageGallery.module.css';
 export default function ImageGallery({ 
   images, 
   onSelect, 
-  selectedImageId, 
-  loading 
+  selectedImageId,
+  selectedImageIds = [],
+  loading,
+  allowMultiple = false
 }: ImageGalleryProps) {
   const [previewVisible, setPreviewVisible] = useState(false);
   const [previewImage, setPreviewImage] = useState<string | null>(null);
@@ -42,12 +44,21 @@ export default function ImageGallery({
   return (
     <div className={styles.gallery}>
       <div className={styles.imageGrid}>
-        {images.map((image) => (
+        {images.map((image) => {
+          const isSelected = allowMultiple 
+            ? selectedImageIds.includes(image.id)
+            : selectedImageId === image.id;
+          
+          
+          return (
           <Card
             key={image.id}
             hoverable
+            onClick={() => {
+              onSelect(image);
+            }}
             className={`${styles.imageCard} ${
-              selectedImageId === image.id ? styles.selected : ''
+              isSelected ? styles.selected : ''
             }`}
             cover={
               <div className={styles.imageContainer}>
@@ -56,28 +67,8 @@ export default function ImageGallery({
                   alt={image.title}
                   className={styles.image}
                   preview={false}
-                  onClick={() => handlePreview(image)}
+                  
                 />
-                <div className={styles.imageOverlay}>
-                  <div className={styles.imageActions}>
-                    <Tooltip title="Переглянути">
-                      <button
-                        className={styles.actionButton}
-                        onClick={() => handlePreview(image)}
-                      >
-                        👁️
-                      </button>
-                    </Tooltip>
-                    <Tooltip title="Вибрати">
-                      <button
-                        className={styles.actionButton}
-                        onClick={() => onSelect(image)}
-                      >
-                        ✓
-                      </button>
-                    </Tooltip>
-                  </div>
-                </div>
               </div>
             }
             bodyStyle={{ padding: '8px' }}
@@ -88,7 +79,8 @@ export default function ImageGallery({
               </div>
             </div>
           </Card>
-        ))}
+          );
+        })}
       </div>
 
       {/* Модалка для перегляду зображення */}

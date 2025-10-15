@@ -98,6 +98,7 @@ export default function NewsEditorSidebar({ newsId, articleData, menuData, onEdi
 
   // Стан для модалки зображень
   const [isImageModalOpen, setIsImageModalOpen] = useState(false);
+  const [isMultipleImageModalOpen, setIsMultipleImageModalOpen] = useState(false);
   
   // Ref для контейнера зображень для автоскролу
   const imageScrollRef = useRef<HTMLDivElement>(null);
@@ -132,6 +133,43 @@ export default function NewsEditorSidebar({ newsId, articleData, menuData, onEdi
 
   const closeImagePicker = () => {
     setIsImageModalOpen(false);
+  };
+
+  const closeMultipleImagePicker = () => {
+    setIsMultipleImageModalOpen(false);
+  };
+
+  const handleMultipleImageSelect = (images: any[]) => {
+    console.log('Multiple images selected:', images);
+    
+    // Додаємо всі вибрані зображення до списку файлів (як в одинарному виборі)
+    images.forEach((image, index) => {
+      const newFile = {
+        uid: `image-${image.id}-${index}`,
+        name: image.filename || image.title || `image-${image.id}`,
+        status: 'done' as const,
+        url: image.url || image.thumbnail_url,
+        imageId: image.id,
+        thumbUrl: image.thumbnail_url,
+      };
+      
+      setFileList(prev => [...prev, newFile]);
+    });
+
+     // Автоскрол до кінця списку зображень
+     setTimeout(() => {
+      if (imageScrollRef.current) {
+        const container = imageScrollRef.current;
+        // Використовуємо smooth scroll для кращого UX
+        container.scrollTo({
+          left: container.scrollWidth,
+          behavior: 'smooth'
+        });
+      }
+    }, 400);
+    
+    message.success(`Додано ${images.length} зображень до статті`);
+    closeMultipleImagePicker();
   };
 
   const handleImageSelect = (image: any) => {
@@ -641,7 +679,7 @@ export default function NewsEditorSidebar({ newsId, articleData, menuData, onEdi
               
             </Upload>
           </div>
-          <Button
+          {/* <Button
             type="default"
             size="small"
             icon={<PictureOutlined/>}
@@ -649,6 +687,15 @@ export default function NewsEditorSidebar({ newsId, articleData, menuData, onEdi
             style={{marginTop: '8px', width: '100%'}}
           >
             Вибрати з галереї
+          </Button> */}
+          <Button
+            type="default"
+            size="small"
+            icon={<PictureOutlined/>}
+            onClick={() => setIsMultipleImageModalOpen(true)}
+            style={{marginTop: '8px', width: '100%'}}
+          >
+            Вибрати кілька зображень
           </Button>
         </div>
 
@@ -979,6 +1026,16 @@ export default function NewsEditorSidebar({ newsId, articleData, menuData, onEdi
         onClose={closeImagePicker}
         onSelect={handleImageSelect}
         currentImage={null}
+      />
+
+      {/* Модалка для множинного вибору зображень */}
+      <ImagePickerModal
+        open={isMultipleImageModalOpen}
+        onClose={closeMultipleImagePicker}
+        onSelect={handleImageSelect}
+        onSelectMultiple={handleMultipleImageSelect}
+        currentImage={null}
+        allowMultiple={true}
       />
 
       {/* Превью зображення */}

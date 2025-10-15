@@ -7,7 +7,6 @@ import AdminNavigation from '../components/AdminNavigation';
 import styles from './categories.module.css';
 
 const { Option } = Select;
-const { TabPane } = Tabs;
 
 interface Category {
   id: number;

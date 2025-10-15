@@ -43,7 +43,6 @@ export default function VideoWidget({
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [activeTab, setActiveTab] = useState<'upload' | 'url' | 'existing'>('upload');
   const [uploading, setUploading] = useState(false);
-  const [form] = Form.useForm();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Handle video selection from existing videos
@@ -71,7 +70,6 @@ export default function VideoWidget({
       const videoData = await onVideoUpload(file, title);
       onVideoSelect(videoData);
       setIsModalVisible(false);
-      form.resetFields();
       message.success('Відео успішно завантажено та додано');
     } catch (error) {
       console.error('Upload error:', error);
@@ -88,7 +86,6 @@ export default function VideoWidget({
       const videoData = await onVideoUrlInsert(values.url, values.title, values.description);
       onVideoSelect(videoData);
       setIsModalVisible(false);
-      form.resetFields();
       message.success('Відео успішно додано з URL');
     } catch (error) {
       console.error('URL insert error:', error);
@@ -140,7 +137,6 @@ export default function VideoWidget({
         open={isModalVisible}
         onCancel={() => {
           setIsModalVisible(false);
-          form.resetFields();
         }}
         footer={null}
         width={800}
@@ -209,7 +205,6 @@ export default function VideoWidget({
             {activeTab === 'url' && (
               <div className={styles.urlTab}>
                 <Form
-                  form={form}
                   layout="vertical"
                   onFinish={handleUrlSubmit}
                   className={styles.urlForm}
@@ -256,7 +251,9 @@ export default function VideoWidget({
                       >
                         Додати відео
                       </Button>
-                      <Button onClick={() => form.resetFields()}>
+                      <Button onClick={() => {
+                        // Очистити форму можна через Form.useForm() якщо потрібно
+                      }}>
                         Очистити
                       </Button>
                     </Space>

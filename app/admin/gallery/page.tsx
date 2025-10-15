@@ -3,8 +3,11 @@
 import React, { useState, useEffect } from 'react';
 import { Table, Button, Upload, Modal, Form, Input, Select, message, Space, Popconfirm, Checkbox } from 'antd';
 import { UploadOutlined, DeleteOutlined, EditOutlined, EyeOutlined } from '@ant-design/icons';
-import type { UploadFile, TableRowSelection } from 'antd/es/table/interface';
+import type { TableRowSelection } from 'antd/es/table/interface';
+import type { UploadFile } from 'antd/es/upload/interface';
 import AdminNavigation from '../components/AdminNavigation';
+import TagInput from '../article-editor/components/TagInput';
+import TagSearchInput from '../article-editor/components/TagSearchInput';
 import styles from './gallery.module.css';
 
 const { Option } = Select;
@@ -15,6 +18,7 @@ interface Image {
   title_ua: string;
   title_deflang: string;
   pic_type: string;
+  tags?: string;
   url: string;
   thumbnail_url: string;
 }
@@ -29,6 +33,7 @@ const GalleryPage: React.FC = () => {
   });
   const [searchText, setSearchText] = useState('');
   const [picTypeFilter, setPicTypeFilter] = useState('');
+  const [tagsFilter, setTagsFilter] = useState('');
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isUploadModalVisible, setIsUploadModalVisible] = useState(false);
   const [editingImage, setEditingImage] = useState<Image | null>(null);
@@ -39,7 +44,7 @@ const GalleryPage: React.FC = () => {
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
 
   // Завантаження списку зображень
-  const fetchImages = async (page = 1, limit = 20, search = '', picType = '') => {
+  const fetchImages = async (page = 1, limit = 20, search = '', picType = '', tags = '') => {
     setLoading(true);
     try {
       const params = new URLSearchParams({
@@ -47,6 +52,7 @@ const GalleryPage: React.FC = () => {
         limit: limit.toString(),
         ...(search && { search }),
         ...(picType && { pic_type: picType }),
+        ...(tags && { tags }),
       });
 
       const response = await fetch(`/api/admin/images?${params}`);
@@ -97,6 +103,7 @@ const GalleryPage: React.FC = () => {
       
       formData.append('title', values.title || '');
       formData.append('pic_type', values.pic_type || 'gallery');
+      formData.append('tags', values.tags || '');
 
       const response = await fetch('/api/admin/images/upload', {
         method: 'POST',
@@ -110,7 +117,7 @@ const GalleryPage: React.FC = () => {
         setIsUploadModalVisible(false);
         uploadForm.resetFields();
         setFileList([]);
-        fetchImages(pagination.current, pagination.pageSize, searchText, picTypeFilter);
+        fetchImages(pagination.current, pagination.pageSize, searchText, picTypeFilter, tagsFilter);
       } else {
         message.error(data.error || 'Помилка завантаження зображень');
       }
@@ -129,6 +136,7 @@ const GalleryPage: React.FC = () => {
       title_ua: image.title_ua,
       title_deflang: image.title_deflang,
       pic_type: image.pic_type,
+      tags: image.tags || '',
     });
     setIsModalVisible(true);
   };
@@ -145,7 +153,12 @@ const GalleryPage: React.FC = () => {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(values),
+        body: JSON.stringify({
+          title_ua: values.title_ua,
+          title_deflang: values.title_deflang,
+          pic_type: values.pic_type,
+          tags: values.tags || null,
+        }),
       });
 
       const result = await response.json();
@@ -155,7 +168,7 @@ const GalleryPage: React.FC = () => {
         setIsModalVisible(false);
         setEditingImage(null);
         form.resetFields();
-        fetchImages(pagination.current, pagination.pageSize, searchText, picTypeFilter);
+        fetchImages(pagination.current, pagination.pageSize, searchText, picTypeFilter, tagsFilter);
       } else {
         message.error(result.error || 'Помилка збереження зображення');
       }
@@ -176,7 +189,7 @@ const GalleryPage: React.FC = () => {
 
       if (response.ok && result.success) {
         message.success('Зображення видалено');
-        fetchImages(pagination.current, pagination.pageSize, searchText, picTypeFilter);
+        fetchImages(pagination.current, pagination.pageSize, searchText, picTypeFilter, tagsFilter);
       } else {
         message.error(result.error || 'Помилка видалення зображення');
       }
@@ -207,7 +220,7 @@ const GalleryPage: React.FC = () => {
       if (response.ok && result.success) {
         message.success(`Видалено ${result.deleted} зображень`);
         setSelectedRowKeys([]);
-        fetchImages(pagination.current, pagination.pageSize, searchText, picTypeFilter);
+        fetchImages(pagination.current, pagination.pageSize, searchText, picTypeFilter, tagsFilter);
       } else {
         message.error(result.error || 'Помилка групового видалення');
       }
@@ -274,6 +287,35 @@ const GalleryPage: React.FC = () => {
       },
     },
     {
+      title: 'Теги',
+      dataIndex: 'tags',
+      key: 'tags',
+      width: 200,
+      ellipsis: true,
+      render: (tags: string) => {
+        if (!tags || tags.trim() === '') {
+          return <span style={{ color: '#999' }}>—</span>;
+        }
+        return (
+          <div style={{ maxWidth: '180px' }}>
+            {tags.split(',').map((tag, index) => (
+              <span key={index} style={{ 
+                display: 'inline-block',
+                background: '#f0f0f0',
+                padding: '2px 6px',
+                margin: '1px',
+                borderRadius: '3px',
+                fontSize: '12px',
+                color: '#666'
+              }}>
+                {tag.trim()}
+              </span>
+            ))}
+          </div>
+        );
+      },
+    },
+    {
       title: 'Дії',
       key: 'actions',
       width: 150,
@@ -320,7 +362,7 @@ const GalleryPage: React.FC = () => {
             placeholder="Пошук зображень..."
             value={searchText}
             onChange={(e) => setSearchText(e.target.value)}
-            onSearch={(value) => fetchImages(1, pagination.pageSize, value, picTypeFilter)}
+            onSearch={(value) => fetchImages(1, pagination.pageSize, value, picTypeFilter, tagsFilter)}
             style={{ width: 200, marginRight: 16 }}
           />
           <Select
@@ -328,7 +370,7 @@ const GalleryPage: React.FC = () => {
             value={picTypeFilter}
             onChange={(value) => {
               setPicTypeFilter(value);
-              fetchImages(1, pagination.pageSize, searchText, value);
+              fetchImages(1, pagination.pageSize, searchText, value, tagsFilter);
             }}
             style={{ width: 150, marginRight: 16 }}
             allowClear
@@ -338,6 +380,14 @@ const GalleryPage: React.FC = () => {
             <Option value="avatar">Аватар</Option>
             <Option value="banner">Банер</Option>
           </Select>
+          <div style={{ width: 200, marginRight: 16 }}>
+            <TagSearchInput
+              value={tagsFilter}
+              onChange={setTagsFilter}
+              onSearch={(value) => fetchImages(1, pagination.pageSize, searchText, picTypeFilter, value)}
+              placeholder="Пошук по тегах..."
+            />
+          </div>
           {selectedRowKeys.length > 0 && (
             <Popconfirm
               title={`Ви впевнені, що хочете видалити ${selectedRowKeys.length} зображень?`}
@@ -377,7 +427,7 @@ const GalleryPage: React.FC = () => {
           showTotal: (total, range) => 
             `${range[0]}-${range[1]} з ${total} зображень`,
           onChange: (page, pageSize) => {
-            fetchImages(page, pageSize || 20, searchText, picTypeFilter);
+            fetchImages(page, pageSize || 20, searchText, picTypeFilter, tagsFilter);
           },
         }}
         scroll={{ x: 800 }}
@@ -450,6 +500,15 @@ const GalleryPage: React.FC = () => {
               <Option value="banner">Банер</Option>
             </Select>
           </Form.Item>
+
+          <Form.Item
+            name="tags"
+            label="Теги"
+          >
+            <TagInput
+              placeholder="Введіть теги через кому..."
+            />
+          </Form.Item>
         </Form>
       </Modal>
 
@@ -492,6 +551,14 @@ const GalleryPage: React.FC = () => {
               <Option value="avatar">Аватар</Option>
               <Option value="banner">Банер</Option>
             </Select>
+          </Form.Item>
+          <Form.Item
+            name="tags"
+            label="Теги"
+          >
+            <TagInput
+              placeholder="Введіть теги через кому..."
+            />
           </Form.Item>
         </Form>
       </Modal>

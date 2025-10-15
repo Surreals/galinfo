@@ -9,6 +9,7 @@ export async function GET(request: NextRequest) {
     const limit = parseInt(searchParams.get('limit') || '20');
     const search = searchParams.get('search') || '';
     const picType = searchParams.get('pic_type') || '';
+    const tags = searchParams.get('tags') || '';
     
     const offset = (page - 1) * limit;
     
@@ -19,17 +20,24 @@ export async function GET(request: NextRequest) {
         filename,
         title_ua,
         title_deflang,
-        pic_type
+        pic_type,
+        tags
       FROM a_pics 
       WHERE 1=1
     `;
     
     const queryParams: any[] = [];
     
-    // Додаємо пошук по назві
+    // Додаємо пошук по назві та тегах
     if (search) {
-      queryText += ` AND (title_ua LIKE ? OR filename LIKE ?)`;
-      queryParams.push(`%${search}%`, `%${search}%`);
+      queryText += ` AND (title_ua LIKE ? OR filename LIKE ? OR tags LIKE ?)`;
+      queryParams.push(`%${search}%`, `%${search}%`, `%${search}%`);
+    }
+    
+    // Додаємо пошук по тегах
+    if (tags) {
+      queryText += ` AND tags LIKE ?`;
+      queryParams.push(`%${tags}%`);
     }
     
     // Додаємо фільтр по типу
@@ -59,8 +67,13 @@ export async function GET(request: NextRequest) {
     const countParams: any[] = [];
     
     if (search) {
-      countQuery += ` AND (title_ua LIKE ? OR filename LIKE ?)`;
-      countParams.push(`%${search}%`, `%${search}%`);
+      countQuery += ` AND (title_ua LIKE ? OR filename LIKE ? OR tags LIKE ?)`;
+      countParams.push(`%${search}%`, `%${search}%`, `%${search}%`);
+    }
+    
+    if (tags) {
+      countQuery += ` AND tags LIKE ?`;
+      countParams.push(`%${tags}%`);
     }
     
     if (picType) {

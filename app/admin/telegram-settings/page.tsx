@@ -36,7 +36,6 @@ import {
 const { Title, Text, Paragraph } = Typography;
 const { Option } = Select;
 const { TextArea } = Input;
-const { TabPane } = Tabs;
 
 interface BotInfo {
   id: number;
@@ -425,7 +424,7 @@ export default function TelegramUnifiedPage() {
     {
       title: 'Дії',
       key: 'actions',
-      render: (_, record: TelegramChannel) => (
+      render: (_: any, record: TelegramChannel) => (
         <Space>
           <Tooltip title="Редагувати">
             <Button 
@@ -476,208 +475,206 @@ export default function TelegramUnifiedPage() {
           <Text type="secondary">Управління ботом та каналами для публікації новин</Text>
         </div>
 
-        <Tabs defaultActiveKey="channels" size="large">
-            {/* Channel Management Tab */}
-            <TabPane 
-            tab={
+        <Tabs defaultActiveKey="channels" size="large" items={[
+          {
+            key: 'channels',
+            label: (
               <span>
                 <MessageOutlined />
                 Управління каналами
               </span>
-            } 
-            key="channels"
-          >
-            <Space direction="vertical" size="large" style={{ width: '100%' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <Title level={3}>Канали та групи</Title>
-                <Button 
-                  type="primary" 
-                  icon={<PlusOutlined />} 
-                  onClick={handleCreateChannel}
-                >
-                  Додати канал
-                </Button>
-              </div>
+            ),
+            children: (
+              <Space direction="vertical" size="large" style={{ width: '100%' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <Title level={3}>Канали та групи</Title>
+                  <Button 
+                    type="primary" 
+                    icon={<PlusOutlined />} 
+                    onClick={handleCreateChannel}
+                  >
+                    Додати канал
+                  </Button>
+                </div>
 
-              <Card>
-                <Table
-                  columns={columns}
-                  dataSource={channels}
-                  rowKey="id"
-                  loading={loading}
-                  pagination={{
-                    pageSize: 10,
-                    showSizeChanger: true,
-                    showQuickJumper: true,
-                    showTotal: (total, range) => 
-                      `${range[0]}-${range[1]} з ${total} каналів`,
-                  }}
-                />
-              </Card>
+                <Card>
+                  <Table
+                    columns={columns}
+                    dataSource={channels}
+                    rowKey="id"
+                    loading={loading}
+                    pagination={{
+                      pageSize: 10,
+                      showSizeChanger: true,
+                      showQuickJumper: true,
+                      showTotal: (total, range) => 
+                        `${range[0]}-${range[1]} з ${total} каналів`,
+                    }}
+                  />
+                </Card>
 
-              <Card title="Інструкції з налаштування">
-                <Space direction="vertical" size="large">
-                  <div>
-                    <Title level={5}>Як отримати Chat ID:</Title>
-                    <Space direction="vertical">
-                      <div>
-                        <Text strong>Для каналів:</Text>
-                        <ul>
-                          <li>Публічні: <Text code>@channel_username</Text></li>
-                          <li>Приватні: <Text code>-1001234567890</Text></li>
-                        </ul>
-                      </div>
-                      <div>
-                        <Text strong>Для груп:</Text>
-                        <ul>
-                          <li>Додайте бота в групу</li>
-                          <li>Використовуйте: <Text code>-1001234567890</Text></li>
-                        </ul>
-                      </div>
-                      <div>
-                        <Text strong>Для приватних чатів:</Text>
-                        <ul>
-                          <li>Напишіть боту <Text code>/start</Text></li>
-                          <li>Використовуйте ID користувача</li>
-                        </ul>
-                      </div>
-                    </Space>
-                  </div>
-                  
-                  <div>
-                    <Title level={5}>Типи каналів:</Title>
-                    <Space direction="vertical">
-                      <div><Tag color="blue">Канал</Tag> - Публічний канал для новин</div>
-                      <div><Tag color="green">Група</Tag> - Група користувачів</div>
-                      <div><Tag color="orange">Приватний</Tag> - Приватний чат</div>
-                    </Space>
-                  </div>
+                <Card title="Інструкції з налаштування">
+                  <Space direction="vertical" size="large">
+                    <div>
+                      <Title level={5}>Як отримати Chat ID:</Title>
+                      <Space direction="vertical">
+                        <div>
+                          <Text strong>Для каналів:</Text>
+                          <ul>
+                            <li>Публічні: <Text code>@channel_username</Text></li>
+                            <li>Приватні: <Text code>-1001234567890</Text></li>
+                          </ul>
+                        </div>
+                        <div>
+                          <Text strong>Для груп:</Text>
+                          <ul>
+                            <li>Додайте бота в групу</li>
+                            <li>Використовуйте: <Text code>-1001234567890</Text></li>
+                          </ul>
+                        </div>
+                        <div>
+                          <Text strong>Для приватних чатів:</Text>
+                          <ul>
+                            <li>Напишіть боту <Text code>/start</Text></li>
+                            <li>Використовуйте ID користувача</li>
+                          </ul>
+                        </div>
+                      </Space>
+                    </div>
+                    
+                    <div>
+                      <Title level={5}>Типи каналів:</Title>
+                      <Space direction="vertical">
+                        <div><Tag color="blue">Канал</Tag> - Публічний канал для новин</div>
+                        <div><Tag color="green">Група</Tag> - Група користувачів</div>
+                        <div><Tag color="orange">Приватний</Tag> - Приватний чат</div>
+                      </Space>
+                    </div>
 
-                  <div>
-                    <Title level={5}>Розв'язання проблем:</Title>
-                    <Space direction="vertical">
-                      <div><Text type="danger">"Chat not found"</Text> - Перевірте Chat ID та додайте бота до чату</div>
-                      <div><Text type="danger">"Bot was blocked"</Text> - Розблокуйте бота</div>
-                      <div><Text type="danger">"Forbidden"</Text> - Надайте боту права на відправку повідомлень</div>
-                    </Space>
-                  </div>
-                </Space>
-              </Card>
-            </Space>
-          </TabPane>
-          {/* Bot Management Tab */}
-          <TabPane 
-            tab={
+                    <div>
+                      <Title level={5}>Розв'язання проблем:</Title>
+                      <Space direction="vertical">
+                        <div><Text type="danger">"Chat not found"</Text> - Перевірте Chat ID та додайте бота до чату</div>
+                        <div><Text type="danger">"Bot was blocked"</Text> - Розблокуйте бота</div>
+                        <div><Text type="danger">"Forbidden"</Text> - Надайте боту права на відправку повідомлень</div>
+                      </Space>
+                    </div>
+                  </Space>
+                </Card>
+              </Space>
+            )
+          },
+          {
+            key: 'bot',
+            label: (
               <span>
                 <RobotOutlined />
                 Управління ботом
               </span>
-            } 
-            key="bot"
-          >
-            <Space direction="vertical" size="large" style={{ width: '100%' }}>
-              {/* Bot Information */}
-              <Card title="Інформація про бота" icon={<InfoCircleOutlined />}>
-                {botInfo ? (
-                  <Space direction="vertical">
-                    <Text><strong>Ім'я:</strong> {botInfo.first_name}</Text>
-                    <Text><strong>Username:</strong> @{botInfo.username}</Text>
-                    <Text><strong>ID:</strong> {botInfo.id}</Text>
-                    <Text><strong>Може приєднуватися до груп:</strong> {botInfo.can_join_groups ? 'Так' : 'Ні'}</Text>
-                    <Text><strong>Може читати всі повідомлення груп:</strong> {botInfo.can_read_all_group_messages ? 'Так' : 'Ні'}</Text>
-                    <Text><strong>Підтримує inline запити:</strong> {botInfo.supports_inline_queries ? 'Так' : 'Ні'}</Text>
-                  </Space>
-                ) : (
-                  <Text>Завантаження інформації про бота...</Text>
-                )}
-              </Card>
+            ),
+            children: (
+              <Space direction="vertical" size="large" style={{ width: '100%' }}>
+                {/* Bot Information */}
+                <Card title="Інформація про бота">
+                  {botInfo ? (
+                    <Space direction="vertical">
+                      <Text><strong>Ім'я:</strong> {botInfo.first_name}</Text>
+                      <Text><strong>Username:</strong> @{botInfo.username}</Text>
+                      <Text><strong>ID:</strong> {botInfo.id}</Text>
+                      <Text><strong>Може приєднуватися до груп:</strong> {botInfo.can_join_groups ? 'Так' : 'Ні'}</Text>
+                      <Text><strong>Може читати всі повідомлення груп:</strong> {botInfo.can_read_all_group_messages ? 'Так' : 'Ні'}</Text>
+                      <Text><strong>Підтримує inline запити:</strong> {botInfo.supports_inline_queries ? 'Так' : 'Ні'}</Text>
+                    </Space>
+                  ) : (
+                    <Text>Завантаження інформації про бота...</Text>
+                  )}
+                </Card>
 
-              {/* Webhook Information */}
-              <Card title="Налаштування Webhook" icon={<SettingOutlined />}>
-                {webhookInfo ? (
-                  <Space direction="vertical" style={{ width: '100%' }}>
-                    <Text><strong>URL:</strong> {webhookInfo.url || 'Не налаштовано'}</Text>
-                    <Text><strong>Очікуючі оновлення:</strong> {webhookInfo.pending_update_count}</Text>
-                    <Text><strong>Максимальні з'єднання:</strong> {webhookInfo.max_connections}</Text>
-                    {webhookInfo.last_error_message && (
-                      <Text type="danger">
-                        <strong>Остання помилка:</strong> {webhookInfo.last_error_message}
-                      </Text>
-                    )}
-                    
-                    <Divider />
-                    
+                {/* Webhook Information */}
+                <Card title="Налаштування Webhook">
+                  {webhookInfo ? (
                     <Space direction="vertical" style={{ width: '100%' }}>
-                      <Input
-                        placeholder="Введіть URL для webhook (наприклад: https://yourdomain.com/api/telegram/webhook)"
-                        value={webhookUrl}
-                        onChange={(e) => setWebhookUrl(e.target.value)}
-                      />
-                      <Space>
-                        <Button 
-                          type="primary" 
-                          onClick={setWebhook}
-                          loading={loading}
-                        >
-                          Налаштувати Webhook
-                        </Button>
-                        <Button 
-                          danger 
-                          onClick={deleteWebhook}
-                          loading={loading}
-                        >
-                          Видалити Webhook
-                        </Button>
-                        <Button onClick={loadWebhookInfo}>
-                          Оновити
-                        </Button>
+                      <Text><strong>URL:</strong> {webhookInfo.url || 'Не налаштовано'}</Text>
+                      <Text><strong>Очікуючі оновлення:</strong> {webhookInfo.pending_update_count}</Text>
+                      <Text><strong>Максимальні з'єднання:</strong> {webhookInfo.max_connections}</Text>
+                      {webhookInfo.last_error_message && (
+                        <Text type="danger">
+                          <strong>Остання помилка:</strong> {webhookInfo.last_error_message}
+                        </Text>
+                      )}
+                      
+                      <Divider />
+                      
+                      <Space direction="vertical" style={{ width: '100%' }}>
+                        <Input
+                          placeholder="Введіть URL для webhook (наприклад: https://yourdomain.com/api/telegram/webhook)"
+                          value={webhookUrl}
+                          onChange={(e) => setWebhookUrl(e.target.value)}
+                        />
+                        <Space>
+                          <Button 
+                            type="primary" 
+                            onClick={setWebhook}
+                            loading={loading}
+                          >
+                            Налаштувати Webhook
+                          </Button>
+                          <Button 
+                            danger 
+                            onClick={deleteWebhook}
+                            loading={loading}
+                          >
+                            Видалити Webhook
+                          </Button>
+                          <Button onClick={loadWebhookInfo}>
+                            Оновити
+                          </Button>
+                        </Space>
                       </Space>
                     </Space>
-                  </Space>
-                ) : (
-                  <Text>Завантаження інформації про webhook...</Text>
-                )}
-              </Card>
+                  ) : (
+                    <Text>Завантаження інформації про webhook...</Text>
+                  )}
+                </Card>
 
-              {/* Test Message */}
-              <Card title="Тестове повідомлення">
-                <Space direction="vertical" style={{ width: '100%' }}>
-                  <Input
-                    placeholder="Введіть Chat ID (ID чату або каналу)"
-                    value={testChatId}
-                    onChange={(e) => setTestChatId(e.target.value)}
-                  />
-                  <TextArea
-                    placeholder="Введіть тестове повідомлення"
-                    value={testMessage}
-                    onChange={(e) => setTestMessage(e.target.value)}
-                    rows={4}
-                  />
-                  <Space>
-                    <Button 
-                      type="primary" 
-                      icon={<SendOutlined />}
-                      onClick={sendTestMessage}
-                      loading={loading}
-                    >
-                      Відправити тестове повідомлення
-                    </Button>
-                    <Button 
-                      onClick={() => {
-                        setTestChatId('351801381');
-                        setTestMessage('🧪 Швидкий тест з GalInfo\n\nЧас: ' + new Date().toLocaleString('uk-UA'));
-                      }}
-                    >
-                      Швидкий тест (ваш ID)
-                    </Button>
+                {/* Test Message */}
+                <Card title="Тестове повідомлення">
+                  <Space direction="vertical" style={{ width: '100%' }}>
+                    <Input
+                      placeholder="Введіть Chat ID (ID чату або каналу)"
+                      value={testChatId}
+                      onChange={(e) => setTestChatId(e.target.value)}
+                    />
+                    <TextArea
+                      placeholder="Введіть тестове повідомлення"
+                      value={testMessage}
+                      onChange={(e) => setTestMessage(e.target.value)}
+                      rows={4}
+                    />
+                    <Space>
+                      <Button 
+                        type="primary" 
+                        icon={<SendOutlined />}
+                        onClick={sendTestMessage}
+                        loading={loading}
+                      >
+                        Відправити тестове повідомлення
+                      </Button>
+                      <Button 
+                        onClick={() => {
+                          setTestChatId('351801381');
+                          setTestMessage('🧪 Швидкий тест з GalInfo\n\nЧас: ' + new Date().toLocaleString('uk-UA'));
+                        }}
+                      >
+                        Швидкий тест (ваш ID)
+                      </Button>
+                    </Space>
                   </Space>
-                </Space>
-              </Card>
-            </Space>
-          </TabPane>
-
-        
-        </Tabs>
+                </Card>
+              </Space>
+            )
+          }
+        ]} />
 
         {/* Channel Modal */}
         <Modal

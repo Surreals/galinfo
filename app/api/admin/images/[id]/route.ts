@@ -112,7 +112,7 @@ export async function PUT(
     }
 
     const body = await request.json();
-    const { title_ua, title_deflang, pic_type } = body;
+    const { title_ua, title_deflang, pic_type, tags } = body;
 
     // Convert pic_type string to integer
     const getPicTypeId = (type: string): number => {
@@ -130,7 +130,8 @@ export async function PUT(
       SET 
         title_ua = ?,
         title_deflang = ?,
-        pic_type = ?
+        pic_type = ?,
+        tags = ?
       WHERE id = ?
     `;
     
@@ -138,6 +139,7 @@ export async function PUT(
       title_ua,
       title_deflang,
       getPicTypeId(pic_type),
+      tags || null,
       imageId
     ]);
 
@@ -148,7 +150,8 @@ export async function PUT(
         filename,
         title_ua,
         title_deflang,
-        pic_type
+        pic_type,
+        tags
       FROM a_pics 
       WHERE id = ?
     `;
