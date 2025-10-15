@@ -93,14 +93,14 @@ const defaultArticleData: ArticleData = {
   rubric: [],
   region: [],
   tags: [],
-  showauthor: false,
+  showauthor: true,  // За замовчуванням увімкнено
   nweight: 0,
   layout: 0,
   rated: true,
   headlineblock: false,
-  hiderss: false,
+  hiderss: false,  // За замовчуванням вимкнено (не транслювати в RSS)
   nocomment: false,
-  maininblock: false,
+  maininblock: true,  // За замовчуванням увімкнено (Головна стрічка)
   suggest: false,
   photo: false,
   video: false,

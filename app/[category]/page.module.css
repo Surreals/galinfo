@@ -318,5 +318,84 @@
   margin: 24px 0;
 }
 
+/* Стилі для сторінки помилки (тег/категорія не знайдено) */
+.errorContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+  padding: 40px 20px;
+  text-align: center;
+}
+
+.errorIcon {
+  width: 120px;
+  height: 120px;
+  margin-bottom: 32px;
+  opacity: 0.6;
+}
+
+.errorTitle {
+  font-size: 32px;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin-bottom: 16px;
+  font-family: var(--font-rubik);
+}
+
+.errorDescription {
+  font-size: 18px;
+  color: #666;
+  margin-bottom: 32px;
+  line-height: 1.6;
+  max-width: 500px;
+}
+
+.errorButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 32px;
+  background-color: #c7084f;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-decoration: none;
+  font-family: var(--font-rubik);
+}
+
+.errorButton:hover {
+  background-color: #a70641;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(199, 8, 79, 0.3);
+}
+
+@media (max-width: 768px) {
+  .errorIcon {
+    width: 80px;
+    height: 80px;
+    margin-bottom: 24px;
+  }
+  
+  .errorTitle {
+    font-size: 24px;
+    margin-bottom: 12px;
+  }
+  
+  .errorDescription {
+    font-size: 16px;
+    margin-bottom: 24px;
+  }
+  
+  .errorButton {
+    padding: 10px 24px;
+    font-size: 14px;
+  }
+}
 
 
