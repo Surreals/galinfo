@@ -284,7 +284,7 @@ export default function Header() {
   return (
     <header className={styles.headerMain}>
       <div className={styles.header}>
-        <Link href="/" className={styles.logo}>
+        <Link href="/" target={'_blank'} className={styles.logo}>
           <Image
             src={galinfoLogo}
             alt="Galinfo Logo"
@@ -448,7 +448,7 @@ export default function Header() {
             <Image src={burgerMenu} alt={'Burger menu'}/>
           </div>
           <div className={styles.svgBox}>
-            <SearchBox/>
+            {!isAdminPage && <SearchBox/>}
             {!isAdminPage && <a className={styles.radioLogo} target={'_blank'} href={'https://lviv.fm/'}>
               <Image
                 src={radioLogo}

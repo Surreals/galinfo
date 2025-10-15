@@ -50,6 +50,7 @@
 }
 
 .updateUrlKeysButton {
+  display: none;
   background: #28a745;
   color: white;
   border: none;
