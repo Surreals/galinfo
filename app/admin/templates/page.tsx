@@ -29,7 +29,6 @@ import {
   termsOfUsePageSchema 
 } from '@/app/lib/editorialPageSchema';
 import { templateDocumentation } from './documentation';
-import { useMenuContext } from '@/app/contexts/MenuContext';
 import EditorialPagesEditor from './EditorialPagesEditor';
 
 interface SchemaTemplate {
@@ -42,14 +41,12 @@ interface SchemaTemplate {
 }
 
 export default function TemplatesPage() {
-  const { menuData, loading: menuLoading } = useMenuContext();
   const [templates, setTemplates] = useState<SchemaTemplate[]>([]);
   const [modifiedTemplates, setModifiedTemplates] = useState<Set<string>>(new Set());
   const [isLoading, setIsLoading] = useState(false);
   const [jsonErrors, setJsonErrors] = useState<Record<string, string>>({});
   const [jsonValues, setJsonValues] = useState<Record<string, string>>({});
   const [expandedDocs, setExpandedDocs] = useState<Set<string>>(new Set());
-  const [isCategoryDrawerOpen, setIsCategoryDrawerOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<'main' | 'editorial'>('main');
 
   // Ініціалізація шаблонів
@@ -569,8 +566,8 @@ export default function TemplatesPage() {
 
           <button 
             className={styles.categoryInfoButton}
-            onClick={() => setIsCategoryDrawerOpen(true)}
-            title="Показати ID категорій"
+            onClick={() => window.open('/admin/categories', '_blank')}
+            title="Відкрити сторінку категорій в новому вікні"
           >
             📋 Довідник категорій
           </button>
@@ -656,93 +653,6 @@ export default function TemplatesPage() {
         )}
       </div>
 
-      {/* Drawer з інформацією про категорії */}
-      {isCategoryDrawerOpen && (
-        <>
-          <div 
-            className={styles.drawerOverlay}
-            onClick={() => setIsCategoryDrawerOpen(false)}
-          />
-          <div className={styles.drawer}>
-            <div className={styles.drawerHeader}>
-              <h2>📋 Довідник ID категорій</h2>
-              <button 
-                className={styles.drawerCloseButton}
-                onClick={() => setIsCategoryDrawerOpen(false)}
-                title="Закрити"
-              >
-                ✕
-              </button>
-            </div>
-            <div className={styles.drawerContent}>
-              {menuLoading ? (
-                <div className={styles.loadingContainer}>
-                  <div className={styles.loadingSpinner}></div>
-                  Завантаження категорій...
-                </div>
-              ) : menuData ? (
-                <>
-                  <div className={styles.categorySection}>
-                    <h3>Спеціальна категорія</h3>
-                    <div className={styles.categoryList}>
-                      <div className={styles.categoryItem}>
-                        <span className={styles.categoryName}>Всі новини</span>
-                        <span className={styles.categoryId}>ID: 0</span>
-                      </div>
-                    </div>
-                  </div>
-
-                  {menuData.mainCategories && menuData.mainCategories.length > 0 && (
-                    <div className={styles.categorySection}>
-                      <h3>Основні категорії (cattype = 1)</h3>
-                      <div className={styles.categoryList}>
-                        {menuData.mainCategories.map((category) => (
-                          <div key={category.id} className={styles.categoryItem}>
-                            <span className={styles.categoryName}>{category.title}</span>
-                            <span className={styles.categoryId}>ID: {category.id}</span>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-
-                  {menuData.regions && menuData.regions.length > 0 && (
-                    <div className={styles.categorySection}>
-                      <h3>Регіони (cattype = 3)</h3>
-                      <div className={styles.categoryList}>
-                        {menuData.regions.map((category) => (
-                          <div key={category.id} className={styles.categoryItem}>
-                            <span className={styles.categoryName}>{category.title}</span>
-                            <span className={styles.categoryId}>ID: {category.id}</span>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-
-                  {menuData.specialThemes && menuData.specialThemes.length > 0 && (
-                    <div className={styles.categorySection}>
-                      <h3>Спеціальні теми (cattype = 2)</h3>
-                      <div className={styles.categoryList}>
-                        {menuData.specialThemes.map((category) => (
-                          <div key={category.id} className={styles.categoryItem}>
-                            <span className={styles.categoryName}>{category.title}</span>
-                            <span className={styles.categoryId}>ID: {category.id}</span>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-                </>
-              ) : (
-                <div className={styles.errorMessage}>
-                  Не вдалося завантажити категорії
-                </div>
-              )}
-            </div>
-          </div>
-        </>
-      )}
     </div>
   );
 }

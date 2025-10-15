@@ -3,11 +3,12 @@
 import { useState, useEffect, useRef } from 'react';
 import dayjs from 'dayjs';
 import { DatePicker, Button, Tag, Table } from 'antd';
-import { EyeOutlined, EditOutlined, DeleteOutlined, ArrowLeftOutlined, LinkOutlined, FileOutlined } from '@ant-design/icons';
+import { EyeOutlined, EditOutlined, DeleteOutlined, ArrowLeftOutlined, LinkOutlined, FileOutlined, ClearOutlined, SearchOutlined } from '@ant-design/icons';
 import { useRouter } from 'next/navigation';
 import AdminNavigation from '../components/AdminNavigation';
 import styles from './news.module.css';
 import { useRolePermissions } from '@/app/hooks/useRolePermissions';
+import { useAuthors } from '@/app/hooks/useAuthors';
 
 // Функція для перевірки, чи новина запланована на майбутнє
 const isNewsScheduled = (formattedDate: string, formattedTime: string): boolean => {
@@ -87,6 +88,7 @@ interface NewsListResponse {
 export default function NewsPage() {
   const router = useRouter();
   const { isAdmin } = useRolePermissions();
+  const { authorsData } = useAuthors();
   const [newsData, setNewsData] = useState<NewsListResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [paginationLoading, setPaginationLoading] = useState(false);
@@ -106,6 +108,7 @@ export default function NewsPage() {
   const [isUpdatingUrlKeys, setIsUpdatingUrlKeys] = useState(false);
   const [activeTab, setActiveTab] = useState<'all' | 'drafts'>('all');
   const previousPageRef = useRef(1);
+  const previousTabRef = useRef<'all' | 'drafts'>('all');
   
   // Фільтри
   const [filters, setFilters] = useState({
@@ -171,13 +174,29 @@ export default function NewsPage() {
     }
   };
 
+  // Manual search function
+  const handleSearch = () => {
+    setFilters(prev => ({ ...prev, page: 1 }));
+    fetchNews(false);
+  };
+
+  // Initial load
+  useEffect(() => {
+    fetchNews(false);
+  }, []);
+
   useEffect(() => {
     // Check if only the page or limit changed
     const isPageChange = filters.page !== previousPageRef.current;
+    const isTabChange = activeTab !== previousTabRef.current;
     
-    fetchNews(isPageChange);
-    previousPageRef.current = filters.page;
-  }, [filters, activeTab]);
+    // Only auto-fetch for page changes and tab changes, not filter changes
+    if (isPageChange || isTabChange) {
+      fetchNews(isPageChange);
+      previousPageRef.current = filters.page;
+      previousTabRef.current = activeTab;
+    }
+  }, [filters.page, filters.limit, activeTab]);
 
   // Обробка зміни табу
   const handleTabChange = (key: string) => {
@@ -186,12 +205,12 @@ export default function NewsPage() {
     setFilters(prev => ({ ...prev, page: 1 }));
   };
 
-  // Обробка зміни фільтрів
+  // Обробка зміни фільтрів (без автоматичного пошуку)
   const handleFilterChange = (key: string, value: any) => {
     setFilters(prev => ({
       ...prev,
-      [key]: value,
-      page: 1 // Скидаємо на першу сторінку при зміні фільтрів
+      [key]: value
+      // Не скидаємо сторінку автоматично - користувач сам натисне пошук
     }));
   };
 
@@ -571,6 +590,20 @@ export default function NewsPage() {
             </div>
 
             <div className={styles.filterGroup}>
+              <label>Автор:</label>
+              <select 
+                value={filters.author} 
+                onChange={(e) => handleFilterChange('author', e.target.value)}
+                disabled={paginationLoading}
+              >
+                <option value="all">Всі автори</option>
+                {authorsData.allAuthors.map(author => (
+                  <option key={author.id} value={author.id}>{author.name}</option>
+                ))}
+              </select>
+            </div>
+
+            <div className={styles.filterGroup}>
               <label>Ключове слово:</label>
               <input
                 type="text"
@@ -616,13 +649,22 @@ export default function NewsPage() {
               />
             </div>
 
-            <div className={`${styles.filterGroup} ${styles.clearButtonGroup}`}>
+            <div className={`${styles.filterGroup} ${styles.actionButtonGroup}`}>
+              <button 
+                className={styles.searchButton}
+                onClick={handleSearch}
+                disabled={paginationLoading}
+                title="Пошук"
+              >
+                <SearchOutlined />
+              </button>
               <button 
                 className={styles.clearButton}
                 onClick={clearFilters}
                 disabled={paginationLoading}
+                title="Очистити фільтри"
               >
-                Очистити фільтри
+                <ClearOutlined />
               </button>
             </div>
           </div>
