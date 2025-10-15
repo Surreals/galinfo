@@ -1,8 +1,8 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Table, Input, Button, Tag, Space, Modal, Form, Checkbox, message, Popconfirm, Select } from 'antd';
-import { SearchOutlined, PlusOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
+import { Table, Input, Button, Tag, Space, Modal, Form, Checkbox, message, Popconfirm, Select, Tabs } from 'antd';
+import { SearchOutlined, PlusOutlined, EditOutlined, DeleteOutlined, UserOutlined, UserDeleteOutlined } from '@ant-design/icons';
 import AdminNavigation from '../components/AdminNavigation';
 import { useAdminAuth } from '@/app/contexts/AdminAuthContext';
 import { UserRole, ROLE_LABELS } from '@/app/types/roles';
@@ -26,6 +26,7 @@ export default function UsersPage() {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [editingUser, setEditingUser] = useState<User | null>(null);
   const [form] = Form.useForm();
+  const [activeTab, setActiveTab] = useState('active');
   
   const isCurrentUserAdmin = currentUser?.role === UserRole.ADMIN;
 
@@ -82,19 +83,38 @@ export default function UsersPage() {
     setIsModalVisible(true);
   };
 
-  const handleDeleteUser = async (userId: number) => {
+  const handleDeactivateUser = async (userId: number) => {
     try {
-      const response = await fetch(`/api/admin/users/${userId}`, {
-        method: 'DELETE',
+      const response = await fetch(`/api/admin/users/${userId}/deactivate`, {
+        method: 'POST',
       });
       
       const data = await response.json();
       
       if (data.success) {
-        message.success('Користувача успішно видалено');
+        message.success('Користувача успішно деактивовано');
         await fetchUsers();
       } else {
-        message.error(data.error || 'Помилка видалення користувача');
+        message.error(data.error || 'Помилка деактивації користувача');
+      }
+    } catch (err) {
+      message.error('Помилка з\'єднання з сервером');
+    }
+  };
+
+  const handleActivateUser = async (userId: number) => {
+    try {
+      const response = await fetch(`/api/admin/users/${userId}/activate`, {
+        method: 'POST',
+      });
+      
+      const data = await response.json();
+      
+      if (data.success) {
+        message.success('Користувача успішно активовано');
+        await fetchUsers();
+      } else {
+        message.error(data.error || 'Помилка активації користувача');
       }
     } catch (err) {
       message.error('Помилка з\'єднання з сервером');
@@ -197,13 +217,21 @@ export default function UsersPage() {
     }
   };
 
-  // Filter users based on search term
-  const filteredUsers = users.filter(user => 
-    !searchTerm || 
-    user.uname_ua.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    user.uname.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    (user.uagency && user.uagency.toLowerCase().includes(searchTerm.toLowerCase()))
-  );
+  // Filter users based on search term and active tab
+  const filteredUsers = users.filter(user => {
+    // Filter by active/inactive status based on current tab
+    const isActive = user.active === 1;
+    const matchesTab = (activeTab === 'active' && isActive) || (activeTab === 'inactive' && !isActive);
+    
+    if (!matchesTab) return false;
+    
+    // Filter by search term
+    if (!searchTerm) return true;
+    
+    return user.uname_ua.toLowerCase().includes(searchTerm.toLowerCase()) ||
+           user.uname.toLowerCase().includes(searchTerm.toLowerCase()) ||
+           (user.uagency && user.uagency.toLowerCase().includes(searchTerm.toLowerCase()));
+  });
 
   const getRoleColor = (role: string) => {
     switch (role) {
@@ -288,21 +316,39 @@ export default function UsersPage() {
             title="Редагувати"
             disabled={!isCurrentUserAdmin}
           />
-          <Popconfirm
-            title="Ви впевнені, що хочете видалити цього користувача?"
-            onConfirm={() => handleDeleteUser(record.id)}
-            okText="Так"
-            cancelText="Ні"
-            disabled={!isCurrentUserAdmin}
-          >
-            <Button
-              type="text"
-              danger
-              icon={<DeleteOutlined />}
-              title="Видалити"
+          {record.active === 1 ? (
+            <Popconfirm
+              title="Ви впевнені, що хочете деактивувати цього користувача?"
+              description="Користувач буде розлогінений і втратить доступ до системи."
+              onConfirm={() => handleDeactivateUser(record.id)}
+              okText="Так"
+              cancelText="Ні"
               disabled={!isCurrentUserAdmin}
-            />
-          </Popconfirm>
+            >
+              <Button
+                type="text"
+                danger
+                icon={<UserDeleteOutlined />}
+                title="Деактивувати"
+                disabled={!isCurrentUserAdmin}
+              />
+            </Popconfirm>
+          ) : (
+            <Popconfirm
+              title="Ви впевнені, що хочете активувати цього користувача?"
+              onConfirm={() => handleActivateUser(record.id)}
+              okText="Так"
+              cancelText="Ні"
+              disabled={!isCurrentUserAdmin}
+            >
+              <Button
+                type="text"
+                icon={<UserOutlined />}
+                title="Активувати"
+                disabled={!isCurrentUserAdmin}
+              />
+            </Popconfirm>
+          )}
         </Space>
       ),
     },
@@ -341,18 +387,59 @@ export default function UsersPage() {
         </div>
 
         <div className={styles.tableContainer}>
-          <Table
-            columns={columns}
-            dataSource={filteredUsers}
-            rowKey="id"
-            loading={loading}
-            pagination={{
-              pageSize: 15,
-              showSizeChanger: true,
-              showTotal: (total, range) => 
-                `${range[0]}-${range[1]} з ${total} користувачів`,
-            }}
-            scroll={{ x: 800 }}
+          <Tabs
+            activeKey={activeTab}
+            onChange={setActiveTab}
+            items={[
+              {
+                key: 'active',
+                label: (
+                  <span>
+                    <UserOutlined />
+                    Активні ({users.filter(u => u.active === 1).length})
+                  </span>
+                ),
+                children: (
+                  <Table
+                    columns={columns}
+                    dataSource={filteredUsers}
+                    rowKey="id"
+                    loading={loading}
+                    pagination={{
+                      pageSize: 15,
+                      showSizeChanger: true,
+                      showTotal: (total, range) => 
+                        `${range[0]}-${range[1]} з ${total} активних користувачів`,
+                    }}
+                    scroll={{ x: 800 }}
+                  />
+                ),
+              },
+              {
+                key: 'inactive',
+                label: (
+                  <span>
+                    <UserDeleteOutlined />
+                    Неактивні ({users.filter(u => u.active === 0).length})
+                  </span>
+                ),
+                children: (
+                  <Table
+                    columns={columns}
+                    dataSource={filteredUsers}
+                    rowKey="id"
+                    loading={loading}
+                    pagination={{
+                      pageSize: 15,
+                      showSizeChanger: true,
+                      showTotal: (total, range) => 
+                        `${range[0]}-${range[1]} з ${total} неактивних користувачів`,
+                    }}
+                    scroll={{ x: 800 }}
+                  />
+                ),
+              },
+            ]}
           />
         </div>
 

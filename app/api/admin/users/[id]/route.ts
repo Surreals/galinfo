@@ -166,34 +166,18 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { id } = await params;
-    const userId = parseInt(id);
-    
-    // Check if user exists
-    const [existingUsers] = await executeQuery<{ count: number }>(`
-      SELECT COUNT(*) as count FROM a_powerusers WHERE id = ?
-    `, [userId]);
-
-    if (existingUsers[0].count === 0) {
-      return NextResponse.json(
-        { success: false, error: 'User not found' },
-        { status: 404 }
-      );
-    }
-
-    // Delete user
-    await executeQuery(`
-      DELETE FROM a_powerusers WHERE id = ?
-    `, [userId]);
-
-    return NextResponse.json({
-      success: true,
-      message: 'User deleted successfully'
-    });
-  } catch (error) {
-    console.error('Error deleting user:', error);
+    // This endpoint is deprecated - use deactivate instead
     return NextResponse.json(
-      { success: false, error: 'Failed to delete user' },
+      { 
+        success: false, 
+        error: 'User deletion is not allowed. Use deactivate endpoint instead.' 
+      },
+      { status: 405 }
+    );
+  } catch (error) {
+    console.error('Error in deprecated delete endpoint:', error);
+    return NextResponse.json(
+      { success: false, error: 'Failed to process request' },
       { status: 500 }
     );
   }

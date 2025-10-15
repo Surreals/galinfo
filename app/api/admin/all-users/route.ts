@@ -13,6 +13,7 @@ export async function GET() {
   try {
     // Завантажуємо тільки активних користувачів з a_powerusers (адміністраторів)
     // Це ті самі користувачі, які показуються на сторінці /admin/users
+    // Для створення новин показуємо тільки активних користувачів
     const [adminUsers] = await executeQuery<{
       id: number;
       name: string;

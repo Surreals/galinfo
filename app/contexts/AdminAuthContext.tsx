@@ -44,14 +44,35 @@ export function AdminAuthProvider({ children }: AdminAuthProviderProps) {
 
   useEffect(() => {
     // Check for existing authentication on mount
-    const checkAuth = () => {
+    const checkAuth = async () => {
       try {
         const storedUser = localStorage.getItem('adminUser');
         const storedToken = localStorage.getItem('adminToken');
         
         if (storedUser && storedToken) {
-          setUser(JSON.parse(storedUser));
+          const userData = JSON.parse(storedUser);
+          setUser(userData);
           setToken(storedToken);
+          
+          // Verify user is still active
+          try {
+            const response = await fetch('/api/admin/users');
+            const data = await response.json();
+            
+            if (data.success) {
+              const currentUser = data.data.find((u: any) => u.id === userData.id);
+              if (!currentUser || currentUser.active !== 1) {
+                // User is inactive, force logout
+                console.log('User is inactive, forcing logout');
+                logout();
+                return;
+              }
+            }
+          } catch (error) {
+            console.error('Error verifying user status:', error);
+            // If we can't verify, we'll let the user continue but they'll be logged out
+            // when they try to access protected routes
+          }
         }
       } catch (error) {
         console.error('Error checking authentication:', error);
