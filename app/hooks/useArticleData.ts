@@ -59,6 +59,9 @@ export interface ArticleData {
   // Зображення
   images: string;
   
+  // Проект
+  isProject: boolean;
+  
   // Назви файлів зображень
   image_filenames: Array<{
     id: number;

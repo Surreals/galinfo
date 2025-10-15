@@ -17,6 +17,7 @@ import {
 import { highlightUrlsInHtml } from '@/app/lib/urlUtils';
 import { articlePageDesktopSchema, articlePageMobileSchema } from '@/app/lib/articlePageSchema';
 import placeholderImage from '@/assets/images/Gal-info logo v13.png';
+import ProjectRenderer from './ProjectRenderer';
 
 // Імпорт компонентів
 import {
@@ -112,6 +113,12 @@ const parseNbody = (nbody: string) => {
 };
 
 const ArticlePageRenderer: React.FC<ArticlePageRendererProps> = ({ article, loading }) => {
+  // Якщо це проект, використовуємо ProjectRenderer (до виклику hooks)
+  if (article?.isProject) {
+    return <ProjectRenderer article={article} loading={loading} />;
+  }
+
+  // Тепер викликаємо hooks після умовного return
   const [allImages, setAllImages] = useState<string[]>([]);
   const [isShowCarousel, setIsShowCarousel] = useState<boolean>(false);
   const [startIndex, setStartIndex] = useState<number>(0);

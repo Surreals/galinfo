@@ -216,6 +216,7 @@ export default function NewsEditorSidebar({ newsId, articleData, menuData, onEdi
   const [favBlock, setFavBlock] = useState<boolean>(articleData?.suggest || false);
   const [markPhoto, setMarkPhoto] = useState<boolean>(articleData?.photo || false);
   const [markVideo, setMarkVideo] = useState<boolean>(articleData?.video || false);
+  const [isProject, setIsProject] = useState<boolean>(articleData?.isProject || false);
 
   // Час публікації
   const [publishAt, setPublishAt] = useState<Dayjs | null>(
@@ -314,6 +315,7 @@ export default function NewsEditorSidebar({ newsId, articleData, menuData, onEdi
       setFavBlock(articleData.suggest);
       setMarkPhoto(articleData.photo);
       setMarkVideo(articleData.video);
+      setIsProject(articleData.isProject || false);
       const base = dayjs(articleData.ndate);
       const [h, m, s] = articleData.ntime.split(':').map(Number);
       setPublishAt(base.hour(h).minute(m).second(s));
@@ -329,7 +331,9 @@ export default function NewsEditorSidebar({ newsId, articleData, menuData, onEdi
         
         // Заповнюємо мапу даними з image_filenames
         articleData.image_filenames.forEach((imageData) => {
-          imageMap.set(imageData.id.toString(), imageData);
+          if (imageData.id != null) {
+            imageMap.set(imageData.id.toString(), imageData);
+          }
         });
         
         // Створюємо imageFiles в тому ж порядку що й imageIds (правильний порядок)
@@ -376,6 +380,7 @@ export default function NewsEditorSidebar({ newsId, articleData, menuData, onEdi
       setFavBlock(false);
       setMarkPhoto(false);
       setMarkVideo(false);
+      setIsProject(false);
       setPublishAt(dayjs());
       setPublishOnSite(false);
       setPublishOnTwitter(false);
@@ -447,6 +452,7 @@ export default function NewsEditorSidebar({ newsId, articleData, menuData, onEdi
       suggest: favBlock,
       photo: markPhoto,
       video: markVideo,
+      isProject: isProject,
       
       // Час публікації
       ndate: (() => {
@@ -846,6 +852,12 @@ export default function NewsEditorSidebar({ newsId, articleData, menuData, onEdi
               onChange={(e) => setNoRss(e.target.checked)}
             >
               Не транслювати в RSS
+            </Checkbox>
+            <Checkbox
+              checked={isProject}
+              onChange={(e) => setIsProject(e.target.checked)}
+            >
+              Проект
             </Checkbox>
           </div>
         </div>

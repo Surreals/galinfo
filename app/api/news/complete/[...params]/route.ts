@@ -309,6 +309,7 @@ export async function GET(
             tmb: `/media/gallery/tmb/${image.filename}`
           }
         })),
+        isProject: news.isProject || 0, // Add isProject field
         rubrics,
         tags,
         relatedNews,

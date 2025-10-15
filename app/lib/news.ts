@@ -49,6 +49,7 @@ export interface NewsData {
   idtotop: number;
   twitter_status: string;
   twittered: number;
+  isProject: number;
   
   // Поля з a_news_body
   nbody: string;
@@ -165,7 +166,7 @@ export async function getNewsById(id: number): Promise<NewsData | null> {
     const booleanFields = [
       'showauthor', 'hiderss', 'rated', 'photo', 'video', 'approved', 
       'nocomment', 'printsubheader', 'topnews', 'suggest', 'headlineblock', 
-      'maininblock', 'twittered'
+      'maininblock', 'twittered', 'isProject'
     ];
     
     booleanFields.forEach(field => {
@@ -202,7 +203,7 @@ export async function createNews(data: Partial<NewsData>): Promise<number> {
         images, ndate, ntime, ntype, nauthor, nauthorplus, showauthor, rubric, region, theme,
         nweight, nocomment, hiderss, approved, lang, rated, udate, urlkey, userid, layout,
         bytheme, ispopular, supervideo, printsubheader, topnews, isexpert, photo, video,
-        subrubric, suggest, headlineblock, twitter_status, youcode, maininblock
+        subrubric, suggest, headlineblock, twitter_status, youcode, maininblock, isProject
       ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `;
     
@@ -263,6 +264,7 @@ export async function createNews(data: Partial<NewsData>): Promise<number> {
       data.twitter_status || 'not_published',
       data.youcode || '',
       data.maininblock ? 1 : 0,
+      data.isProject ? 1 : 0,
     ];
     
     console.log('🔍 SQL Query values:', newsValues);
@@ -474,6 +476,10 @@ export async function updateNews(id: number, data: Partial<NewsData>): Promise<b
     if (data.maininblock !== undefined) {
       updateFields.push('maininblock = ?');
       updateValues.push(data.maininblock ? 1 : 0);
+    }
+    if (data.isProject !== undefined) {
+      updateFields.push('isProject = ?');
+      updateValues.push(data.isProject ? 1 : 0);
     }
     
     // Завжди оновлюємо udate
