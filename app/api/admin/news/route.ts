@@ -342,7 +342,7 @@ function formatDate(dateString: string): string {
   if (!dateString) return 'Невідома дата';
   
   try {
-    // Парсимо дату з dayjs
+    // Парсимо дату з dayjs (dateString в форматі YYYY-MM-DD)
     const date = dayjs(dateString);
     
     // Перевіряємо, чи дата валідна
@@ -350,8 +350,8 @@ function formatDate(dateString: string): string {
       return 'Невідома дата';
     }
     
-    // Форматуємо дату в українському форматі з урахуванням часового поясу
-    return date.tz('Europe/Kiev').format('DD.MM.YYYY');
+    // Форматуємо дату в українському форматі
+    return date.format('DD.MM.YYYY');
   } catch (error) {
     console.error('Error formatting date:', error, 'Input:', dateString);
     return 'Невідома дата';

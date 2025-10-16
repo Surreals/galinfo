@@ -13,7 +13,8 @@ export const ArticleMeta: React.FC<ArticleMetaProps> = ({ date: newsDate, time, 
   const capitalize = (str: string) => str.charAt(0).toUpperCase() + str.slice(1);
 
   const formatDate = (date: string, time?: string): string => {
-    const dateTimeString = time ? `${date.slice(0, 10)}T${time}` : date;
+    // Створюємо дату з UTC часу (додаємо Z для вказування UTC)
+    const dateTimeString = time ? `${date.slice(0, 10)}T${time}Z` : date;
     const dateObj = new Date(dateTimeString);
 
     const weekday = capitalize(dateObj.toLocaleDateString('uk-UA', { weekday: 'short' }));
@@ -21,7 +22,13 @@ export const ArticleMeta: React.FC<ArticleMetaProps> = ({ date: newsDate, time, 
     const month = dateObj.toLocaleDateString('uk-UA', { month: 'long' });
     const year = dateObj.getFullYear();
 
-    return `${weekday}, ${day} ${month} ${year}` + (time ? ` ${time.slice(0, 5)}` : '');
+    // Використовуємо локальний час (автоматично конвертується з UTC)
+    const localTime = time ? dateObj.toLocaleTimeString('uk-UA', { 
+      hour: '2-digit', 
+      minute: '2-digit' 
+    }) : '';
+
+    return `${weekday}, ${day} ${month} ${year}` + (localTime ? ` ${localTime}` : '');
   };
 
 

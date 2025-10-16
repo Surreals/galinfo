@@ -114,7 +114,7 @@ export async function GET(
     const [newsResult] = await executeQuery<SpecialThemesNewsItem>(
       `SELECT 
         a_news.id,
-        a_news.ndate,
+        DATE_FORMAT(a_news.ndate, '%Y-%m-%d') as ndate,
         a_news.ntime,
         a_news.ntype,
         a_news.images,

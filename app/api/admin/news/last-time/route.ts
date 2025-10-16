@@ -6,7 +6,7 @@ export async function GET() {
     // Отримуємо час останньої новини (незалежно від статусу публікації)
     const [results] = await executeQuery(`
       SELECT 
-        a_news.ndate,
+        DATE_FORMAT(a_news.ndate, '%Y-%m-%d') as ndate,
         a_news.ntime,
         a_news.udate,
         a_news_headers.nheader
@@ -29,15 +29,13 @@ export async function GET() {
     // Форматуємо час для відображення
     const formatTime = (ndate: string, ntime: string) => {
       try {
-        // ndate в форматі "2025-08-12T21:00:00.000Z"
-        const date = new Date(ndate);
+        // ndate в форматі "2025-10-16" (YYYY-MM-DD)
+        // ntime в форматі "12:21:50" (UTC час)
         
-        // Витягуємо час з ntime (формат "15:18:00")
-        const [hours, minutes, seconds] = ntime.split(':');
+        // Створюємо дату з UTC часу і додаємо Z для вказування UTC
+        const date = new Date(`${ndate}T${ntime}Z`);
         
-        // Встановлюємо час з ntime
-        date.setHours(parseInt(hours), parseInt(minutes), parseInt(seconds));
-        
+        // Конвертуємо в локальний часовий пояс
         return date.toLocaleString('uk-UA', {
           year: 'numeric',
           month: '2-digit',

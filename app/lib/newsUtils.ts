@@ -58,21 +58,24 @@ export function formatNewsDate(ndate: string, udate: number): string {
 
 // Нова функція для повного формату дати: "13 серпня 2025 р., 14:13"
 export function formatFullNewsDate(ndate: string, ntime?: string): string {
-  // Використовуємо ndate з запиту для форматування дати (ISO формат: 2025-09-10T21:00:00.000Z)
-  const newsTime = dayjs(ndate);
+  // Створюємо дату з UTC часу (додаємо Z для вказування UTC)
+  const dateTimeString = ntime ? `${ndate}T${ntime}Z` : ndate;
+  const dateObj = new Date(dateTimeString);
 
   // Форматуємо дату: "13 серпня 2025 р."
-  const dateStr = newsTime.format('DD MMMM YYYY');
+  const dateStr = dateObj.toLocaleDateString('uk-UA', {
+    day: '2-digit',
+    month: 'long',
+    year: 'numeric'
+  });
 
-  // Використовуємо ntime з бекенду для часу, якщо він є, інакше беремо з ndate
-  // Прибираємо секунди з часу (формат HH:mm:ss -> HH:mm)
-  let timeStr = ntime || newsTime.format('HH:mm');
-  if (timeStr && timeStr.includes(':')) {
-    const timeParts = timeStr.split(':');
-    timeStr = `${timeParts[0]}:${timeParts[1]}`; // Беремо тільки години та хвилини
-  }
+  // Використовуємо локальний час (автоматично конвертується з UTC)
+  const localTime = dateObj.toLocaleTimeString('uk-UA', {
+    hour: '2-digit',
+    minute: '2-digit'
+  });
 
-  return `${dateStr} ${timeStr}`;
+  return `${dateStr} ${localTime}`;
 }
 
 export function generateArticleUrl(newsItem: NewsItem): string {

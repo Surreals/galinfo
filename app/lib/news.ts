@@ -1,5 +1,36 @@
 import { executeQuery } from './db';
 import { generateUrlKey } from './transliteration';
+import dayjs from 'dayjs';
+import utc from 'dayjs/plugin/utc';
+
+dayjs.extend(utc);
+
+// Функція для отримання поточного часу сервера
+async function getServerTime(): Promise<{ date: string; time: string }> {
+  try {
+    const [result] = await executeQuery<{ server_date: string; server_time: string }>(`
+      SELECT 
+        DATE(NOW()) as server_date,
+        TIME(NOW()) as server_time
+    `);
+    
+    if (result.length > 0) {
+      return {
+        date: result[0].server_date,
+        time: result[0].server_time
+      };
+    }
+  } catch (error) {
+    console.warn('Failed to get server time, using local time:', error);
+  }
+  
+  // Fallback to local time if server query fails
+  const now = new Date();
+  return {
+    date: now.toISOString().split('T')[0],
+    time: now.toTimeString().split(' ')[0].substring(0, 8)
+  };
+}
 
 // Константи таблиць (відповідно до PHP коду)
 const TABLES = {
@@ -94,7 +125,14 @@ export async function getNewsById(id: number): Promise<NewsData | null> {
   try {
     const query = `
       SELECT 
-        n.*,
+        n.id, n.images, n.ntype, n.nauthor, n.nauthorplus, n.showauthor, n.rubric, 
+        n.region, n.theme, n.nweight, n.nocomment, n.hiderss, n.approved, n.lang, 
+        n.rated, n.udate, n.urlkey, n.userid, n.layout, n.comments, n.bytheme, 
+        n.ispopular, n.supervideo, n.printsubheader, n.topnews, n.isexpert, n.photo, 
+        n.video, n.subrubric, n.imagescopy, n.suggest, n.headlineblock, n.twitter_status, 
+        n.youcode, n._todel1, n._todel2, n._todel3, n._stage, n.maininblock, n.videos, n.isProject,
+        DATE_FORMAT(n.ndate, '%Y-%m-%d') as ndate,
+        n.ntime,
         nb.nbody,
         nh.nheader,
         nh.nsubheader,
@@ -197,6 +235,9 @@ export async function getNewsById(id: number): Promise<NewsData | null> {
 
 export async function createNews(data: Partial<NewsData>): Promise<number> {
   try {
+    // Отримуємо поточний час сервера
+    const serverTime = await getServerTime();
+    
     // Створюємо запис в основній таблиці
     const newsQuery = `
       INSERT INTO ${TABLES.NEWS} (
@@ -210,29 +251,37 @@ export async function createNews(data: Partial<NewsData>): Promise<number> {
     const newsValues = [
       data.images || '',
       (() => {
-        // Обробляємо дату - конвертуємо ISO timestamp в YYYY-MM-DD формат
+        // Обробляємо дату - завжди конвертуємо в YYYY-MM-DD формат
         if (data.ndate) {
-          if (typeof data.ndate === 'string' && data.ndate.includes('T')) {
-            // Якщо це ISO timestamp, витягуємо тільки дату
-            const result = data.ndate.split('T')[0];
-            return result;
-          } else if (typeof data.ndate === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(data.ndate)) {
-            // Якщо це вже в правильному форматі YYYY-MM-DD
-            return data.ndate;
-          } else {
-            // Спробуємо парсити як дату
-            const date = new Date(data.ndate);
-            if (!isNaN(date.getTime())) {
-              const result = date.toISOString().split('T')[0];
-              return result;
-            }
+          const date = new Date(data.ndate);
+          if (!isNaN(date.getTime())) {
+            // Завжди повертаємо дату в форматі YYYY-MM-DD
+            return date.toISOString().split('T')[0];
           }
         }
-        // За замовчуванням - поточна дата
-        const defaultDate = new Date().toISOString().split('T')[0];
-        return defaultDate;
+        // За замовчуванням - поточна дата в UTC
+        return new Date().toISOString().split('T')[0];
       })(),
-      data.ntime || new Date().toTimeString().split(' ')[0].substring(0, 8),
+      (() => {
+        // Обробляємо час з використанням dayjs
+        if (data.ntime && typeof data.ntime === 'string' && /^\d{2}:\d{2}:\d{2}$/.test(data.ntime)) {
+          // Якщо передано ntime окремо, конвертуємо локальний час в UTC
+          const dateStr = data.ndate ? dayjs(data.ndate).format('YYYY-MM-DD') : dayjs().format('YYYY-MM-DD');
+          const localDateTime = dayjs(`${dateStr} ${data.ntime}`);
+          const utcTime = localDateTime.utc();
+          return utcTime.format('HH:mm:ss');
+        } else if (data.ndate) {
+          // Якщо передано ndate з часом, конвертуємо в UTC
+          const dateObj = dayjs(data.ndate);
+          if (dateObj.isValid()) {
+            const utcTime = dateObj.utc();
+            return utcTime.format('HH:mm:ss');
+          }
+        }
+        // За замовчуванням - поточний UTC час мінус 1 хвилина, щоб гарантувати відображення
+        const now = dayjs().utc().subtract(1, 'minute');
+        return now.format('HH:mm:ss');
+      })(),
       data.ntype || 1,
       data.nauthor || 0,
       '', // nauthorplus - required field
@@ -246,7 +295,7 @@ export async function createNews(data: Partial<NewsData>): Promise<number> {
       data.approved ? 1 : 0,
       data.lang === 'ua' ? 1 : (data.lang === 'en' ? 2 : (data.lang === 'ru' ? 3 : 1)),
       data.rated ? 1 : 0,
-      Math.floor(Date.now() / 1000),
+      Math.floor(Date.now() / 1000), // udate - використовуємо локальний час для timestamp
       data.urlkey || (data.nheader ? generateUrlKey(data.nheader) : ''),
       data.userid || 0,
       data.layout || 0,
@@ -378,32 +427,39 @@ export async function updateNews(id: number, data: Partial<NewsData>): Promise<b
     }
     if (data.ndate !== undefined) {
       updateFields.push('ndate = ?');
-      // Валідуємо та форматуємо дату
-      
-      // Якщо дата вже в правильному форматі YYYY-MM-DD, використовуємо її
-      if (typeof data.ndate === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(data.ndate)) {
-        updateValues.push(data.ndate);
-      } else if (typeof data.ndate === 'string' && data.ndate === 'Invalid Date') {
-        // Не оновлюємо ndate, якщо передано "Invalid Date"
-        updateFields.pop(); // Видаляємо останній доданий field
+      // Обробляємо дату - завжди конвертуємо в YYYY-MM-DD формат
+      const date = new Date(data.ndate);
+      if (!isNaN(date.getTime())) {
+        // Завжди повертаємо дату в форматі YYYY-MM-DD
+        updateValues.push(date.toISOString().split('T')[0]);
       } else {
-        const date = new Date(data.ndate);
-        if (isNaN(date.getTime())) {
-          // Не оновлюємо ndate, якщо дата невалідна
-          updateFields.pop(); // Видаляємо останній доданий field
-        } else {
-          const formattedDate = date.toISOString().split('T')[0]; // YYYY-MM-DD формат
-          updateValues.push(formattedDate);
-        }
+        // Якщо дата невалідна, не оновлюємо
+        updateFields.pop();
       }
     }
     if (data.ntime !== undefined) {
       updateFields.push('ntime = ?');
-      // Валідуємо час (має бути в форматі HH:MM:SS)
+      // Обробляємо час з використанням dayjs
       if (typeof data.ntime === 'string' && /^\d{2}:\d{2}:\d{2}$/.test(data.ntime)) {
-        updateValues.push(data.ntime);
+        // Якщо передано час окремо, конвертуємо локальний час в UTC
+        const dateStr = data.ndate ? dayjs(data.ndate).format('YYYY-MM-DD') : dayjs().format('YYYY-MM-DD');
+        const localDateTime = dayjs(`${dateStr} ${data.ntime}`);
+        const utcTime = localDateTime.utc();
+        updateValues.push(utcTime.format('HH:mm:ss'));
       } else {
-        throw new Error('Invalid time format for ntime. Expected HH:MM:SS');
+        // Якщо формат не правильний, спробуємо витягти час з ndate
+        if (data.ndate) {
+          const dateObj = dayjs(data.ndate);
+          if (dateObj.isValid()) {
+            // Конвертуємо в UTC час
+            const utcTime = dateObj.utc();
+            updateValues.push(utcTime.format('HH:mm:ss'));
+          } else {
+            updateFields.pop(); // Видаляємо поле, якщо не можемо обробити
+          }
+        } else {
+          updateFields.pop(); // Видаляємо поле, якщо не можемо обробити
+        }
       }
     }
     if (data.ntype !== undefined) {

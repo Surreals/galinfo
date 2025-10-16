@@ -27,7 +27,7 @@ export async function getNewsData() {
     
     // Fetch main news (48 items)
     const mainNews = await executeQuery(`
-      SELECT a_news.id, a_news.ndate, a_news.ntime, a_news.ntype, a_news.images, 
+      SELECT a_news.id, DATE_FORMAT(a_news.ndate, '%Y-%m-%d') as ndate, a_news.ntime, a_news.ntype, a_news.images, 
              a_news.urlkey, a_news.photo, a_news.video, a_news_headers.nheader,
              a_news_headers.nsubheader, a_news.nweight, a_news.comments,
              a_news.printsubheader, a_statcomm.qty
@@ -43,7 +43,7 @@ export async function getNewsData() {
     const slideNews = await executeQuery(`
       SELECT a_news_headers.id, a_news_headers.nheader, a_news_headers.nteaser,
              a_news.ntype, a_news.comments, a_news.images, a_news.urlkey,
-             a_news.photo, a_news.video, a_news.ndate, a_news.nweight,
+             a_news.photo, a_news.video, DATE_FORMAT(a_news.ndate, '%Y-%m-%d') as ndate, a_news.nweight,
              a_news_slideheaders.sheader, a_news_slideheaders.steaser, a_statcomm.qty
       FROM a_news_headers USE KEY (PRIMARY)
       LEFT JOIN a_news USE KEY (datetype) ON a_news_headers.id = a_news.id

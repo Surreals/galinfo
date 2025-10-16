@@ -12,7 +12,7 @@ export async function GET(request: NextRequest) {
     const importantNewsQuery = `
       SELECT 
         a_news.id,
-        a_news.ndate,
+        DATE_FORMAT(a_news.ndate, '%Y-%m-%d') as ndate,
         a_news.ntime,
         a_news.udate,
         a_news.ntype,

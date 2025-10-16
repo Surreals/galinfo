@@ -150,7 +150,7 @@ export async function GET(
         SELECT 
           a_news.id,
           a_news.urlkey,
-          a_news.ndate,
+          DATE_FORMAT(a_news.ndate, '%Y-%m-%d') as ndate,
           a_news.ntype,
           a_news.images,
           a_news_headers.nheader,

@@ -87,7 +87,17 @@ export async function GET(
     // Основний запит для отримання новини з усіма даними
     const newsQuery = `
       SELECT 
-        a_news.*,
+        a_news.id, a_news.images, a_news.ntype, a_news.nauthor, a_news.nauthorplus, 
+        a_news.showauthor, a_news.rubric, a_news.region, a_news.theme, a_news.nweight, 
+        a_news.nocomment, a_news.hiderss, a_news.approved, a_news.lang, a_news.rated, 
+        a_news.udate, a_news.urlkey, a_news.userid, a_news.layout, a_news.comments, 
+        a_news.bytheme, a_news.ispopular, a_news.supervideo, a_news.printsubheader, 
+        a_news.topnews, a_news.isexpert, a_news.photo, a_news.video, a_news.subrubric, 
+        a_news.imagescopy, a_news.suggest, a_news.headlineblock, a_news.twitter_status, 
+        a_news.youcode, a_news._todel1, a_news._todel2, a_news._todel3, a_news._stage, 
+        a_news.maininblock, a_news.videos, a_news.isProject,
+        DATE_FORMAT(a_news.ndate, '%Y-%m-%d') as ndate,
+        a_news.ntime,
         a_news_headers.nheader,
         a_news_headers.nsubheader,
         a_news_headers.nteaser,
@@ -222,7 +232,10 @@ export async function GET(
         LIMIT 5
       `;
       const [relatedNewsData] = await executeQuery(relatedQuery, [id, ...newsTypes, news.rubric.split(',')[0], lang]);
-      relatedNews = relatedNewsData;
+      relatedNews = relatedNewsData.map(item => ({
+        ...item,
+        ndate: item.ndate ? new Date(item.ndate).toISOString().split('T')[0] : ''
+      }));
     }
     
     // Оновлення статистики переглядів

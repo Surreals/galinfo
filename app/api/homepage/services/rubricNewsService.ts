@@ -5,72 +5,72 @@ export async function getRubricNewsData() {
     // Fetch rubric-specific news for different sections
     const rubric4News = await executeQuery(`
       SELECT a_news_headers.id, a_news_headers.nheader, a_news.ntype, a_news.comments,
-             a_news.images, a_news.urlkey, a_news.udate, a_news.ndate, a_news.photo,
+             a_news.images, a_news.urlkey, a_news.udate, DATE_FORMAT(DATE_FORMAT(a_news.ndate, '%Y-%m-%d') as ndate, '%Y-%m-%d') as ndate, a_news.photo,
              a_news.video, a_news.nweight, a_statcomm.qty
       FROM a_news USE KEY (maininblock)
       LEFT JOIN a_news_headers ON a_news.id = a_news_headers.id
       LEFT JOIN a_statcomm ON a_news.id = a_statcomm.id
-      WHERE maininblock =1 AND approved=1 AND CONCAT(a_news.ndate, " ", a_news.ntime) < NOW()
+      WHERE maininblock =1 AND approved=1 AND CONCAT(DATE_FORMAT(a_news.ndate, '%Y-%m-%d') as ndate, " ", a_news.ntime) < NOW()
             AND a_news.ntype<=6 AND a_news.rubric = 4
       ORDER BY udate DESC LIMIT 1
     `);
     
     const rubric3News = await executeQuery(`
       SELECT a_news_headers.id, a_news_headers.nheader, a_news.ntype, a_news.comments,
-             a_news.images, a_news.urlkey, a_news.udate, a_news.ndate, a_news.photo,
+             a_news.images, a_news.urlkey, a_news.udate, DATE_FORMAT(DATE_FORMAT(a_news.ndate, '%Y-%m-%d') as ndate, '%Y-%m-%d') as ndate, a_news.photo,
              a_news.video, a_news.nweight, a_statcomm.qty
       FROM a_news USE KEY (maininblock)
       LEFT JOIN a_news_headers ON a_news.id = a_news_headers.id
       LEFT JOIN a_statcomm ON a_news.id = a_statcomm.id
-      WHERE maininblock =1 AND approved=1 AND CONCAT(a_news.ndate, " ", a_news.ntime) < NOW()
+      WHERE maininblock =1 AND approved=1 AND CONCAT(DATE_FORMAT(a_news.ndate, '%Y-%m-%d') as ndate, " ", a_news.ntime) < NOW()
             AND a_news.ntype<=6 AND a_news.rubric = 3
       ORDER BY udate DESC LIMIT 1
     `);
     
     const rubric2News = await executeQuery(`
       SELECT a_news_headers.id, a_news_headers.nheader, a_news.ntype, a_news.comments,
-             a_news.images, a_news.urlkey, a_news.udate, a_news.ndate, a_news.photo,
+             a_news.images, a_news.urlkey, a_news.udate, DATE_FORMAT(DATE_FORMAT(a_news.ndate, '%Y-%m-%d') as ndate, '%Y-%m-%d') as ndate, a_news.photo,
              a_news.video, a_news.nweight, a_statcomm.qty
       FROM a_news USE KEY (maininblock)
       LEFT JOIN a_news_headers ON a_news.id = a_news_headers.id
       LEFT JOIN a_statcomm ON a_news.id = a_statcomm.id
-      WHERE maininblock =1 AND approved=1 AND CONCAT(a_news.ndate, " ", a_news.ntime) < NOW()
+      WHERE maininblock =1 AND approved=1 AND CONCAT(DATE_FORMAT(a_news.ndate, '%Y-%m-%d') as ndate, " ", a_news.ntime) < NOW()
             AND a_news.ntype<=6 AND a_news.rubric = 2
       ORDER BY udate DESC LIMIT 1
     `);
     
     const rubric103News = await executeQuery(`
       SELECT a_news_headers.id, a_news_headers.nheader, a_news.ntype, a_news.comments,
-             a_news.images, a_news.urlkey, a_news.udate, a_news.ndate, a_news.photo,
+             a_news.images, a_news.urlkey, a_news.udate, DATE_FORMAT(DATE_FORMAT(a_news.ndate, '%Y-%m-%d') as ndate, '%Y-%m-%d') as ndate, a_news.photo,
              a_news.video, a_news.nweight, a_statcomm.qty
       FROM a_news USE KEY (maininblock)
       LEFT JOIN a_news_headers ON a_news.id = a_news_headers.id
       LEFT JOIN a_statcomm ON a_news.id = a_statcomm.id
-      WHERE maininblock =1 AND approved=1 AND CONCAT(a_news.ndate, " ", a_news.ntime) < NOW()
+      WHERE maininblock =1 AND approved=1 AND CONCAT(DATE_FORMAT(a_news.ndate, '%Y-%m-%d') as ndate, " ", a_news.ntime) < NOW()
             AND a_news.ntype<=6 AND a_news.rubric = 103
       ORDER BY udate DESC LIMIT 1
     `);
     
     const rubric5News = await executeQuery(`
       SELECT a_news_headers.id, a_news_headers.nheader, a_news.ntype, a_news.comments,
-             a_news.images, a_news.urlkey, a_news.udate, a_news.ndate, a_news.photo,
+             a_news.images, a_news.urlkey, a_news.udate, DATE_FORMAT(a_news.ndate, '%Y-%m-%d') as ndate, a_news.photo,
              a_news.video, a_news.nweight, a_statcomm.qty
       FROM a_news USE KEY (maininblock)
       LEFT JOIN a_news_headers ON a_news.id = a_news_headers.id
       LEFT JOIN a_statcomm ON a_news.id = a_statcomm.id
-      WHERE maininblock =1 AND approved=1 AND CONCAT(a_news.ndate, " ", a_news.ntime) < NOW()
+      WHERE maininblock =1 AND approved=1 AND CONCAT(DATE_FORMAT(a_news.ndate, '%Y-%m-%d') as ndate, " ", a_news.ntime) < NOW()
             AND a_news.ntype<=6 AND a_news.rubric = 5
       ORDER BY udate DESC LIMIT 1
     `);
     
     const rubric101News = await executeQuery(`
       SELECT a_news_headers.id, a_news_headers.nheader, a_news.ntype, a_news.comments,
-             a_news.images, a_news.urlkey, a_news.udate, a_news.ndate, a_news.photo,
+             a_news.images, a_news.urlkey, a_news.udate, DATE_FORMAT(a_news.ndate, '%Y-%m-%d') as ndate, a_news.photo,
              a_news.video, a_news.nweight, a_statcomm.qty
       FROM a_news USE KEY (maininblock)
       LEFT JOIN a_news_headers ON a_news.id = a_news_headers.id
       LEFT JOIN a_statcomm ON a_news.id = a_statcomm.id
-      WHERE maininblock =1 AND approved=1 AND CONCAT(a_news.ndate, " ", a_news.ntime) < NOW()
+      WHERE maininblock =1 AND approved=1 AND CONCAT(DATE_FORMAT(a_news.ndate, '%Y-%m-%d') as ndate, " ", a_news.ntime) < NOW()
             AND a_news.ntype<=6 AND a_news.rubric = 101
       ORDER BY udate DESC LIMIT 1
     `);
@@ -82,7 +82,7 @@ export async function getRubricNewsData() {
       FROM a_news USE KEY (udate)
       LEFT JOIN a_news_headers ON a_news.id = a_news_headers.id
       LEFT JOIN a_statcomm ON a_news.id = a_statcomm.id
-      WHERE nweight >0 AND approved=1 AND CONCAT(a_news.ndate, " ", a_news.ntime) < NOW()
+      WHERE nweight >0 AND approved=1 AND CONCAT(DATE_FORMAT(a_news.ndate, '%Y-%m-%d') as ndate, " ", a_news.ntime) < NOW()
             AND a_news.ntype<=6 AND a_news.rubric = 4 AND a_news.id <> 435996
       ORDER BY udate DESC LIMIT 2
     `);
@@ -93,7 +93,7 @@ export async function getRubricNewsData() {
       FROM a_news USE KEY (udate)
       LEFT JOIN a_news_headers ON a_news.id = a_news_headers.id
       LEFT JOIN a_statcomm ON a_news.id = a_statcomm.id
-      WHERE nweight >0 AND approved=1 AND CONCAT(a_news.ndate, " ", a_news.ntime) < NOW()
+      WHERE nweight >0 AND approved=1 AND CONCAT(DATE_FORMAT(a_news.ndate, '%Y-%m-%d') as ndate, " ", a_news.ntime) < NOW()
             AND a_news.ntype<=6 AND a_news.rubric = 3 AND a_news.id <> 436000
       ORDER BY udate DESC LIMIT 2
     `);
@@ -104,7 +104,7 @@ export async function getRubricNewsData() {
       FROM a_news USE KEY (udate)
       LEFT JOIN a_news_headers ON a_news.id = a_news_headers.id
       LEFT JOIN a_statcomm ON a_news.id = a_statcomm.id
-      WHERE nweight >0 AND approved=1 AND CONCAT(a_news.ndate, " ", a_news.ntime) < NOW()
+      WHERE nweight >0 AND approved=1 AND CONCAT(DATE_FORMAT(a_news.ndate, '%Y-%m-%d') as ndate, " ", a_news.ntime) < NOW()
             AND a_news.ntype<=6 AND a_news.rubric = 2 AND a_news.id <> 435647
       ORDER BY udate DESC LIMIT 2
     `);
@@ -115,7 +115,7 @@ export async function getRubricNewsData() {
       FROM a_news USE KEY (udate)
       LEFT JOIN a_news_headers ON a_news.id = a_news_headers.id
       LEFT JOIN a_statcomm ON a_news.id = a_statcomm.id
-      WHERE nweight >0 AND approved=1 AND CONCAT(a_news.ndate, " ", a_news.ntime) < NOW()
+      WHERE nweight >0 AND approved=1 AND CONCAT(DATE_FORMAT(a_news.ndate, '%Y-%m-%d') as ndate, " ", a_news.ntime) < NOW()
             AND a_news.ntype<=6 AND a_news.rubric = 103 AND a_news.id <> 437201
       ORDER BY udate DESC LIMIT 2
     `);
@@ -126,7 +126,7 @@ export async function getRubricNewsData() {
       FROM a_news USE KEY (udate)
       LEFT JOIN a_news_headers ON a_news.id = a_news_headers.id
       LEFT JOIN a_statcomm ON a_news.id = a_statcomm.id
-      WHERE nweight >0 AND approved=1 AND CONCAT(a_news.ndate, " ", a_news.ntime) < NOW()
+      WHERE nweight >0 AND approved=1 AND CONCAT(DATE_FORMAT(a_news.ndate, '%Y-%m-%d') as ndate, " ", a_news.ntime) < NOW()
             AND a_news.ntype<=6 AND a_news.rubric = 5 AND a_news.id <> 436058
       ORDER BY udate DESC LIMIT 2
     `);
@@ -137,7 +137,7 @@ export async function getRubricNewsData() {
       FROM a_news USE KEY (udate)
       LEFT JOIN a_news_headers ON a_news.id = a_news_headers.id
       LEFT JOIN a_statcomm ON a_news.id = a_statcomm.id
-      WHERE nweight >0 AND approved=1 AND CONCAT(a_news.ndate, " ", a_news.ntime) < NOW()
+      WHERE nweight >0 AND approved=1 AND CONCAT(DATE_FORMAT(a_news.ndate, '%Y-%m-%d') as ndate, " ", a_news.ntime) < NOW()
             AND a_news.ntype<=6 AND a_news.rubric = 101 AND a_news.id <> 435728
       ORDER BY udate DESC LIMIT 2
     `);
