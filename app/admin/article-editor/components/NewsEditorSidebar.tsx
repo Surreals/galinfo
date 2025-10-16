@@ -262,9 +262,8 @@ export default function NewsEditorSidebar({ newsId, articleData, menuData, onEdi
   // Час публікації
   const [publishAt, setPublishAt] = useState<Dayjs | null>(() => {
     if (articleData) {
-      // Правильно обробляємо UTC час з часовим поясом
-      const dateTimeString = `${articleData.ndate}T${articleData.ntime}Z`;
-      return dayjs(dateTimeString);
+      // API вже повертає час з +3 годинами, просто створюємо dayjs об'єкт
+      return dayjs(`${articleData.ndate} ${articleData.ntime}`);
     }
     return dayjs();
   });
@@ -276,9 +275,8 @@ export default function NewsEditorSidebar({ newsId, articleData, menuData, onEdi
   // Оновлюємо publishAt при зміні articleData
   useEffect(() => {
     if (articleData?.ndate && articleData?.ntime) {
-      // Правильно обробляємо UTC час з часовим поясом
-      const dateTimeString = `${articleData.ndate}T${articleData.ntime}Z`;
-      const newPublishAt = dayjs(dateTimeString);
+      // API вже повертає час в локальному часовому поясі, просто створюємо dayjs об'єкт
+      const newPublishAt = dayjs(`${articleData.ndate} ${articleData.ntime}`);
       setPublishAt(newPublishAt);
     }
   }, [articleData?.ndate, articleData?.ntime]);
