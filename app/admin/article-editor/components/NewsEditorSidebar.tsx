@@ -33,6 +33,9 @@ import {
   FileOutlined,
 } from "@ant-design/icons";
 import dayjs, { Dayjs } from "dayjs";
+import utc from 'dayjs/plugin/utc';
+
+dayjs.extend(utc);
 import styles from "../NewsEditor.module.css";
 import { 
   useArticleEditorData, 
@@ -257,13 +260,28 @@ export default function NewsEditorSidebar({ newsId, articleData, menuData, onEdi
   const [isProject, setIsProject] = useState<boolean>(articleData?.isProject || false);
 
   // Час публікації
-  const [publishAt, setPublishAt] = useState<Dayjs | null>(
-    articleData ? dayjs(`${articleData.ndate} ${articleData.ntime}`) : dayjs()
-  );
+  const [publishAt, setPublishAt] = useState<Dayjs | null>(() => {
+    if (articleData) {
+      // Правильно обробляємо UTC час з часовим поясом
+      const dateTimeString = `${articleData.ndate}T${articleData.ntime}Z`;
+      return dayjs(dateTimeString);
+    }
+    return dayjs();
+  });
 
   // Прапори публікації
   const [publishOnSite, setPublishOnSite] = useState<boolean>(articleData?.approved || true);
   const [publishOnTwitter, setPublishOnTwitter] = useState<boolean>(articleData?.to_twitter || true);
+
+  // Оновлюємо publishAt при зміні articleData
+  useEffect(() => {
+    if (articleData?.ndate && articleData?.ntime) {
+      // Правильно обробляємо UTC час з часовим поясом
+      const dateTimeString = `${articleData.ndate}T${articleData.ntime}Z`;
+      const newPublishAt = dayjs(dateTimeString);
+      setPublishAt(newPublishAt);
+    }
+  }, [articleData?.ndate, articleData?.ntime]);
 
   // Хук для збереження
   const { saving, saveArticle, deleteArticle } = useArticleSave({ 
@@ -918,6 +936,8 @@ export default function NewsEditorSidebar({ newsId, articleData, menuData, onEdi
             onChange={(v) => setPublishAt(v)}
             format="HH:mm DD.MM.YYYY"
             className={styles.fullWidth}
+            placeholder="Оберіть дату та час публікації"
+            title={publishAt ? `Поточний час: ${publishAt.format('HH:mm DD.MM.YYYY')}` : 'Оберіть дату та час публікації'}
           />
           <TimeButtons 
             publishAt={publishAt} 

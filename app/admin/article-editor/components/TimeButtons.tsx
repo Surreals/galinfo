@@ -2,6 +2,9 @@
 
 import { message } from "antd";
 import dayjs, { Dayjs } from "dayjs";
+import utc from 'dayjs/plugin/utc';
+
+dayjs.extend(utc);
 import { useTimeButtons } from "@/app/hooks/useTimeButtons";
 import styles from "../NewsEditor.module.css";
 
@@ -39,8 +42,26 @@ export default function TimeButtons({ publishAt, setPublishAt }: TimeButtonsProp
     }
   };
 
+  const handleNowClick = () => {
+    const now = dayjs();
+    setPublishAt(now);
+    message.success('Встановлено поточний час');
+  };
+
   return (
     <div className={styles.timeHints}>
+      <a 
+        onClick={handleNowClick}
+        style={{ 
+          cursor: 'pointer',
+          opacity: 1,
+          fontWeight: 'bold'
+        }}
+        title="Клікніть, щоб встановити поточний час"
+      >
+        🕐 Зараз
+      </a>
+      
       <a 
         onClick={() => handleTimeClick(timeData.lastNewsTime, 'Встановлено час останньої новини')}
         style={{ 
@@ -49,7 +70,7 @@ export default function TimeButtons({ publishAt, setPublishAt }: TimeButtonsProp
         }}
         title={timeData.lastNewsTime ? `Клікніть, щоб встановити: ${timeData.lastNewsTime}` : 'Немає даних'}
       >
-        » Час останньої новини {timeData.loading ? '(завантаження...)' : timeData.lastNewsTime ? `(${timeData.lastNewsTime})` : '(немає даних)'}
+        » Час останньої новини {timeData.loading ? '(завантаження...)' : timeData.lastNewsTime ? '' : '(немає даних)'}
       </a>
       
       <a 
@@ -60,7 +81,7 @@ export default function TimeButtons({ publishAt, setPublishAt }: TimeButtonsProp
         }}
         title={timeData.lastPublishedTime ? `Клікніть, щоб встановити: ${timeData.lastPublishedTime}` : 'Немає даних'}
       >
-        ♥ Час останньої опублікованої {timeData.loading ? '(завантаження...)' : timeData.lastPublishedTime ? `(${timeData.lastPublishedTime})` : '(немає даних)'}
+        ♥ Час останньої опублікованої {timeData.loading ? '(завантаження...)' : timeData.lastPublishedTime ? '' : '(немає даних)'}
       </a>
       
       <a 
@@ -71,7 +92,7 @@ export default function TimeButtons({ publishAt, setPublishAt }: TimeButtonsProp
         }}
         title={timeData.serverTime ? `Клікніть, щоб встановити: ${timeData.serverTime}` : 'Немає даних'}
       >
-        » Час на сервері {timeData.loading ? '(завантаження...)' : timeData.serverTime ? `(${timeData.serverTime})` : '(немає даних)'}
+        » Час на сервері {timeData.loading ? '(завантаження...)' : timeData.serverTime ? '' : '(немає даних)'}
       </a>
     </div>
   );

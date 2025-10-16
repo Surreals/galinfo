@@ -14,17 +14,14 @@ import { useAuthors } from '@/app/hooks/useAuthors';
 const isNewsScheduled = (formattedDate: string, formattedTime: string): boolean => {
   try {
     // formattedDate має формат DD.MM.YYYY (наприклад, "10.10.2025")
-    // formattedTime має формат HH:mm:ss (наприклад, "21:22:00")
-    
-    // Обрізаємо секунди з часу
-    const timeWithoutSeconds = formattedTime.split(':').slice(0, 2).join(':');
+    // formattedTime має формат HH:mm (наприклад, "21:22") - вже оброблений з UTC
     
     // Перетворюємо DD.MM.YYYY в YYYY-MM-DD
     const [day, month, year] = formattedDate.split('.');
     const isoDate = `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
     
-    // Об'єднуємо в ISO формат
-    const fullDateTime = dayjs(`${isoDate}T${timeWithoutSeconds}`);
+    // Об'єднуємо в ISO формат (використовуємо локальний час, оскільки formattedTime вже конвертований)
+    const fullDateTime = dayjs(`${isoDate}T${formattedTime}`);
     
     return fullDateTime.isAfter(dayjs());
   } catch (error) {

@@ -124,7 +124,7 @@ export async function GET(request: NextRequest) {
     const newsQuery = `
       SELECT 
         a_news.id,
-        a_news.ndate,
+        DATE_FORMAT(a_news.ndate, '%Y-%m-%d') as ndate,
         a_news.ntime,
         a_news.ntype,
         a_news.images,
@@ -220,7 +220,7 @@ export async function GET(request: NextRequest) {
           }
         })) : [],
         formattedDate: formatDate(news.ndate),
-        formattedTime: news.ntime,
+        formattedTime: formatTime(news.ndate, news.ntime),
         typeName: getTypeName(news.ntype),
         authorDisplayName: news.fuser_name || news.author_name || 'Невідомий автор',
         isImportant: news.nweight > 0,
@@ -355,5 +355,30 @@ function formatDate(dateString: string): string {
   } catch (error) {
     console.error('Error formatting date:', error, 'Input:', dateString);
     return 'Невідома дата';
+  }
+}
+
+// Функція для форматування часу з урахуванням UTC
+function formatTime(dateString: string, timeString: string): string {
+  if (!dateString || !timeString) return 'Невідомий час';
+  
+  try {
+    // Створюємо дату з UTC часу (додаємо Z для вказування UTC)
+    const dateTimeString = `${dateString}T${timeString}Z`;
+    const dateObj = new Date(dateTimeString);
+    
+    // Перевіряємо, чи дата валідна
+    if (isNaN(dateObj.getTime())) {
+      return 'Невідомий час';
+    }
+    
+    // Використовуємо локальний час (автоматично конвертується з UTC)
+    return dateObj.toLocaleTimeString('uk-UA', {
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+  } catch (error) {
+    console.error('Error formatting time:', error, 'Input:', dateString, timeString);
+    return 'Невідомий час';
   }
 }
