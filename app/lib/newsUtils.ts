@@ -62,12 +62,12 @@ export function formatFullNewsDate(ndate: string, ntime?: string): string {
   const dateTimeString = ntime ? `${ndate}T${ntime}Z` : ndate;
   const dateObj = new Date(dateTimeString);
 
-  // Форматуємо дату: "13 серпня 2025 р."
+  // Форматуємо дату: "13 серпня 2025" (без 'р.')
   const dateStr = dateObj.toLocaleDateString('uk-UA', {
     day: '2-digit',
     month: 'long',
     year: 'numeric'
-  });
+  }).replace(' р.', ''); // Прибираємо 'р.' з року
 
   // Використовуємо локальний час (автоматично конвертується з UTC)
   const localTime = dateObj.toLocaleTimeString('uk-UA', {
