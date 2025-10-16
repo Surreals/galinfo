@@ -202,9 +202,9 @@ export async function createNews(data: Partial<NewsData>): Promise<number> {
       INSERT INTO ${TABLES.NEWS} (
         images, ndate, ntime, ntype, nauthor, nauthorplus, showauthor, rubric, region, theme,
         nweight, nocomment, hiderss, approved, lang, rated, udate, urlkey, userid, layout,
-        bytheme, ispopular, supervideo, printsubheader, topnews, isexpert, photo, video,
-        subrubric, suggest, headlineblock, twitter_status, youcode, maininblock, isProject
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        comments, bytheme, ispopular, supervideo, printsubheader, topnews, isexpert, photo, video,
+        subrubric, imagescopy, suggest, headlineblock, twitter_status, youcode, _todel1, _todel2, _todel3, _stage, maininblock, videos, isProject
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `;
     
     const newsValues = [
@@ -250,6 +250,7 @@ export async function createNews(data: Partial<NewsData>): Promise<number> {
       data.urlkey || (data.nheader ? generateUrlKey(data.nheader) : ''),
       data.userid || 0,
       data.layout || 0,
+      null, // comments - nullable field
       '', // bytheme - required field
       data.ispopular || 0,
       0, // supervideo - required field
@@ -259,11 +260,17 @@ export async function createNews(data: Partial<NewsData>): Promise<number> {
       data.photo ? 1 : 0,
       data.video ? 1 : 0,
       0, // subrubric - required field
+      null, // imagescopy - nullable field
       data.suggest ? 1 : 0,
       data.headlineblock ? 1 : 0,
       data.twitter_status || 'not_published',
       data.youcode || '',
+      null, // _todel1 - nullable field
+      null, // _todel2 - nullable field
+      null, // _todel3 - nullable field
+      null, // _stage - nullable field
       data.maininblock ? 1 : 0,
+      null, // videos - nullable field
       data.isProject ? 1 : 0,
     ];
     
