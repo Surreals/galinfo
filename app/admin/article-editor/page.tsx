@@ -25,6 +25,7 @@ function ArticleEditorContent() {
   const [editorSaveFn, setEditorSaveFn] = useState<(() => Promise<string>) | null>(null);
   const [isHeaderValid, setIsHeaderValid] = useState(false);
   const [isSidebarValid, setIsSidebarValid] = useState(false);
+  const [isPublishing, setIsPublishing] = useState(false);
   
   // Загальна валідація
   const isFormValid = isHeaderValid && isSidebarValid;
@@ -38,6 +39,13 @@ function ArticleEditorContent() {
       setIsEditing(true);
     }
   }, [newsId]);
+
+  // Ініціалізуємо isPublishing на основі статусу approved існуючої статті
+  useEffect(() => {
+    if (articleData) {
+      setIsPublishing(articleData.approved || false);
+    }
+  }, [articleData?.approved]);
 
   // Handler for nbody changes
   const handleNbodyChange = (nbody: string) => {
@@ -80,6 +88,7 @@ function ArticleEditorContent() {
           onDataChange={handleDataChange}
           onEditorSaveRef={handleEditorSaveRef}
           onValidationChange={setIsHeaderValid}
+          isPublishing={isPublishing}
         />
         <NewsEditorSidebar
           fetchArticle={fetchArticle}
@@ -91,6 +100,7 @@ function ArticleEditorContent() {
           onSidebarValidationChange={setIsSidebarValid}
           onTagsChange={handleTagsChange}
           onDataChange={handleDataChange}
+          onPublishStateChange={setIsPublishing}
         />
       </div>
       

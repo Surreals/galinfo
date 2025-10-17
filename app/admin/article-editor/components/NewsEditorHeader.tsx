@@ -24,9 +24,10 @@ interface NewsEditorHeaderProps {
   onDataChange?: (updates: Partial<ArticleData>) => void;
   onEditorSaveRef?: (saveFn: () => Promise<string>) => void;
   onValidationChange?: (isValid: boolean) => void;
+  isPublishing?: boolean;
 }
 
-export default function NewsEditorHeader({ isEditing, articleData, onNbodyChange, onDataChange, onEditorSaveRef, onValidationChange }: NewsEditorHeaderProps) {
+export default function NewsEditorHeader({ isEditing, articleData, onNbodyChange, onDataChange, onEditorSaveRef, onValidationChange, isPublishing = false }: NewsEditorHeaderProps) {
   const router = useRouter();
   const editorRef = useRef<CKEditorClientRef>(null);
   
@@ -74,6 +75,13 @@ export default function NewsEditorHeader({ isEditing, articleData, onNbodyChange
     }
   }, [articleData]);
 
+  // Перевалідація при зміні isPublishing
+  useEffect(() => {
+    validateTitle(mainTitle);
+    validateLead(mainLead);
+    validateBody(articleData?.nbody || "");
+    updateOverallValidation();
+  }, [isPublishing]);
 
   // Функція валідації заголовка
   const validateTitle = (title: string): boolean => {
@@ -88,6 +96,12 @@ export default function NewsEditorHeader({ isEditing, articleData, onNbodyChange
 
   // Функція валідації ліду
   const validateLead = (lead: string): boolean => {
+    // Для чернетки лід не обов'язковий
+    if (!isPublishing) {
+      setLeadError("");
+      return true;
+    }
+    
     const trimmedLead = lead?.trim();
     if (!trimmedLead) {
       setLeadError("Лід є обов'язковим");
@@ -99,6 +113,12 @@ export default function NewsEditorHeader({ isEditing, articleData, onNbodyChange
 
   // Функція валідації тексту новини
   const validateBody = (body: string): boolean => {
+    // Для чернетки текст не обов'язковий
+    if (!isPublishing) {
+      setBodyError("");
+      return true;
+    }
+    
     const trimmedBody = body?.trim();
     if (!trimmedBody || trimmedBody === '<p></p>' || trimmedBody === '<p><br></p>') {
       setBodyError("Текст новини є обов'язковим");

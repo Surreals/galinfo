@@ -71,9 +71,10 @@ interface NewsEditorSidebarProps {
   onSidebarValidationChange?: (isValid: boolean) => void;
   onTagsChange?: (tags: string) => void;
   onDataChange?: (updates: Partial<ArticleData>) => void;
+  onPublishStateChange?: (isPublishing: boolean) => void;
 }
 
-export default function NewsEditorSidebar({ newsId, articleData, menuData, onEditorSave, fetchArticle, isTitleValid, onSidebarValidationChange, onTagsChange, onDataChange }: NewsEditorSidebarProps) {
+export default function NewsEditorSidebar({ newsId, articleData, menuData, onEditorSave, fetchArticle, isTitleValid, onSidebarValidationChange, onTagsChange, onDataChange, onPublishStateChange }: NewsEditorSidebarProps) {
   const router = useRouter();
   const { modal } = App.useApp();
   const [savingProcess, setSavingProcess] = useState(false);
@@ -288,7 +289,13 @@ export default function NewsEditorSidebar({ newsId, articleData, menuData, onEdi
   });
 
   // Функції валідації
-  const validateType = (type: number): boolean => {
+  const validateType = (type: number, isPublishing: boolean): boolean => {
+    // Для чернетки тип не обов'язковий
+    if (!isPublishing) {
+      setTypeError("");
+      return true;
+    }
+    
     if (!type) {
       setTypeError("Тип статті є обов'язковим");
       return false;
@@ -297,7 +304,13 @@ export default function NewsEditorSidebar({ newsId, articleData, menuData, onEdi
     return true;
   };
 
-  const validateRubric = (rubrics: string[]): boolean => {
+  const validateRubric = (rubrics: string[], isPublishing: boolean): boolean => {
+    // Для чернетки рубрика не обов'язкова
+    if (!isPublishing) {
+      setRubricError("");
+      return true;
+    }
+    
     if (!rubrics || rubrics.length === 0) {
       setRubricError("Оберіть хоча б одну рубрику");
       return false;
@@ -306,7 +319,13 @@ export default function NewsEditorSidebar({ newsId, articleData, menuData, onEdi
     return true;
   };
 
-  const validateRegion = (regions: string[]): boolean => {
+  const validateRegion = (regions: string[], isPublishing: boolean): boolean => {
+    // Для чернетки регіон не обов'язковий
+    if (!isPublishing) {
+      setRegionError("");
+      return true;
+    }
+    
     if (!regions || regions.length === 0) {
       setRegionError("Оберіть хоча б один регіон");
       return false;
@@ -315,7 +334,19 @@ export default function NewsEditorSidebar({ newsId, articleData, menuData, onEdi
     return true;
   };
 
-  const validateTags = (tagString: string): boolean => {
+  const validateTags = (tagString: string, isPublishing: boolean): boolean => {
+    // Для чернетки теги не обов'язкові
+    if (!isPublishing) {
+      setTagsError("");
+      return true;
+    }
+    
+    // Для адміністраторів теги не обов'язкові
+    if (isAdmin) {
+      setTagsError("");
+      return true;
+    }
+    
     const trimmedTags = tagString?.trim();
     if (!trimmedTags) {
       setTagsError("Теги є обов'язковими");
@@ -330,12 +361,16 @@ export default function NewsEditorSidebar({ newsId, articleData, menuData, onEdi
     currentType?: number,
     currentRubrics?: string[],
     currentRegions?: string[],
-    currentTags?: string
+    currentTags?: string,
+    isPublishing?: boolean
   ) => {
-    const isTypeValid = validateType(currentType !== undefined ? currentType : articleType);
-    const isRubricValid = validateRubric(currentRubrics !== undefined ? currentRubrics : selectedRubrics);
-    const isRegionValid = validateRegion(currentRegions !== undefined ? currentRegions : selectedRegions);
-    const isTagsValid = validateTags(currentTags !== undefined ? currentTags : tags);
+    // Використовуємо publishOnSite як індикатор, чи це публікація чи чернетка
+    const publishing = isPublishing !== undefined ? isPublishing : publishOnSite;
+    
+    const isTypeValid = validateType(currentType !== undefined ? currentType : articleType, publishing);
+    const isRubricValid = validateRubric(currentRubrics !== undefined ? currentRubrics : selectedRubrics, publishing);
+    const isRegionValid = validateRegion(currentRegions !== undefined ? currentRegions : selectedRegions, publishing);
+    const isTagsValid = validateTags(currentTags !== undefined ? currentTags : tags, publishing);
     
     const overallValid = isTypeValid && isRubricValid && isRegionValid && isTagsValid;
     onSidebarValidationChange?.(overallValid);
@@ -407,11 +442,12 @@ export default function NewsEditorSidebar({ newsId, articleData, menuData, onEdi
       }
       
       // Валідуємо всі поля після завантаження з актуальними значеннями
-      validateType(articleData.ntype);
-      validateRubric(rubrics);
-      validateRegion(regions);
-      validateTags(tagsString);
-      updateSidebarValidation(articleData.ntype, rubrics, regions, tagsString);
+      const isPublishing = articleData.approved;
+      validateType(articleData.ntype, isPublishing);
+      validateRubric(rubrics, isPublishing);
+      validateRegion(regions, isPublishing);
+      validateTags(tagsString, isPublishing);
+      updateSidebarValidation(articleData.ntype, rubrics, regions, tagsString, isPublishing);
     } else if (!articleData && !loading) {
       // Скидаємо до значень за замовчуванням при створенні нової новини
       setArticleType(ARTICLE_TYPE_OPTIONS[0].value);
@@ -440,16 +476,29 @@ export default function NewsEditorSidebar({ newsId, articleData, menuData, onEdi
       setPublishOnTwitter(false);
       setFileList([]);
       
-      // Валідуємо порожні поля
-      validateType(ARTICLE_TYPE_OPTIONS[0].value);
-      validateRubric([]);
-      validateRegion([]);
-      validateTags("");
-      updateSidebarValidation(ARTICLE_TYPE_OPTIONS[0].value, [], [], "");
+      // Валідуємо порожні поля (для нової новини за замовчуванням чернетка)
+      const isPublishing = false; // За замовчуванням publishOnSite = false для нової новини
+      validateType(ARTICLE_TYPE_OPTIONS[0].value, isPublishing);
+      validateRubric([], isPublishing);
+      validateRegion([], isPublishing);
+      validateTags("", isPublishing);
+      updateSidebarValidation(ARTICLE_TYPE_OPTIONS[0].value, [], [], "", isPublishing);
     }
   }, [articleData?.id, loading, user?.id]);
 
+  // Перевалідація при зміні publishOnSite (коли вмикаємо/вимикаємо публікацію)
+  useEffect(() => {
+    updateSidebarValidation(articleType, selectedRubrics, selectedRegions, tags, publishOnSite);
+    // Повідомляємо батьківський компонент про зміну статусу публікації
+    onPublishStateChange?.(publishOnSite);
+  }, [publishOnSite]);
 
+  // Перевалідація при зміні ролі користувача (важливо для адмінів)
+  useEffect(() => {
+    if (isAdmin !== undefined) {
+      updateSidebarValidation(articleType, selectedRubrics, selectedRegions, tags, publishOnSite);
+    }
+  }, [isAdmin]);
 
   // handlers
   const onSave = async () => {
@@ -725,7 +774,7 @@ export default function NewsEditorSidebar({ newsId, articleData, menuData, onEdi
             value={articleType}
             onChange={(value) => {
               setArticleType(value);
-              validateType(value);
+              validateType(value, publishOnSite);
               updateSidebarValidation(value, undefined, undefined, undefined);
             }}
             className={styles.fullWidth}
@@ -748,7 +797,7 @@ export default function NewsEditorSidebar({ newsId, articleData, menuData, onEdi
                 value={selectedRubrics}
                 onChange={(value) => {
                   setSelectedRubrics(value);
-                  validateRubric(value);
+                  validateRubric(value, publishOnSite);
                   updateSidebarValidation(undefined, value, undefined, undefined);
                   // Синхронізуємо з articleData, щоб зміни не втрачалися
                   onDataChange?.({ rubric: value.map(Number) });
@@ -780,7 +829,7 @@ export default function NewsEditorSidebar({ newsId, articleData, menuData, onEdi
                 value={selectedRegions}
                 onChange={(value) => {
                   setSelectedRegions(value);
-                  validateRegion(value);
+                  validateRegion(value, publishOnSite);
                   updateSidebarValidation(undefined, undefined, value, undefined);
                   // Синхронізуємо з articleData, щоб зміни не втрачалися
                   onDataChange?.({ region: value.map(Number) });
@@ -791,7 +840,6 @@ export default function NewsEditorSidebar({ newsId, articleData, menuData, onEdi
                 }))}
                 className={styles.fullWidth}
                 size="middle"
-                showSearch
                 notFoundContent="Регіони не знайдені"
                 loading={loading}
                 status={regionError ? "error" : undefined}
@@ -831,7 +879,7 @@ export default function NewsEditorSidebar({ newsId, articleData, menuData, onEdi
             onChange={(value) => {
               setTags(value);
               onTagsChange?.(value); // Notify parent component about tags change
-              validateTags(value);
+              validateTags(value, publishOnSite);
               updateSidebarValidation(undefined, undefined, undefined, value);
             }}
             placeholder="Львівщина, полювання, ... "
