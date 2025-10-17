@@ -1,8 +1,9 @@
 'use client';
 
-import React, { useState, useRef } from 'react';
+import React, { useState } from 'react';
 import Image from 'next/image';
 import { formatFullNewsDate, getImageFromImageData } from '@/app/lib/newsUtils';
+import Breadcrumbs from '@/app/components/breadcrumbs/Breadcrumbs';
 import styles from './ProjectRenderer.module.css';
 
 interface ProjectRendererProps {
@@ -30,32 +31,6 @@ const ProjectRenderer: React.FC<ProjectRendererProps> = ({ article, loading = fa
 
   // Тепер викликаємо hooks після умовних return statements
   const [allImages, setAllImages] = useState<string[]>([]);
-  const [isShowCarousel, setIsShowCarousel] = useState<boolean>(false);
-  const [startIndex, setStartIndex] = useState<number>(0);
-  const [modalImages, setModalImages] = useState<string[] | null>(null);
-
-  const carouselRef = useRef<any>(null);
-
-  // Handle Escape key to close modal
-  React.useEffect(() => {
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape' && isShowCarousel) {
-        setIsShowCarousel(false);
-        setModalImages(null);
-      }
-    };
-
-    if (isShowCarousel) {
-      document.addEventListener('keydown', handleKeyDown);
-      // Prevent body scroll when modal is open
-      document.body.style.overflow = 'hidden';
-    }
-
-    return () => {
-      document.removeEventListener('keydown', handleKeyDown);
-      document.body.style.overflow = 'unset';
-    };
-  }, [isShowCarousel]);
 
   React.useEffect(() => {
     if (!article?.images_data || !article?.images) return;
@@ -74,24 +49,27 @@ const ProjectRenderer: React.FC<ProjectRendererProps> = ({ article, loading = fa
     setAllImages(urls);
   }, [article?.images_data, article?.images]);
 
-  const handleImageClick = (index: number) => {
-    setStartIndex(index);
-    setModalImages(allImages);
-    setIsShowCarousel(true);
-  };
-
-  const closeCarousel = () => {
-    setIsShowCarousel(false);
-    setModalImages(null);
-  };
-
   // Отримуємо перше зображення для банера
   const bannerImage = allImages.length > 0 ? allImages[0] : null;
-  const remainingImages = allImages.slice(1);
+
+  // Формуємо breadcrumbs
+  const breadcrumbItems = [
+    { label: 'ГОЛОВНА', href: '/' },
+    ...(article?.breadcrumbs?.map((item: { title: string; link: string }) => ({
+      label: item.title.toUpperCase(),
+      href: item.link,
+    })) || []),
+    { label: article?.nheader?.toUpperCase() || 'ПРОЕКТ' },
+  ];
 
   return (
     <div className={styles.projectContainer}>
-      {/* Банер з заголовком */}
+      {/* Breadcrumbs */}
+      <div className={styles.breadcrumbsSection}>
+        <Breadcrumbs items={breadcrumbItems} />
+      </div>
+
+      {/* Основне зображення з заголовком */}
       {bannerImage && (
         <div className={styles.bannerSection}>
           <div className={styles.bannerImage}>
@@ -103,11 +81,20 @@ const ProjectRenderer: React.FC<ProjectRendererProps> = ({ article, loading = fa
               priority
             />
             <div className={styles.bannerOverlay}>
-              <div className={styles.bannerContent}>
+              <div className={`${styles.bannerContent} ${styles.frostedGlass}`}>
                 <h1 className={styles.bannerTitle}>{article.nheader}</h1>
               </div>
             </div>
           </div>
+        </div>
+      )}
+
+      {/* Якщо немає банерного зображення, показуємо заголовок окремо */}
+      {!bannerImage && article.nheader && (
+        <div className={styles.leadSection}>
+          <h1 className={styles.titleText}>
+            {article.nheader}
+          </h1>
         </div>
       )}
 
@@ -136,7 +123,7 @@ const ProjectRenderer: React.FC<ProjectRendererProps> = ({ article, loading = fa
         </div>
       )}
 
-      {/* Тіло новини */}
+      {/* Основний текст проекту */}
       <div className={styles.contentSection}>
         <div 
           className={styles.content}
@@ -152,8 +139,6 @@ const ProjectRenderer: React.FC<ProjectRendererProps> = ({ article, loading = fa
           </p>
         </div>
       )}
-
-  
     </div>
   );
 };

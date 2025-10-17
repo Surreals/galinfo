@@ -18,7 +18,6 @@ export async function generateMetadata({ params }: ArticlePageProps): Promise<Me
 
 
   const lastDashIndex = urlParams.lastIndexOf("_");
-  console.log('AAAA',lastDashIndex);
   if (lastDashIndex === -1) {
     return {
       title: 'Новина не знайдена | Гал-Інфо',
