@@ -7,13 +7,13 @@ export default function HeaderSkeleton() {
     <header className={styles.headerMain}>
       <div className={styles.header}>
         {/* Logo skeleton */}
-        <Skeleton.Avatar 
+        <Skeleton.Button 
           active 
-          size={120} 
-          shape="square" 
+          size="large"
           style={{ 
             width: '120px', 
             height: '40px',
+            minWidth: '120px',
             borderRadius: '4px'
           }} 
         />
@@ -70,11 +70,16 @@ export default function HeaderSkeleton() {
         {/* Right side skeleton */}
         <div className={styles.headerRight}>
           {/* Search icon skeleton */}
-          <Skeleton.Avatar 
+          <Skeleton.Button 
             active 
-            size={24} 
+            size="small"
             shape="circle" 
-            style={{ marginRight: '20px' }} 
+            style={{ 
+              width: '24px', 
+              height: '24px',
+              minWidth: '24px',
+              marginRight: '20px' 
+            }} 
           />
           
           {/* Radio button skeleton */}

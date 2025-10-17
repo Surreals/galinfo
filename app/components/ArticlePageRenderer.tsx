@@ -124,10 +124,22 @@ const ArticlePageRenderer: React.FC<ArticlePageRendererProps> = ({ article, load
   const [startIndex, setStartIndex] = useState<number>(0);
   const [modalImages, setModalImages] = useState<string[] | null>(null);
   const [currentMainImageIndex, setCurrentMainImageIndex] = useState<number>(0);
+  const [currentCarouselIndex, setCurrentCarouselIndex] = useState<number>(0);
 
   const carouselRef = useRef<any>(null);
   const { isMobile } = useMobileContext();
   const { getSchema } = useTemplateSchemas();
+
+  // Функція для отримання title поточного зображення в каруселі
+  const getCurrentImageTitle = () => {
+    if (!article?.images || !article?.images_data) return null;
+    
+    const imageIds = article.images.split(',').map((id: string) => parseInt(id.trim())).filter((id: number) => !isNaN(id));
+    const currentImageId = imageIds[currentCarouselIndex];
+    const currentImage = article.images_data.find((imgData: any) => imgData.id === currentImageId);
+    
+    return currentImage?.title || null;
+  };
 
   // Handle Escape key to close modal
   React.useEffect(() => {
@@ -142,13 +154,15 @@ const ArticlePageRenderer: React.FC<ArticlePageRendererProps> = ({ article, load
       document.addEventListener('keydown', handleKeyDown);
       // Prevent body scroll when modal is open
       document.body.style.overflow = 'hidden';
+      // Встановлюємо початковий індекс
+      setCurrentCarouselIndex(startIndex);
     }
 
     return () => {
       document.removeEventListener('keydown', handleKeyDown);
       document.body.style.overflow = 'unset';
     };
-  }, [isShowCarousel]);
+  }, [isShowCarousel, startIndex]);
 
   React.useEffect(() => {
     if (!article?.images_data || !article?.images) return;
@@ -419,9 +433,7 @@ const ArticlePageRenderer: React.FC<ArticlePageRendererProps> = ({ article, load
                 dangerouslySetInnerHTML={{__html: highlightUrlsInHtml(article?.nbody || '')}}
               />
             </>
-
-          )
-            ;
+          );
         } else {
           const blocks = parseNbody(article?.nbody || '');
           const imageBlocks = blocks.filter((b: any) => b.type === 'images');
@@ -511,7 +523,12 @@ const ArticlePageRenderer: React.FC<ArticlePageRendererProps> = ({ article, load
                       >
                         <Image src={closeIcon} alt="Close" width={44} height={44} />
                       </button>
-                      <Carousel ref={carouselRef} dots={false} initialSlide={startIndex}>
+                      <Carousel 
+                        ref={carouselRef} 
+                        dots={false} 
+                        initialSlide={startIndex}
+                        afterChange={(current) => setCurrentCarouselIndex(current)}
+                      >
                         {(modalImages ?? allImages).map((url, idx) => (
                           <div key={idx} className={styles.carouselItem}>
                             <img alt={'img'} src={url} loading="lazy" />
@@ -524,6 +541,9 @@ const ArticlePageRenderer: React.FC<ArticlePageRendererProps> = ({ article, load
                       <button onClick={() => carouselRef.current?.prev()} className={styles.leftArrowButton}>
                         <Image src={roundArrowLeft} alt="Left arrow" width={44} height={44} />
                       </button>
+                      {getCurrentImageTitle() && (
+                        <div className={styles.imageCredits}>{getCurrentImageTitle()}</div>
+                      )}
                     </div>
                   </div>
                 )}
@@ -555,42 +575,52 @@ const ArticlePageRenderer: React.FC<ArticlePageRendererProps> = ({ article, load
                 );
               })}
 
-              {isShowCarousel && (
-                <div
-                  className={styles.backDrop}
-                  onClick={(e) => {
-                    if (e.target === e.currentTarget) {
-                      setIsShowCarousel(false);
-                      setModalImages(null);
-                    }
-                  }}
-                >
-                  <div className={styles.carouselBox}>
-                    <button 
-                      onClick={() => {
+                {isShowCarousel && (
+                  <div
+                    className={styles.backDrop}
+                    onClick={(e) => {
+                      if (e.target === e.currentTarget) {
                         setIsShowCarousel(false);
                         setModalImages(null);
-                      }} 
-                      className={styles.closeButton}
-                    >
-                      <Image src={closeIcon} alt="Close" width={44} height={44} />
-                    </button>
-                    <Carousel ref={carouselRef} dots={false} initialSlide={startIndex}>
-                      {(modalImages ?? allImages).map((url, idx) => (
-                        <div key={idx} className={styles.carouselItem}>
-                          <img alt={'img'} src={url} loading="lazy" />
-                        </div>
-                      ))}
-                    </Carousel>
-                    <button onClick={() => carouselRef.current?.next()} className={styles.rightArrowButton}>
-                      <Image src={roundArrowRight} alt="Right arrow" width={44} height={44} />
-                    </button>
-                    <button onClick={() => carouselRef.current?.prev()} className={styles.leftArrowButton}>
-                      <Image src={roundArrowLeft} alt="Left arrow" width={44} height={44} />
-                    </button>
+                      }
+                    }}
+                  >
+                    <div className={styles.carouselBox}>
+                      <button 
+                        onClick={() => {
+                          setIsShowCarousel(false);
+                          setModalImages(null);
+                        }} 
+                        className={styles.closeButton}
+                      >
+                        <Image src={closeIcon} alt="Close" width={44} height={44} />
+                      </button>
+                      <Carousel 
+                        ref={carouselRef} 
+                        dots={false} 
+                        initialSlide={startIndex}
+                        afterChange={(current) => setCurrentCarouselIndex(current)}
+                      >
+                        {(modalImages ?? allImages).map((url, idx) => (
+                          <div key={idx} className={styles.carouselItem}>
+                            <img alt={'img'} src={url} loading="lazy" />
+                          </div>
+                        ))}
+                      </Carousel>
+                      <button onClick={() => carouselRef.current?.next()} className={styles.rightArrowButton}>
+                        <Image src={roundArrowRight} alt="Right arrow" width={44} height={44} />
+                      </button>
+                      <button onClick={() => carouselRef.current?.prev()} className={styles.leftArrowButton}>
+                        <Image src={roundArrowLeft} alt="Left arrow" width={44} height={44} />
+                      </button>
+                      <div className={styles.carouseTitleBox}>
+                        {getCurrentImageTitle() && (
+                          <div className={styles.imageCreditsWithe}>{getCurrentImageTitle()}</div>
+                        )}
+                      </div>
+                    </div>
                   </div>
-                </div>
-              )}
+                )}
             </>
           );
         }

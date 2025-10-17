@@ -692,9 +692,10 @@ export default function Header() {
           {
             weatherLoading ?
               <div style={{width: '35px'}}>
-                <Skeleton.Avatar
+                <Skeleton.Button
                   active
-                  style={{width: '100%', height: '18px'}}
+                  size="small"
+                  style={{width: '100%', height: '18px', minWidth: '35px'}}
                 />
               </div>
               : <div className={styles.sityText}>{weather?.temp}°C</div>

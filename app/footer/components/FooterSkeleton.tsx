@@ -103,13 +103,13 @@ export default function FooterSkeleton() {
         <div className={styles.footerBottom}>
           <div className={styles.footerBottomContent}>
             {/* Logo skeleton */}
-            <Skeleton.Avatar 
+            <Skeleton.Button 
               active 
-              size={80} 
-              shape="square" 
+              size="large"
               style={{ 
                 width: '80px', 
                 height: '30px',
+                minWidth: '80px',
                 borderRadius: '4px'
               }} 
             />
@@ -128,12 +128,17 @@ export default function FooterSkeleton() {
               />
               <div className={styles.socialLinks}>
                 {[1, 2, 3, 4, 5].map((i) => (
-                  <Skeleton.Avatar 
+                  <Skeleton.Button 
                     key={i}
                     active 
-                    size={24} 
+                    size="small"
                     shape="circle" 
-                    style={{ marginRight: '10px' }} 
+                    style={{ 
+                      width: '24px', 
+                      height: '24px',
+                      minWidth: '24px',
+                      marginRight: '10px' 
+                    }} 
                   />
                 ))}
               </div>

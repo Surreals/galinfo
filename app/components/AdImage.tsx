@@ -75,12 +75,14 @@ const AdImage: React.FC<AdImageProps> = ({
 
   if (loading) {
     return (
-      <div className={className} style={{ width: '100%' }}>
-        <Skeleton.Image 
+      <div className={className} style={{ width: '100%', height: `${height}px` }}>
+        <Skeleton.Button 
           active 
+          block
           style={{ 
             width: '100%', 
-            height: `${height}px`
+            height: `${height}px`,
+            minWidth: '100%'
           }} 
         />
       </div>

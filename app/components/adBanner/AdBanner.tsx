@@ -76,12 +76,14 @@ const AdBanner: React.FC<AdBannerProps> = ({
   if (loading) {
     return (
       <div className={`${styles.adBanner} ${className || ''}`}>
-        <Skeleton.Image 
+        <Skeleton.Button 
           active 
+          block
           style={{ 
             width: '100%', 
             height: '185px',
-            maxHeight: '185px'
+            maxHeight: '185px',
+            minWidth: '100%'
           }} 
         />
       </div>
