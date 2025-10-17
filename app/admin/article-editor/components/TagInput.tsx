@@ -138,17 +138,29 @@ export default function TagInput({ value = '', onChange, placeholder, status }: 
     const beforeCurrentTag = internalValue.substring(0, startOfCurrentTag);
     const afterCurrentTag = internalValue.substring(cursorPosition);
     
-    // Build the new value - always add comma and space after selected tag
-    if (beforeCurrentTag.trim() === '') {
-      // First tag
-      newValue = selectedTag + ', ' + afterCurrentTag;
+    // Build the new value - add comma and space after selected tag
+    const isFirstTag = beforeCurrentTag.trim() === '';
+    const isAtEnd = afterCurrentTag.trim().length === 0;
+    
+    if (isFirstTag) {
+      // First tag - just add tag + comma + space
+      newValue = selectedTag + ', ' + afterCurrentTag.trimStart();
     } else {
-      // Subsequent tags
-      newValue = beforeCurrentTag + selectedTag + ', ' + afterCurrentTag;
+      // Subsequent tags - add space + tag + comma + space
+      newValue = beforeCurrentTag.trimEnd() + ' ' + selectedTag + ', ' + afterCurrentTag.trimStart();
     }
     
-    // Clean up extra commas and spaces
-    newValue = newValue.replace(/,\s*,/g, ',').replace(/,\s*$/g, '').trim();
+    // Clean up duplicate commas
+    newValue = newValue.replace(/,\s*,/g, ',');
+    
+    // If we're at the end, ensure we have comma and space for next tag
+    if (isAtEnd) {
+      newValue = newValue.trim();
+      if (!newValue.endsWith(', ')) {
+        // Replace any trailing comma (with or without space) with exactly ", "
+        newValue = newValue.replace(/,\s*$/, '') + ', ';
+      }
+    }
     
     setInternalValue(newValue);
     setPendingValue(newValue);
@@ -160,8 +172,19 @@ export default function TagInput({ value = '', onChange, placeholder, status }: 
     setTimeout(() => {
       if (inputRef.current) {
         inputRef.current.focus();
-        // Position cursor at the end after the comma and space
-        const newCursorPos = newValue.indexOf(selectedTag) + selectedTag.length + 2; // +2 for ", "
+        
+        // Position cursor after the comma and space
+        let newCursorPos = newValue.length; // Default to end
+        
+        if (!isAtEnd) {
+          // We're in the middle, position after the selected tag and its comma
+          if (isFirstTag) {
+            newCursorPos = selectedTag.length + 2; // +2 for ", "
+          } else {
+            newCursorPos = beforeCurrentTag.trimEnd().length + 1 + selectedTag.length + 2; // +1 for space, +2 for ", "
+          }
+        }
+        
         // Access the actual textarea element from Ant Design's TextArea component
         const textareaElement = inputRef.current.resizableTextArea?.textArea;
         if (textareaElement && typeof textareaElement.setSelectionRange === 'function') {

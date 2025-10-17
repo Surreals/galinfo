@@ -648,7 +648,7 @@ export default function NewsEditorSidebar({ newsId, articleData, menuData, onEdi
   }
 
   return (
-    <aside className={styles.sidebar}>
+    <aside className={styles.sidebar} style={{width: '50%'}}>
       <div className={styles.sidebarBox}>
         {/* Фото */}
         <div className={styles.section} style={{maxWidth: 350}}>
