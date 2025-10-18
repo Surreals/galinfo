@@ -244,3 +244,66 @@ export function getCategoryFromMenuData(
   
   return category || null;
 }
+
+// Helper function to determine if a category is a region based on menuData
+export function isCategoryInRegions(
+  categoryParam: string,
+  menuData: MenuData | null
+): boolean {
+  if (!menuData || !menuData.regions) return false;
+  
+  return menuData.regions.some(region => 
+    region.param === categoryParam || 
+    region.title.toLowerCase() === categoryParam.toLowerCase()
+  );
+}
+
+// Helper function to determine if a category is a main category based on menuData
+export function isCategoryInMainCategories(
+  categoryParam: string,
+  menuData: MenuData | null
+): boolean {
+  if (!menuData || !menuData.mainCategories) return false;
+  
+  return menuData.mainCategories.some(cat => 
+    cat.param === categoryParam || 
+    cat.title.toLowerCase() === categoryParam.toLowerCase()
+  );
+}
+
+// Helper function to determine if a category is a special theme based on menuData
+export function isCategoryInSpecialThemes(
+  categoryParam: string,
+  menuData: MenuData | null
+): boolean {
+  if (!menuData || !menuData.specialThemes) return false;
+  
+  return menuData.specialThemes.some(theme => 
+    theme.param === categoryParam || 
+    theme.title.toLowerCase() === categoryParam.toLowerCase()
+  );
+}
+
+// Helper function to get category type from menuData
+// Returns: 'main' | 'region' | 'special' | null (null означає що це тег)
+export function getCategoryType(
+  categoryParam: string,
+  menuData: MenuData | null
+): 'main' | 'region' | 'special' | null {
+  if (!menuData) return null;
+  
+  if (isCategoryInMainCategories(categoryParam, menuData)) {
+    return 'main';
+  }
+  
+  if (isCategoryInRegions(categoryParam, menuData)) {
+    return 'region';
+  }
+  
+  if (isCategoryInSpecialThemes(categoryParam, menuData)) {
+    return 'special';
+  }
+  
+  // Якщо не знайдено в жодній категорії - це тег
+  return null;
+}

@@ -5,7 +5,7 @@ import { CategoryRenderer } from "@/app/components";
 import { isValidCategoryUrl } from '@/app/lib/categoryMapper';
 import { useTemplateSchemas } from '@/app/hooks/useTemplateSchemas';
 import { useMenuContext } from '@/app/contexts/MenuContext';
-import { isValidCategoryInMenuData } from '@/app/lib/categoryUtils';
+import { getCategoryType } from '@/app/lib/categoryUtils';
 import { Spin } from 'antd';
 import styles from "./page.module.css";
 
@@ -25,18 +25,52 @@ export const CategoryPageClient: React.FC<CategoryPageClientProps> = ({
   const { getSchema } = useTemplateSchemas();
   const { menuData, loading: menuLoading } = useMenuContext();
 
-  // Перевіряємо, чи є валідна категорія (спочатку статично, потім динамічно)
-  const isValidCategoryStatic = isValidCategoryUrl(category);
-  const isValidCategoryDynamic = menuData ? isValidCategoryInMenuData(category, menuData) : false;
-  const isValidCategory = isValidCategoryStatic || isValidCategoryDynamic;
-  const isTag = !isValidCategory;
+  // ВАЖЛИВО: Спочатку чекаємо завантаження menuData, щоб коректно визначити тип категорії
+  // Якщо menuData ще завантажується, не робимо жодних висновків про тип категорії
+  
+  // Визначаємо тип категорії динамічно через menuData (тільки якщо menuData завантажилося)
+  // categoryType може бути:
+  // - 'main' - основна категорія (Політика, Економіка, тощо)
+  // - 'region' - регіональна категорія (Львів, Тернопіль, Україна, тощо)
+  // - 'special' - спеціальна тема (Відверта розмова, Пресслужба, тощо)
+  // - null - не знайдено в menuData (може бути тег або невалідна категорія)
+  const categoryType = !menuLoading ? getCategoryType(category, menuData) : undefined;
+  
+  // Перевіряємо чи це статична категорія (із старого маппера)
+  const isStaticCategory = isValidCategoryUrl(category);
+  
+  // Визначаємо чи це тег ТІЛЬКИ після завантаження menuData
+  // Якщо menuData ще завантажується (categoryType === undefined), не вважаємо це тегом
+  const isTag = categoryType !== undefined && categoryType === null && !isStaticCategory;
+  
+  // Валідна категорія - це категорія з menuData або статична
+  const isValidCategory = categoryType !== undefined && (categoryType !== null || isStaticCategory);
 
-  // Завантажуємо дані тегу, якщо це тег
+  // DEBUG
+  console.log(`[CategoryPageClient] Category: ${category}`, {
+    menuLoading,
+    categoryType,
+    isStaticCategory,
+    isTag,
+    isValidCategory
+  });
+
+  // Завантажуємо дані тегу, тільки якщо:
+  // 1. menuData завантажилося (!menuLoading)
+  // 2. це точно тег (isTag === true)
+  // 3. дані тегу ще не завантажені
   useEffect(() => {
-    if (isTag) {
+    // Чекаємо завантаження menuData перед визначенням тегу
+    if (menuLoading) {
+      return;
+    }
+    
+    // Тепер можна перевірити чи це тег
+    if (isTag && !tagData && !loading) {
       const fetchTagData = async () => {
         try {
           setLoading(true);
+          console.log(`[CategoryPageClient] Fetching tag data for: ${category}`);
           const response = await fetch(`/api/tags/by-name/${encodeURIComponent(category)}`);
           
           if (!response.ok) {
@@ -55,7 +89,7 @@ export const CategoryPageClient: React.FC<CategoryPageClientProps> = ({
 
       fetchTagData();
     }
-  }, [isTag, category]);
+  }, [isTag, category, menuLoading, tagData, loading]);
 
   // Якщо завантажуємо дані меню або тегу
   if (menuLoading || (isTag && loading)) {

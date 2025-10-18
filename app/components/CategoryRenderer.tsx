@@ -3,7 +3,9 @@
 import React from 'react';
 import { useSearchParams, usePathname, useRouter } from 'next/navigation';
 import { useMobileContext } from '@/app/contexts/MobileContext';
+import { useMenuContext } from '@/app/contexts/MenuContext';
 import { getCategoryIdFromUrl, isRegionCategory as isRegionCategoryFromMapper, isSpecialThemeCategory } from '@/app/lib/categoryMapper';
+import { getCategoryType, getCategoryFromMenuData } from '@/app/lib/categoryUtils';
 import { useNewsByRubric } from '@/app/hooks/useNewsByRubric';
 import { useNewsByRegion } from '@/app/hooks/useNewsByRegion';
 import { useImportantNews } from '@/app/hooks/useImportantNews';
@@ -45,6 +47,7 @@ const CategoryRenderer: React.FC<CategoryRendererProps> = ({
   apiMobileSchema 
 }) => {
   const { isMobile } = useMobileContext();
+  const { menuData, loading: menuLoading } = useMenuContext();
   const searchParams = useSearchParams();
   const pathname = usePathname();
   const router = useRouter();
@@ -55,14 +58,19 @@ const CategoryRenderer: React.FC<CategoryRendererProps> = ({
   // Стан для тегу
   const [tagData, setTagData] = React.useState<{ id: number; tag: string } | null>(null);
   
-  // Отримуємо categoryId з URL параметра
-  const categoryId = getCategoryIdFromUrl(category);
+  // ВАЖЛИВО: Чекаємо завантаження menuData перед визначенням типу категорії
+  // Визначаємо тип категорії динамічно через menuData (тільки якщо menuData завантажилося)
+  const categoryType = !menuLoading ? getCategoryType(category, menuData) : undefined;
   
-  // Перевіряємо, чи це тег (якщо categoryId не знайдено, можливо це тег)
-  const isTag = categoryId === null;
+  // Отримуємо categoryId з URL параметра (спочатку з menuData, потім статично)
+  const categoryFromMenu = !menuLoading ? getCategoryFromMenuData(category, menuData) : null;
+  const categoryId = categoryFromMenu?.id ?? getCategoryIdFromUrl(category, menuData);
   
-  // Визначаємо, чи це регіональна категорія
-  const isRegion = categoryId !== null ? isRegionCategoryFromMapper(categoryId) : false;
+  // Перевіряємо, чи це тег: тільки якщо menuData завантажилося і не знайдено ні в menuData, ні в статичному маппері
+  const isTag = categoryType !== undefined && categoryType === null && categoryId === null;
+  
+  // Визначаємо, чи це регіональна категорія (через categoryType або fallback до статичного маппера)
+  const isRegion = categoryType === 'region' || (categoryId !== null ? isRegionCategoryFromMapper(categoryId) : false);
   
   // Визначаємо, чи це категорія "all" (всі новини)
   const isAllCategory = categoryId === 0;
@@ -76,14 +84,33 @@ const CategoryRenderer: React.FC<CategoryRendererProps> = ({
   // Визначаємо, чи це категорія "articles" (статті)
   const isArticlesCategory = categoryId === -3;
 
-  // Визначаємо, чи це спеціальна тема, яка має використовувати useSpecialThemesNews
-  const isSpecialTheme = categoryId !== null && isSpecialThemeCategory(categoryId);
+  // Визначаємо, чи це спеціальна тема (через categoryType або fallback до статичного маппера)
+  const isSpecialTheme = categoryType === 'special' || (categoryId !== null && isSpecialThemeCategory(categoryId));
   
-  // Завантажуємо дані тегу, якщо це тег
+  // DEBUG: виводимо інформацію про категорію
   React.useEffect(() => {
-    if (isTag) {
+    console.log(`[CategoryRenderer] Category: ${category}`, {
+      menuLoading,
+      categoryType: categoryType || 'undefined (ще завантажується)',
+      categoryId,
+      isTag,
+      isRegion,
+      isSpecialTheme
+    });
+  }, [category, categoryType, categoryId, isTag, isRegion, isSpecialTheme, menuLoading]);
+  
+  // Завантажуємо дані тегу, тільки якщо menuData завантажилося і це точно тег
+  React.useEffect(() => {
+    // Чекаємо завантаження menuData перед визначенням тегу
+    if (menuLoading) {
+      return;
+    }
+    
+    // Тепер можна перевірити чи це тег
+    if (isTag && !tagData) {
       const fetchTagData = async () => {
         try {
+          console.log(`[CategoryRenderer] Fetching tag data for: ${category}`);
           const response = await fetch(`/api/tags/by-name/${encodeURIComponent(category)}`);
           if (response.ok) {
             const data = await response.json();
@@ -95,7 +122,7 @@ const CategoryRenderer: React.FC<CategoryRendererProps> = ({
       };
       fetchTagData();
     }
-  }, [isTag, category]);
+  }, [isTag, category, menuLoading, tagData]);
   
 
   // Використовуємо відповідний хук для поточної категорії (запитуємо на 1 новину більше для вибору головної)
