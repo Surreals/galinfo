@@ -211,22 +211,30 @@ export default function Header() {
   const specialThemesItem = menuData?.specialThemes || [];
   const additionalItems = menuData?.additionalItems || [];
 
-  // ГНУЧКА система - отримуємо будь-яку категорію за ID незалежно від типу
-  const getCategoriesByIds = (categoryIds: number[]) => {
+  // ГНУЧКА система - отримуємо будь-яку категорію за ID або додатковий елемент за param
+  const getCategoriesByIds = (categoryIds: (number | string)[]) => {
     if (!categoryIds || categoryIds.length === 0 || !menuData) {
       return [];
     }
     
     const ordered: any[] = [];
     categoryIds.forEach(id => {
-      // Шукаємо категорію серед усіх типів
-      const category = 
-        mainCategories.find(cat => cat.id === id) ||
-        regions.find(cat => cat.id === id) ||
-        specialThemesItem.find(cat => cat.id === id);
-      
-      if (category) {
-        ordered.push(category);
+      // Якщо це рядок, шукаємо серед additionalItems за param
+      if (typeof id === 'string') {
+        const additionalItem = additionalItems.find(item => item.param === id);
+        if (additionalItem) {
+          ordered.push(additionalItem);
+        }
+      } else {
+        // Якщо це число, шукаємо категорію серед усіх типів
+        const category = 
+          mainCategories.find(cat => cat.id === id) ||
+          regions.find(cat => cat.id === id) ||
+          specialThemesItem.find(cat => cat.id === id);
+        
+        if (category) {
+          ordered.push(category);
+        }
       }
     });
     
@@ -255,14 +263,10 @@ export default function Header() {
     headerSettings?.moreNewsDropdown?.categories?.column3?.categoryIds || []
   );
 
-  // Column 4 - може містити як додаткові елементи, так і звичайні категорії
-  const orderedColumn4Categories = getCategoriesByIds(
+  // Column 4 - може містити як додаткові елементи (рядки), так і звичайні категорії (числа)
+  const orderedColumn4 = getCategoriesByIds(
     headerSettings?.moreNewsDropdown?.categories?.column4?.categoryIds || []
   );
-  
-  const orderedAdditionalItems = (headerSettings?.moreNewsDropdown?.categories?.column4?.items || [])
-    .map(param => additionalItems.find(item => item.param === param))
-    .filter(Boolean);
 
   // Mobile menu ordering - єдиний список категорій
   const orderedMobileTopThemes = getCategoriesByIds(
@@ -613,20 +617,13 @@ export default function Header() {
 
                 {/* Підколонка 4 - ГНУЧКА: категорії + додаткові елементи */}
                 <div className={styles.gridColumn}>
-                  {/* Спочатку звичайні категорії */}
-                  {orderedColumn4Categories.map((category) => (
-                    <Link key={category.id} href={generateCategoryUrl(category.id) || category.link} className={styles.linkSlider}>
-                      {category.title?.toUpperCase()}
-                    </Link>
-                  ))}
-                  {/* Потім додаткові елементи */}
-                  {(orderedAdditionalItems.length > 0 ? orderedAdditionalItems : additionalItems.slice(0, 2)).map((item: any) => (
-                    <Link key={item.param} href={item.link} className={styles.linkSlider}>
+                  {(orderedColumn4.length > 0 ? orderedColumn4 : additionalItems.slice(0, 2)).map((item: any) => (
+                    <Link key={item.id || item.param} href={generateCategoryUrl(item.id) || item.link} className={styles.linkSlider}>
                       {item.title.toUpperCase()}
                     </Link>
                   ))}
                   {/* Fallback to static items if no dynamic data */}
-                  {additionalItems.length === 0 && orderedAdditionalItems.length === 0 && orderedColumn4Categories.length === 0 && (
+                  {additionalItems.length === 0 && orderedColumn4.length === 0 && (
                     <>
                       <Link href={paths.news} className={styles.linkSlider}>
                         НОВИНА

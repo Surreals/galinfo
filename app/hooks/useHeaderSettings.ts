@@ -3,39 +3,38 @@ import { headerSchema } from '@/app/lib/headerSchema';
 
 interface HeaderSettings {
   mainNavigation: {
-    categoryIds: number[];
+    categoryIds: (number | string)[];
     maxItems: number;
   };
   moreNewsDropdown: {
     topThemes: {
       enabled: boolean;
-      categoryIds: number[];
+      categoryIds: (number | string)[];
     };
     categories: {
       enabled: boolean;
       column1: {
-        categoryIds: number[];
+        categoryIds: (number | string)[];
       };
       column2: {
-        categoryIds: number[];
+        categoryIds: (number | string)[];
       };
       column3: {
-        categoryIds: number[];
+        categoryIds: (number | string)[];
       };
       column4: {
-        items?: string[];
-        categoryIds?: number[];
+        categoryIds?: (number | string)[];
       };
     };
   };
   mobileMenu: {
     topThemes: {
       enabled: boolean;
-      categoryIds: number[];
+      categoryIds: (number | string)[];
     };
     categories: {
       enabled: boolean;
-      categoryIds: number[];
+      categoryIds: (number | string)[];
     };
   };
 }

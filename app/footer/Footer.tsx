@@ -26,22 +26,30 @@ export default function Footer() {
   const additionalItems = menuData?.additionalItems || [];
   const specialThemesItem = menuData?.specialThemes || [];
 
-  // ГНУЧКА система - отримуємо будь-яку категорію за ID незалежно від типу
-  const getCategoriesByIds = (categoryIds: number[]) => {
+  // ГНУЧКА система - отримуємо будь-яку категорію за ID або додатковий елемент за param
+  const getCategoriesByIds = (categoryIds: (number | string)[]) => {
     if (!categoryIds || categoryIds.length === 0 || !menuData) {
       return [];
     }
     
     const ordered: any[] = [];
     categoryIds.forEach(id => {
-      // Шукаємо категорію серед усіх типів
-      const category = 
-        mainCategories.find(cat => cat.id === id) ||
-        regions.find(cat => cat.id === id) ||
-        specialThemesItem.find(cat => cat.id === id);
-      
-      if (category) {
-        ordered.push(category);
+      // Якщо це рядок, шукаємо серед additionalItems за param
+      if (typeof id === 'string') {
+        const additionalItem = additionalItems.find(item => item.param === id);
+        if (additionalItem) {
+          ordered.push(additionalItem);
+        }
+      } else {
+        // Якщо це число, шукаємо категорію серед усіх типів
+        const category = 
+          mainCategories.find(cat => cat.id === id) ||
+          regions.find(cat => cat.id === id) ||
+          specialThemesItem.find(cat => cat.id === id);
+        
+        if (category) {
+          ordered.push(category);
+        }
       }
     });
     
@@ -65,15 +73,10 @@ export default function Footer() {
     footerSettings?.categories?.column3?.categoryIds || []
   ).slice(0, footerSettings?.categories?.column3?.maxItems || 4);
 
-  // Column 4 - може містити як додаткові елементи, так і звичайні категорії
-  const orderedColumn4Categories = getCategoriesByIds(
+  // Column 4 - може містити як додаткові елементи (рядки), так і звичайні категорії (числа)
+  const orderedColumn4 = getCategoriesByIds(
     footerSettings?.categories?.column4?.categoryIds || []
-  );
-
-  const orderedAdditionalItems = (footerSettings?.categories?.column4?.items || [])
-    .map(param => additionalItems.find(item => item.param === param))
-    .filter(Boolean)
-    .slice(0, footerSettings?.categories?.column4?.maxItems || 2);
+  ).slice(0, footerSettings?.categories?.column4?.maxItems || 2);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -212,15 +215,8 @@ export default function Footer() {
 
                 {/* Колонка 4 - ГНУЧКА: категорії + додаткові елементи */}
                 <div className={styles.gridColumn}>
-                  {/* Спочатку звичайні категорії */}
-                  {orderedColumn4Categories.map((category) => (
-                    <Link key={category.id} href={generateCategoryUrl(category.id) || category.link} className={styles.link}>
-                      {category.title?.toUpperCase()}
-                    </Link>
-                  ))}
-                  {/* Потім додаткові елементи */}
-                  {(orderedAdditionalItems.length > 0 ? orderedAdditionalItems : additionalItems.slice(0, 2)).map((item: any) => (
-                    <Link key={item.param} href={item.link} className={styles.link}>
+                  {(orderedColumn4.length > 0 ? orderedColumn4 : additionalItems.slice(0, 2)).map((item: any) => (
+                    <Link key={item.id || item.param} href={generateCategoryUrl(item.id) || item.link} className={styles.link}>
                       {item.title.toUpperCase()}
                     </Link>
                   ))}
