@@ -64,16 +64,6 @@ export const categoryDesktopSchema = {
         newsRange: { start: 1, end: 8 } // Діапазон новин з єдиного набору
       }
     },
-    
-    // Рекламний банер
-    {
-      type: AD_BANNER,
-      config: {
-        show: true,
-        className: 'adBannerStandard',
-        advertisementId: 1  // ID реклами з таблиці advertisements
-      }
-    },
 
     // Колонка новин (новини 9-13 з єдиного набору)
     {
@@ -93,16 +83,6 @@ export const categoryDesktopSchema = {
       }
     },
     
-    // Рекламний банер
-    {
-      type: AD_BANNER,
-      config: {
-        show: true,
-        className: 'adBannerStandard',
-        advertisementId: 1  // ID реклами з таблиці advertisements
-      }
-    },
-    
     // Колонка новин (новини 14-18 з єдиного набору)
     {
       type: COLUMN_NEWS,
@@ -118,16 +98,6 @@ export const categoryDesktopSchema = {
         showSeparator: true,
         newsRange: { start: 14, end: 18 } // Діапазон новин з єдиного набору
       }
-    },
-    
-    // Рекламний банер
-    {
-        type: AD_BANNER,
-        config: {
-          show: true,
-          className: 'adBannerStandard',
-          advertisementId: 1  // ID реклами з таблиці advertisements
-        }
     },
     
     // Категорія новин (новини 19-26 з єдиного набору)
@@ -379,16 +349,6 @@ export const categoryMobileSchema = {
       }
     },
     
-    // Рекламний банер
-    {
-      type: AD_BANNER,
-      config: {
-        show: true,
-        className: 'adBannerStandard',
-        advertisementId: 1  // ID реклами з таблиці advertisements
-      }
-    },
-    
     // Колонка новин (новини 9-16 з єдиного набору)
     {
       type: COLUMN_NEWS,
@@ -404,16 +364,6 @@ export const categoryMobileSchema = {
         className: 'columnNewsStandard',
         showSeparator: true,
         newsRange: { start: 9, end: 16 } // Діапазон новин з єдиного набору
-      }
-    },
-    
-    // Рекламний банер
-    {
-      type: AD_BANNER,
-      config: {
-        show: true,
-        className: 'adBannerStandard',
-        advertisementId: 1  // ID реклами з таблиці advertisements
       }
     },
     

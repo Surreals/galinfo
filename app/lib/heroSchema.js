@@ -89,17 +89,6 @@ export const heroInfoSchema = {
       }
     },
     {
-      type: AD_BANNER,
-      config: {
-        show: true,
-        mobileOnly: true, // Показувати тільки на мобільних
-        image: '/assets/images/Ad Banner white.png',
-        alt: 'IN-FOMO Banner',
-        width: 600,
-        height: 240
-      }
-    },
-    {
       type: NEWS_LIST,
       categoryId: CATEGORY_IDS.LVIV,
       config: {
@@ -161,17 +150,6 @@ export const heroInfoMobileSchema = {
           lang: '1',
           approved: true
         }
-      }
-    },
-    {
-      type: AD_BANNER,
-      config: {
-        show: true,
-        mobileOnly: true,
-        image: '/assets/images/Ad Banner white.png',
-        alt: 'IN-FOMO Banner',
-        width: 600,
-        height: 240
       }
     },
     {

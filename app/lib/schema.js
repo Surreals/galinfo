@@ -60,14 +60,6 @@ export const desktopSchema = {
       }
     },
     {
-      type: AD_BANNER,
-      config: {
-        show: true,
-        className: 'adBannerStandard',
-        advertisementId: 1  // ID реклами з таблиці advertisements
-      }
-    },
-    {
       type: COLUMN_NEWS,
       categoryId: CATEGORY_IDS.HEALTH,
       sideCategoryId: CATEGORY_IDS.SOCIETY,
@@ -111,14 +103,6 @@ export const desktopSchema = {
             approved: true
             }
         }
-    },
-    {
-      type: AD_BANNER,
-      config: {
-        show: true,
-        className: 'adBannerStandard',
-        advertisementId: 1  // ID реклами з таблиці advertisements
-      }
     },
     {
       type: COLUMN_NEWS,
@@ -227,14 +211,6 @@ export const mobileSchema = {
       }
     },
     {
-      type: AD_BANNER,
-      config: {
-        show: true,
-        className: 'adBannerStandard',
-        advertisementId: 1  // ID реклами з таблиці advertisements
-      }
-    },
-    {
       type: COLUMN_NEWS,
       categoryId: CATEGORY_IDS.HEALTH,
       sideCategoryId: CATEGORY_IDS.SOCIETY,
@@ -308,14 +284,6 @@ export const mobileSchema = {
         advertisementId: 2,  // ID реклами з таблиці advertisements
         showAdvertisement: true,
         hardcodedInFomo: true  // Захардкоджена реклама IN-FOMO (чорний варіант) - не можна змінити через адмін
-      }
-    },
-    {
-      type: AD_BANNER,
-      config: {
-        show: true,
-        className: 'adBannerStandard',
-        advertisementId: 1  // ID реклами з таблиці advertisements
       }
     },
     {
