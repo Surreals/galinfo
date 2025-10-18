@@ -22,12 +22,14 @@ import {
   EditOutlined, 
   DeleteOutlined, 
   UploadOutlined,
-  LinkOutlined
+  LinkOutlined,
+  PictureOutlined
 } from '@ant-design/icons';
 import AdminNavigation from '../components/AdminNavigation';
 import styles from './advertisements.module.css';
 import type { UploadFile } from 'antd/es/upload/interface';
 import dayjs from 'dayjs';
+import ImageGallerySelector from './ImageGallerySelector';
 
 const { RangePicker } = DatePicker;
 
@@ -54,6 +56,7 @@ export default function AdvertisementsPage() {
   const [editingAd, setEditingAd] = useState<Advertisement | null>(null);
   const [uploading, setUploading] = useState(false);
   const [imageUrl, setImageUrl] = useState<string>('');
+  const [galleryVisible, setGalleryVisible] = useState(false);
   const [form] = Form.useForm();
 
   // Завантаження реклам
@@ -144,6 +147,12 @@ export default function AdvertisementsPage() {
       setUploading(false);
     }
     return false; // Prevent default upload behavior
+  };
+
+  // Вибрати зображення з галереї
+  const handleSelectFromGallery = (url: string) => {
+    setImageUrl(url);
+    message.success('Зображення вибрано з галереї');
   };
 
   // Зберегти рекламу
@@ -435,20 +444,31 @@ export default function AdvertisementsPage() {
             </Form.Item>
 
             <Form.Item label="Зображення">
-              <Upload
-                beforeUpload={handleUpload}
-                showUploadList={false}
-                accept="image/*"
-              >
-                <Button icon={<UploadOutlined />} loading={uploading}>
-                  Завантажити зображення
-                </Button>
-              </Upload>
-              {imageUrl && (
-                <div style={{ marginTop: 10 }}>
-                  <Image src={imageUrl} alt="Preview" width={200} />
-                </div>
-              )}
+              <Space direction="vertical" style={{ width: '100%' }}>
+                <Space>
+                  <Upload
+                    beforeUpload={handleUpload}
+                    showUploadList={false}
+                    accept="image/*"
+                  >
+                    <Button icon={<UploadOutlined />} loading={uploading}>
+                      Завантажити зображення
+                    </Button>
+                  </Upload>
+                  <Button 
+                    type="default"
+                    icon={<PictureOutlined />}
+                    onClick={() => setGalleryVisible(true)}
+                  >
+                    Вибрати з галереї
+                  </Button>
+                </Space>
+                {imageUrl && (
+                  <div style={{ marginTop: 10 }}>
+                    <Image src={imageUrl} alt="Preview" width={200} />
+                  </div>
+                )}
+              </Space>
             </Form.Item>
 
             <Form.Item
@@ -491,6 +511,12 @@ export default function AdvertisementsPage() {
             </Form.Item>
           </Form>
         </Modal>
+
+        <ImageGallerySelector
+          visible={galleryVisible}
+          onCancel={() => setGalleryVisible(false)}
+          onSelect={handleSelectFromGallery}
+        />
       </div>
     </div>
   );
