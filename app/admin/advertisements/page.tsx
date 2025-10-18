@@ -15,8 +15,11 @@ import {
   Upload,
   Image,
   DatePicker,
-  Select
+  Select,
+  Radio
 } from 'antd';
+
+const { TextArea } = Input;
 import { 
   PlusOutlined, 
   EditOutlined, 
@@ -38,6 +41,8 @@ interface Advertisement {
   title: string;
   image_url: string | null;
   link_url: string;
+  content_type: 'image' | 'html';
+  html_content: string | null;
   placement: string;
   is_active: boolean;
   display_order: number;
@@ -57,6 +62,8 @@ export default function AdvertisementsPage() {
   const [uploading, setUploading] = useState(false);
   const [imageUrl, setImageUrl] = useState<string>('');
   const [galleryVisible, setGalleryVisible] = useState(false);
+  const [contentType, setContentType] = useState<'image' | 'html'>('image');
+  const [htmlPreview, setHtmlPreview] = useState<string>('');
   const [form] = Form.useForm();
 
   // Завантаження реклам
@@ -87,10 +94,14 @@ export default function AdvertisementsPage() {
   const openModal = (ad?: Advertisement) => {
     if (ad) {
       setEditingAd(ad);
+      setContentType(ad.content_type || 'image');
       setImageUrl(ad.image_url || '');
+      setHtmlPreview(ad.html_content || '');
       form.setFieldsValue({
         title: ad.title,
         link_url: ad.link_url,
+        content_type: ad.content_type || 'image',
+        html_content: ad.html_content || '',
         placement: ad.placement,
         is_active: ad.is_active,
         display_order: ad.display_order,
@@ -101,12 +112,15 @@ export default function AdvertisementsPage() {
       });
     } else {
       setEditingAd(null);
+      setContentType('image');
       setImageUrl('');
+      setHtmlPreview('');
       form.resetFields();
       form.setFieldsValue({
         is_active: true,
         display_order: 0,
-        placement: 'general'
+        placement: 'general',
+        content_type: 'image'
       });
     }
     setModalVisible(true);
@@ -117,6 +131,8 @@ export default function AdvertisementsPage() {
     setModalVisible(false);
     setEditingAd(null);
     setImageUrl('');
+    setContentType('image');
+    setHtmlPreview('');
     form.resetFields();
   };
 
@@ -163,7 +179,9 @@ export default function AdvertisementsPage() {
       
       const adData = {
         title: values.title,
-        image_url: imageUrl,
+        content_type: contentType,
+        image_url: contentType === 'image' ? imageUrl : null,
+        html_content: contentType === 'html' ? values.html_content : null,
         link_url: values.link_url,
         placement: values.placement || 'general',
         is_active: values.is_active !== undefined ? values.is_active : true,
@@ -236,6 +254,8 @@ export default function AdvertisementsPage() {
           title: ad.title,
           image_url: ad.image_url,
           link_url: ad.link_url,
+          content_type: ad.content_type || 'image',
+          html_content: ad.html_content,
           placement: ad.placement,
           is_active: !ad.is_active,
           display_order: ad.display_order,
@@ -266,25 +286,39 @@ export default function AdvertisementsPage() {
       width: 80,
     },
     {
-      title: 'Зображення',
-      dataIndex: 'image_url',
-      key: 'image_url',
-      width: 120,
-      render: (imageUrl: string | null) => (
-        imageUrl ? (
+      title: 'Контент',
+      dataIndex: 'content_type',
+      key: 'content',
+      width: 150,
+      render: (_: any, record: Advertisement) => {
+        if (record.content_type === 'html') {
+          return (
+            <div style={{ 
+              width: 100, 
+              padding: '8px', 
+              background: '#f0f0f0', 
+              borderRadius: '4px',
+              textAlign: 'center',
+              fontSize: '12px'
+            }}>
+              <code style={{ color: '#1890ff' }}>HTML код</code>
+            </div>
+          );
+        }
+        return record.image_url ? (
           <Image
-            src={imageUrl}
+            src={record.image_url}
             alt="Advertisement"
             width={80}
             height={60}
             style={{ objectFit: 'cover' }}
           />
         ) : (
-          <div style={{ width: 80, height: 60, background: '#f0f0f0', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <div style={{ width: 80, height: 60, background: '#f0f0f0', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '12px' }}>
             Немає фото
           </div>
-        )
-      ),
+        );
+      },
     },
     {
       title: 'Назва',
@@ -443,7 +477,19 @@ export default function AdvertisementsPage() {
               </Select>
             </Form.Item>
 
-            <Form.Item label="Зображення">
+            <Form.Item
+              label="Тип контенту"
+              name="content_type"
+              rules={[{ required: true, message: 'Виберіть тип контенту' }]}
+            >
+              <Radio.Group onChange={(e) => setContentType(e.target.value)}>
+                <Radio value="image">Зображення</Radio>
+                <Radio value="html">HTML код</Radio>
+              </Radio.Group>
+            </Form.Item>
+
+            {contentType === 'image' && (
+              <Form.Item label="Зображення">
               <Space direction="vertical" style={{ width: '100%' }}>
                 <Space>
                   <Upload
@@ -470,6 +516,59 @@ export default function AdvertisementsPage() {
                 )}
               </Space>
             </Form.Item>
+            )}
+
+            {contentType === 'html' && (
+              <>
+                <Form.Item
+                  label="HTML код"
+                  name="html_content"
+                  rules={[
+                    { required: true, message: 'Введіть HTML код' }
+                  ]}
+                  tooltip="Вставте HTML код вашого банера"
+                >
+                  <TextArea
+                    rows={8}
+                    placeholder="<div>...</div> або <script>...</script>"
+                    style={{ fontFamily: 'monospace', fontSize: '13px' }}
+                    onChange={(e) => setHtmlPreview(e.target.value)}
+                  />
+                </Form.Item>
+                <Form.Item label="Попередній перегляд">
+                  <div style={{
+                    border: '1px dashed #d9d9d9',
+                    borderRadius: '4px',
+                    padding: '16px',
+                    background: '#fafafa',
+                    minHeight: '100px'
+                  }}>
+                    {htmlPreview ? (
+                      <div 
+                        dangerouslySetInnerHTML={{ 
+                          __html: htmlPreview 
+                        }}
+                        style={{ width: '100%', overflow: 'auto' }}
+                      />
+                    ) : (
+                      <div style={{ color: '#999', textAlign: 'center' }}>
+                        Введіть HTML код для попереднього перегляду
+                      </div>
+                    )}
+                  </div>
+                  <div style={{ 
+                    marginTop: '8px', 
+                    padding: '8px', 
+                    background: '#fff7e6', 
+                    border: '1px solid #ffd591',
+                    borderRadius: '4px',
+                    fontSize: '12px'
+                  }}>
+                    ⚠️ <strong>Увага:</strong> Будьте обережні з HTML кодом від сторонніх джерел. Переконайтеся, що код безпечний перед додаванням.
+                  </div>
+                </Form.Item>
+              </>
+            )}
 
             <Form.Item
               label="URL посилання"

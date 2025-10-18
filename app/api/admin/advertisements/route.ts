@@ -9,6 +9,8 @@ interface Advertisement extends RowDataPacket {
   title: string;
   image_url: string | null;
   link_url: string;
+  content_type: 'image' | 'html';
+  html_content: string | null;
   is_active: boolean;
   display_order: number;
   click_count: number;
@@ -54,6 +56,8 @@ export async function POST(request: NextRequest) {
       title,
       image_url,
       link_url,
+      content_type = 'image',
+      html_content,
       placement = 'general',
       is_active = true,
       display_order = 0,
@@ -69,16 +73,33 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Validate content based on type
+    if (content_type === 'image' && !image_url) {
+      return NextResponse.json(
+        { success: false, error: 'Image URL is required when content type is image' },
+        { status: 400 }
+      );
+    }
+
+    if (content_type === 'html' && !html_content) {
+      return NextResponse.json(
+        { success: false, error: 'HTML content is required when content type is html' },
+        { status: 400 }
+      );
+    }
+
     const query = `
       INSERT INTO advertisements 
-      (title, image_url, link_url, placement, is_active, display_order, start_date, end_date)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+      (title, image_url, link_url, content_type, html_content, placement, is_active, display_order, start_date, end_date)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `;
 
     const [result] = await pool.query<ResultSetHeader>(query, [
       title,
       image_url || null,
       link_url,
+      content_type,
+      html_content || null,
       placement,
       is_active,
       display_order,
@@ -93,6 +114,8 @@ export async function POST(request: NextRequest) {
         title,
         image_url,
         link_url,
+        content_type,
+        html_content,
         placement,
         is_active,
         display_order,
@@ -118,6 +141,8 @@ export async function PUT(request: NextRequest) {
       title,
       image_url,
       link_url,
+      content_type = 'image',
+      html_content,
       placement,
       is_active,
       display_order,
@@ -132,11 +157,28 @@ export async function PUT(request: NextRequest) {
       );
     }
 
+    // Validate content based on type
+    if (content_type === 'image' && !image_url) {
+      return NextResponse.json(
+        { success: false, error: 'Image URL is required when content type is image' },
+        { status: 400 }
+      );
+    }
+
+    if (content_type === 'html' && !html_content) {
+      return NextResponse.json(
+        { success: false, error: 'HTML content is required when content type is html' },
+        { status: 400 }
+      );
+    }
+
     const query = `
       UPDATE advertisements 
       SET title = ?, 
           image_url = ?, 
           link_url = ?, 
+          content_type = ?,
+          html_content = ?,
           placement = ?,
           is_active = ?, 
           display_order = ?,
@@ -149,6 +191,8 @@ export async function PUT(request: NextRequest) {
       title,
       image_url || null,
       link_url,
+      content_type,
+      html_content || null,
       placement || 'general',
       is_active,
       display_order,
@@ -159,7 +203,7 @@ export async function PUT(request: NextRequest) {
 
     return NextResponse.json({
       success: true,
-      data: { id, title, image_url, link_url, placement, is_active, display_order },
+      data: { id, title, image_url, link_url, content_type, html_content, placement, is_active, display_order },
     });
   } catch (error) {
     console.error('Error updating advertisement:', error);
