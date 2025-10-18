@@ -26,15 +26,20 @@ export default function Footer() {
   const additionalItems = menuData?.additionalItems || [];
   const specialThemesItem = menuData?.specialThemes || [];
 
-  // Helper function to order categories by settings
-  const getOrderedCategories = (categories: any[], categoryIds: number[]) => {
-    if (!categoryIds || categoryIds.length === 0) {
-      return []; // Return empty array if no specific order is set
+  // ГНУЧКА система - отримуємо будь-яку категорію за ID незалежно від типу
+  const getCategoriesByIds = (categoryIds: number[]) => {
+    if (!categoryIds || categoryIds.length === 0 || !menuData) {
+      return [];
     }
     
     const ordered: any[] = [];
     categoryIds.forEach(id => {
-      const category = categories.find(cat => cat.id === id);
+      // Шукаємо категорію серед усіх типів
+      const category = 
+        mainCategories.find(cat => cat.id === id) ||
+        regions.find(cat => cat.id === id) ||
+        specialThemesItem.find(cat => cat.id === id);
+      
       if (category) {
         ordered.push(category);
       }
@@ -43,27 +48,27 @@ export default function Footer() {
     return ordered;
   };
 
-  // Get ordered categories for footer sections
-  const orderedTopThemes = getOrderedCategories(
-    specialThemesItem,
+  // Get ordered categories for footer sections - тепер всі використовують єдину функцію
+  const orderedTopThemes = getCategoriesByIds(
     footerSettings?.topThemes?.categoryIds || []
   );
 
-  const orderedRegions = getOrderedCategories(
-    regions,
+  const orderedColumn1 = getCategoriesByIds(
     footerSettings?.categories?.column1?.categoryIds || []
   );
 
-  const orderedMainCatCol2 = getOrderedCategories(
-    mainCategories,
+  const orderedColumn2 = getCategoriesByIds(
     footerSettings?.categories?.column2?.categoryIds || []
   ).slice(0, footerSettings?.categories?.column2?.maxItems || 5);
 
-  const orderedMainCatCol3 = getOrderedCategories(
-    mainCategories,
+  const orderedColumn3 = getCategoriesByIds(
     footerSettings?.categories?.column3?.categoryIds || []
-  );
+  ).slice(0, footerSettings?.categories?.column3?.maxItems || 4);
 
+  // Column 4 - може містити як додаткові елементи, так і звичайні категорії
+  const orderedColumn4Categories = getCategoriesByIds(
+    footerSettings?.categories?.column4?.categoryIds || []
+  );
 
   const orderedAdditionalItems = (footerSettings?.categories?.column4?.items || [])
     .map(param => additionalItems.find(item => item.param === param))
@@ -171,13 +176,14 @@ export default function Footer() {
               <h3 className={styles.title}>КАТЕГОРІЇ</h3>
               <div className={styles.divider}></div>
               <div className={styles.grid}>
+                {/* Колонка 1 - ГНУЧКА: будь-які категорії */}
                 <div className={styles.gridColumn}>
-                  {(orderedRegions.length > 0 ? orderedRegions : regions).map((region) => (
-                    <Link key={region.id} href={generateCategoryUrl(region.id) || region.link} className={styles.link}>
-                      {region.title?.toUpperCase()}
+                  {(orderedColumn1.length > 0 ? orderedColumn1 : regions).map((category) => (
+                    <Link key={category.id} href={generateCategoryUrl(category.id) || category.link} className={styles.link}>
+                      {category.title?.toUpperCase()}
                     </Link>
                   ))}
-                  {regions.length === 0 && (
+                  {regions.length === 0 && orderedColumn1.length === 0 && (
                     <>
                       <Link href={paths.lvivRegion} className={styles.link}>ЛЬВІВЩИНА</Link>
                       <Link href={paths.ternopilRegion} className={styles.link}>ТЕРНОПІЛЬЩИНА</Link>
@@ -186,23 +192,33 @@ export default function Footer() {
                   )}
                 </div>
 
+                {/* Колонка 2 - ГНУЧКА: будь-які категорії */}
                 <div className={styles.gridColumn}>
-                  {(orderedMainCatCol2.length > 0 ? orderedMainCatCol2 : mainCategories.slice(0, 5)).map((cat) => (
-                    <Link key={cat.id} href={generateCategoryUrl(cat.id) || cat.link} className={styles.link}>
-                      {cat.title.toUpperCase()}
+                  {(orderedColumn2.length > 0 ? orderedColumn2 : mainCategories.slice(0, 5)).map((category) => (
+                    <Link key={category.id} href={generateCategoryUrl(category.id) || category.link} className={styles.link}>
+                      {category.title.toUpperCase()}
                     </Link>
                   ))}
                 </div>
 
+                {/* Колонка 3 - ГНУЧКА: будь-які категорії */}
                 <div className={styles.gridColumn}>
-                  {orderedMainCatCol3.map((cat) => (
-                    <Link key={cat.id} href={generateCategoryUrl(cat.id) || cat.link} className={styles.link}>
-                      {cat.title.toUpperCase()}
+                  {orderedColumn3.map((category) => (
+                    <Link key={category.id} href={generateCategoryUrl(category.id) || category.link} className={styles.link}>
+                      {category.title.toUpperCase()}
                     </Link>
                   ))}
                 </div>
 
+                {/* Колонка 4 - ГНУЧКА: категорії + додаткові елементи */}
                 <div className={styles.gridColumn}>
+                  {/* Спочатку звичайні категорії */}
+                  {orderedColumn4Categories.map((category) => (
+                    <Link key={category.id} href={generateCategoryUrl(category.id) || category.link} className={styles.link}>
+                      {category.title?.toUpperCase()}
+                    </Link>
+                  ))}
+                  {/* Потім додаткові елементи */}
                   {(orderedAdditionalItems.length > 0 ? orderedAdditionalItems : additionalItems.slice(0, 2)).map((item: any) => (
                     <Link key={item.param} href={item.link} className={styles.link}>
                       {item.title.toUpperCase()}

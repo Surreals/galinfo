@@ -12,22 +12,20 @@ interface FooterSettings {
   categories: {
     enabled: boolean;
     column1: {
-      type: string;
       categoryIds: number[];
     };
     column2: {
-      type: string;
       categoryIds: number[];
-      maxItems: number;
+      maxItems?: number;
     };
     column3: {
-      type: string;
       categoryIds: number[];
+      maxItems?: number;
     };
     column4: {
-      type: string;
-      items: string[];
-      maxItems: number;
+      items?: string[];
+      categoryIds?: number[];
+      maxItems?: number;
     };
   };
   bottomSection: {

@@ -14,20 +14,17 @@ interface HeaderSettings {
     categories: {
       enabled: boolean;
       column1: {
-        type: string;
         categoryIds: number[];
       };
       column2: {
-        type: string;
         categoryIds: number[];
       };
       column3: {
-        type: string;
         categoryIds: number[];
       };
       column4: {
-        type: string;
-        items: string[];
+        items?: string[];
+        categoryIds?: number[];
       };
     };
   };
@@ -38,8 +35,7 @@ interface HeaderSettings {
     };
     categories: {
       enabled: boolean;
-      regionIds: number[];
-      mainCategoryIds: number[];
+      categoryIds: number[];
     };
   };
 }

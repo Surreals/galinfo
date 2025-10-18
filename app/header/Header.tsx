@@ -211,15 +211,20 @@ export default function Header() {
   const specialThemesItem = menuData?.specialThemes || [];
   const additionalItems = menuData?.additionalItems || [];
 
-  // Helper function to order categories by settings
-  const getOrderedCategories = (categories: any[], categoryIds: number[]) => {
-    if (!categoryIds || categoryIds.length === 0) {
-      return []; // Return empty array if no specific order is set
+  // ГНУЧКА система - отримуємо будь-яку категорію за ID незалежно від типу
+  const getCategoriesByIds = (categoryIds: number[]) => {
+    if (!categoryIds || categoryIds.length === 0 || !menuData) {
+      return [];
     }
     
     const ordered: any[] = [];
     categoryIds.forEach(id => {
-      const category = categories.find(cat => cat.id === id);
+      // Шукаємо категорію серед усіх типів
+      const category = 
+        mainCategories.find(cat => cat.id === id) ||
+        regions.find(cat => cat.id === id) ||
+        specialThemesItem.find(cat => cat.id === id);
+      
       if (category) {
         ordered.push(category);
       }
@@ -229,50 +234,43 @@ export default function Header() {
   };
 
   // Get ordered categories for main navigation
-  const orderedMainNav = getOrderedCategories(
-    mainCategories,
+  const orderedMainNav = getCategoriesByIds(
     headerSettings?.mainNavigation?.categoryIds || []
   ).slice(0, headerSettings?.mainNavigation?.maxItems || 8);
 
-  // Get ordered categories for dropdown sections
-  const orderedTopThemes = getOrderedCategories(
-    specialThemesItem,
+  // Get ordered categories for dropdown sections - тепер всі використовують єдину функцію
+  const orderedTopThemes = getCategoriesByIds(
     headerSettings?.moreNewsDropdown?.topThemes?.categoryIds || []
   );
 
-  const orderedRegions = getOrderedCategories(
-    regions,
+  const orderedColumn1 = getCategoriesByIds(
     headerSettings?.moreNewsDropdown?.categories?.column1?.categoryIds || []
   );
 
-  const orderedMainCatCol2 = getOrderedCategories(
-    mainCategories,
+  const orderedColumn2 = getCategoriesByIds(
     headerSettings?.moreNewsDropdown?.categories?.column2?.categoryIds || []
   );
 
-  const orderedMainCatCol3 = getOrderedCategories(
-    mainCategories,
+  const orderedColumn3 = getCategoriesByIds(
     headerSettings?.moreNewsDropdown?.categories?.column3?.categoryIds || []
   );
 
+  // Column 4 - може містити як додаткові елементи, так і звичайні категорії
+  const orderedColumn4Categories = getCategoriesByIds(
+    headerSettings?.moreNewsDropdown?.categories?.column4?.categoryIds || []
+  );
+  
   const orderedAdditionalItems = (headerSettings?.moreNewsDropdown?.categories?.column4?.items || [])
     .map(param => additionalItems.find(item => item.param === param))
     .filter(Boolean);
 
-  // Mobile menu ordering
-  const orderedMobileTopThemes = getOrderedCategories(
-    specialThemesItem,
+  // Mobile menu ordering - єдиний список категорій
+  const orderedMobileTopThemes = getCategoriesByIds(
     headerSettings?.mobileMenu?.topThemes?.categoryIds || []
   );
 
-  const orderedMobileRegions = getOrderedCategories(
-    regions,
-    headerSettings?.mobileMenu?.categories?.regionIds || []
-  );
-
-  const orderedMobileMainCategories = getOrderedCategories(
-    mainCategories,
-    headerSettings?.mobileMenu?.categories?.mainCategoryIds || []
+  const orderedMobileCategories = getCategoriesByIds(
+    headerSettings?.mobileMenu?.categories?.categoryIds || []
   );
 
 
@@ -523,15 +521,15 @@ export default function Header() {
               <h3 className={styles.title}>КАТЕГОРІЇ</h3>
               <div className={styles.divider}></div>
               <div className={styles.grid}>
-                {/* Підколонка 1 - Регіони */}
+                {/* Підколонка 1 - ГНУЧКА: будь-які категорії */}
                 <div className={styles.gridColumn}>
-                  {(orderedRegions.length > 0 ? orderedRegions : regions).map((region) => (
-                    <Link key={region.id} href={generateCategoryUrl(region.id) || region.link} className={styles.linkSlider}>
-                      {region.title?.toUpperCase()}
+                  {(orderedColumn1.length > 0 ? orderedColumn1 : regions).map((category) => (
+                    <Link key={category.id} href={generateCategoryUrl(category.id) || category.link} className={styles.linkSlider}>
+                      {category.title?.toUpperCase()}
                     </Link>
                   ))}
                   {/* Fallback to static regions if no dynamic data */}
-                  {regions.length === 0 && (
+                  {regions.length === 0 && orderedColumn1.length === 0 && (
                     <>
                       <Link href={paths.lvivRegion} className={styles.linkSlider}>
                         ЛЬВІВЩИНА
@@ -555,15 +553,15 @@ export default function Header() {
                   )}
                 </div>
 
-                {/* Підколонка 2 - Теми */}
+                {/* Підколонка 2 - ГНУЧКА: будь-які категорії */}
                 <div className={styles.gridColumn}>
-                  {(orderedMainCatCol2.length > 0 ? orderedMainCatCol2 : mainCategories.slice(0, 5)).map((category) => (
+                  {(orderedColumn2.length > 0 ? orderedColumn2 : mainCategories.slice(0, 5)).map((category) => (
                     <Link key={category.id} href={generateCategoryUrl(category.id) || category.link} className={styles.linkSlider}>
                       {category.title?.toUpperCase()}
                     </Link>
                   ))}
                   {/* Fallback to static categories if no dynamic data */}
-                  {mainCategories.length === 0 && (
+                  {mainCategories.length === 0 && orderedColumn2.length === 0 && (
                     <>
                       <Link href={paths.society} className={styles.linkSlider}>
                         СУСПІЛЬСТВО
@@ -584,15 +582,15 @@ export default function Header() {
                   )}
                 </div>
 
-                {/* Підколонка 3 - Додаткові теми */}
+                {/* Підколонка 3 - ГНУЧКА: будь-які категорії */}
                 <div className={styles.gridColumn}>
-                  {orderedMainCatCol3.map((category) => (
+                  {orderedColumn3.map((category) => (
                     <Link key={category.id} href={generateCategoryUrl(category.id) || category.link} className={styles.linkSlider}>
                       {category.title?.toUpperCase()}
                     </Link>
                   ))}
                   {/* Fallback to static categories if no dynamic data */}
-                  {mainCategories.length === 0 && (
+                  {mainCategories.length === 0 && orderedColumn3.length === 0 && (
                     <>
                       <Link href={paths.sport} className={styles.linkSlider}>
                         СПОРТ
@@ -613,15 +611,22 @@ export default function Header() {
                   )}
                 </div>
 
-                {/* Підколонка 4 - Типи контенту */}
+                {/* Підколонка 4 - ГНУЧКА: категорії + додаткові елементи */}
                 <div className={styles.gridColumn}>
+                  {/* Спочатку звичайні категорії */}
+                  {orderedColumn4Categories.map((category) => (
+                    <Link key={category.id} href={generateCategoryUrl(category.id) || category.link} className={styles.linkSlider}>
+                      {category.title?.toUpperCase()}
+                    </Link>
+                  ))}
+                  {/* Потім додаткові елементи */}
                   {(orderedAdditionalItems.length > 0 ? orderedAdditionalItems : additionalItems.slice(0, 2)).map((item: any) => (
                     <Link key={item.param} href={item.link} className={styles.linkSlider}>
                       {item.title.toUpperCase()}
                     </Link>
                   ))}
                   {/* Fallback to static items if no dynamic data */}
-                  {additionalItems.length === 0 && (
+                  {additionalItems.length === 0 && orderedAdditionalItems.length === 0 && orderedColumn4Categories.length === 0 && (
                     <>
                       <Link href={paths.news} className={styles.linkSlider}>
                         НОВИНА
@@ -849,26 +854,21 @@ export default function Header() {
                   </>
                 )}
 
-                {/* Categories - Mobile */}
+                {/* Categories - Mobile - ГНУЧКА система */}
                 {headerSettings?.mobileMenu?.categories?.enabled !== false && (
                   <>
                     <h3 className={styles.sectionTitle}>КАТЕГОРІЇ</h3>
                     <hr className={styles.divider}/>
                     <div className={styles.categories}>
-                      {/* Dynamic categories from database - ordered */}
-                      {(orderedMobileRegions.length > 0 ? orderedMobileRegions : regions).map((region) => (
-                        <Link key={region.id} className={styles.textCategory} href={generateCategoryUrl(region.id) || region.link}>
-                          {region.title?.toUpperCase()}
-                        </Link>
-                      ))}
-                      {(orderedMobileMainCategories.length > 0 ? orderedMobileMainCategories : mainCategories).map((category) => (
+                      {/* Єдиний гнучкий список - будь-які категорії у потрібному порядку */}
+                      {(orderedMobileCategories.length > 0 ? orderedMobileCategories : [...regions, ...mainCategories]).map((category) => (
                         <Link key={category.id} className={styles.textCategory} href={generateCategoryUrl(category.id) || category.link}>
                           {category.title?.toUpperCase()}
                         </Link>
                       ))}
 
                       {/* Fallback to static categories if no dynamic data */}
-                      {regions.length === 0 && mainCategories.length === 0 && (
+                      {regions.length === 0 && mainCategories.length === 0 && orderedMobileCategories.length === 0 && (
                         <>
                           <Link className={styles.textCategory} href="#">ЛЬВІВЩИНА</Link>
                           <Link className={styles.textCategory} href="#">СУСПІЛЬСТВО</Link>
