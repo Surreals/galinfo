@@ -651,6 +651,7 @@ export default function NewsPage() {
                 <Input
                   value={filters.keyword}
                   onChange={(e) => handleFilterChange('keyword', e.target.value)}
+                  onPressEnter={handleSearch}
                   placeholder="Пошук в заголовках та описі..."
                   disabled={paginationLoading}
                   title="Пошук працює в заголовках новин та їх коротких описах"
@@ -664,6 +665,7 @@ export default function NewsPage() {
                 <Input
                   value={filters.newsId}
                   onChange={(e) => handleFilterChange('newsId', e.target.value)}
+                  onPressEnter={handleSearch}
                   placeholder="Введіть ID..."
                   disabled={paginationLoading}
                 />

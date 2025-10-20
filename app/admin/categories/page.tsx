@@ -360,13 +360,17 @@ export default function CategoriesPage() {
             form={form}
             layout="vertical"
             initialValues={{ isvis: 1 }}
+            onFinish={handleSave}
           >
             <Form.Item
               name="title"
               label="Назва категорії"
               rules={[{ required: true, message: 'Введіть назву' }]}
             >
-              <Input placeholder="Наприклад: Суспільство" />
+              <Input 
+                placeholder="Наприклад: Суспільство"
+                onPressEnter={() => form.submit()}
+              />
             </Form.Item>
 
             <Form.Item
@@ -377,7 +381,10 @@ export default function CategoriesPage() {
                 { pattern: /^[a-z0-9-]+$/, message: 'Тільки малі латинські літери, цифри та дефіс' }
               ]}
             >
-              <Input placeholder="наприклад: society" />
+              <Input 
+                placeholder="наприклад: society"
+                onPressEnter={() => form.submit()}
+              />
             </Form.Item>
 
             <Form.Item

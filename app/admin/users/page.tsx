@@ -380,6 +380,7 @@ export default function UsersPage() {
               placeholder="Пошук за іменем, логіном або агенцією..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
+              onPressEnter={(e) => e.currentTarget.blur()}
               prefix={<SearchOutlined />}
               allowClear
             />
@@ -468,14 +469,14 @@ export default function UsersPage() {
                 name="uname_ua"
                 rules={[{ required: true, message: 'Будь ласка, введіть повне ім\'я' }]}
               >
-                <Input />
+                <Input onPressEnter={() => form.submit()} />
               </Form.Item>
 
               <Form.Item
                 label="Агенція"
                 name="uagency"
               >
-                <Input />
+                <Input onPressEnter={() => form.submit()} />
               </Form.Item>
             </div>
 
@@ -485,7 +486,10 @@ export default function UsersPage() {
                 name="uname"
                 rules={[{ required: true, message: 'Будь ласка, введіть логін' }]}
               >
-                <Input disabled={!!editingUser} />
+                <Input 
+                  disabled={!!editingUser}
+                  onPressEnter={() => form.submit()}
+                />
               </Form.Item>
 
               <Form.Item
@@ -495,6 +499,7 @@ export default function UsersPage() {
               >
                 <Input.Password 
                   placeholder={editingUser ? 'Залиште порожнім, щоб не змінювати' : ''}
+                  onPressEnter={() => form.submit()}
                 />
               </Form.Item>
             </div>

@@ -610,6 +610,7 @@ export default function TelegramUnifiedPage() {
                           placeholder="Введіть URL для webhook (наприклад: https://yourdomain.com/api/telegram/webhook)"
                           value={webhookUrl}
                           onChange={(e) => setWebhookUrl(e.target.value)}
+                          onPressEnter={setWebhook}
                         />
                         <Space>
                           <Button 
@@ -644,12 +645,25 @@ export default function TelegramUnifiedPage() {
                       placeholder="Введіть Chat ID (ID чату або каналу)"
                       value={testChatId}
                       onChange={(e) => setTestChatId(e.target.value)}
+                      onPressEnter={() => {
+                        // Якщо є і Chat ID і повідомлення, відправляємо
+                        if (testChatId && testMessage) {
+                          sendTestMessage();
+                        }
+                      }}
                     />
                     <TextArea
                       placeholder="Введіть тестове повідомлення"
                       value={testMessage}
                       onChange={(e) => setTestMessage(e.target.value)}
                       rows={4}
+                      onKeyDown={(e) => {
+                        // Ctrl+Enter для відправки
+                        if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+                          e.preventDefault();
+                          sendTestMessage();
+                        }
+                      }}
                     />
                     <Space>
                       <Button 
@@ -694,7 +708,10 @@ export default function TelegramUnifiedPage() {
               label="Назва каналу"
               rules={[{ required: true, message: 'Введіть назву каналу' }]}
             >
-              <Input placeholder="Наприклад: Головні новини" />
+              <Input 
+                placeholder="Наприклад: Головні новини"
+                onPressEnter={() => form.submit()}
+              />
             </Form.Item>
 
             <Form.Item
@@ -715,7 +732,10 @@ export default function TelegramUnifiedPage() {
               rules={[{ required: true, message: 'Введіть Chat ID' }]}
               extra="Для каналів: @username або -1001234567890. Для груп: -1001234567890"
             >
-              <Input placeholder="@channel_username або -1001234567890" />
+              <Input 
+                placeholder="@channel_username або -1001234567890"
+                onPressEnter={() => form.submit()}
+              />
             </Form.Item>
 
             <Form.Item
@@ -725,6 +745,11 @@ export default function TelegramUnifiedPage() {
               <TextArea 
                 rows={3} 
                 placeholder="Короткий опис каналу..."
+                onPressEnter={(e) => {
+                  if (e.shiftKey) return;
+                  e.preventDefault();
+                  form.submit();
+                }}
               />
             </Form.Item>
 

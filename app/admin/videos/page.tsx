@@ -387,7 +387,7 @@ const VideosPage: React.FC = () => {
         okText="Завантажити"
         cancelText="Скасувати"
       >
-        <Form form={uploadForm} layout="vertical">
+        <Form form={uploadForm} layout="vertical" onFinish={handleUpload}>
           <Form.Item
             label="Відео файл"
             required
@@ -458,14 +458,25 @@ const VideosPage: React.FC = () => {
             label="Назва"
             rules={[{ required: true, message: 'Будь ласка, введіть назву' }]}
           >
-            <Input placeholder="Назва відео" />
+            <Input 
+              placeholder="Назва відео"
+              onPressEnter={() => uploadForm.submit()}
+            />
           </Form.Item>
 
           <Form.Item
             name="description"
             label="Опис"
           >
-            <Input.TextArea rows={3} placeholder="Опис відео (необов'язково)" />
+            <Input.TextArea 
+              rows={3} 
+              placeholder="Опис відео (необов'язково)"
+              onPressEnter={(e) => {
+                if (e.shiftKey) return; // Shift+Enter для нового рядка
+                e.preventDefault();
+                uploadForm.submit();
+              }}
+            />
           </Form.Item>
 
           <Form.Item
@@ -495,31 +506,45 @@ const VideosPage: React.FC = () => {
         }}
         width={600}
       >
-        <Form form={form} layout="vertical">
+        <Form form={form} layout="vertical" onFinish={handleSave}>
           <Form.Item
             name="title_ua"
             label="Назва (українська)"
             rules={[{ required: true, message: 'Будь ласка, введіть назву' }]}
           >
-            <Input />
+            <Input onPressEnter={() => form.submit()} />
           </Form.Item>
           <Form.Item
             name="title_deflang"
             label="Назва (за замовчуванням)"
           >
-            <Input />
+            <Input onPressEnter={() => form.submit()} />
           </Form.Item>
           <Form.Item
             name="description_ua"
             label="Опис (українська)"
           >
-            <Input.TextArea rows={3} />
+            <Input.TextArea 
+              rows={3}
+              onPressEnter={(e) => {
+                if (e.shiftKey) return;
+                e.preventDefault();
+                form.submit();
+              }}
+            />
           </Form.Item>
           <Form.Item
             name="description_deflang"
             label="Опис (за замовчуванням)"
           >
-            <Input.TextArea rows={3} />
+            <Input.TextArea 
+              rows={3}
+              onPressEnter={(e) => {
+                if (e.shiftKey) return;
+                e.preventDefault();
+                form.submit();
+              }}
+            />
           </Form.Item>
           <Form.Item
             name="video_type"

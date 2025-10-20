@@ -612,6 +612,13 @@ export default function TemplatesPage() {
                     className={`${styles.jsonTextarea} ${jsonErrors[template.id] ? styles.jsonTextareaError : ''}`}
                     value={jsonValues[template.id] || formatJson(template.schema, template.id)}
                     onChange={(e) => handleJsonChange(template.id, e.target.value)}
+                    onKeyDown={(e) => {
+                      // Ctrl+Enter або Cmd+Enter для збереження
+                      if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+                        e.preventDefault();
+                        handleSave(template.id);
+                      }
+                    }}
                     placeholder="Введіть JSON схему..."
                     spellCheck={false}
                   />
