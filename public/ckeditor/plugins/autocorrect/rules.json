@@ -1,0 +1,18 @@
+[
+  {
+    "find": "&laquo;|&raquo;",
+    "replace": "\""
+  },
+  {
+    "find": "&mdash;",
+    "replace": "–"
+  },
+  {
+    "find": ", (-|−)",
+    "replace": ", –"
+  },
+  {
+    "find": "\\.\\.\\.",
+    "replace": "…"
+  }
+]

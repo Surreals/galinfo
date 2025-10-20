@@ -50,17 +50,6 @@ export default function TimeButtons({ publishAt, setPublishAt }: TimeButtonsProp
 
   return (
     <div className={styles.timeHints}>
-      <a 
-        onClick={handleNowClick}
-        style={{ 
-          cursor: 'pointer',
-          opacity: 1,
-          fontWeight: 'bold'
-        }}
-        title="Клікніть, щоб встановити поточний час"
-      >
-        🕐 Зараз
-      </a>
       
       <a 
         onClick={() => handleTimeClick(timeData.lastNewsTime, 'Встановлено час останньої новини')}
@@ -85,7 +74,7 @@ export default function TimeButtons({ publishAt, setPublishAt }: TimeButtonsProp
       </a>
       
       <a 
-        onClick={() => handleTimeClick(timeData.serverTime, 'Встановлено поточний час сервера')}
+        onClick={handleNowClick}
         style={{ 
           cursor: timeData.serverTime ? 'pointer' : 'default',
           opacity: timeData.serverTime ? 1 : 0.5 

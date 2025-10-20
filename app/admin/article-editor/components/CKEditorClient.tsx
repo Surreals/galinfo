@@ -23,10 +23,10 @@ const CKEditorClient = forwardRef<CKEditorClientRef, Props>(
     const editorRef = useRef<any>(null);
     const [existingVideos, setExistingVideos] = useState<any[]>([]);
 
-    // CKEditor 4 конфігурація
+    // CKEditor 4 конфігурація з локальними файлами
     const editorConfig = {
-      // Використовуємо конкретну версію 4.22.1 (остання Open Source версія)
-      editorUrl: 'https://cdn.ckeditor.com/4.22.1/standard-all/ckeditor.js',
+      // Використовуємо локальний CKEditor
+      editorUrl: '/ckeditor/ckeditor.js',
       placeholder: placeholder,
       language: 'uk',
       // Вимикаємо попередження про оновлення до LTS (комерційної) версії
@@ -35,13 +35,13 @@ const CKEditorClient = forwardRef<CKEditorClientRef, Props>(
       toolbar: [
         { name: 'document', items: ['Source', '-', 'NewPage', 'Preview', '-', 'Templates'] },
         { name: 'clipboard', items: ['Cut', 'Copy', 'Paste', 'PasteText', 'PasteFromWord', '-', 'Undo', 'Redo'] },
-        { name: 'editing', items: ['Find', 'Replace', '-', 'SelectAll'] },
+        { name: 'editing', items: ['Find', 'Replace', '-', 'SelectAll', '-', 'Autocorrect', '-', 'NofollowAll'] },
         '/',
         { name: 'basicstyles', items: ['Bold', 'Italic', 'Underline', 'Strike', 'Subscript', 'Superscript', '-', 'RemoveFormat'] },
         { name: 'paragraph', items: ['NumberedList', 'BulletedList', '-', 'Outdent', 'Indent', '-', 'Blockquote', '-', 'JustifyLeft', 'JustifyCenter', 'JustifyRight', 'JustifyBlock'] },
         { name: 'links', items: ['Link', 'Unlink', 'Anchor'] },
         '/',
-        { name: 'insert', items: ['Image', 'Table', 'HorizontalRule', 'SpecialChar', 'Iframe'] },
+        { name: 'insert', items: ['Image', 'Table', 'HorizontalRule', 'SpecialChar', 'Iframe', '-', 'InsertVariable'] },
         { name: 'styles', items: ['Styles', 'Format', 'Font', 'FontSize'] },
         { name: 'colors', items: ['TextColor', 'BGColor'] },
         { name: 'tools', items: ['Maximize', 'ShowBlocks'] }
@@ -51,7 +51,7 @@ const CKEditorClient = forwardRef<CKEditorClientRef, Props>(
       // Висота редактора
       height: 500,
       // Додаткові плагіни
-      extraPlugins: 'iframe,font,colorbutton,justify',
+      extraPlugins: 'iframe,font,colorbutton,justify,autocorrect,insertvariable,nofollow',
       // Налаштування для зображень
       filebrowserUploadUrl: '/api/admin/images/upload',
       filebrowserUploadMethod: 'form',
@@ -67,10 +67,14 @@ const CKEditorClient = forwardRef<CKEditorClientRef, Props>(
       // Автоматичне збереження при втраті фокусу
       removePlugins: 'elementspath', // Прибираємо path внизу редактора
       resize_enabled: true,
-      // Стилі для редактора
+      // Стилі для редактора - використовуємо локальний файл
       contentsCss: [
-        'https://cdn.ckeditor.com/4.22.1/standard-all/contents.css',
+        '/ckeditor/contents.css',
       ],
+      // Налаштування для autocorrect
+      autocorrect: {
+        rulesPath: '/ckeditor/plugins/autocorrect/rules.json'
+      },
     };
 
     // Обробник зміни контенту
@@ -207,7 +211,7 @@ const CKEditorClient = forwardRef<CKEditorClientRef, Props>(
           config={editorConfig}
           onInstanceReady={handleEditorReady}
           onChange={handleEditorChange}
-          editorUrl="https://cdn.ckeditor.com/4.22.1/standard-all/ckeditor.js"
+          editorUrl="/ckeditor/ckeditor.js"
         />
       </div>
     );
