@@ -31,48 +31,66 @@ const CKEditorClient = forwardRef<CKEditorClientRef, Props>(
       language: 'uk',
       // Вимикаємо попередження про оновлення до LTS (комерційної) версії
       versionCheck: false,
-      // Toolbar конфігурація
-      toolbar: [
-        { name: 'document', items: ['Source', '-', 'NewPage', 'Preview', '-', 'Templates'] },
-        { name: 'clipboard', items: ['Cut', 'Copy', 'Paste', 'PasteText', 'PasteFromWord', '-', 'Undo', 'Redo'] },
-        { name: 'editing', items: ['Find', 'Replace', '-', 'SelectAll'] },
-        '/',
-        { name: 'basicstyles', items: ['Bold', 'Italic', 'Underline', 'Strike', 'Subscript', 'Superscript', '-', 'RemoveFormat'] },
-        { name: 'paragraph', items: ['NumberedList', 'BulletedList', '-', 'Outdent', 'Indent', '-', 'Blockquote', '-', 'JustifyLeft', 'JustifyCenter', 'JustifyRight', 'JustifyBlock'] },
-        { name: 'links', items: ['Link', 'Unlink', 'Anchor'] },
-        '/',
-        { name: 'insert', items: ['Image', 'Table', 'HorizontalRule', 'SpecialChar', 'Iframe'] },
-        { name: 'styles', items: ['Styles', 'Format', 'Font', 'FontSize'] },
-        { name: 'colors', items: ['TextColor', 'BGColor'] },
-        { name: 'tools', items: ['Maximize', 'ShowBlocks'] },
-        '/',
-        { name: 'plugins', items: ['Autocorrect', 'InsertVariable', 'NofollowAll'] }
+      
+      // Toolbar Groups конфігурація (адаптована з config.js)
+      toolbarGroups: [
+        { name: 'correction', groups: [ 'correction' ] },
+        { name: 'document', groups: [ 'mode', 'document', 'doctools' ] },
+        { name: 'clipboard', groups: [ 'clipboard', 'undo' ] },
+        { name: 'editing', groups: [ 'find', 'selection', 'spellchecker', 'editing' ] },
+        { name: 'forms', groups: [ 'forms' ] },
+        { name: 'basicstyles', groups: [ 'basicstyles', 'cleanup' ] },
+        { name: 'paragraph', groups: [ 'list', 'indent', 'blocks', 'align', 'bidi', 'paragraph' ] },
+        { name: 'links', groups: [ 'links' ] },
+        { name: 'insert', groups: [ 'insert' ] },
+        { name: 'emoji', groups: [ 'emoji' ] },
+        { name: 'styles', groups: [ 'styles' ] },
+        { name: 'colors', groups: [ 'colors' ] },
+        { name: 'tools', groups: [ 'tools' ] },
+        { name: 'others', groups: [ 'others' ] },
+        { name: 'about', groups: [ 'about' ] }
       ],
-      // Дозволені теги для контенту
-      allowedContent: true,
-      // Висота редактора
-      height: 500,
+      
+      // Видаляємо непотрібні кнопки
+      removeButtons: 'Scayt,Form,Checkbox,Radio,TextField,Textarea,Select,Button,HiddenField,CopyFormatting,CreateDiv,BidiLtr,BidiRtl,Language,Styles,Font,Save,NewPage,Templates,PasteFromWord,ExportPdf,ImageButton',
+      
       // Додаткові плагіни
       extraPlugins: 'iframe,font,colorbutton,justify,autocorrect,insertvariable,nofollow',
+      
+      // Видаляємо плагіни
+      removePlugins: 'exportpdf,elementspath',
+      
+      // Форматування блоків
+      format_tags: 'p;h1;h2;h3;pre',
+      
+      // Налаштування для офіційного плагіна autogrow
+      autoGrow_minHeight: 200,
+      autoGrow_maxHeight: 800,
+      autoGrow_bottomSpace: 50,
+      autoGrow_onStartup: true,
+      
       // Налаштування для зображень
       filebrowserUploadUrl: '/api/admin/images/upload',
       filebrowserUploadMethod: 'form',
+      
       // Налаштування для відео через iframe
       iframe_dialog: {
         title: 'Вставити відео',
         minWidth: 350,
         minHeight: 260
       },
+      
       // Форматування виводу
       enterMode: 2, // CKEDITOR.ENTER_BR
       shiftEnterMode: 1, // CKEDITOR.ENTER_P
-      // Автоматичне збереження при втраті фокусу
-      removePlugins: 'elementspath', // Прибираємо path внизу редактора
+      
       resize_enabled: true,
+      
       // Стилі для редактора - використовуємо локальний файл
       contentsCss: [
         '/ckeditor/contents.css',
       ],
+      
       // Налаштування для autocorrect
       autocorrect: {
         rulesPath: '/ckeditor/plugins/autocorrect/rules.json'
