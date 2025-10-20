@@ -294,6 +294,37 @@ export const categoryDesktopSchema = {
             type: null
           }
         }
+      },
+      
+      // Сепаратор
+      {
+        type: RIGHT_SEPARATOR,
+        config: {
+          show: true
+        }
+      },
+      
+      // NewsList - Культура
+      {
+        type: NEWS_LIST,
+        categoryId: CATEGORY_IDS.CULTURE,
+        config: {
+          show: true,
+          mobileLayout: "horizontal",
+          arrowRightIcon: true,
+          title: "КУЛЬТУРА",
+          showImagesAt: [0, 1],
+          showMoreButton: true,
+          moreButtonUrl: "/culture",
+          widthPercent: 100,
+          apiParams: {
+            page: 1,
+            limit: 8,
+            lang: '1',
+            approved: true,
+            type: null
+          }
+        }
       }
     ]
   },

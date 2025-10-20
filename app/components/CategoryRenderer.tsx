@@ -34,6 +34,7 @@ import Image from "next/image";
 import styles from "../[category]/page.module.css";
 import { Pagination } from 'antd';
 import adBannerIndfomo from '@/assets/images/Ad Banner black.png';
+import { filterSidebarCategoryBlocks } from '@/app/lib/sidebarUtils';
 
 interface CategoryRendererProps {
   category: string;
@@ -792,6 +793,11 @@ const CategoryRenderer: React.FC<CategoryRendererProps> = ({
     return null;
   }
 
+  // Фільтруємо sidebar блоки: пропускаємо категорію яка співпадає з поточною та обмежуємо до 3
+  const filteredSidebarBlocks = (schema as any).sidebar?.blocks 
+    ? filterSidebarCategoryBlocks((schema as any).sidebar.blocks, categoryId, 3)
+    : [];
+
   return (
     <>
       <div className={styles.container}>
@@ -801,9 +807,10 @@ const CategoryRenderer: React.FC<CategoryRendererProps> = ({
         </div>
 
         {/* Бокова панель для десктопу */}
+        {/* Sidebar завжди показується якщо є блоки (навіть якщо немає категорійних - є банери, валюта, погода) */}
         {!isMobile && (schema as any).sidebar && (
           <div className={styles.sidebar}>
-            {(schema as any).sidebar.blocks.map((block: any, index: number) => renderBlock(block, index))}
+            {filteredSidebarBlocks.map((block: any, index: number) => renderBlock(block, index))}
           </div>
         )}
       </div>

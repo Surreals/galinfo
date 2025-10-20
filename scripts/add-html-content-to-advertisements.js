@@ -1,13 +1,21 @@
 const mysql = require('mysql2/promise');
-require('dotenv').config({ path: '.env.local' });
+const dotenv = require('dotenv');
+const path = require('path');
+
+// Завантажуємо змінні оточення з .env та .env.local (аналогічно іншим скриптам)
+dotenv.config({ path: path.join(__dirname, '..', '.env') });
+dotenv.config({ path: path.join(__dirname, '..', '.env.local') });
 
 async function addHtmlContentColumn() {
-  const connection = await mysql.createConnection({
-    host: process.env.DB_HOST,
-    user: process.env.DB_USER,
-    password: process.env.DB_PASSWORD,
-    database: process.env.DB_NAME,
-  });
+  const dbConfig = {
+    host: process.env.DB_HOST || 'localhost',
+    user: process.env.DB_USER || 'root',
+    password: process.env.DB_PASSWORD || '',
+    database: process.env.DB_NAME || 'galinfodb_db',
+    port: parseInt(process.env.DB_PORT || '3306'),
+  };
+
+  const connection = await mysql.createConnection(dbConfig);
 
   try {
     console.log('🔄 Додавання колонок для HTML контенту...');
