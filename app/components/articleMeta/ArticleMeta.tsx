@@ -14,7 +14,7 @@ export const ArticleMeta: React.FC<ArticleMetaProps> = ({ date: newsDate, time, 
 
   const formatDate = (date: string, time?: string): string => {
     // Створюємо дату з UTC часу (додаємо Z для вказування UTC)
-    const dateTimeString = time ? `${date.slice(0, 10)}T${time}Z` : date;
+    const dateTimeString = time ? `${date.slice(0, 10)}T${time}` : date;
     const dateObj = new Date(dateTimeString);
 
     const weekday = capitalize(dateObj.toLocaleDateString('uk-UA', { weekday: 'short' }));
