@@ -41,6 +41,8 @@ const config = {
   bigNumberStrings: true,
   // Close idle connections after 15 seconds
   idleTimeout: 15000,
+  // Set timezone to Europe/Kiev (UTC+3)
+  timezone: '+03:00',
 };
 
 // Ensure single pool instance across all requests
@@ -50,6 +52,13 @@ global._mysqlPool = global._mysqlPool || mysql.createPool(config);
 if (!global._mysqlPool.listenerCount('connection')) {
   global._mysqlPool.on('connection', (connection) => {
     // console.log('🔗 New connection established as id ' + connection.threadId);
+    
+    // Встановлюємо часову зону для кожного підключення
+    connection.query("SET time_zone = '+03:00'", (err: any) => {
+      if (err) {
+        console.error('Error setting timezone:', err);
+      }
+    });
   });
 
   global._mysqlPool.on('acquire', (connection) => {
