@@ -315,6 +315,7 @@ export default function TagsPage() {
                 placeholder="Введіть тег"
                 style={{ width: 200 }}
                 allowClear
+                onPressEnter={handleFilter}
               />
             </Form.Item>
             <Form.Item name="newsId" label="ID новини">
@@ -322,6 +323,7 @@ export default function TagsPage() {
                 placeholder="ID"
                 style={{ width: 120 }}
                 allowClear
+                onPressEnter={handleFilter}
               />
             </Form.Item>
             <Form.Item>
@@ -375,6 +377,7 @@ export default function TagsPage() {
           <Form
             form={form}
             layout="vertical"
+            onFinish={handleSave}
           >
             <Form.Item
               name="tag"
@@ -384,7 +387,10 @@ export default function TagsPage() {
                 { max: 100, message: 'Максимум 100 символів' }
               ]}
             >
-              <Input placeholder="Наприклад: політика, економіка" />
+              <Input 
+                placeholder="Наприклад: політика, економіка"
+                onPressEnter={() => form.submit()}
+              />
             </Form.Item>
           </Form>
         </Modal>

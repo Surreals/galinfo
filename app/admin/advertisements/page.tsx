@@ -454,13 +454,17 @@ export default function AdvertisementsPage() {
               is_active: true,
               display_order: 0,
             }}
+            onFinish={handleSave}
           >
             <Form.Item
               label="Назва реклами"
               name="title"
               rules={[{ required: true, message: 'Введіть назву реклами' }]}
             >
-              <Input placeholder="Назва реклами" />
+              <Input 
+                placeholder="Назва реклами"
+                onPressEnter={() => form.submit()}
+              />
             </Form.Item>
 
             <Form.Item
@@ -578,7 +582,11 @@ export default function AdvertisementsPage() {
                 { type: 'url', message: 'Введіть коректний URL' }
               ]}
             >
-              <Input placeholder="https://example.com" prefix={<LinkOutlined />} />
+              <Input 
+                placeholder="https://example.com" 
+                prefix={<LinkOutlined />}
+                onPressEnter={() => form.submit()}
+              />
             </Form.Item>
 
             <Form.Item

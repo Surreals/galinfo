@@ -215,6 +215,7 @@ export default function ImagePickerModal({
                     placeholder="Пошук зображень..."
                     allowClear
                     onSearch={handleSearch}
+                    onPressEnter={(e) => handleSearch((e.target as HTMLInputElement).value)}
                     style={{ width: 300 }}
                     prefix={<SearchOutlined />}
                   />
