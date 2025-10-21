@@ -41,8 +41,6 @@ const config = {
   bigNumberStrings: true,
   // Close idle connections after 15 seconds
   idleTimeout: 15000,
-  // Set timezone to UTC for consistent time handling
-  timezone: 'Z',
 };
 
 // Ensure single pool instance across all requests
