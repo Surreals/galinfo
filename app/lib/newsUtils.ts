@@ -59,7 +59,7 @@ export function formatNewsDate(ndate: string, udate: number): string {
 // Нова функція для повного формату дати: "13 серпня 2025 р., 14:13"
 export function formatFullNewsDate(ndate: string, ntime?: string): string {
   // Створюємо дату з UTC часу (додаємо Z для вказування UTC)
-  const dateTimeString = ntime ? `${ndate}T${ntime}Z` : ndate;
+  const dateTimeString = ntime ? `${ndate}T${ntime}` : ndate;
   const dateObj = new Date(dateTimeString);
 
   // Форматуємо дату: "13 серпня 2025" (без 'р.')
