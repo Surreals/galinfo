@@ -226,26 +226,9 @@ export async function getNewsById(id: number): Promise<NewsData | null> {
       news.region = [];
     }
     
-    // Конвертуємо UTC час в локальний часовий пояс
-    if (news.ntime && news.ndate) {
-      try {
-        // Створюємо UTC дату з часом з бази даних
-        const utcDateTime = new Date(`${news.ndate}T${news.ntime}Z`);
-        
-        // Отримуємо локальний час
-        const localDateTime = new Date(utcDateTime.toLocaleString('en-US', { timeZone: 'Europe/Kiev' }));
-        
-        // Форматуємо час назад в HH:mm:ss формат
-        const hours = localDateTime.getHours().toString().padStart(2, '0');
-        const minutes = localDateTime.getMinutes().toString().padStart(2, '0');
-        const seconds = localDateTime.getSeconds().toString().padStart(2, '0');
-        
-        news.ntime = `${hours}:${minutes}:${seconds}`;
-      } catch (error) {
-        console.error('Error converting timezone:', error);
-        // Якщо помилка, залишаємо оригінальний час
-      }
-    }
+    // Час зберігається в UTC в базі даних і буде автоматично конвертований
+    // в локальний час при відображенні в компонентах (formatFullNewsDate)
+    // Додаткова конвертація тут не потрібна
     
     return news;
   } catch (error) {
