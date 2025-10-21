@@ -103,6 +103,7 @@ export default function NewsEditorSidebar({ newsId, articleData, menuData, onEdi
   // Стан для модалки зображень
   const [isImageModalOpen, setIsImageModalOpen] = useState(false);
   const [isMultipleImageModalOpen, setIsMultipleImageModalOpen] = useState(false);
+  const [initialFileList, setInitialFileList] = useState<ExtendedUploadFile[]>([]);
   
   // Ref для контейнера зображень для автоскролу
   const imageScrollRef = useRef<HTMLDivElement>(null);
@@ -132,6 +133,7 @@ export default function NewsEditorSidebar({ newsId, articleData, menuData, onEdi
 
   // Функції для роботи з модалкою зображень
   const openImagePicker = () => {
+    setInitialFileList([...fileList]); // Зберігаємо початковий стан
     setIsImageModalOpen(true);
   };
 
@@ -139,17 +141,57 @@ export default function NewsEditorSidebar({ newsId, articleData, menuData, onEdi
     setIsImageModalOpen(false);
   };
 
+  const openMultipleImagePicker = () => {
+    setInitialFileList([...fileList]); // Зберігаємо початковий стан
+    setIsMultipleImageModalOpen(true);
+  };
+
   const closeMultipleImagePicker = () => {
     setIsMultipleImageModalOpen(false);
+  };
+
+  // Функція для конвертації fileList в ImageItem[]
+  const convertFileListToImageItems = (files: ExtendedUploadFile[]): any[] => {
+    return files.map(file => ({
+      id: file.imageId || parseInt(file.uid.replace('image-', '')) || 0,
+      filename: file.name,
+      title: file.name,
+      url: file.url,
+      thumbnail_url: file.thumbUrl,
+      pic_type: 'news',
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString()
+    }));
+  };
+
+  // Функція для конвертації ImageItem[] в fileList
+  const convertImageItemsToFileList = (images: any[]): ExtendedUploadFile[] => {
+    return images.map((image, index) => ({
+      uid: `image-${image.id}-${index}`,
+      name: image.filename || image.title || `image-${image.id}`,
+      status: 'done' as const,
+      url: image.url || image.thumbnail_url,
+      imageId: image.id,
+      thumbUrl: image.thumbnail_url,
+    }));
   };
 
   const handleMultipleImageSelect = (images: any[]) => {
     console.log('Multiple images selected:', images);
     
-    // Додаємо всі вибрані зображення до списку файлів (як в одинарному виборі)
-    images.forEach((image, index) => {
+    // Видаляємо дублікати за ID зображення
+    const uniqueImages = images.filter((image, index, self) => 
+      index === self.findIndex(img => img.id === image.id)
+    );
+    
+    // Перевіряємо, чи не існують вже такі зображення в fileList
+    const existingIds = new Set(fileList.map(file => file.imageId));
+    const newImages = uniqueImages.filter(image => !existingIds.has(image.id));
+    
+    // Додаємо тільки нові зображення до списку файлів
+    newImages.forEach((image, index) => {
       const newFile = {
-        uid: `image-${image.id}-${index}`,
+        uid: `image-${image.id}-${Date.now()}-${index}`, // Використовуємо timestamp для унікальності
         name: image.filename || image.title || `image-${image.id}`,
         status: 'done' as const,
         url: image.url || image.thumbnail_url,
@@ -172,14 +214,75 @@ export default function NewsEditorSidebar({ newsId, articleData, menuData, onEdi
       }
     }, 400);
     
-    message.success(`Додано ${images.length} зображень до статті`);
+    const duplicateCount = images.length - uniqueImages.length;
+    const existingCount = uniqueImages.length - newImages.length;
+    
+    if (duplicateCount > 0 || existingCount > 0) {
+      message.success(`Додано ${newImages.length} зображень до статті${duplicateCount > 0 ? ` (видалено ${duplicateCount} дублікатів)` : ''}${existingCount > 0 ? ` (${existingCount} вже існували)` : ''}`);
+    } else {
+      message.success(`Додано ${newImages.length} зображень до статті`);
+    }
+    
     closeMultipleImagePicker();
   };
 
+  // Нова функція для обробки змін зображень з модалки
+  const handleImagesChange = (newImages: any[]) => {
+    console.log('Images changed in modal:', newImages);
+    
+    // Перевіряємо, чи це скасування (повернення до початкового стану)
+    const isCancellation = JSON.stringify(convertFileListToImageItems(initialFileList)) === JSON.stringify(newImages);
+    
+    if (isCancellation) {
+      // При скасуванні повертаємо початковий стан
+      setFileList([...initialFileList]);
+      message.info('Зміни скасовано');
+      return;
+    }
+    
+    // Видаляємо дублікати за ID зображення
+    const uniqueImages = newImages.filter((image, index, self) => 
+      index === self.findIndex(img => img.id === image.id)
+    );
+    
+    // Конвертуємо нові зображення в fileList
+    const newFileList = convertImageItemsToFileList(uniqueImages);
+    
+    // Оновлюємо fileList
+    setFileList(newFileList);
+    
+    // Автоскрол до кінця списку зображень
+    setTimeout(() => {
+      if (imageScrollRef.current) {
+        const container = imageScrollRef.current;
+        container.scrollTo({
+          left: container.scrollWidth,
+          behavior: 'smooth'
+        });
+      }
+    }, 400);
+    
+    const removedCount = newImages.length - uniqueImages.length;
+    if (removedCount > 0) {
+      message.success(`Оновлено список зображень: ${uniqueImages.length} зображень (видалено ${removedCount} дублікатів)`);
+    } else {
+      message.success(`Оновлено список зображень: ${uniqueImages.length} зображень`);
+    }
+  };
+
   const handleImageSelect = (image: any) => {
+    // Перевіряємо, чи не існує вже таке зображення в fileList
+    const existingIds = new Set(fileList.map(file => file.imageId));
+    
+    if (existingIds.has(image.id)) {
+      message.warning('Це зображення вже додано до статті');
+      closeImagePicker();
+      return;
+    }
+    
     // Додаємо вибране зображення до списку файлів
     const newFile = {
-      uid: `image-${image.id}`,
+      uid: `image-${image.id}-${Date.now()}`, // Використовуємо timestamp для унікальності
       name: image.filename,
       status: 'done' as const,
       url: image.url,
@@ -201,6 +304,8 @@ export default function NewsEditorSidebar({ newsId, articleData, menuData, onEdi
         });
       }
     }, 400);
+    
+    message.success('Зображення додано до статті');
   };
 
   // Всі користувачі з a_powerusers (адміністратори/редактори)
@@ -757,7 +862,7 @@ export default function NewsEditorSidebar({ newsId, articleData, menuData, onEdi
             type="default"
             size="small"
             icon={<PictureOutlined/>}
-            onClick={() => setIsMultipleImageModalOpen(true)}
+            onClick={openMultipleImagePicker}
             style={{marginTop: '8px', width: '100%'}}
           >
             Вибрати кілька зображень
@@ -1016,7 +1121,6 @@ export default function NewsEditorSidebar({ newsId, articleData, menuData, onEdi
         <div className={styles.actions}>
           <Button
             type="primary"
-            size="large"
             icon={<SaveOutlined/>}
             onClick={async () => {
               onSave();
@@ -1033,7 +1137,6 @@ export default function NewsEditorSidebar({ newsId, articleData, menuData, onEdi
               
               <Button
                 danger={!articleData?.approved}
-                size="large"
                 icon={articleData?.approved ? <FileOutlined /> : <DeleteOutlined/>}
                 onClick={onDelete}
                 loading={saving}
@@ -1051,7 +1154,6 @@ export default function NewsEditorSidebar({ newsId, articleData, menuData, onEdi
               </Button>
                 <Button
                   // type="text"
-                  size="large"
                   icon={<EyeOutlined/>}
                   onClick={async () => {
                     try {
@@ -1102,6 +1204,8 @@ export default function NewsEditorSidebar({ newsId, articleData, menuData, onEdi
         onSelectMultiple={handleMultipleImageSelect}
         currentImage={null}
         allowMultiple={true}
+        selectedImages={convertFileListToImageItems(fileList)}
+        onImagesChange={handleImagesChange}
       />
 
       {/* Превью зображення */}

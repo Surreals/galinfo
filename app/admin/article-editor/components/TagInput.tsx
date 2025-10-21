@@ -237,12 +237,28 @@ export default function TagInput({ value = '', onChange, placeholder, status }: 
     };
   }, []);
 
+  // Function to highlight matching text
+  const highlightText = (text: string, searchTerm: string) => {
+    if (!searchTerm || !text) return text;
+    
+    const regex = new RegExp(`(${searchTerm.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
+    const parts = text.split(regex);
+    
+    return parts.map((part, index) => 
+      regex.test(part) ? (
+        <span key={index} style={{ backgroundColor: '#fff3cd', fontWeight: 'bold' }}>
+          {part}
+        </span>
+      ) : part
+    );
+  };
+
   // Prepare autocomplete options
   const autocompleteOptions = suggestions.map(tag => ({
     value: tag.tag,
     label: (
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <span>{tag.tag}</span>
+        <span>{highlightText(tag.tag, currentTag)}</span>
         {tag.newsCount && (
           <span style={{ color: '#999', fontSize: '12px' }}>
             {tag.newsCount} новин
@@ -267,7 +283,7 @@ export default function TagInput({ value = '', onChange, placeholder, status }: 
         style={{ position: 'relative' }}
       />
       
-      {showSuggestions && autocompleteOptions.length > 0 && (
+      {showSuggestions && (
         <div
           style={{
             position: 'absolute',
@@ -284,27 +300,41 @@ export default function TagInput({ value = '', onChange, placeholder, status }: 
             overflowY: 'auto',
           }}
         >
-          {autocompleteOptions.map((option, index) => (
+          {autocompleteOptions.length > 0 ? (
+            autocompleteOptions.map((option, index) => (
+              <div
+                key={index}
+                onClick={() => handleSuggestionSelect(option.value)}
+                style={{
+                  padding: '10px 12px',
+                  cursor: 'pointer',
+                  borderBottom: index < autocompleteOptions.length - 1 ? '1px solid #f0f0f0' : 'none',
+                  fontSize: '14px',
+                  transition: 'background-color 0.2s ease',
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.backgroundColor = '#f7f7f7';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.backgroundColor = '#fff';
+                }}
+              >
+                {option.label}
+              </div>
+            ))
+          ) : (
             <div
-              key={index}
-              onClick={() => handleSuggestionSelect(option.value)}
               style={{
                 padding: '10px 12px',
-                cursor: 'pointer',
-                borderBottom: index < autocompleteOptions.length - 1 ? '1px solid #f0f0f0' : 'none',
+                color: '#999',
                 fontSize: '14px',
-                transition: 'background-color 0.2s ease',
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.backgroundColor = '#f7f7f7';
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.backgroundColor = '#fff';
+                textAlign: 'center',
+                fontStyle: 'italic',
               }}
             >
-              {option.label}
+              Тегів не знайдено
             </div>
-          ))}
+          )}
         </div>
       )}
       

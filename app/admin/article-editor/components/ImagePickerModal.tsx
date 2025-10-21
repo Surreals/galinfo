@@ -17,7 +17,9 @@ export default function ImagePickerModal({
   onSelect, 
   onSelectMultiple,
   currentImage,
-  allowMultiple = false
+  allowMultiple = false,
+  selectedImages: initialSelectedImages = [],
+  onImagesChange
 }: ImagePickerModalProps) {
   const [images, setImages] = useState<ImageItem[]>([]);
   const [loading, setLoading] = useState(false);
@@ -28,6 +30,7 @@ export default function ImagePickerModal({
   const [totalPages, setTotalPages] = useState(1);
   const [activeTab, setActiveTab] = useState('gallery');
   const [selectedImages, setSelectedImages] = useState<ImageItem[]>([]);
+  const [savedInitialImages, setSavedInitialImages] = useState<ImageItem[]>([]);
 
   // Завантаження зображень
   const fetchImages = async (page = 1, search = '', picType = '', tags = '') => {
@@ -106,11 +109,15 @@ export default function ImagePickerModal({
 
   // Підтвердження множинного вибору
   const handleConfirmMultiple = () => {
-    if (onSelectMultiple && selectedImages.length > 0) {
+    if (onImagesChange) {
+      // Використовуємо новий callback для передачі змін
+      onImagesChange(selectedImages);
+    } else if (onSelectMultiple && selectedImages.length > 0) {
+      // Fallback для старої логіки
       onSelectMultiple(selectedImages);
-      setSelectedImages([]);
-      onClose();
     }
+    setSelectedImages([]);
+    onClose();
   };
 
   // Скидання вибору
@@ -131,16 +138,21 @@ export default function ImagePickerModal({
   useEffect(() => {
     if (open) {
       fetchImages();
-      // Скидаємо вибрані зображення при відкритті модалки
-      setSelectedImages([]);
+      // Зберігаємо початковий стан для можливості скасування
+      setSavedInitialImages(initialSelectedImages);
+      setSelectedImages(initialSelectedImages);
     }
-  }, [open]);
+  }, [open, initialSelectedImages]);
 
   return (
     <Modal
       title="Вибір зображення"
       open={open}
       onCancel={() => {
+        // При скасуванні повертаємо початковий стан
+        if (onImagesChange) {
+          onImagesChange(savedInitialImages);
+        }
         setSelectedImages([]);
         onClose();
       }}
@@ -160,6 +172,10 @@ export default function ImagePickerModal({
               </Button>
             )}
             <Button onClick={() => {
+              // При скасуванні повертаємо початковий стан
+              if (onImagesChange) {
+                onImagesChange(savedInitialImages);
+              }
               setSelectedImages([]);
               onClose();
             }}>

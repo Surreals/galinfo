@@ -20,6 +20,9 @@ export interface ImagePickerModalProps {
   onSelectMultiple?: (images: ImageItem[]) => void;
   currentImage?: ImageItem | null;
   allowMultiple?: boolean;
+  // Нові пропси для роботи з вже вибраними зображеннями
+  selectedImages?: ImageItem[];
+  onImagesChange?: (images: ImageItem[]) => void;
 }
 
 export interface ImageGalleryProps {

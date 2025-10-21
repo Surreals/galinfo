@@ -25,8 +25,17 @@ export async function GET(request: NextRequest) {
 
     // Фільтр по ключовому слову
     if (keyword) {
-      whereClauses.push('a_tags.tag LIKE ?');
-      params.push(`%${keyword}%`);
+      // Нормалізуємо ключове слово для пошуку
+      const normalizedKeyword = keyword.trim();
+      whereClauses.push('LOWER(a_tags.tag) LIKE LOWER(?)');
+      params.push(`%${normalizedKeyword}%`);
+      
+      // Додаємо логування для дебагу
+      console.log('Tag search filter:', {
+        keyword: normalizedKeyword,
+        whereClause: whereClauses.join(' AND '),
+        params
+      });
     }
 
     // Фільтр по ID новини
@@ -50,6 +59,38 @@ export async function GET(request: NextRequest) {
 
     // Отримання даних з пагінацією
     const offset = page * perPage;
+    
+    // Покращене сортування для пошуку тегів
+    let orderByClause = 'a_tags.tag'; // За замовчуванням алфавітне сортування
+    let queryParams = [...params];
+    
+    if (keyword) {
+      const normalizedKeyword = keyword.trim();
+      // Створюємо рейтинг релевантності для пошуку
+      orderByClause = `
+        CASE 
+          WHEN LOWER(a_tags.tag) = LOWER(?) THEN 1
+          WHEN LOWER(a_tags.tag) LIKE LOWER(?) THEN 2
+          WHEN LOWER(a_tags.tag) LIKE LOWER(?) THEN 3
+          ELSE 4
+        END,
+        COUNT(a_tags_map.newsid) DESC,
+        a_tags.tag
+      `;
+      // Додаємо параметри для сортування
+      queryParams.push(normalizedKeyword, `${normalizedKeyword}%`, `%${normalizedKeyword}%`);
+      
+      // Додаємо логування для дебагу
+      console.log('Tag search params:', {
+        keyword: normalizedKeyword,
+        params: queryParams,
+        orderByClause
+      });
+    } else {
+      // Якщо немає пошуку, сортуємо за кількістю новин, потім за алфавітом
+      orderByClause = 'COUNT(a_tags_map.newsid) DESC, a_tags.tag';
+    }
+    
     const [rows] = await pool.query<any[]>(
       `SELECT 
         a_tags.id,
@@ -59,10 +100,19 @@ export async function GET(request: NextRequest) {
        LEFT JOIN a_tags_map ON a_tags.id = a_tags_map.tagid
        WHERE ${whereClause}
        GROUP BY a_tags.id
-       ORDER BY a_tags.tag
+       ORDER BY ${orderByClause}
        LIMIT ? OFFSET ?`,
-      [...params, perPage, offset]
+      [...queryParams, perPage, offset]
     );
+
+    // Логування результатів для дебагу
+    if (keyword) {
+      console.log('Tag search results:', {
+        keyword,
+        results: rows.map(r => ({ tag: r.tag, newsCount: r.newsCount })),
+        total: rows.length
+      });
+    }
 
     return NextResponse.json({
       success: true,
