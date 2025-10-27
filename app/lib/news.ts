@@ -130,7 +130,7 @@ export async function getNewsById(id: number): Promise<NewsData | null> {
         n.rated, n.udate, n.urlkey, n.userid, n.layout, n.comments, n.bytheme, 
         n.ispopular, n.supervideo, n.printsubheader, n.topnews, n.isexpert, n.photo, 
         n.video, n.subrubric, n.imagescopy, n.suggest, n.headlineblock, n.twitter_status, 
-        n.youcode, n._todel1, n._todel2, n._todel3, n._stage, n.maininblock, n.videos, n.isProject,
+        n.youcode, n._todel1, n._todel2, n._todel3, n._stage, n.maininblock, n.isProject,
         DATE_FORMAT(n.ndate, '%Y-%m-%d') as ndate,
         n.ntime,
         nb.nbody,
