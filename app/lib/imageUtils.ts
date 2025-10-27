@@ -54,9 +54,9 @@ export interface ImageSize {
   tmb: string;
 }
 
-// Базові URL для зображень
-const OLD_IMAGE_BASE_URL = 'https://galinfo.com.ua';
-const NEW_IMAGE_BASE_URL = process.env.NEXT_PUBLIC_IMAGE_BASE_URL || '';
+// Базові URL для зображень - використовуємо тільки серверний IP
+const OLD_IMAGE_BASE_URL = 'http://89.116.31.189';
+const NEW_IMAGE_BASE_URL = process.env.NEXT_PUBLIC_IMAGE_BASE_URL || 'http://89.116.31.189';
 
 // Функція для визначення, чи є зображення старим (з старого сайту)
 function isOldImage(filename: string): boolean {
@@ -75,26 +75,15 @@ export function getImageUrl(filename: string, size: keyof ImageSize = 'intxt'): 
   const baseUrl = isOld ? OLD_IMAGE_BASE_URL : NEW_IMAGE_BASE_URL;
   const basePath = '/media/gallery';
   
-  if (isOld) {
-    // Для старих зображень використовуємо стару структуру папок
-    // Приклад: volgnpz.jpg -> /media/gallery/tmb/v/o/volgnpz.jpg
-    const imagePath = generateImagePath(filename);
-    const sizes: ImageSize = {
-      full: `${baseUrl}${basePath}/full/${imagePath}`,
-      intxt: `${baseUrl}${basePath}/intxt/${imagePath}`,
-      tmb: `${baseUrl}${basePath}/tmb/${imagePath}`
-    };
-    return sizes[size] || sizes.intxt;
-  } else {
-    // Для нових зображень використовуємо локальну структуру
-    const imagePath = generateImagePath(filename);
-    const sizes: ImageSize = {
-      full: `${basePath}/full/${imagePath}`,
-      intxt: `${basePath}/intxt/${imagePath}`,
-      tmb: `${basePath}/tmb/${imagePath}`
-    };
-    return sizes[size] || sizes.intxt;
-  }
+  // Генеруємо URL для різних розмірів з fallback логікою
+  const imagePath = generateImagePath(filename);
+  
+  const sizes: ImageSize = {
+    full: `${baseUrl}${basePath}/full/${imagePath}`,     // Завжди оригінальний файл
+    intxt: `${baseUrl}${basePath}/intxt/${imagePath}`,   // Спочатку шукаємо в intxt, fallback через API
+    tmb: `${baseUrl}${basePath}/tmb/${imagePath}`        // Спочатку шукаємо в tmb, fallback через API
+  };
+  return sizes[size] || sizes.full;
 }
 
 // Отримання alt тексту для зображення по мові

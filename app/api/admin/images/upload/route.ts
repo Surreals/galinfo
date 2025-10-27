@@ -98,13 +98,9 @@ export async function POST(request: NextRequest) {
         const secondChar = filename.charAt(1);
         
         const fullPath = join(basePath, 'gallery', 'full', firstChar, secondChar);
-        const tmbPath = join(basePath, 'gallery', 'tmb', firstChar, secondChar);
-        const intxtPath = join(basePath, 'gallery', 'intxt', firstChar, secondChar);
-
-        // Створюємо директорії якщо вони не існують
+        
+        // Створюємо тільки папку 'full', оскільки інших папок на сервері немає
         await mkdir(fullPath, { recursive: true });
-        await mkdir(tmbPath, { recursive: true });
-        await mkdir(intxtPath, { recursive: true });
 
         // Конвертуємо файл в буфер
         const bytes = await file.arrayBuffer();
@@ -114,10 +110,8 @@ export async function POST(request: NextRequest) {
         const fullFilePath = join(fullPath, filename);
         await writeFile(fullFilePath, buffer);
 
-        // Тут можна додати логіку для створення мініатюр
-        // Поки що копіюємо оригінал в інші папки
-        await writeFile(join(tmbPath, filename), buffer);
-        await writeFile(join(intxtPath, filename), buffer);
+        // TODO: Оскільки на сервері є тільки папка 'full', 
+        // створення мініатюр поки що не потрібно
 
         // Зберігаємо інформацію в базу даних
         const insertQuery = `

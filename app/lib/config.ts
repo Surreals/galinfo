@@ -3,14 +3,14 @@
 export const config = {
   // Image configuration
   images: {
-    // Base URL for news images - can be easily changed via environment variable or hardcoded
-    baseUrl: process.env.NEXT_PUBLIC_IMAGE_BASE_URL || 'https://galinfo.com.ua',
+    // Base URL for news images - використовуємо тільки серверний IP
+    baseUrl: process.env.NEXT_PUBLIC_IMAGE_BASE_URL || 'http://89.116.31.189',
     // Path to news images relative to base URL
-    newsPath: process.env.NEXT_PUBLIC_IMAGE_NEWS_PATH || '/media/gallery/intxt',
+    newsPath: process.env.NEXT_PUBLIC_IMAGE_NEWS_PATH || '/media/gallery/full',
     // Full path for news images
     getNewsImagePath: (filename: string) => {
-      const baseUrl = process.env.NEXT_PUBLIC_IMAGE_BASE_URL || 'https://galinfo.com.ua';
-      const newsPath = process.env.NEXT_PUBLIC_IMAGE_NEWS_PATH || '/media/gallery/intxt';
+      const baseUrl = process.env.NEXT_PUBLIC_IMAGE_BASE_URL || 'http://89.116.31.189';
+      const newsPath = process.env.NEXT_PUBLIC_IMAGE_NEWS_PATH || '/media/gallery/full';
       return `${baseUrl}${newsPath}/${filename}`;
     },
   },
@@ -28,11 +28,12 @@ export const config = {
     mediaUrl: process.env.NEXT_PUBLIC_MEDIA_URL || '/media',
     
     // Subdirectories for different media types
+    // Тепер API автоматично генерує розміри з fallback на full
     paths: {
       images: {
-        full: '/gallery/full',
-        tmb: '/gallery/tmb',
-        intxt: '/gallery/intxt',
+        full: '/gallery/full',   // Оригінальні зображення
+        tmb: '/gallery/tmb',     // Мініатюри 150px (генеруються API)
+        intxt: '/gallery/intxt', // Середні зображення 800px (генеруються API)
       },
       videos: {
         files: '/videos',

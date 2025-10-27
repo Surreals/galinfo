@@ -234,7 +234,7 @@ export async function getNewsMetadata(urlkey: string, id: number, lang: string =
           const filename = images[0].filename;
           const firstChar = filename.charAt(0);
           const secondChar = filename.charAt(1);
-          imageUrl = `https://galinfo.com.ua/media/gallery/intxt/${firstChar}/${secondChar}/${filename}`;
+          imageUrl = `http://89.116.31.189/media/gallery/full/${firstChar}/${secondChar}/${filename}`;
         }
       }
     }

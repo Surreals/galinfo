@@ -95,7 +95,7 @@ export async function GET(
         a_news.topnews, a_news.isexpert, a_news.photo, a_news.video, a_news.subrubric, 
         a_news.imagescopy, a_news.suggest, a_news.headlineblock, a_news.twitter_status, 
         a_news.youcode, a_news._todel1, a_news._todel2, a_news._todel3, a_news._stage, 
-        a_news.maininblock, a_news.videos, a_news.isProject,
+        a_news.maininblock, a_news.video, a_news.isProject,
         DATE_FORMAT(a_news.ndate, '%Y-%m-%d') as ndate,
         a_news.ntime,
         a_news_headers.nheader,
