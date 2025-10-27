@@ -88,8 +88,8 @@ export function getImageUrl(filename: string, size: keyof ImageSize = 'intxt'): 
   // Для нових зображень теж використовуємо fallback на full поки не налаштовано ресайз
   const sizes: ImageSize = {
     full: `${baseUrl}${basePath}/full/${imagePath}`,
-    intxt: `${baseUrl}${basePath}/full/${imagePath}`,  // Fallback на full
-    tmb: `${baseUrl}${basePath}/full/${imagePath}`     // Fallback на full
+    intxt: `${baseUrl}${basePath}/intxt/${imagePath}`,  // Fallback на full
+    tmb: `${baseUrl}${basePath}/tmb/${imagePath}`     // Fallback на full
   };
   return sizes[size] || sizes.full;
 }
