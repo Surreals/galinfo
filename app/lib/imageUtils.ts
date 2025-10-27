@@ -78,10 +78,18 @@ export function getImageUrl(filename: string, size: keyof ImageSize = 'intxt'): 
   // Генеруємо URL для різних розмірів з fallback логікою
   const imagePath = generateImagePath(filename);
   
+  // Для старих зображень використовуємо fallback на full, оскільки tmb/intxt можуть не існувати
+  if (isOld) {
+    // Для старих зображень завжди повертаємо full розмір, 
+    // оскільки мініатюри можуть не існувати на сервері
+    return `${baseUrl}${basePath}/full/${imagePath}`;
+  }
+  
+  // Для нових зображень теж використовуємо fallback на full поки не налаштовано ресайз
   const sizes: ImageSize = {
-    full: `${baseUrl}${basePath}/full/${imagePath}`,     // Завжди оригінальний файл
-    intxt: `${baseUrl}${basePath}/intxt/${imagePath}`,   // Спочатку шукаємо в intxt, fallback через API
-    tmb: `${baseUrl}${basePath}/tmb/${imagePath}`        // Спочатку шукаємо в tmb, fallback через API
+    full: `${baseUrl}${basePath}/full/${imagePath}`,
+    intxt: `${baseUrl}${basePath}/full/${imagePath}`,  // Fallback на full
+    tmb: `${baseUrl}${basePath}/full/${imagePath}`     // Fallback на full
   };
   return sizes[size] || sizes.full;
 }
