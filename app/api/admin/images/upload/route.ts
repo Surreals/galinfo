@@ -4,6 +4,7 @@ import { join } from 'path';
 import { executeQuery } from '@/app/lib/db';
 import { config } from '@/app/lib/config';
 import { getImageUrl } from '@/app/lib/imageUtils';
+import { processImage, validateImage } from '@/app/lib/imageProcessor';
 
 export async function POST(request: NextRequest) {
   try {
@@ -93,25 +94,25 @@ export async function POST(request: NextRequest) {
         const fileExtension = file.name.split('.').pop();
         const filename = `${timestamp}_${Math.random().toString(36).substring(2)}.${fileExtension}`;
         
-        // Створюємо підпапки на основі перших двох символів
-        const firstChar = filename.charAt(0);
-        const secondChar = filename.charAt(1);
-        
-        const fullPath = join(basePath, 'gallery', 'full', firstChar, secondChar);
-        
-        // Створюємо тільки папку 'full', оскільки інших папок на сервері немає
-        await mkdir(fullPath, { recursive: true });
-
         // Конвертуємо файл в буфер
         const bytes = await file.arrayBuffer();
         const buffer = Buffer.from(bytes);
 
-        // Зберігаємо оригінальне зображення
-        const fullFilePath = join(fullPath, filename);
-        await writeFile(fullFilePath, buffer);
+        // Валідуємо зображення
+        const validation = await validateImage(buffer);
+        if (!validation.isValid) {
+          errors.push({ file: file.name, error: validation.error || 'Некоректне зображення' });
+          continue;
+        }
 
-        // TODO: Оскільки на сервері є тільки папка 'full', 
-        // створення мініатюр поки що не потрібно
+        // Обробляємо зображення та створюємо всі розміри (full, intx, tmb)
+        const processingResult = await processImage(buffer, filename, basePath);
+        
+        console.log('🖼️ Створено зображення з розмірами:', {
+          filename: processingResult.filename,
+          originalSize: `${processingResult.metadata.originalWidth}x${processingResult.metadata.originalHeight}`,
+          sizes: Object.keys(processingResult.sizes)
+        });
 
         // Зберігаємо інформацію в базу даних
         const insertQuery = `
