@@ -4,9 +4,25 @@
  * Complete Database Migration Script for GalInfo Project
  * 
  * This script performs all necessary database migrations to set up the project:
- * 1. Creates new tables (advertisements, template_schemas, a_videos)
- * 2. Adds new columns to existing tables (2FA, roles, isProject, placement, thumburl)
- * 3. Sets up default data and configurations
+ * 
+ * TABLES CREATED:
+ * 1. advertisements - реклама та банери
+ * 2. template_schemas - схеми шаблонів
+ * 3. a_videos - таблиця відео
+ * 4. a_powerusers - користувачі адмін-панелі (якщо не існує)
+ * 
+ * COLUMNS ADDED:
+ * 1. a_powerusers: twofa_enabled, twofa_secret, backup_codes (2FA підтримка)
+ * 2. a_powerusers: role (ролі користувачів)
+ * 3. a_news: isProject (маркер проектів)
+ * 4. advertisements: placement (позиції реклами)
+ * 5. advertisements: content_type, html_content (HTML контент)
+ * 6. a_videos: thumburl (мініатюри відео)
+ * 7. a_pics: tags (теги зображень)
+ * 
+ * DEFAULT DATA:
+ * - Тестові реклами з різними розташуваннями
+ * - Дефолтні схеми шаблонів для десктопу та мобільних
  * 
  * Usage: node scripts/complete-database-migration.js
  */
@@ -62,7 +78,16 @@ async function runMigration() {
     // 8. Add thumburl column to a_videos
     await addThumbUrlColumn(connection);
     
-    // 9. Setup default data
+    // 9. Add HTML content columns to advertisements
+    await addHtmlContentColumns(connection);
+    
+    // 10. Add tags column to a_pics
+    await addTagsColumn(connection);
+    
+    // 11. Create a_powerusers table if not exists
+    await createPowerUsersTable(connection);
+    
+    // 12. Setup default data
     await setupDefaultData(connection);
     
     console.log('\n🎉 All migrations completed successfully!');
@@ -306,6 +331,91 @@ async function addThumbUrlColumn(connection) {
     `);
     console.log('✅ Added thumburl column');
   }
+}
+
+async function addHtmlContentColumns(connection) {
+  console.log('📊 Adding HTML content columns to advertisements...');
+  
+  // Check if columns exist
+  const [columns] = await connection.execute(`
+    SELECT COLUMN_NAME 
+    FROM INFORMATION_SCHEMA.COLUMNS 
+    WHERE TABLE_SCHEMA = ? 
+    AND TABLE_NAME = 'advertisements' 
+    AND COLUMN_NAME IN ('content_type', 'html_content')
+  `, [config.database]);
+  
+  const existingColumns = columns.map(row => row.COLUMN_NAME);
+  
+  // Add content_type column
+  if (!existingColumns.includes('content_type')) {
+    await connection.execute(`
+      ALTER TABLE advertisements 
+      ADD COLUMN content_type ENUM('image', 'html') DEFAULT 'image' AFTER link_url
+    `);
+    console.log('✅ Added content_type column');
+  }
+  
+  // Add html_content column
+  if (!existingColumns.includes('html_content')) {
+    await connection.execute(`
+      ALTER TABLE advertisements 
+      ADD COLUMN html_content TEXT NULL AFTER content_type
+    `);
+    console.log('✅ Added html_content column');
+  }
+  
+  if (existingColumns.length === 2) {
+    console.log('✅ HTML content columns already exist');
+  }
+}
+
+async function addTagsColumn(connection) {
+  console.log('📊 Adding tags column to a_pics...');
+  
+  // Check if column exists
+  const [columns] = await connection.execute(`
+    SELECT COLUMN_NAME 
+    FROM INFORMATION_SCHEMA.COLUMNS 
+    WHERE TABLE_SCHEMA = ? AND TABLE_NAME = 'a_pics' AND COLUMN_NAME = 'tags'
+  `, [config.database]);
+  
+  if (columns.length > 0) {
+    console.log('✅ Tags column already exists');
+  } else {
+    await connection.execute(`
+      ALTER TABLE a_pics 
+      ADD COLUMN tags TEXT NULL COMMENT 'Comma-separated tags for the image'
+    `);
+    console.log('✅ Added tags column');
+  }
+}
+
+async function createPowerUsersTable(connection) {
+  console.log('📊 Creating/verifying a_powerusers table...');
+  
+  await connection.execute(`
+    CREATE TABLE IF NOT EXISTS a_powerusers (
+      id INT AUTO_INCREMENT PRIMARY KEY,
+      uname VARCHAR(255) NOT NULL UNIQUE,
+      upass VARCHAR(255) NOT NULL,
+      uname_ua VARCHAR(255),
+      uagency VARCHAR(255),
+      perm TEXT,
+      role VARCHAR(20) DEFAULT 'journalist',
+      active TINYINT(1) DEFAULT 1,
+      twofa_enabled TINYINT(1) DEFAULT 0,
+      twofa_secret VARCHAR(255) DEFAULT NULL,
+      backup_codes TEXT DEFAULT NULL,
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+      INDEX idx_uname (uname),
+      INDEX idx_role (role),
+      INDEX idx_active (active)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
+  `);
+  
+  console.log('✅ a_powerusers table created/verified');
 }
 
 async function setupDefaultData(connection) {
