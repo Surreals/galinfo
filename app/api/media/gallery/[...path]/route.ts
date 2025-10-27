@@ -20,10 +20,11 @@ const SIZE_CONFIG = {
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { path: string[] } }
+  { params }: { params: Promise<{ path: string[] }> }
 ) {
   try {
-    const pathSegments = params.path;
+    const { path } = await params;
+    const pathSegments = path;
     
     // Парсимо шлях: [size, char1, char2, filename]
     // Приклад: /tmb/1/7/1761574574725_59m3t1s5ikd.jpg
